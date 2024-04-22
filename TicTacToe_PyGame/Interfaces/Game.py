@@ -1,4 +1,9 @@
-class Game:
+from abc import ABC, abstractmethod
+
+import numpy as np
+
+
+class Game(ABC):
     """
     This class specifies the base TicTacToe_PyGame class. To define your own game, subclass
     this class and implement the functions below. This works when the game is
@@ -11,7 +16,8 @@ class Game:
     def __init__(self):
         pass
 
-    def getInitBoard(self):
+    @abstractmethod
+    def getInitBoard(self) -> np.array:
         """
         Returns:
             startBoard: a representation of the board (ideally this is the form
@@ -19,21 +25,24 @@ class Game:
         """
         pass
 
-    def getBoardSize(self):
+    @abstractmethod
+    def getBoardSize(self) -> tuple[int, int]:
         """
         Returns:
             (x,y): a tuple of board dimensions
         """
         pass
 
-    def getActionSize(self):
+    @abstractmethod
+    def getActionSize(self) -> int:
         """
         Returns:
             actionSize: number of all possible actions
         """
         pass
 
-    def getNextState(self, board, player, action):
+    @abstractmethod
+    def getNextState(self, board: np.array, player: int, action) -> tuple[np.array, int]:
         """
         Input:
             board: current board
@@ -46,7 +55,8 @@ class Game:
         """
         pass
 
-    def getValidMoves(self, board, player):
+    @abstractmethod
+    def getValidMoves(self, board: np.array, player: int) -> np.array:
         """
         Input:
             board: current board
@@ -59,7 +69,8 @@ class Game:
         """
         pass
 
-    def getGameEnded(self, board, player):
+    @abstractmethod
+    def getGameEnded(self, board: np.array, player: int) -> int:
         """
         Input:
             board: current board
@@ -72,7 +83,8 @@ class Game:
         """
         pass
 
-    def getCanonicalForm(self, board, player):
+    @abstractmethod
+    def getCanonicalForm(self, board: np.array, player: int) -> int:
         """
         Input:
             board: current board
@@ -88,7 +100,8 @@ class Game:
         """
         pass
 
-    def getSymmetries(self, board, pi):
+    @abstractmethod
+    def getSymmetries(self, board: np.array, pi) -> list:
         """
         Input:
             board: current board
@@ -101,7 +114,8 @@ class Game:
         """
         pass
 
-    def stringRepresentation(self, board):
+    @abstractmethod
+    def stringRepresentation(self, board: np.array) -> str:
         """
         Input:
             board: current board

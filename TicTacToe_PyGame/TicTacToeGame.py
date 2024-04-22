@@ -6,7 +6,7 @@ import pygame
 from PIL import Image
 
 sys.path.append('..')
-from Game import Game
+from TicTacToe_PyGame.Interfaces.Game import Game
 from TicTacToeLogic import Board
 import numpy as np
 
@@ -23,6 +23,7 @@ Based on the OthelloGame by Surag Nair.
 
 class TicTacToeGame(Game):
     def __init__(self, n=3):
+        super().__init__()
         self.n = n
 
     def getInitBoard(self):
@@ -32,7 +33,7 @@ class TicTacToeGame(Game):
 
     def getBoardSize(self):
         # (a,b) tuple
-        return (self.n, self.n)
+        return self.n, self.n
 
     def getActionSize(self):
         # return number of actions
@@ -42,7 +43,7 @@ class TicTacToeGame(Game):
         # if player takes action on board, return next (board,player)
         # action must be a valid move
         if action == self.n * self.n:
-            return (board, -player)
+            return board, -player
         b = Board(self.n)
         b.pieces = np.copy(board)
         move = (int(action / self.n), action % self.n)
