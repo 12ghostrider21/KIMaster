@@ -1,11 +1,6 @@
-from abc import ABC, abstractmethod
-
-import numpy as np
-
-
-class Game(ABC):
+class Game:
     """
-    This class specifies the base TicTacToe_PyGame class. To define your own game, subclass
+    This class specifies the base Game class. To define your own game, subclass
     this class and implement the functions below. This works when the game is
     two-player, adversarial and turn-based.
 
@@ -16,8 +11,7 @@ class Game(ABC):
     def __init__(self):
         pass
 
-    @abstractmethod
-    def getInitBoard(self) -> np.array:
+    def getInitBoard(self):
         """
         Returns:
             startBoard: a representation of the board (ideally this is the form
@@ -25,24 +19,21 @@ class Game(ABC):
         """
         pass
 
-    @abstractmethod
-    def getBoardSize(self) -> tuple[int, int]:
+    def getBoardSize(self):
         """
         Returns:
             (x,y): a tuple of board dimensions
         """
         pass
 
-    @abstractmethod
-    def getActionSize(self) -> int:
+    def getActionSize(self):
         """
         Returns:
             actionSize: number of all possible actions
         """
         pass
 
-    @abstractmethod
-    def getNextState(self, board: np.array, player: int, action) -> tuple[np.array, int]:
+    def getNextState(self, board, player, action):
         """
         Input:
             board: current board
@@ -55,8 +46,7 @@ class Game(ABC):
         """
         pass
 
-    @abstractmethod
-    def getValidMoves(self, board: np.array, player: int) -> np.array:
+    def getValidMoves(self, board, player):
         """
         Input:
             board: current board
@@ -69,8 +59,7 @@ class Game(ABC):
         """
         pass
 
-    @abstractmethod
-    def getGameEnded(self, board: np.array, player: int) -> int:
+    def getGameEnded(self, board, player):
         """
         Input:
             board: current board
@@ -83,8 +72,7 @@ class Game(ABC):
         """
         pass
 
-    @abstractmethod
-    def getCanonicalForm(self, board: np.array, player: int) -> int:
+    def getCanonicalForm(self, board, player):
         """
         Input:
             board: current board
@@ -100,8 +88,7 @@ class Game(ABC):
         """
         pass
 
-    @abstractmethod
-    def getSymmetries(self, board: np.array, pi) -> list:
+    def getSymmetries(self, board, pi):
         """
         Input:
             board: current board
@@ -114,8 +101,7 @@ class Game(ABC):
         """
         pass
 
-    @abstractmethod
-    def stringRepresentation(self, board: np.array) -> str:
+    def stringRepresentation(self, board):
         """
         Input:
             board: current board

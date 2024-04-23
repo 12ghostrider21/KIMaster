@@ -1,17 +1,16 @@
 from __future__ import print_function
-import sys
+
 from io import BytesIO
 
-import pygame
 from PIL import Image
 
-sys.path.append('..')
-from TicTacToe_PyGame.Interfaces.Game import Game
-from TicTacToeLogic import Board
+from Game import Game
+from .TicTacToeLogic import Board
 import numpy as np
+import pygame
 
 """
-TicTacToe_PyGame class implementation for the game of TicTacToe.
+Game class implementation for the game of TicTacToe.
 Based on the OthelloGame then getGameEnded() was adapted to new rules.
 
 Author: Evgeny Tyurin, github.com/evg-tyurin
@@ -33,7 +32,7 @@ class TicTacToeGame(Game):
 
     def getBoardSize(self):
         # (a,b) tuple
-        return self.n, self.n
+        return (self.n, self.n)
 
     def getActionSize(self):
         # return number of actions
@@ -43,12 +42,12 @@ class TicTacToeGame(Game):
         # if player takes action on board, return next (board,player)
         # action must be a valid move
         if action == self.n * self.n:
-            return board, -player
+            return (board, -player)
         b = Board(self.n)
         b.pieces = np.copy(board)
         move = (int(action / self.n), action % self.n)
         b.execute_move(move, player)
-        return b.pieces, -player
+        return (b.pieces, -player)
 
     def getValidMoves(self, board, player):
         # return a fixed size binary vector

@@ -1,6 +1,6 @@
 import logging
 
-import pygame
+from tqdm import tqdm
 
 log = logging.getLogger(__name__)
 
@@ -14,10 +14,13 @@ class Arena:
         """
         Input:
             player 1,2: two functions that takes board as input, return action
-            game: TicTacToe_PyGame object
+            game: Game object
             display: a function that takes board as input and prints it (e.g.
                      display in othello/OthelloGame). Is necessary for verbose
                      mode.
+
+        see othello/OthelloPlayers.py for an example. See pit.py for pitting
+        human players/other baselines with each other.
         """
         self.player1 = player1
         self.player2 = player2
@@ -38,7 +41,6 @@ class Arena:
         curPlayer = 1
         board = self.game.getInitBoard()
         it = 0
-        pygame.init()
         while self.game.getGameEnded(board, curPlayer) == 0:
             it += 1
             if verbose:
@@ -57,9 +59,8 @@ class Arena:
             board, curPlayer = self.game.getNextState(board, curPlayer, action)
         if verbose:
             assert self.display
-            print("TicTacToe_PyGame over: Turn ", str(it), "Result ", str(self.game.getGameEnded(board, 1)))
+            print("Game over: Turn ", str(it), "Result ", str(self.game.getGameEnded(board, 1)))
             self.display(board)
-        pygame.quit()
         return curPlayer * self.game.getGameEnded(board, curPlayer)
 
     def playGames(self, num, verbose=False):
@@ -77,7 +78,7 @@ class Arena:
         oneWon = 0
         twoWon = 0
         draws = 0
-        for _ in range(num):
+        for _ in tqdm(range(num), desc="Arena.playGames (1)"):
             gameResult = self.playGame(verbose=verbose)
             if gameResult == 1:
                 oneWon += 1
@@ -85,9 +86,10 @@ class Arena:
                 twoWon += 1
             else:
                 draws += 1
+
         self.player1, self.player2 = self.player2, self.player1
 
-        for _ in range(num):
+        for _ in tqdm(range(num), desc="Arena.playGames (2)"):
             gameResult = self.playGame(verbose=verbose)
             if gameResult == -1:
                 oneWon += 1
