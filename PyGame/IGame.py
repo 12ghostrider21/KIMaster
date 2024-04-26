@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
-from io import BytesIO
 
 import numpy as np
 import pygame
-from PIL import Image
 
 
 class IGame(ABC):
+
     @abstractmethod
     def getInitBoard(self) -> np.array:
         """
@@ -119,7 +118,7 @@ class IGame(ABC):
         pass
 
     @abstractmethod
-    def getGameEnded(self, board: np.array, player: int) -> int:
+    def getGameEnded(self, board: np.array, player: int) -> int | float:
         """
         Determine the outcome of the game for the given player on the current board state.
 
@@ -268,32 +267,3 @@ class IGame(ABC):
             return surface
         """
         pass
-
-    @staticmethod
-    def surfaceToBytes(surface: pygame.Surface) -> bytes:
-        """
-        Convert a Pygame surface to bytes representing a PNG image.
-
-        This function takes a Pygame surface and converts it into bytes representing
-        a PNG image. The Pygame surface is first converted to a string of RGBA pixel data,
-        which is then used to create a PIL (Pillow) Image object. The Image object is
-        then saved into a BytesIO buffer as a PNG image, and the resulting bytes are
-        returned.
-
-        Parameters:
-        - surface (pygame.Surface): The Pygame surface to be converted to bytes.
-
-        Returns:
-        - png_bytes (bytes): The bytes representing the PNG image of the Pygame surface.
-        """
-        # Convert Pygame surface to string of RGBA pixel data
-        image_string = pygame.image.tostring(surface, "RGBA")
-        # Create a PIL Image from the RGBA pixel data
-        image = Image.frombytes("RGBA", surface.get_size(), image_string)
-        # Save the PIL Image to a BytesIO buffer as a PNG image
-        img_bytes_array = BytesIO()
-        image.save(img_bytes_array, format="PNG")
-        # Retrieve the bytes from the BytesIO buffer
-        img_bytes_array.seek(0)
-        png_bytes = img_bytes_array.getvalue()
-        return png_bytes

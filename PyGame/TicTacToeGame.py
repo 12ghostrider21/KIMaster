@@ -1,64 +1,54 @@
-from io import BytesIO
-from PIL import Image
-from Game import Game
-from .TicTacToeLogic import Board
 import numpy as np
 import pygame
 
-"""
-Game class implementation for the game of TicTacToe.
-Based on the OthelloGame then getGameEnded() was adapted to new rules.
-
-Author: Evgeny Tyurin, github.com/evg-tyurin
-Date: Jan 5, 2018.
-
-Based on the OthelloGame by Surag Nair.
-"""
+from IGame import IGame
+from TicTacToeLogic import Board
 
 
-class TicTacToeGame(Game):
+class TicTacToeGame(IGame):
+
     def __init__(self, n=3):
         super().__init__()
         self.n = n
 
-    def getInitBoard(self):
+    def getInitBoard(self) -> np.array:
         # return initial board (numpy board)
         b = Board(self.n)
         return np.array(b.pieces)
 
-    def getBoardSize(self):
+    def getBoardSize(self) -> tuple[int, int]:
         # (a,b) tuple
-        return (self.n, self.n)
+        return self.n, self.n
 
-    def getActionSize(self):
+    def getActionSize(self) -> int:
         # return number of actions
         return self.n * self.n + 1
 
-    def getNextState(self, board, player, action):
+    def getNextState(self, board: np.array, player: int, action: int) -> tuple[np.array, int]:
         # if player takes action on board, return next (board,player)
         # action must be a valid move
         if action == self.n * self.n:
-            return (board, -player)
+            return board, -player
         b = Board(self.n)
         b.pieces = np.copy(board)
         move = (int(action / self.n), action % self.n)
         b.execute_move(move, player)
-        return (b.pieces, -player)
+        return b.pieces, -player
 
-    def getValidMoves(self, board, player):
+    def getValidMoves(self, board: np.array, player: int) -> np.array:
         # return a fixed size binary vector
-        valids = [0] * self.getActionSize()
+        val = [0] * self.getActionSize()
         b = Board(self.n)
         b.pieces = np.copy(board)
-        legalMoves = b.get_legal_moves(player)
+        legalMoves = b.get_legal_moves()
         if len(legalMoves) == 0:
-            valids[-1] = 1
-            return np.array(valids)
+            val[-1] = 1
+            return np.array(val)
         for x, y in legalMoves:
-            valids[self.n * x + y] = 1
-        return np.array(valids)
+            val[self.n * x + y] = 1
+        return np.array(val)
 
-    def getGameEnded(self, board, player):
+    def getGameEnded(self, board: np.array, player: int) -> int | float:
         # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
         # player = 1
         b = Board(self.n)
@@ -70,18 +60,18 @@ class TicTacToeGame(Game):
             return -1
         if b.has_legal_moves():
             return 0
-        # draw has a very little value 
+        # draw has a very little value
         return 1e-4
 
-    def getCanonicalForm(self, board, player):
+    def getCanonicalForm(self, board: np.array, player: int) -> np.array:
         # return state if player==1, else return -state if player==-1
         return player * board
 
-    def getSymmetries(self, board, pi):
+    def getSymmetries(self, board: np.array, pi: np.array) -> list:
         # mirror, rotational
         assert (len(pi) == self.n ** 2 + 1)  # 1 for pass
         pi_board = np.reshape(pi[:-1], (self.n, self.n))
-        l = []
+        result = []
 
         for i in range(1, 5):
             for j in [True, False]:
@@ -90,17 +80,15 @@ class TicTacToeGame(Game):
                 if j:
                     newB = np.fliplr(newB)
                     newPi = np.fliplr(newPi)
-                l += [(newB, list(newPi.ravel()) + [pi[-1]])]
-        return l
+                result += [(newB, list(newPi.ravel()) + [pi[-1]])]
+        return result
 
-    def stringRepresentation(self, board):
+    def stringRepresentation(self, board: np.array) -> str:
         # 8x8 numpy array (canonical board)
         return board.tostring()
 
-    @staticmethod
-    def display(board):
+    def draw_terminal(self, board: np.array) -> None:
         n = board.shape[0]
-
         print("   ", end="")
         for y in range(n):
             print(y, "", end="")
@@ -129,8 +117,7 @@ class TicTacToeGame(Game):
             print("-", end="-")
         print("--")
 
-    @staticmethod
-    def display_pyGame(board: np.array):
+    def draw(self, board: np.array, *args: any) -> pygame.surface:
         n = board.shape[0]
 
         square_size = 100  # Size of each square in pixels
@@ -158,24 +145,4 @@ class TicTacToeGame(Game):
                     size = square_size / 2
                     pygame.draw.circle(surface, BLUE, (x * square_size + size, y * square_size + size),
                                        min(square_size, square_size) // n, line_width)
-
-        # to look the image
-        pygame.image.save(surface, 'test.png')
-
-        # Convert Pygame surface to string format
-        image_string = pygame.image.tostring(surface, 'RGBA')
-
-        # Create PIL image from string data
-        image = Image.frombytes('RGBA', surface.get_size(), image_string)
-
-        # Create in-memory file object
-        img_byte_array = BytesIO()
-
-        # Save PIL image to in-memory file object as PNG
-        image.save(img_byte_array, format='PNG')
-
-        # Get bytes data from in-memory file object
-        img_byte_array.seek(0)
-        png_bytes = img_byte_array.getvalue()
-
-        return png_bytes
+        return surface
