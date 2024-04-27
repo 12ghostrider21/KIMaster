@@ -39,9 +39,7 @@ class Arena:
             self.sendSurface(self.game.draw(board))
             action: int = players[curPlayer + 1].play(self.game.getCanonicalForm(board, curPlayer))
             print(action)
-            time.sleep(2)
             valids = self.game.getValidMoves(self.game.getCanonicalForm(board, curPlayer), 1)
-            print(valids)
             #assert valids[action] > 0
             board, curPlayer = self.game.getNextState(board, curPlayer, action)
             #print("Game over: Turn ", str(it), "Result ", str(self.game.getGameEnded(board, 1)))
@@ -58,7 +56,7 @@ class Arena:
         files = {'file': ('surface.png', image_buffer, 'image/png')}
         try:
             response = requests.post(url, files=files)
-            #print(response.json())
+            print(response.json())
 
         except requests.exceptions.RequestException as e:
             print("An error occurred:", e)

@@ -60,6 +60,7 @@ class HumanAPIPlayer(IPlayer):
         url = 'http://127.0.0.1:8000/play'  # Update with your FastAPI server URL
 
         # Send a POST request with the NumPy array converted to JSON
+        response_data = None
         try:
             response = requests.post(url, json=board.tolist())
             if response.status_code == 200:
@@ -70,4 +71,4 @@ class HumanAPIPlayer(IPlayer):
 
         except requests.exceptions.RequestException as e:
             print("An error occurred:", e)
-        return -1
+        return response_data
