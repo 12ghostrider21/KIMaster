@@ -1,11 +1,11 @@
-class NeuralNet:
+class NeuralNet():
     """
     This class specifies the base NeuralNet class. To define your own neural
     network, subclass this class and implement the functions below. The neural
     network does not consider the current player, and instead only deals with
     the canonical form of the board.
 
-    See othello/Keras.py for an example implementation.
+    See othello/NNet.py for an example implementation.
     """
 
     def __init__(self, game):
@@ -33,6 +33,7 @@ class NeuralNet:
             pi: a policy vector for the current board- a numpy array of length
                 game.getActionSize
             v: a float in [-1,1] that gives the value of the current board
+
         """
         pass
 

@@ -5,12 +5,12 @@ from tqdm import tqdm
 log = logging.getLogger(__name__)
 
 
-class Arena:
+class Arena():
     """
     An Arena class where any 2 agents can be pit against each other.
     """
 
-    def __init__(self, player1, player2, game, display=None):
+    def __init__(self, player1, player2, game, draw_terminal=None):
         """
         Input:
             player 1,2: two functions that takes board as input, return action
@@ -25,9 +25,10 @@ class Arena:
         self.player1 = player1
         self.player2 = player2
         self.game = game
-        self.display = display
+        self.draw_terminal = draw_terminal
 
-    def playGame(self, verbose=False):
+    # an episode = 1 Game played
+    def playGame(self, verbose=False):  # if set to True, board gets displayed
         """
         Executes one episode of a game.
 
@@ -37,18 +38,21 @@ class Arena:
             or
                 draw result returned from the game that is neither 1, -1, nor 0.
         """
-        players = [self.player2, None, self.player1]
+        players = [self.player2, None, self.player1]  # player2 and player1 are functions (lambda)
         curPlayer = 1
         board = self.game.getInitBoard()
         it = 0
-        while self.game.getGameEnded(board, curPlayer) == 0:
+        while self.game.getGameEnded(board, curPlayer) == 0:  # 0 is if game is not finished
             it += 1
             if verbose:
-                assert self.display
+                assert self.draw_terminal
                 print("Turn ", str(it), "Player ", str(curPlayer))
-                self.display(board)
-                self.game.display_pyGame(board)
-            action = players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer))
+                self.draw_terminal(self, board)
+                self.game.draw(board)
+            action = players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer))  # the canonicalForm of the
+                        # board is the argument for the player function (lambda x : ... (x)) -> look into pit.py
+                        # in pit.py the maximum value from the ActionProbabilites is getting chosen;
+                        # players are at index 0 and 2 => therefore curPlayer + 1 ==> -1 + 1 = 0; 1 + 1 = 2
 
             valids = self.game.getValidMoves(self.game.getCanonicalForm(board, curPlayer), 1)
 
@@ -58,14 +62,15 @@ class Arena:
                 assert valids[action] > 0
             board, curPlayer = self.game.getNextState(board, curPlayer, action)
         if verbose:
-            assert self.display
+            assert self.draw_terminal
             print("Game over: Turn ", str(it), "Result ", str(self.game.getGameEnded(board, 1)))
-            self.display(board)
+            self.draw_terminal(self, board)
+            self.game.draw(board)
         return curPlayer * self.game.getGameEnded(board, curPlayer)
 
     def playGames(self, num, verbose=False):
         """
-        Plays num games in which player1 starts num/2 games and player2 starts
+        Plays num games in which player1 starts num/2 games and player2 starts        # says all
         num/2 games.
 
         Returns:
@@ -78,8 +83,8 @@ class Arena:
         oneWon = 0
         twoWon = 0
         draws = 0
-        for _ in tqdm(range(num), desc="Arena.playGames (1)"):
-            gameResult = self.playGame(verbose=verbose)
+        for _ in tqdm(range(num), desc="Arena.playGames (1)"):  # _ is a placeholder => used if there is no need of a var
+            gameResult = self.playGame(verbose=verbose)         # inside loop
             if gameResult == 1:
                 oneWon += 1
             elif gameResult == -1:
