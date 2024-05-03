@@ -1,7 +1,8 @@
+import datetime
 import socket
 import threading
 import json
-
+from code.backend.api.Lobby import Lobby
 
 class Server:
 
@@ -12,6 +13,14 @@ class Server:
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.clients = {}  # Dictionary zur Verfolgung der verbundenen Clients
         self.lock = threading.Lock()
+        self.lobbies: dict[str, Lobby] = {}
+
+    def createLobby(self) -> dict:
+        key = str(hash(datetime.datetime.now()))
+        if key in self.clients.keys():
+            raise KeyError(f"{key} already in use!")
+        self.lobbies[key] = Lobby()
+        return {"response": "create", "key": key}
 
     def start(self):
         """Startet den Server und wartet auf eingehende Verbindungen."""

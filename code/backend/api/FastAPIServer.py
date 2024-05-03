@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 import random
 import threading
@@ -16,7 +17,6 @@ class FastAPIServer:
         self.server: Server = server_instance
         self.app = FastAPI()
         self.manager: F_Manager = F_Manager()
-        self.lobbies = {}
 
         @self.app.get("/")
         def read_root():
@@ -31,19 +31,21 @@ class FastAPIServer:
             await self.manager.connect(websocket)
             print(self.manager.active_connections)
             while True:
-                data = await websocket.receive_text()
+                data = await websocket.receive_json()
+
+                create = data.get("create")
+                lobby = data.get("lobby")
+                connection = data.get("connection")
 
                 if data.get("create"):
-                    key = str(hash(datetime.datetime.now()))
-                    self.lobbies[key] = Lobby()
-                    print(f"{key=}")
-                    self.server.toServer(key)
-                    await websocket.send_json({"key": key, "msg": "Lobby created successfully."})
+                    result: dict = self.server.createLobby()
+                    await websocket.send_json(result)
+                    continue
 
-                print(data)
                 await websocket.send_text(data)
-                if data == "exit":
-                    break
+                if connection:
+                    if lobby == "exit":
+                        break
             await websocket.close()
             self.manager.disconnect(websocket)
 
