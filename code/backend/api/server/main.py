@@ -1,5 +1,5 @@
-from code.backend.api.server.SocketServer import Server
-from code.backend.api.server.FastAPIServer import FastAPIServer
+from SocketServer import Server
+from FastAPIServer import FastAPIServer
 import sys
 
 if __name__ == "__main__":
