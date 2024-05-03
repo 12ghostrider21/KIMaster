@@ -46,5 +46,7 @@ class FastAPIServer:
 
     def run(self, host: str, port: int):
         threading.Thread(target=self.server.start, daemon=True).start()
+        # send initial reqest do socket server to see if the communication between both is running
+        self.server.toServer("Thanos was right!")
         import uvicorn
         uvicorn.run(self.app, host=host, port=port)

@@ -10,7 +10,9 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["python", "main.py", ""]
+EXPOSE 12345
+
+CMD ["python", "main.py", "12345", "8000", "0.0.0.0", "0.0.0.0"]
 
 
 
