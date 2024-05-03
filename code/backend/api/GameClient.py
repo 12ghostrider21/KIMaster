@@ -1,6 +1,7 @@
-import socket
 import json
+import socket
 import threading
+
 
 class GameClient:
     def __init__(self, host: str = '127.0.0.1', port: int = 12345):
