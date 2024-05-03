@@ -33,37 +33,6 @@ class FastAPIServer:
         def read_root():
             return {"Hello": "World"}
 
-        @self.app.get("/connections")
-        def read_connections():
-            return self.manager.active_connections.__str__()
-
-        @self.app.post("/join/{lobbykey}")
-        def post_join(lobbykey):
-            self.server.toServer(data=lobbykey)
-
-        @self.app.get("/clients")
-        def read_clients():
-            with self.server.lock:
-                return {"clients": list(self.server.clients.keys())}
-
-        @self.app.post("/toServer")
-        def msg(data: dict):
-            return self.server.toServer(data=data)
-
-        @self.app.post("/send_message_to_client/{client_id}")
-        def send_message_to_client(client_id: int, message: str):
-            with self.server.lock:
-                if client_id in self.server.clients:
-                    client_socket = self.server.clients[client_id]
-                    try:
-                        self.server.send(client_socket, message)
-                        response = client_socket.recv(1024).decode()  # Beispiel für eine Rückmeldung vom Client
-                        return {"status": "success", "response": response}
-                    except Exception as e:
-                        return {"status": "error", "message": str(e)}
-                else:
-                    return {"status": "error", "message": f"Client with ID {client_id} not found"}
-
         @self.app.websocket("/ws")
         async def websocket_endpoint(websocket: WebSocket):
             await self.manager.connect(websocket)
