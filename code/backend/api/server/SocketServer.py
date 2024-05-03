@@ -2,11 +2,12 @@ import datetime
 import socket
 import threading
 import json
-from code.backend.api.Lobby import Lobby
+from code.backend.api.server.Lobby import Lobby
+
 
 class Server:
 
-    def __init__(self, host='127.0.0.1', port=12345):
+    def __init__(self, host: str, port: int):
         self.host = host
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -93,8 +94,3 @@ class Server:
             print(f"Verbindung von {client_address} geschlossen")
             if client_address[1] in self.clients:
                 del self.clients[client_address[1]]
-
-
-if __name__ == "__main__":
-    server = Server()
-    server.start()
