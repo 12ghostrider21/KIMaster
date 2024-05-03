@@ -1,8 +1,8 @@
 import random
 import threading
 
-from code.backend.api.server.FrontendManager import F_Manager
-from code.backend.api.server.SocketServer import Server
+from FrontendManager import F_Manager
+from SocketServer import Server
 from fastapi import FastAPI
 from starlette.websockets import WebSocket
 

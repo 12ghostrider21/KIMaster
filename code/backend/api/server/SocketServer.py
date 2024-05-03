@@ -2,7 +2,7 @@ import datetime
 import socket
 import threading
 import json
-from code.backend.api.server.Lobby import Lobby
+from Lobby import Lobby
 
 
 class Server:
