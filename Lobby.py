@@ -1,6 +1,6 @@
 from starlette.websockets import WebSocket
 from Games.IGame import IGame
-from Game.GameClient import GameClient
+from GameClient import GameClient
 from pygame import surface
 
 
