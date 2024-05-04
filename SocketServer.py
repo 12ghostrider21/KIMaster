@@ -18,12 +18,9 @@ class SocketServer:
             await self.connect(websocket)
             while True:
                 try:
-                    readObject = await websocket.receive_json()
+                    readObject = await websocket.receive_text()
                     print(readObject)
-
-                except JSONDecodeError:
-                    await self.send_message("Recieved data is not a json!", websocket)
-                    continue
+                    await websocket.send_text(readObject)
                 except WebSocketDisconnect:
                     break
             await self.disconnect(websocket)

@@ -1,27 +1,51 @@
 import asyncio
 import websockets
 
+
 class GameClient:
-    def __init__(self, uri):
-        self.uri = uri
+    def __init__(self, host: str, port: int):
+        self.host: str = host
+        self.port: int = port
         self.websocket = None
-        self.receive_task = None
 
     async def connect(self):
-        try:
-            self.websocket = await websockets.connect(self.uri)
-            print(f"Connected to {self.uri}")
-            self.receive_task = asyncio.create_task(self.receive())
-        except ConnectionRefusedError:
-            print(f"Failed to connect to {self.uri}")
+        url = f"ws://{self.host}:{self.port}/ws"
+        self.websocket = await websockets.connect(url)
+        print(f"Connected to {url}")
 
-    async def receive(self):
-        try:
-            while True:
-                message = await self.websocket.recv()
-                print(f"Received: {message}")
-        except websockets.ConnectionClosed:
-            print("Connection to server closed.")
+    async def send_message(self, message):
+        await self.websocket.send(message)
+        print(f"Sent message: {message}")
 
-    async def send_msg(self, data):
-        await self.websocket.send(data)
+    async def receive_message(self):
+        try:
+            response = await self.websocket.recv()
+            print(f"Received message: {response}")
+            return response
+        except websockets.exceptions.ConnectionClosed:
+            print("WebSocket connection closed.")
+
+    async def run(self):
+        await self.connect()
+
+        while True:
+            # Send a message
+            message = input("Type your message (or 'exit' to quit): ")
+            if message.lower() == 'exit':
+                break
+
+            await self.send_message(message)
+
+            # Receive response
+            response = await self.receive_message()
+
+        # Close the WebSocket connection
+        await self.websocket.close()
+        print("WebSocket connection closed.")
+
+
+if __name__ == "__main__":
+
+    # Create and run the WebSocketClient instance
+    client = GameClient("localhost", 12345)
+    asyncio.run(client.run())
