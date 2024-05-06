@@ -1,15 +1,10 @@
-import datetime
-import json
-import os
 import random
 import threading
 
-from code.backend.api.FrontendManager import F_Manager
-from code.backend.api.SocketServer import Server
+from FrontendManager import F_Manager
+from SocketServer import Server
 from fastapi import FastAPI
 from starlette.websockets import WebSocket
-from code.backend.api.Lobby import Lobby
-from code.backend.api.GameClient import GameClient
 
 
 class FastAPIServer:
@@ -49,13 +44,9 @@ class FastAPIServer:
             await websocket.close()
             self.manager.disconnect(websocket)
 
-    def run(self, host='127.0.0.1', port=8000):
+    def run(self, host: str, port: int):
         threading.Thread(target=self.server.start, daemon=True).start()
+        # send initial reqest do socket server to see if the communication between both is running
+        self.server.toServer("Thanos was right!")
         import uvicorn
         uvicorn.run(self.app, host=host, port=port)
-
-
-if __name__ == "__main__":
-    server = Server()
-    api = FastAPIServer(server)
-    api.run()
