@@ -1,7 +1,4 @@
 from starlette.websockets import WebSocket
-from Games.IGame import IGame
-from GameClient import GameClient
-from pygame import surface
 
 
 class Lobby:
@@ -10,8 +7,7 @@ class Lobby:
         self.p2 = None
         self.spectator_list: list = []
         self.key: str = key
-        self.game: IGame | None = None
-        self.game_client: GameClient | None = None
+        self.game_client = None
 
     def client_in_lobby(self, client: WebSocket) -> bool:
         if client == self.p1:
@@ -46,14 +42,3 @@ class Lobby:
             self.spectator_list.remove(client)
             return f"Spectator {client=} leaved"
         return "Client not in Lobby"
-
-    def get_board_images(self, board: surface, valid_moves=False, from_pos=0, *args: any):
-        png_p1 = self.game.draw(board, 1, valid_moves, from_pos, args)
-        png_p2 = self.game.draw(board, -1, valid_moves, from_pos, args)
-        return png_p1, png_p2
-
-    def __str__(self) -> str:
-        players = f"Players: {self.p1} vs {self.p2}" if self.p1 and self.p2 else "Players: None"
-        spectators = f"Spectators: {', '.join(self.spectator_list)}" if self.spectator_list else "Spectators: None"
-        game_state = f"Game: {self.game}" if self.game else "Game: None"
-        return f"Lobby Key: {self.key}\n{players}\n{spectators}\n{game_state}"

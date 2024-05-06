@@ -22,6 +22,7 @@ class SocketServer:
                     print(readObject)
                     await websocket.send_text(readObject)
                 except WebSocketDisconnect:
+                    print("websocket closes...")
                     break
             await self.disconnect(websocket)
 
@@ -84,16 +85,6 @@ class SocketServer:
             if lobby.client_in_lobby(client):
                 return lobby.key
         return None
-
-    async def draw_images_of_lobby(self, key: str, board: surface):
-        if self.lobby_exist(key):
-            lobby = self.lobbies.get(key)
-            png_p1, png_p2 = lobby.get_board_images(board)
-            await self.send_image(png_p1, lobby.p1)
-            await self.send_image(png_p2, lobby.p2)
-            for c in lobby.spectator_list:
-                await self.send_image(png_p1, c)
-            return "Images send"
 
     # *************************************************************************************************************
 

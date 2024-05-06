@@ -28,11 +28,16 @@ class FastAPIServer:
                 match command:
                     case "exit":
                         break
+                    case "play":
+                        match command_key:
+                            case "makemove":
+                                pass
+
                     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                     case "lobby":
                         match command_key:
                             case "create":
-                                msg, key = self.socket_server.new_lobby(websocket)
+                                msg, key = self.socket_server.create_lobby(websocket)
                                 if key is None:  # if user in lobby, cant create a new lobby!
                                     await self.send_message(msg, websocket)
                                     continue
