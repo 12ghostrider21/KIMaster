@@ -12,7 +12,7 @@ EXPOSE 8000
 
 EXPOSE 12345
 
-CMD ["python", "main.py", "12345", "8000", "0.0.0.0", "0.0.0.0"]
+CMD ["python", "StartServer.py", "12345", "8000", "0.0.0.0", "0.0.0.0"]
 
 
 

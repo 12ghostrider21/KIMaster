@@ -1,4 +1,4 @@
-from FastAPIServer import FastAPIServer
+from fastAPIServer import FastAPIServer
 import sys
 
 

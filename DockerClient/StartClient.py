@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from Arena import Arena
+from GameClient import GameClient
 
 
 def main():
@@ -10,7 +10,10 @@ def main():
     host = sys.argv[2] if len(sys.argv) > 2 else "localhost"
     key = sys.argv[3] if len(sys.argv) > 3 else "no key"
 
-    asyncio.get_event_loop().run_until_complete(Arena(port=port, host=host).readLoop())
+    print(host, port, key)
+
+    #game_client = GameClient(port=port, host=host).run()
+    #asyncio.get_event_loop().run_until_complete(game_client)
 
 
 if __name__ == "__main__":

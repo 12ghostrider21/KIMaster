@@ -1,6 +1,6 @@
 import numpy as np
 import pygame
-from ..IGame import IGame
+from IGame import IGame
 from .Connect4Logic import Board
 
 
