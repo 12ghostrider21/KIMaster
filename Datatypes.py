@@ -14,6 +14,11 @@ class EGame(Enum):
     waldmeister = 6
 
 
+class RESPONSE(Enum):
+    SUCCESS = 200
+    ERROR = 400
+
+
 class EGameMode(Enum):
     pp = "player_vs_player"
     pa = "player_vs_ai"

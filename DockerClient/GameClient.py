@@ -4,6 +4,8 @@ import json
 import websockets
 from starlette.websockets import WebSocket
 
+from Datatypes import RESPONSE
+
 
 class GameClient:
     def __init__(self, host: str, port: int, key: str):
@@ -16,44 +18,29 @@ class GameClient:
         url = f"ws://{self.host}:{self.port}/ws"
         try:
             self.websocket = await websockets.connect(url, ping_interval=None)
-            await self.send_message(self.key)
-            result = await self.receive_message()
-            if result == "true":
-                print("Connected to lobby!")
-                return True
-            else:
-                print("Key does not exist!")
-                return False
         except ConnectionRefusedError as e:
-            print(f"Can not connect to SocketServer {url}. Closing")
+            print(f"Can not connect to SocketServer with: {url}. Closing")
             return False
 
-    async def send_message(self, message):
-        try:
-            await self.websocket.send(message)
-        except AttributeError:
-            print(f"{message=} is not a str or bytes or iterable!")
-        print(f"Sent message: {message}")
-
     async def receive_json(self):
-        json_string = await self.receive_message()
-        if json_string is None:
-            return None
+        json_string = await self.websocket.recv()
         return json.loads(json_string)
 
-    async def receive_message(self):
-        try:
-            response = await self.websocket.recv()
-            print(f"Received message: {response}")
-            return response
-        except websockets.exceptions.ConnectionClosed:
-            print("WebSocket connection closed.")
+    async def send_image(self, img_p1: bytes, img_p2: bytes):
+        await self.send_cmd("client", "img")
+        await self.websocket.send(img_p1)
+        await self.websocket.send(img_p2)
 
     async def send_cmd(self, command: str, command_key: str, data: dict | None = None):
-        if data is None:
-            data = {}
         cmd = {"command": command, "command_key": command_key}
-        cmd.update(data)  # add data if used
+        if data is not None:
+            cmd.update(data)
+        await self.websocket.send(cmd)
+
+    async def send_response(self, response_code: RESPONSE, response_msg: str, data: dict | None = None):
+        cmd = {"response_code": response_code.value, "response_msg": response_msg}
+        if data is not None:
+            cmd.update(data)
         await self.websocket.send(cmd)
 
     async def run(self):
@@ -63,8 +50,6 @@ class GameClient:
             message = input("Type your message (or 'exit' to quit): ")
             if message.lower() == 'exit':
                 break
-            if message == "key":
-                print(self.key)
-            await self.send_message(message)
-            response = await self.receive_message()
+            await self.send_response(RESPONSE.SUCCESS, message)
+            response = await self.receive_json()
         await self.websocket.close()

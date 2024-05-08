@@ -1,6 +1,8 @@
 from json.decoder import JSONDecodeError
 from fastapi import FastAPI
 from starlette.websockets import WebSocket, WebSocketState, WebSocketDisconnect
+
+from Datatypes import RESPONSE
 from lobby import LobbyManager
 
 
@@ -26,34 +28,25 @@ class SocketServer:
 
     # *************************************************************************************************************
 
-    async def connect(self, client: WebSocket) -> bool:
+    async def connect(self, client: WebSocket):
         await client.accept()
-        lobby_key = await client.receive_text()
-        if self.lobby_manager.lobby_exist(lobby_key):
-            await self.send_message("true", client)
-            print(f"GameClient connected with: {client}")
-            return True
-        print(f"GameClient connected with unknown lobby_key {lobby_key}")
-        await self.send_message("false", client)
-        return False
 
-    async def send_image(self, image_bytes: bytes, websocket: WebSocket):
-        await websocket.send_bytes(image_bytes)
-
-    async def send_cmd(self, websocket: WebSocket, command: str, command_key: str, data: dict | None = None):
-        if data is None:
-            data = {}
+    async def send_cmd(self, client: WebSocket, command: str, command_key: str, data: dict | None = None):
         cmd = {"command": command, "command_key": command_key}
-        cmd.update(data)  # add data if used
-        await websocket.send_json(cmd)
+        if data is not None:
+            cmd.update(data)
+        await client.send_json(cmd)
 
-    async def send_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
+    async def send_response(self, client: WebSocket, response_code: RESPONSE, response_msg: str, data: dict | None = None):
+        cmd = {"response_code": response_code.value, "response_msg": response_msg}
+        if data is not None:
+            cmd.update(data)
+        await client.send_json(cmd)
 
     async def disconnect(self, game_client: WebSocket):
         if game_client.client_state == WebSocketState.CONNECTED:
             await game_client.close(code=1000, reason="Server initiated closure")
-        self.lobby_manager.game_client_leave_lobby(game_client)
+        self.lobby_manager.disconnect_game_client(game_client)
         print(f"GameClient disconnected as: {game_client}")
 
     def run(self, host: str, port: int):
