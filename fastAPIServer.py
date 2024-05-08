@@ -1,4 +1,5 @@
 import json
+import subprocess
 import threading
 from fastapi import FastAPI
 from starlette.websockets import WebSocket, WebSocketState, WebSocketDisconnect
@@ -36,8 +37,18 @@ class FastAPIServer:
                                     await self.send_message(client, "Client already in a lobby!")
                                     continue
                                 lobby_key: str = self.socket_server.lobby_manager.create_lobby()
+
                                 self.socket_server.lobby_manager.join(lobby_key, client)
                                 await self.send_message(client, lobby_key)
+                            case "start":
+                                if not self.socket_server.lobby_manager.lobby_exist(lobby_key):
+                                    await self.send_message(client, f"Lobby {lobby_key} does not exist!")
+                                    continue
+                                # replace with docker container
+                                command = rf'start cmd /k python C:\Users\alex\PycharmProjects\Plattform-fuer-Vergleich-von-Spiele-KIs\DockerClient\StartClient.py 12345 localhost {lobby_key}'
+                                subprocess.Popen(command, shell=True)
+
+
                             case "join":
                                 if not self.socket_server.lobby_manager.lobby_exist(lobby_key):
                                     await self.send_message(client, f"Lobby {lobby_key} does not exist!")
@@ -100,6 +111,7 @@ class FastAPIServer:
         if websocket.client_state == WebSocketState.CONNECTED:
             await websocket.close(code=1000, reason="Server initiated closure")
         print(f"FrontEnd Client disconnected with: {websocket}")
+        self.socket_server.lobby_manager.leave(websocket)
         self.active_connections.remove(websocket)
 
     async def send_message(self, websocket: WebSocket, message: str):

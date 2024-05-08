@@ -2,6 +2,7 @@ import asyncio
 import json
 
 import websockets
+from starlette.websockets import WebSocket
 
 
 class GameClient:
@@ -15,11 +16,14 @@ class GameClient:
         url = f"ws://{self.host}:{self.port}/ws"
         try:
             self.websocket = await websockets.connect(url, ping_interval=None)
-            message = await self.receive_message()
-            if message == "No Lobby":
+            await self.send_message(self.key)
+            result = await self.receive_message()
+            if result == "true":
+                print("Connected to lobby!")
+                return True
+            else:
+                print("Key does not exist!")
                 return False
-            self.key = json.loads(message).get("key")
-            return True
         except ConnectionRefusedError as e:
             print(f"Can not connect to SocketServer {url}. Closing")
             return False
@@ -44,6 +48,13 @@ class GameClient:
             return response
         except websockets.exceptions.ConnectionClosed:
             print("WebSocket connection closed.")
+
+    async def send_cmd(self, command: str, command_key: str, data: dict | None = None):
+        if data is None:
+            data = {}
+        cmd = {"command": command, "command_key": command_key}
+        cmd.update(data)  # add data if used
+        await self.websocket.send(cmd)
 
     async def run(self):
         loop = await self.connect()

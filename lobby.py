@@ -92,8 +92,8 @@ class Lobby:
         p1_status = "True" if self.p1 else "False"
         p2_status = "True" if self.p2 else "False"
         spectator_count = len(self.spectator_list)
-
-        return f"P1: {p1_status}, P2: {p2_status}, Spectators: {spectator_count}"
+        game = "True" if self.game_client else "False"
+        return f"P1: {p1_status}, P2: {p2_status}, Spectators: {spectator_count}, GameClient: {game}"
 
 
 class LobbyManager:
@@ -186,7 +186,7 @@ class LobbyManager:
     # ***************************************************************************
     # GameClients
 
-    def remove_game_client(self, client: WebSocket) -> bool:
+    def game_client_leave_lobby(self, client: WebSocket) -> bool:
         for lobby in self.lobbies.values():
             if lobby.game_client == client:
                 lobby.game_client = None

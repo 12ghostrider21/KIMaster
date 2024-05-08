@@ -11,8 +11,8 @@ class SocketServer:
 
         @self.__app.websocket("/ws")
         async def websocket_endpoint(websocket: WebSocket):
-            await self.connect(websocket)
-            while True:
+            connection = await self.connect(websocket)
+            while connection:
                 try:
                     readObject = await websocket.receive_text()
                     print(readObject)
@@ -26,9 +26,16 @@ class SocketServer:
 
     # *************************************************************************************************************
 
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        print(f"GameClient connected with: {websocket}")
+    async def connect(self, client: WebSocket) -> bool:
+        await client.accept()
+        lobby_key = await client.receive_text()
+        if self.lobby_manager.lobby_exist(lobby_key):
+            await self.send_message("true", client)
+            print(f"GameClient connected with: {client}")
+            return True
+        print(f"GameClient connected with unknown lobby_key {lobby_key}")
+        await self.send_message("false", client)
+        return False
 
     async def send_image(self, image_bytes: bytes, websocket: WebSocket):
         await websocket.send_bytes(image_bytes)
@@ -46,6 +53,7 @@ class SocketServer:
     async def disconnect(self, game_client: WebSocket):
         if game_client.client_state == WebSocketState.CONNECTED:
             await game_client.close(code=1000, reason="Server initiated closure")
+        self.lobby_manager.game_client_leave_lobby(game_client)
         print(f"GameClient disconnected as: {game_client}")
 
     def run(self, host: str, port: int):
