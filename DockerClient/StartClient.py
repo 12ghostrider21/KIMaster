@@ -20,5 +20,5 @@ if __name__ == "__main__":
         main()
     else:
         # Print usage and exit if arguments are incorrect
-        print("Usage: python StartClient.py port host")
+        print("Usage: python StartClient.py port host key")
         sys.exit(1)

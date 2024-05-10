@@ -31,6 +31,7 @@ class FastAPIServer:
                 match command:
                     case "exit":
                         break
+    
                     case "debug":
                         await self.handle_debug_command(client, readObject)
                     case "lobby":

@@ -16,6 +16,12 @@ class SocketServer:
             connection = await self.connect(websocket)
             while connection:
                 try:
+
+                    # User < - fastApiServer -> SocketServer < - > Game_client
+                    #                *              <->                  *
+
+
+
                     readObject = await websocket.receive_text()
                     print(readObject)
                     await websocket.send_text(readObject)

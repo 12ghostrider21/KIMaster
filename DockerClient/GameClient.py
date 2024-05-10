@@ -1,9 +1,11 @@
 import asyncio
 import json
+import threading
 
 import websockets
 from starlette.websockets import WebSocket
-
+from Arena import Arena
+from Pit import Pit
 from Datatypes import RESPONSE
 
 
@@ -13,6 +15,8 @@ class GameClient:
         self.port: int = port
         self.websocket = None
         self.key: str = key
+        self.arena = Arena(self)
+        self.pit = Pit()
 
     async def connect(self):
         url = f"ws://{self.host}:{self.port}/ws"
@@ -42,6 +46,10 @@ class GameClient:
         if data is not None:
             cmd.update(data)
         await self.websocket.send(cmd)
+        
+    def start_aren(self):
+        # thread
+        pass
 
     async def run(self):
         loop = await self.connect()
@@ -50,6 +58,7 @@ class GameClient:
             message = input("Type your message (or 'exit' to quit): ")
             if message.lower() == 'exit':
                 break
+                
             await self.send_response(RESPONSE.SUCCESS, message)
             response = await self.receive_json()
         await self.websocket.close()
