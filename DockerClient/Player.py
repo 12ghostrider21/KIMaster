@@ -29,8 +29,7 @@ class Player:
                         break
                     else:
                         Player.move = None
-                        await self.game_client.send_cmd("play", "make_move", {"response_code": RESPONSE.ERROR,
-                                                                              "response_msg": "Invalid move"})
+                        await self.game_client.send_response(RESPONSE.ERROR, "Invalid move")
             await asyncio.sleep(0.1)
         return tmp
 

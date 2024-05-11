@@ -55,8 +55,7 @@ class Arena:
                                                                   "response_msg": "Player" + str(
                                                                       curPlayer) + "'s turn:"})
                 representation = self.game.draw_terminal(board, False, curPlayer)
-                await self.game_client.send_cmd("play", "img", {"response_code": RESPONSE.SUCCESS,
-                                                                "payload": representation})
+                await self.game_client.send_response(RESPONSE.SUCCESS, "img", {"payload": representation})
                 img1, img2 = self.game.draw(board, False, curPlayer)
                 await self.game_client.send_image(img1, img2)
             action = None
@@ -95,8 +94,7 @@ class Arena:
                                                                               "; Result: " + str(
                                                                   self.game.getGameEnded(board, 1))})
             representation = self.game.draw_terminal(board, False, curPlayer)
-            await self.game_client.send_cmd("play", "img", {"response_code": RESPONSE.SUCCESS,
-                                                            "payload": representation})
+            await self.game_client.send_response(RESPONSE.SUCCESS, "img", {"payload": representation})
             img1, img2 = self.game.draw(board, False, curPlayer)
             await self.game_client.send_image(img1, img2)
         async with self.stop_lock:
@@ -185,16 +183,13 @@ class Arena:
         img1, img2 = self.game.draw(self.game.getCanonicalForm(self.history[-1][0], -1), True, -1, from_pos)
         await self.game_client.send_image(img1, img2)
         representation = self.game.draw_terminal(self.history[-1][0], True, -1, from_pos)
-        await self.game_client.send_cmd("play", "img", {"response_code": RESPONSE.SUCCESS,
-                                                        "payload": representation})
+        await self.game_client.send_response(RESPONSE.SUCCESS, "img", {"payload": representation})
 
     async def show_blunder(self):
         if len(self.blunder_history) > 0:
-            await self.game_client.send_cmd("play", "show_blunder", {"response_code": RESPONSE.SUCCESS,
-                                                                     "payload": self.blunder_history})
+            await self.game_client.send_response(RESPONSE.SUCCESS, "blunder", {"payload": self.blunder_history})
         else:
-            await self.game_client.send_cmd("play", "show_blunder", {"response_code": RESPONSE.SUCCESS,
-                                                                     "response_msg": "No obvious blunder"})
+            await self.game_client.send_response(RESPONSE.SUCCESS, "No obvious blunder")
 
     async def timeline(self, start_index: int = -1, step: bool = False, unstep: bool = False):
         if start_index > -1:  # in case of initial timeline start
@@ -206,12 +201,10 @@ class Arena:
         elif unstep:
             start_index = self.timeline_start = self.timeline_start - 1
         if len(self.history) <= start_index or start_index < 0:
-            await self.game_client.send_cmd("play", "timeline", {"response_code": RESPONSE.ERROR,
-                                                                 "response_msg": "Invalid index"})
+            await self.game_client.send_response(RESPONSE.ERROR, "Invalid index")
         else:
             await self.game_client.send_response(RESPONSE.SUCCESS, "Valid index")
             representation = self.game.draw_terminal(self.history[start_index][0], False, self.history[start_index][1])
-            await self.game_client.send_cmd("play", "img", {"response_code": RESPONSE.SUCCESS,
-                                                            "payload": representation})
+            await self.game_client.send_response(RESPONSE.SUCCESS, "img", {"payload": representation})
             img1, img2 = self.game.draw(self.history[start_index][0], False, self.history[start_index][1])
             await self.game_client.send_image(img1, img2)

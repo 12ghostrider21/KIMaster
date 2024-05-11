@@ -20,11 +20,9 @@ class SocketServer:
                     # User < - fastApiServer -> SocketServer < - > Game_client
                     #                *              <->                  *
 
-
-
-                    readObject = await websocket.receive_text()
-                    print(readObject)
-                    await websocket.send_text(readObject)
+                    readObject = await websocket.receive_json()
+                    if readObject.get("response_code"):
+                        print(readObject)
                 except WebSocketDisconnect as e:
                     print("websocket closes...", e)
                     break
@@ -43,7 +41,8 @@ class SocketServer:
             cmd.update(data)
         await client.send_json(cmd)
 
-    async def send_response(self, client: WebSocket, response_code: RESPONSE, response_msg: str, data: dict | None = None):
+    async def send_response(self, client: WebSocket, response_code: RESPONSE, response_msg: str,
+                            data: dict | None = None):
         cmd = {"response_code": response_code.value, "response_msg": response_msg}
         if data is not None:
             cmd.update(data)

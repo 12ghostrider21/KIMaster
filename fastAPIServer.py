@@ -146,7 +146,7 @@ class FastAPIServer:
 
         match command_key:
             case "create":
-                await self.socket_server.send_cmd(game_client,"play", "create",
+                await self.socket_server.send_cmd(game_client, "play", "create",
                                                   readObject.get("data"))
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "valid_moves":
@@ -154,7 +154,7 @@ class FastAPIServer:
                     await self.socket_server.send_cmd(game_client, "play", "valid_moves")
                 else:
                     await self.socket_server.send_cmd(game_client, "play", "valid_moves",
-                                                  readObject.get("data"))
+                                                      readObject.get("data"))
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "make_move":
                 await self.socket_server.send_cmd(game_client, "play", "make_move",

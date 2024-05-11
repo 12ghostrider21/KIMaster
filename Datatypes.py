@@ -16,7 +16,7 @@ from Games.Waldmeister.WaldmeisterGame import WaldmeisterGame
 class EGame(Enum):
     # othello = OthelloGame()
     # tictactoe = TicTacToeGame()
-    connect4 = Connect4Game()
+    connect4 = Connect4Game
     # nim = NimGame()
     # checkers = CheckersGame()
     # go = GoGame()

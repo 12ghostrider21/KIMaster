@@ -4,9 +4,11 @@ import IGame
 import GameClient
 import Arena
 from utils import *
-from DockerClient import MCTS
-from DockerClient import Player
+from DockerClient.MCTS import MCTS
+from DockerClient.Player import Player
 from Games.Connect4.keras.NNet import NNetWrapper as NNet
+
+
 # import NNets from all Games
 
 
@@ -69,11 +71,10 @@ class Pit:
         else:
             await self.game_client.send_response(RESPONSE.SUCCESS, "Evaluation runs")
             wins_player1, wins_player2, draws = self.arena.playGames(num_games)
-            await self.game_client.send_cmd("play", "evaluate", {"response_code": RESPONSE.SUCCESS,
-                                                                 "response_message": "Game evaluated",
-                                                                 "wins_player1": wins_player1,
-                                                                 "wins_player2": wins_player2,
-                                                                 "draws": draws})
+            await self.game_client.send_response(RESPONSE.SUCCESS, "Game evaluated",
+                                                 {"wins_player1": wins_player1,
+                                                  "wins_player2": wins_player2,
+                                                  "draws": draws})
 
     def init_nn(self, game: IGame, folder: str, file: str, difficulty: int = 50):
         nn = NNet(game)
