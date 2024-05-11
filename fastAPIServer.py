@@ -31,7 +31,8 @@ class FastAPIServer:
                 match command:
                     case "exit":
                         break
-    
+                    case "play":
+                        await self.handle_play_command(client, readObject)
                     case "debug":
                         await self.handle_debug_command(client, readObject)
                     case "lobby":
@@ -123,6 +124,86 @@ class FastAPIServer:
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case _:
                 await self.send_response(client, RESPONSE.ERROR, f"Command '{command_key}' not found!")
+
+    # *************************************************************************************************************
+
+    async def handle_play_command(self, client: WebSocket, readObject: dict) -> None:
+        lobby_key: str = readObject.get("key")
+        command_key: str = readObject.get("command_key")
+        if not self.socket_server.lobby_manager.lobby_exist(lobby_key):
+            await self.send_response(client, RESPONSE.ERROR, f"Lobby '{lobby_key}' does not exist!")
+            return
+        lobby = self.socket_server.lobby_manager.lobby_of_client(client)
+        if lobby is None:
+            await self.send_response(client, RESPONSE.ERROR, "Client not in a lobby!")
+            return
+        pos = self.socket_server.lobby_manager.get_pos_of_client(client)
+        if not (pos == "p1" or pos == "p2"):
+            await self.send_response(client, RESPONSE.ERROR, "Client has no permission to play!")
+            return
+
+        game_client = lobby.game_client
+
+        match command_key:
+            case "create":
+                await self.socket_server.send_cmd(game_client,"play", "create",
+                                                  readObject.get("data"))
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "valid_moves":
+                if readObject.get("data") is None:
+                    await self.socket_server.send_cmd(game_client, "play", "valid_moves")
+                else:
+                    await self.socket_server.send_cmd(game_client, "play", "valid_moves",
+                                                  readObject.get("data"))
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "make_move":
+                await self.socket_server.send_cmd(game_client, "play", "make_move",
+                                                  readObject.get("data"))
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "undo_move":
+                if readObject.get("data")["num"] <= 0:  # ?? => int-Wert? xxx
+                    await self.send_response(client, RESPONSE.ERROR,
+                                             "Amount of moves to be undone must be greater than 0")
+                await self.socket_server.send_cmd(game_client, "play", "undo_move",
+                                                  readObject.get("data"))
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "give_up":
+                await self.socket_server.send_cmd(game_client, "play", "give_up")
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "quit":
+                await self.socket_server.send_cmd(game_client, "play", "quit")
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "new_game":
+                await self.socket_server.send_cmd(game_client, "play", "new_game")
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "show_blunder":
+                await self.socket_server.send_cmd(game_client, "play", "show_blunder")
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "timeline":
+                if readObject.get("data")["num"] < 0:  # ?? xxx
+                    await self.send_response(client, RESPONSE.ERROR,
+                                             "Index must be greater than or equal to 0")
+                await self.socket_server.send_cmd(game_client, "play", "timeline",
+                                                  readObject.get("data"))
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "step":
+                await self.socket_server.send_cmd(game_client, "play", "step")
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "unstep":
+                await self.socket_server.send_cmd(game_client, "play", "unstep")
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "evaluate":
+                if readObject.get("data")["game_config"]["mode"].value != "playerai_vs_ai":  # ?? xxx
+                    await self.send_response(client, RESPONSE.ERROR,
+                                             "Only playerai_vs_ai mode is supported")
+                if readObject.get("data")["num"] > 100:  # ?? xxx
+                    await self.send_response(client, RESPONSE.ERROR,
+                                             "Not more than 100 games supported")
+                await self.socket_server.send_cmd(game_client, "play", "evaluate",
+                                                  readObject.get("data"))
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "stop_evaluate":
+                await self.socket_server.send_cmd(game_client, "play", "stop_evaluate")
 
     # *************************************************************************************************************
 

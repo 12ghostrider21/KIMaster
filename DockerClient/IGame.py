@@ -203,45 +203,54 @@ class IGame(ABC):
         pass
 
     @abstractmethod
-    def draw_terminal(self, board: np.array, cur_player: int, valid_moves: bool, from_pos: int) -> None:
+    def draw_terminal(self, board: np.array, valid_moves: bool, *args: any) -> str:
         """
         Displays a terminal representation of the game board for debugging purposes.
 
         Parameters:
             board (numpy.array): The game board represented as a numpy array.
-            cur_player: The current player (1 for one player, -1 for the other player).
+
             valid_moves: Whether displaying / drawing valid moves or not.
-            from_pos (int): The from_pos to get the valid moves for
+            *args: first arg is cur_player(int): The current player (1 for one player, -1 for the other player).
+                   second arg is from_pos (int): The from_pos to get the valid moves for. Wrong indices need
+                        to be handled (send error message via GameClient)
+
+        Output for terminal need to be sent via GameClient
+
         Returns:
-            None
+            str: The terminal representation of the board.
 
         This method is intended to visually display the current state of the game board
-        in a terminal/console environment for debugging and inspection purposes.
+        in a terminal/console environment.
         """
         pass
 
     @abstractmethod
-    def draw(self, board: np.array, cur_player: int, valid_moves: bool, from_pos: int, *args: any) -> pygame.surface:
+    def draw(self, board: np.array, valid_moves: bool, *args: any) -> (bytes, bytes):
         """
         Draw the game representation onto a Pygame surface.
 
         This method is responsible for rendering the current game state represented by `board`
-        onto a Pygame surface, which will be returned as the result.
+        onto a Pygame surface. This surface will be returned in bytes format, twice.
+        One representation for player1, the other one mirrored for player2.
 
         Parameters:
             board (np.array): A NumPy array representing the game state. The array should contain
                 the necessary information to visualize the current state of the game.
             cur_player: The current player (1 for one player, -1 for the other player).
             valid_moves: Whether displaying / drawing valid moves or not.
-            from_pos (int): The from_pos to get the valid moves for
+            *args: first arg is cur_player (int): The current player (1 for one player, -1 for the other player).
+                   second arg is from_pos (int): The from_pos to get the valid moves for. Wrong indices
+                        need to be handled (send error message via GameClient)
 
         *args (Any): Additional optional arguments that can be passed to customize the drawing
           process. The interpretation of these arguments depends on the specific implementation
           of the `draw` method.
 
+        Drawn board need to be sent via GameClient
+
         Returns:
-            surface (pygame.Surface): A Pygame surface object containing the rendered game state.
-                This surface will typically be displayed on the screen or used further for game rendering.
+            bytes (from pygame.Surface)
 
         Notes:
         - The `board` parameter should be a NumPy array representing the game state in a structured
@@ -268,8 +277,9 @@ class IGame(ABC):
                 for j in range(board.shape[1]):
                     if board[i, j] == 1:
                         pygame.draw.rect(surface, (0, 0, 0), (j * cell_size, i * cell_size, cell_size, cell_size))
+            img = bytes(pygame.image.tostring(surface, 'RGBA'))
 
-            return surface
+            return img, img
         """
         pass
 

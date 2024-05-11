@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
-from IGame import IGame
-from .Connect4Logic import Board
+from DockerClient import IGame
+from Connect4Logic import Board
 
 
 class Connect4Game(IGame):
@@ -59,17 +59,16 @@ class Connect4Game(IGame):
     def stringRepresentation(self, board):
         return board.tostring()
 
-    def draw_terminal(self, board, cur_player, valid_moves=False, from_pos=0):  # from_pos irrelevant at connect4
+    def draw_terminal(self, board, valid_moves, *args: any):
         if valid_moves:
-            # prints need to be replaced with send from GameClient
-            print('\nMoves:', [i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
+            return '\nMoves: ' + str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
         else:
-            print(" -----------------------")
-            print(' '.join(map(str, range(len(board[0])))))
-            print(board)
-            print(" -----------------------")
+            return (" -----------------------\n" +
+                    ' '.join(map(str, range(len(board[0])))) +
+                    '\n' + board + '\n' +
+                    " -----------------------\n")
 
-    def draw(self, board, cur_player, valid_moves=False, from_pos=0, *args: any):  # from_pos irrelevant at connect4
+    def draw(self, board, valid_moves, *args: any):
         row_count = board.shape[0]
         col_count = board.shape[1]
         SQUARESIZE = 100
@@ -120,6 +119,5 @@ class Connect4Game(IGame):
                     col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE),
                                        TOKENSIZE - 5)  # yellow tokens
 
-        pygame.image.save(surface, "board.png")
-
-        return surface
+        img = bytes(pygame.image.tostring(surface, 'RGBA'))
+        return img, img

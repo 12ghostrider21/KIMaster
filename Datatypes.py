@@ -3,15 +3,24 @@ from pydantic import BaseModel
 
 from Games.Connect4.Connect4Game import Connect4Game
 
+"""
+from Games.Othello.OthelloGame import OthelloGame
+from Games.TicTacToe.TicTacToeGame import TicTacToeGame
+from Games.Nim.NimGame import NimGame
+from Games.Checkers.CheckersGame import CheckersGame
+from Games.Go.GoGame import GoGame
+from Games.Waldmeister.WaldmeisterGame import WaldmeisterGame
+"""
+
 
 class EGame(Enum):
-    othello = 0
-    tictactoe = 1
-    connect4 = Connect4Game
-    nim = 3
-    checkers = 4
-    go = 5
-    waldmeister = 6
+    # othello = OthelloGame()
+    # tictactoe = TicTacToeGame()
+    connect4 = Connect4Game()
+    # nim = NimGame()
+    # checkers = CheckersGame()
+    # go = GoGame()
+    # waldmeister = WaldmeisterGame()
 
 
 class RESPONSE(Enum):
@@ -20,16 +29,16 @@ class RESPONSE(Enum):
 
 
 class EGameMode(Enum):
-    pp = "player_vs_player"
-    pa = "player_vs_ai"
-    paa = "playerai_vs_ai"
-    papa = "playerai_vs_playerai"
+    player_vs_player = "player_vs_player"
+    player_vs_ai = "player_vs_ai"
+    playerai_vs_ai = "playerai_vs_ai"
+    playerai_vs_playerai = "playerai_vs_playerai"
 
 
 class EDifficulty(Enum):
-    easy = 0
-    medium = 1
-    hard = 2
+    easy = 2
+    medium = 10
+    hard = 50
 
 
 class GameConfig(BaseModel):
