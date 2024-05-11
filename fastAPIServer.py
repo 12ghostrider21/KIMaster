@@ -4,7 +4,7 @@ import threading
 from fastapi import FastAPI
 from starlette.websockets import WebSocket, WebSocketState, WebSocketDisconnect
 from socketServer import SocketServer
-from Datatypes import RESPONSE
+from datatypes import RESPONSE
 from lobby import Lobby
 
 
@@ -143,11 +143,14 @@ class FastAPIServer:
             return
 
         game_client = lobby.game_client
+        if game_client is None:
+            await self.send_response(client, RESPONSE.ERROR, "No Gameclient connected!")
+            return
 
         match command_key:
             case "create":
                 await self.socket_server.send_cmd(game_client, "play", "create",
-                                                  readObject.get("data"))
+                                                  {"game_config": readObject.get("data")})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "valid_moves":
                 if readObject.get("data") is None:
@@ -225,7 +228,8 @@ class FastAPIServer:
         self.active_connections.remove(client)
 
     async def send_cmd(self, client: WebSocket, command: str, command_key: str, data: dict | None = None):
-        cmd = {"command": command, "command_key": command_key}
+        player_pos = self.socket_server.lobby_manager.get_pos_of_client(client)
+        cmd = {"command": command, "command_key": command_key, "pos": player_pos}
         if data is not None:
             cmd.update(data)
         await client.send_json(cmd)

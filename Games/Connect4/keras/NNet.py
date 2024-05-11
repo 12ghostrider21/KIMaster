@@ -6,9 +6,10 @@ import random
 import numpy as np
 import math
 import sys
+
 sys.path.append('../..')
 from utils import *
-from DockerClient import NeuralNet
+from DockerClient.neural_net import NeuralNet
 
 import logging
 log = logging.getLogger(__name__)

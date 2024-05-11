@@ -1,8 +1,8 @@
 import logging
 import asyncio
-from DockerClient import Player
+from DockerClient import player
 import numpy as np
-from Datatypes import RESPONSE
+from datatypes import RESPONSE
 from tqdm import tqdm
 
 log = logging.getLogger(__name__)

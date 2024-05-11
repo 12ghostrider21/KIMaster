@@ -8,7 +8,7 @@ DEFAULT_WIN_LENGTH = 4
 WinState = namedtuple('WinState', 'is_ended winner')
 
 
-class Board():
+class Board:
     """
     Connect4 Board.
     """

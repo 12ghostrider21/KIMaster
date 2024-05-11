@@ -1,6 +1,6 @@
 import asyncio
-from DockerClient import IGame
-from Datatypes import RESPONSE
+from DockerClient.i_game import IGame
+from datatypes import RESPONSE
 
 
 class Player:

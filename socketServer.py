@@ -1,9 +1,10 @@
+import json
 from json.decoder import JSONDecodeError
 from fastapi import FastAPI
 from starlette.websockets import WebSocket, WebSocketState, WebSocketDisconnect
 
-from Datatypes import RESPONSE
-from lobby import LobbyManager
+from datatypes import RESPONSE
+from lobby import LobbyManager, Lobby
 
 
 class SocketServer:
@@ -12,21 +13,50 @@ class SocketServer:
         self.lobby_manager: LobbyManager = LobbyManager()
 
         @self.__app.websocket("/ws")
-        async def websocket_endpoint(websocket: WebSocket):
-            connection = await self.connect(websocket)
-            while connection:
+        async def websocket_endpoint(game_client: WebSocket):
+            await self.connect(game_client)
+            lobby: Lobby = self.lobby_manager.lobby_of_game_client(game_client)
+            while True:
                 try:
-
-                    # User < - fastApiServer -> SocketServer < - > Game_client
-                    #                *              <->                  *
-
-                    readObject = await websocket.receive_json()
-                    if readObject.get("response_code"):
-                        print(readObject)
-                except WebSocketDisconnect as e:
-                    print("websocket closes...", e)
+                    readObject: dict = await game_client.receive_json()
+                except json.decoder.JSONDecodeError:
+                    await self.send_response(game_client, RESPONSE.ERROR, "Received data is not a correct json!")
+                    continue
+                except WebSocketDisconnect:
                     break
-            await self.disconnect(websocket)
+
+                response = readObject.get("response_code")
+                if response:
+                    p = None
+                    match readObject.get("player_pos"):
+                        case "p1":
+                            p = lobby.p1
+                        case "p2":
+                            p = lobby.p2
+                        case _:
+                            raise TypeError(readObject.get("player_pos"))
+                    await self.send_response(p,
+                                             response_code=response,
+                                             response_msg=readObject.get("response_msg"),
+                                             data=readObject.get("data"))
+                    continue
+
+                # command handling
+                command: str = readObject.get("command")
+                match command:
+                    case "exit":
+                        break
+                    case "login":
+                        lobby_key: str = readObject.get("key")
+                        lobby: Lobby = self.lobby_manager.lobbies.get(lobby_key)
+                        if lobby is None:
+                            await self.send_response(game_client, RESPONSE.ERROR, "Lobby does not exist", {"key": lobby_key})
+                            continue
+                        lobby.game_client = game_client
+                        await self.send_response(game_client, RESPONSE.SUCCESS, "Joined lobby!", {"key": lobby_key})
+                    case _:
+                        await self.send_response(game_client, RESPONSE.ERROR, f"Command: '{command}' not found!")
+            await self.disconnect(game_client)
 
     # *************************************************************************************************************
 

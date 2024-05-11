@@ -4,7 +4,7 @@ import threading
 
 import websockets
 from starlette.websockets import WebSocket
-from Datatypes import RESPONSE
+from datatypes import RESPONSE
 
 
 class GameClient:
@@ -19,6 +19,11 @@ class GameClient:
         url = f"ws://{self.host}:{self.port}/ws"
         try:
             self.websocket = await websockets.connect(url, ping_interval=None)
+            await self.send_cmd("login", "", {"key": self.key})
+            response = await self.receive_json()
+            if response.get("response_code") == 200:
+                return True
+            return False
         except ConnectionRefusedError as e:
             print(f"Can not connect to SocketServer with: {url}. Closing")
             return False
@@ -36,23 +41,30 @@ class GameClient:
         cmd = {"command": command, "command_key": command_key}
         if data is not None:
             cmd.update(data)
+        cmd = json.dumps(cmd)
         await self.websocket.send(cmd)
 
-    async def send_response(self, response_code: RESPONSE, response_msg: str, data: dict | None = None):
-        cmd = {"response_code": response_code.value, "response_msg": response_msg}
+    async def send_response(self, response_code: RESPONSE, response_msg: str, player_pos: str | None = None,
+                            data: dict | None = None):
+        cmd = {"response_code": response_code.value, "response_msg": response_msg, "player_pos": player_pos}
         if data is not None:
             cmd.update(data)
+        cmd = json.dumps(cmd)
         await self.websocket.send(cmd)
 
     async def run(self):
         loop = await self.connect()
+        from pit import Pit
         while loop:
             command = await self.receive_json()
+            player_pos = command.get("player_pos")
+            print(command)
             if command["command"] == "play":
                 match command["command_key"]:
                     case "create":
-                        game_config = command["data"]["game_config"]
-                        self.pit.init_game(game_config, num_games=1)
+                        game_config = command["game_config"]
+                        self.pit = Pit(game_config, self)
+                        await self.pit.init_game(game_config=game_config, num_games=1, player_pos=player_pos)
                     case "valid_moves":
                         pos = None
                         if "data" in command:
