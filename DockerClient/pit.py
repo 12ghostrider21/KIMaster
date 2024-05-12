@@ -1,4 +1,3 @@
-from DockerClient.i_game import IGame
 from datatypes import GameConfig, RESPONSE
 from resources.Path import Path
 from game_client import GameClient
@@ -7,9 +6,8 @@ from utils import *
 from DockerClient.mcts import MCTS
 from DockerClient.player import Player
 from Games.Connect4.keras.NNet import NNetWrapper as NNet
-
-
-# import NNets from all Games
+from Games.Connect4.Connect4Game import Connect4Game
+# import NNets and Game.py from all Games
 
 
 class Pit:
@@ -21,39 +19,49 @@ class Pit:
     async def init_game(self, num_games: int, game_config: GameConfig = None, player_pos=None):
         if game_config is not None:  # if the arg is none, it's a re-init e.g. via "new_game"
             self.game_config = game_config
-
-        game = self.game_config.get("game")  # game name
-        difficulty = self.game_config.get("difficulty")
+        game = None
+        difficulty = None
         player1 = None
         player2 = None
         folder = None
         file = None
 
-        match game:  # to be replaced with a query (DB)
+        match game_config.game.value:  # to be replaced with a query (DB)
             case "connect4":
-                folder, file = Path.get_path(game)
+                game = Connect4Game()
+                folder, file = Path.get_path("connect4")
         """ 
-            case "ttt":
+            case "tictactoe":
+                game = TicTacToeGame()
                 folder, file = Path.get_path("ttt")
             case "othello":
+                game = OthelloGame()
                 folder, file = Path.get_path("othello")
             case "nim"
+                game = NimGame()
                 folder, file = Path.get_path("nim")
             case "checkers"
+                game = CheckersGame()
                 folder, file =  Path.get_path("checkers")
             case "go"
+                game = GoGame()
                 folder, file = Path.get_path("go")
             case "waldmeister"
+                game = WaldmeisterGame()
                 folder, file =  Path.get_path("waldmeister")
         """
-        
-        from e_game import EGame
-        
-        game = EGame.connect4
-        
+
+        match game_config.difficulty.value:
+            case "easy":
+                difficulty = 2
+            case "medium":
+                difficulty = 10
+            case "hard":
+                difficulty = 50
+
         mcts = self.init_nn(game, folder, file, difficulty)
 
-        match game_config.get("mode"):
+        match game_config.mode.value:
             case "player_vs_player":
                 player1 = Player(game, self.game_client).play
                 player2 = Player(game, self.game_client).play
@@ -75,13 +83,14 @@ class Pit:
             await self.arena.playGame(verbose=True)
         else:
             await self.game_client.send_response(RESPONSE.SUCCESS, "Evaluation runs")
-            wins_player1, wins_player2, draws = self.arena.playGames(num_games)
-            await self.game_client.send_response(RESPONSE.SUCCESS, "Game evaluated",
-                                                 {"wins_player1": wins_player1,
-                                                  "wins_player2": wins_player2,
-                                                  "draws": draws})
+            wins_player1, wins_player2, draws = await self.arena.playGames(num_games)
+            await self.game_client.send_cmd("play", "arena",
+                                            {"response_msg": "Game evaluated",
+                                             "wins_player1": wins_player1,
+                                             "wins_player2": wins_player2,
+                                             "draws": draws})
 
-    def init_nn(self, game: IGame, folder: str, file: str, difficulty: int = 50):
+    def init_nn(self, game, folder: str, file: str, difficulty: int = 50):
         nn = NNet(game)
         nn.load_checkpoint(folder, file)
         args = dotdict({'numMCTSSims': difficulty, 'cpuct': 1.0})

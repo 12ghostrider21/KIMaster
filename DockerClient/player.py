@@ -1,10 +1,9 @@
 import asyncio
-from DockerClient.i_game import IGame
 from datatypes import RESPONSE
 
 
 class Player:
-    def __init__(self, game: IGame, game_client):
+    def __init__(self, game, game_client):
         self.game = game
         self.game_client = game_client
 

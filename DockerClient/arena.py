@@ -1,6 +1,6 @@
 import logging
 import asyncio
-from DockerClient import player
+from DockerClient.player import Player
 import numpy as np
 from datatypes import RESPONSE
 from tqdm import tqdm

@@ -150,25 +150,25 @@ class FastAPIServer:
         match command_key:
             case "create":
                 await self.socket_server.send_cmd(game_client, "play", "create",
-                                                  {"game_config": readObject.get("data")})
+                                                  {"payload": readObject.get("payload")})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "valid_moves":
-                if readObject.get("data") is None:
+                if readObject.get("payload") is None:
                     await self.socket_server.send_cmd(game_client, "play", "valid_moves")
                 else:
                     await self.socket_server.send_cmd(game_client, "play", "valid_moves",
-                                                      readObject.get("data"))
+                                                      {"payload": readObject.get("payload")})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "make_move":
                 await self.socket_server.send_cmd(game_client, "play", "make_move",
-                                                  readObject.get("data"))
+                                                  {"payload": readObject.get("payload")})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "undo_move":
-                if readObject.get("data")["num"] <= 0:  # ?? => int-Wert? xxx
+                if readObject.get("payload")["num"] <= 0:  # ?? => int-Wert? xxx
                     await self.send_response(client, RESPONSE.ERROR,
                                              "Amount of moves to be undone must be greater than 0")
                 await self.socket_server.send_cmd(game_client, "play", "undo_move",
-                                                  readObject.get("data"))
+                                                  {"payload": readObject.get("payload")})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "give_up":
                 await self.socket_server.send_cmd(game_client, "play", "give_up")
@@ -183,11 +183,11 @@ class FastAPIServer:
                 await self.socket_server.send_cmd(game_client, "play", "show_blunder")
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "timeline":
-                if readObject.get("data")["num"] < 0:  # ?? xxx
+                if readObject.get("payload")["num"] < 0:  # ?? xxx
                     await self.send_response(client, RESPONSE.ERROR,
                                              "Index must be greater than or equal to 0")
                 await self.socket_server.send_cmd(game_client, "play", "timeline",
-                                                  readObject.get("data"))
+                                                  {"payload": readObject.get("payload")})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "step":
                 await self.socket_server.send_cmd(game_client, "play", "step")
@@ -196,14 +196,14 @@ class FastAPIServer:
                 await self.socket_server.send_cmd(game_client, "play", "unstep")
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "evaluate":
-                if readObject.get("data")["game_config"]["mode"].value != "playerai_vs_ai":  # ?? xxx
+                if readObject.get("payload")["game_config"]["mode"].value != "playerai_vs_ai":  # ?? xxx
                     await self.send_response(client, RESPONSE.ERROR,
                                              "Only playerai_vs_ai mode is supported")
-                if readObject.get("data")["num"] > 100:  # ?? xxx
+                if readObject.get("payload")["num"] > 100:  # ?? xxx
                     await self.send_response(client, RESPONSE.ERROR,
                                              "Not more than 100 games supported")
                 await self.socket_server.send_cmd(game_client, "play", "evaluate",
-                                                  readObject.get("data"))
+                                                  {"payload": readObject.get("payload")})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "stop_evaluate":
                 await self.socket_server.send_cmd(game_client, "play", "stop_evaluate")
