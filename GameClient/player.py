@@ -1,5 +1,5 @@
 import asyncio
-from datatypes import RESPONSE
+from Tools.datatypes import EResponse
 
 
 class Player:
@@ -24,11 +24,11 @@ class Player:
                     if valid_moves[Player.move]:
                         tmp = Player.move
                         Player.move = None
-                        await self.game_client.send_response(RESPONSE.SUCCESS, "Valid move")
+                        await self.game_client.send_response(EResponse.SUCCESS, "Valid move")
                         break
                     else:
                         Player.move = None
-                        await self.game_client.send_response(RESPONSE.ERROR, "Invalid move")
+                        await self.game_client.send_response(EResponse.ERROR, "Invalid move")
             await asyncio.sleep(0.1)
         return tmp
 

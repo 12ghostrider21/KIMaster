@@ -1,21 +1,26 @@
 import asyncio
 import json
-import threading
+from enum import Enum
 
 import websockets
-from starlette.websockets import WebSocket
-from datatypes import RESPONSE, GameConfig, EGame, EGameMode, EDifficulty
-from DockerClient.player import Player
+from websockets import ConnectionClosedError
+
+from GameClient.player import Player
+from GameClient.pit import Pit
+from starlette.websockets import WebSocketDisconnect
+from Tools.datatypes import EResponse, GameConfig, EGame, EGameMode, EDifficulty
 import ast
+
+from Tools.i_game import IGame
 
 
 class GameClient:
     def __init__(self, host: str, port: int, key: str):
         self.host: str = host
         self.port: int = port
-        self.websocket = None
         self.key: str = key
-        self.pit = None
+        self.websocket = None
+        self.pit: Pit | None = None
         self.processed_lock = asyncio.Lock()
         self.processed = True
         self.player_pos: str = ""
@@ -28,6 +33,7 @@ class GameClient:
             response = await self.receive_json()
             if response.get("response_code") == 200:
                 return True
+            print("Login failed!", response)
             return False
         except ConnectionRefusedError as e:
             print(f"Can not connect to SocketServer with: {url}. Closing")
@@ -49,12 +55,12 @@ class GameClient:
         cmd = json.dumps(cmd)
         await self.websocket.send(cmd)
 
-    async def send_response(self, response_code: RESPONSE, response_msg: str | None = None,
+    async def send_response(self, response_code: EResponse, p_pos: str, response_msg: str | None = None,
                             data: dict | None = None):
-        async with self.processed_lock:
-            player_pos = self.player_pos
-            self.processed = True
-        cmd = {"response_code": response_code.value, "response_msg": response_msg, "player_pos": player_pos}
+        #async with self.processed_lock:
+        #    player_pos = self.player_pos
+        #    self.processed = True
+        cmd = {"response_code": response_code.value, "response_msg": response_msg, "player_pos": p_pos}
         if data is not None:
             cmd.update(data)
         cmd = json.dumps(cmd)
@@ -63,19 +69,61 @@ class GameClient:
     async def run(self):
         loop = await self.connect()
         while loop:
-            command = await self.receive_json()
-            player_pos = command.get("player_pos")
-            async with self.processed_lock:
-                self.processed = False
-                self.player_pos = player_pos
-            print(command)
-            if command["command"] == "play":
-                match command["command_key"]:
-                    case "create":
-                        from pit import Pit
-                        game_config = self.extract_game_config(command)
-                        self.pit = Pit(game_config, self)
-                        await self.pit.init_game(num_games=1, game_config=game_config)
+            try:
+                readObject: dict = await self.receive_json()
+            except json.decoder.JSONDecodeError:
+                await self.send_response(EResponse.ERROR, "Received data is not a correct json!")
+                continue
+            except WebSocketDisconnect:
+                break
+            except ConnectionClosedError:
+                print("Server closed!")
+                break
+            player_pos: str = readObject.get("player_pos")
+            command: str | None = readObject.get("command")
+            command_key: str | None = readObject.get("command_key")
+            if self.pit is None and command_key != "create":
+                await self.send_response(EResponse.ERROR, player_pos, "You need to create a Game first!")
+                continue
+
+
+
+        #while loop:
+            #command = await self.receive_json()
+
+            #async with self.processed_lock:
+            #    self.processed = False
+            #    self.player_pos = player_pos
+            #print(command)
+
+            match command_key:
+                case "create":
+                    game_config: GameConfig = self.extract_game_config(readObject)
+                    if not game_config():  # get new game_config and call check if correct
+                        await self.send_response(EResponse.ERROR, player_pos,
+                                                 "Arguments are missing!",
+                                                 {"game": readObject.get("game"),
+                                                  "mode": readObject.get("mode"),
+                                                  "difficulty": readObject.get("difficulty")})
+                        continue
+                    self.pit = Pit(game_config, self)
+                    response = self.pit.init_game(num_games=1, game_config=game_config)
+                    await self.send_response(response_code=response.response_code,
+                                             p_pos=player_pos,
+                                             response_msg=response.response_msg,
+                                             data=response.data)
+                case "show_blunder":
+                    blunder = await self.pit.arena.show_blunder()
+                    if len(blunder) == 0:
+                        await self.send_response(EResponse.ERROR, player_pos,"Blunder is empty!")
+                    else:
+                        await self.send_response(EResponse.SUCCESS, player_pos,
+                                                 "Current blunder list.",
+                                                 {"blunder": blunder.__str__()})
+            continue
+
+
+        """
                     case "valid_moves":
                         pos = None
                         if "pos" in command:
@@ -122,7 +170,7 @@ class GameClient:
                         break
                 await asyncio.sleep(0.1)
 
-            """
+            
             # Send a message
             message = input("Type your message (or 'exit' to quit): ")
             if message.lower() == 'exit':
@@ -130,20 +178,22 @@ class GameClient:
                 
             await self.send_response(RESPONSE.SUCCESS, message)
             response = await self.receive_json()
-            """
-        await self.websocket.close()
+            
+        await self.websocket.close()"""
 
-    def extract_game_config(self, command):
-        game = self.get_enum(EGame, command["payload"]["game"])
-        mode = self.get_enum(EGameMode, command["payload"]["mode"])
-        difficulty = self.get_enum(EDifficulty, command["payload"]["difficulty"])
-        return GameConfig(game=game, mode=mode, difficulty=difficulty)
+    def extract_game_config(self, command: dict) -> GameConfig:
+        c_game = self.get_enum(EGame, command.get("game"))
+        c_mode = self.get_enum(EGameMode, command.get("mode"))
+        c_difficulty = self.get_enum(EDifficulty, command.get("difficulty"))
+        return GameConfig(game=c_game, mode=c_mode, difficulty=c_difficulty)
 
-    def get_enum(self, enum_class, value):
+    def get_enum(self, enum_class, value: str) -> Enum | None:
+        if value is None:
+            return None
         for enum_item in enum_class:
-            if enum_item.value == value:
+            if enum_item.name.lower() == value.lower():
                 return enum_item
-        raise ValueError(f"No matching enum value found for {value}")
+        return None
 
     def parse_input(self, input_str):
         if input_str.startswith("(") and input_str.endswith(")"):

@@ -1,6 +1,6 @@
 import numpy as np
 import pygame
-from DockerClient.i_game import IGame
+from Tools.i_game import IGame
 from .Connect4Logic import Board
 
 

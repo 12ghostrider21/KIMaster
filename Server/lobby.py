@@ -2,6 +2,7 @@ import datetime
 import hashlib
 from starlette.websockets import WebSocket
 
+
 class Lobby:
     def __init__(self, key: str):
         self._p1: WebSocket | None = None

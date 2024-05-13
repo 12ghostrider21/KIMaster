@@ -1,19 +1,15 @@
-import argparse
 import os
-import shutil
 import time
-import random
 import numpy as np
-import math
 import sys
 
 sys.path.append('../..')
-from utils import *
-from DockerClient.neural_net import NeuralNet
+from Tools.utils import *
+from GameClient.neural_net import NeuralNet
 
 import logging
-log = logging.getLogger(__name__)
 
+log = logging.getLogger(__name__)
 
 from .Connect4NNet import Connect4NNet as onnet
 
@@ -26,6 +22,7 @@ args = dotdict({
     'num_channels': 128,
     'num_residual_layers': 20
 })
+
 
 class NNetWrapper(NeuralNet):
     def __init__(self, game):
@@ -42,7 +39,7 @@ class NNetWrapper(NeuralNet):
         input_boards = np.asarray(input_boards)
         target_pis = np.asarray(target_pis)
         target_vs = np.asarray(target_vs)
-        self.nnet.model.fit(x = input_boards, y = [target_pis, target_vs], batch_size = args.batch_size, epochs = args.epochs)
+        self.nnet.model.fit(x=input_boards, y=[target_pis, target_vs], batch_size=args.batch_size, epochs=args.epochs)
 
     def predict(self, board):
         """
@@ -74,11 +71,10 @@ class NNetWrapper(NeuralNet):
 
     def load_checkpoint(self, folder='checkpoint', filename='checkpoint.pth.tar'):
         # change extension
-        
         # https://github.com/pytorch/examples/blob/master/imagenet/main.py#L98
-        filepath = "/Users/maxlbachmann/Desktop/THM/4.Semester/Kurse/SWTP/Plattform-fuer-Vergleich-von-Spiele-KIs/resources/pretrained_models/connect4max/best.h5"
+        filepath = f"{folder}/{filename}"
+        #filepath = "/Users/maxlbachmann/Desktop/THM/4.Semester/Kurse/SWTP/Plattform-fuer-Vergleich-von-Spiele-KIs/resources/pretrained_models/connect4/best.h5"
         #if not os.path.exists(filepath):
-            #raise("No model in path {}".format(filepath))
+        #raise("No model in path {}".format(filepath))
         self.nnet.model.load_weights(filepath)
         log.info('Loading Weights...')
-        

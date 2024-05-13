@@ -1,8 +1,10 @@
 import logging
 import asyncio
-from DockerClient.player import Player
+import time
+
+from GameClient.player import Player
 import numpy as np
-from datatypes import RESPONSE
+from Tools.datatypes import EResponse
 from tqdm import tqdm
 
 log = logging.getLogger(__name__)
@@ -35,6 +37,21 @@ class Arena:
         self.blunder_history = []  # (iterator, action)
         self.timeline_start: int = 0
 
+    def player_to_txt(self, curPlayer: int):
+        match curPlayer:
+            case -1:
+                return "p1"
+            case 1:
+                return "p2"
+            case _:
+                return None
+
+    async def send_response(self, response_code: EResponse, curPlayer: int | None, response_msg: str | None = None, data: dict | None = None):
+        await self.game_client.send_response(response_code,
+                                             self.player_to_txt(curPlayer),
+                                             response_msg,
+                                             data)
+
     # an episode = 1 Game played
     async def playGame(self, verbose=False, eval=False, board=None, curPlayer: int = 1, it: int = 0):
         """
@@ -47,16 +64,15 @@ class Arena:
                 draw result returned from the game that is neither 1, -1, nor 0.
         """
         players = [self.player2, None, self.player1]  # player2 and player1 are functions (lambda)
+
         if board is None:
             board = self.game.getInitBoard()
         while self.game.getGameEnded(board, curPlayer) == 0:  # 0 is if game is not finished
             if verbose and not eval:
-                await self.game_client.send_cmd("broadcast", "arena", {"response_code": RESPONSE.SUCCESS.value,
-                                                                       "response_msg": "Player" + str(
-                                                                           curPlayer) + "'s turn:"})
+                await self.send_response(EResponse.SUCCESS, None, "Player" + str(curPlayer) + "'s turn:")
                 representation = self.game.draw_terminal(board, False, curPlayer)
-                await self.game_client.send_cmd("broadcast", "arena", {"response_code": RESPONSE.SUCCESS.value,
-                                                                       "response_msg": representation})
+                await self.send_response(EResponse.SUCCESS, None, "", {"board": representation})
+
                 # img1, img2 = self.game.draw(board, False, curPlayer)
                 # await self.game_client.send_image(img1, img2)
             action = None
@@ -66,9 +82,9 @@ class Arena:
                 user_action = players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer))  # the canonicalForm
                 # of the board is the argument for the player function (lambda x : ... (x) / play(self,board))
                 # players are at index 0 and 2 => curPlayer + 1 ==> -1 + 1 = 0; 1 + 1 = 2
-                async with self.stop_lock:
-                    if self.stop:
-                        break
+                #async with self.stop_lock:
+                #    if self.stop:
+                #        break
                 if verbose:  # if evaluation is running (multiple games), blunder_history should not be created,
                     # except for the last game
                     ref_actions = players[-curPlayer + 1](self.game.getCanonicalForm(board, curPlayer)).sort()
@@ -78,8 +94,7 @@ class Arena:
                         if a == user_action:
                             self.blunder_history.append((it, user_action))
             else:  # website AI is in charge of making a turn
-                action = np.argmax(players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer)))
-
+                action = np.argmax(await players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer)))
             valids = self.game.getValidMoves(self.game.getCanonicalForm(board, curPlayer), 1)
 
             if valids[action] == 0:
@@ -90,12 +105,12 @@ class Arena:
             it += 1
             await asyncio.sleep(0.1)
         if verbose and not eval:
-            await self.game_client.send_cmd("broadcast", "arena", {"response_code": RESPONSE.SUCCESS.value,
+            await self.game_client.send_cmd("broadcast", "arena", {"response_code": EResponse.SUCCESS.value,
                                                                    "response_msg": "Game over: Turn " + str(it) +
                                                                                    "; Result: " + str(
                                                                        self.game.getGameEnded(board, 1))})
             representation = self.game.draw_terminal(board, False, curPlayer)
-            await self.game_client.send_cmd("broadcast", "arena", {"response_code": RESPONSE.SUCCESS.value,
+            await self.game_client.send_cmd("broadcast", "arena", {"response_code": EResponse.SUCCESS.value,
                                                                    "response_msg": representation})
             img1, img2 = self.game.draw(board, False, curPlayer)
             await self.game_client.send_image(img1, img2)
@@ -178,21 +193,22 @@ class Arena:
         await self.stop_game()
         tmp = self.history[-1]
         self.history.pop()  # additional pop because the same state is added in play again when calling play
-        await self.game_client.send_response(RESPONSE.SUCCESS, "Move successfully undone")
+        await self.game_client.send_response(EResponse.SUCCESS, "Move successfully undone")
         await self.playGame(board=tmp[-1][0], curPlayer=tmp[-1][1], it=tmp[-1][3])
 
     async def draw_valid_moves(self, from_pos: int):
         img1, img2 = self.game.draw(self.game.getCanonicalForm(self.history[-1][0], -1), True, -1, from_pos)
         await self.game_client.send_image(img1, img2)
         representation = self.game.draw_terminal(self.history[-1][0], True, -1, from_pos)
-        await self.game_client.send_cmd("broadcast", "arena", {"response_code": RESPONSE.SUCCESS.value,
+        await self.game_client.send_cmd("broadcast", "arena", {"response_code": EResponse.SUCCESS.value,
                                                                "response_msg": representation})
 
-    async def show_blunder(self):
-        if len(self.blunder_history) > 0:
-            await self.game_client.send_response(RESPONSE.SUCCESS, "blunder", {"payload": self.blunder_history})
-        else:
-            await self.game_client.send_response(RESPONSE.SUCCESS, "No obvious blunder")
+    async def show_blunder(self) -> list:
+        return self.blunder_history
+        #if len(self.blunder_history) > 0:
+        #    await self.game_client.send_response(EResponse.SUCCESS, "blunder", {"payload": self.blunder_history})
+        #else:
+        #    await self.game_client.send_response(EResponse.SUCCESS, "No obvious blunder")
 
     async def timeline(self, start_index: int = -1, step: bool = False, unstep: bool = False):
         if start_index > -1:  # in case of initial timeline start
@@ -204,11 +220,11 @@ class Arena:
         elif unstep:
             start_index = self.timeline_start = self.timeline_start - 1
         if len(self.history) <= start_index or start_index < 0:
-            await self.game_client.send_response(RESPONSE.ERROR, "Invalid index")
+            await self.game_client.send_response(EResponse.ERROR, "Invalid index")
         else:
-            await self.game_client.send_response(RESPONSE.SUCCESS, "Valid index")
+            await self.game_client.send_response(EResponse.SUCCESS, "Valid index")
             representation = self.game.draw_terminal(self.history[start_index][0], False, self.history[start_index][1])
-            await self.game_client.send_cmd("broadcast", "arena", {"response_code": RESPONSE.SUCCESS.value,
+            await self.game_client.send_cmd("broadcast", "arena", {"response_code": EResponse.SUCCESS.value,
                                                                    "response_msg": representation})
             img1, img2 = self.game.draw(self.history[start_index][0], False, self.history[start_index][1])
             await self.game_client.send_image(img1, img2)
