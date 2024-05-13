@@ -65,7 +65,7 @@ class Connect4Game(IGame):
         else:
             return (" -----------------------\n" +
                     ' '.join(map(str, range(len(board[0])))) +
-                    '\n' + board + '\n' +
+                    '\n' + str(board) + '\n' +
                     " -----------------------\n")
 
     def draw(self, board, valid_moves, *args: any):

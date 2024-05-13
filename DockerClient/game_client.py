@@ -16,6 +16,9 @@ class GameClient:
         self.websocket = None
         self.key: str = key
         self.pit = None
+        self.processed_lock = asyncio.Lock()
+        self.processed = True
+        self.player_pos: str = ""
 
     async def connect(self):
         url = f"ws://{self.host}:{self.port}/ws"
@@ -46,8 +49,11 @@ class GameClient:
         cmd = json.dumps(cmd)
         await self.websocket.send(cmd)
 
-    async def send_response(self, response_code: RESPONSE, response_msg: str, player_pos: str | None = None,
+    async def send_response(self, response_code: RESPONSE, response_msg: str | None = None,
                             data: dict | None = None):
+        async with self.processed_lock:
+            player_pos = self.player_pos
+            self.processed = True
         cmd = {"response_code": response_code.value, "response_msg": response_msg, "player_pos": player_pos}
         if data is not None:
             cmd.update(data)
@@ -56,17 +62,20 @@ class GameClient:
 
     async def run(self):
         loop = await self.connect()
-        from pit import Pit
         while loop:
             command = await self.receive_json()
             player_pos = command.get("player_pos")
+            async with self.processed_lock:
+                self.processed = False
+                self.player_pos = player_pos
             print(command)
             if command["command"] == "play":
                 match command["command_key"]:
                     case "create":
+                        from pit import Pit
                         game_config = self.extract_game_config(command)
                         self.pit = Pit(game_config, self)
-                        await self.pit.init_game(num_games=1, game_config=game_config, player_pos=player_pos)
+                        await self.pit.init_game(num_games=1, game_config=game_config)
                     case "valid_moves":
                         pos = None
                         if "pos" in command:
@@ -88,7 +97,7 @@ class GameClient:
                         await self.send_response(RESPONSE.SUCCESS, "Game quit")
                         break
                     case "new_game":
-                        await self.pit.init_game(num_games=1, game_config=self.pit.game_config, player_pos=player_pos)
+                        await self.pit.init_game(num_games=1, game_config=self.pit.game_config)
                     case "show_blunder":
                         await self.pit.arena.show_blunder()
                     case "timeline":
@@ -102,11 +111,16 @@ class GameClient:
                         game_config = self.extract_game_config(command)
                         num = int(command["payload"]["num"])
                         self.pit = Pit(game_config, self)
-                        await self.pit.init_game(num_games=num, game_config=game_config, player_pos=player_pos)
+                        await self.pit.init_game(num_games=num, game_config=game_config)
                     case "stop_evaluate":
                         await self.pit.arena.stop_game()
                         await Player.stop_game()
                         await self.send_response(RESPONSE.SUCCESS, "Evaluation stopped")
+            while True:
+                async with self.processed_lock:
+                    if self.processed:
+                        break
+                await asyncio.sleep(0.1)
 
             """
             # Send a message
@@ -136,4 +150,3 @@ class GameClient:
             return ast.literal_eval(input_str)
         else:
             return int(input_str)
-

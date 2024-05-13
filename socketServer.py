@@ -46,6 +46,18 @@ class SocketServer:
                 match command:
                     case "exit":
                         break
+                    case "client":
+                        # code for img
+                        pass
+                    case "broadcast":
+                        entries_to_delete = ["response_code", "response_msg"]
+                        cleansed_data = {key: val for key, val in readObject.get("data") if key not in entries_to_delete}
+                        await self.send_response(lobby.p1, response_code=readObject.get("data")["response_code"],
+                                                 response_msg=readObject.get("data")["response_msg"],
+                                                 data=cleansed_data if len(cleansed_data) > 0 else None)
+                        await self.send_response(lobby.p2, response_code=readObject.get("data")["response_code"],
+                                                 response_msg=readObject.get("data")["response_msg"],
+                                                 data=cleansed_data if len(cleansed_data) > 0 else None)
                     case "login":
                         lobby_key: str = readObject.get("key")
                         lobby: Lobby = self.lobby_manager.lobbies.get(lobby_key)
@@ -66,14 +78,18 @@ class SocketServer:
         await client.accept()
 
     async def send_cmd(self, client: WebSocket, command: str, command_key: str, data: dict | None = None):
-        cmd = {"command": command, "command_key": command_key}
+        player_pos = self.lobby_manager.get_pos_of_client(client)
+        cmd = {"command": command, "command_key": command_key, "player_pos": "p1"}
         if data is not None:
             cmd.update(data)
         await client.send_json(cmd)
 
-    async def send_response(self, client: WebSocket, response_code: RESPONSE, response_msg: str,
+    async def send_response(self, client: WebSocket, response_code: RESPONSE | int, response_msg: str,
                             data: dict | None = None):
-        cmd = {"response_code": response_code.value, "response_msg": response_msg}
+        if isinstance(response_code, int):
+            cmd = {"response_code": response_code, "response_msg": response_msg}
+        else:
+            cmd = {"response_code": response_code.value, "response_msg": response_msg}
         if data is not None:
             cmd.update(data)
         await client.send_json(cmd)

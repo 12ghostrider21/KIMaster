@@ -16,7 +16,7 @@ class Pit:
         self.game_client = game_client
         self.arena: Arena | None = None
 
-    async def init_game(self, num_games: int, game_config: GameConfig = None, player_pos=None):
+    async def init_game(self, num_games: int, game_config: GameConfig = None):
         if game_config is not None:  # if the arg is none, it's a re-init e.g. via "new_game"
             self.game_config = game_config
         game = None
@@ -78,14 +78,14 @@ class Pit:
         self.arena = Arena(player1, player2, game, self.game_client)
         if num_games == 1:
             await self.game_client.send_response(response_code=RESPONSE.SUCCESS,
-                                                 player_pos=player_pos,
                                                  response_msg="Game initialized")
             await self.arena.playGame(verbose=True)
         else:
             await self.game_client.send_response(RESPONSE.SUCCESS, "Evaluation runs")
             wins_player1, wins_player2, draws = await self.arena.playGames(num_games)
-            await self.game_client.send_cmd("play", "arena",
-                                            {"response_msg": "Game evaluated",
+            await self.game_client.send_cmd("broadcast", "arena",
+                                            {"response_code": RESPONSE.SUCCESS.value,
+                                                "response_msg": "Game evaluated",
                                              "wins_player1": wins_player1,
                                              "wins_player2": wins_player2,
                                              "draws": draws})

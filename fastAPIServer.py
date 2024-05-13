@@ -228,8 +228,7 @@ class FastAPIServer:
         self.active_connections.remove(client)
 
     async def send_cmd(self, client: WebSocket, command: str, command_key: str, data: dict | None = None):
-        player_pos = self.socket_server.lobby_manager.get_pos_of_client(client)
-        cmd = {"command": command, "command_key": command_key, "pos": player_pos}
+        cmd = {"command": command, "command_key": command_key}
         if data is not None:
             cmd.update(data)
         await client.send_json(cmd)

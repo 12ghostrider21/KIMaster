@@ -190,7 +190,7 @@ class LobbyManager:
 
     def get_pos_of_client(self, client: WebSocket) -> str | None:
         lobby: Lobby = self.lobby_of_client(client)
-        if Lobby:
+        if lobby:
             if lobby.p1 == client:
                 return "p1"
             if lobby.p2 == client:

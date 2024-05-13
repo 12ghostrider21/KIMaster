@@ -5,12 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fcdf837f-2803-4fde-9a0b-dfd42fc25c34" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DockerClient/StartClient.py" beforeDir="false" afterPath="$PROJECT_DIR$/DockerClient/StartClient.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DockerClient/arena.py" beforeDir="false" afterPath="$PROJECT_DIR$/DockerClient/arena.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DockerClient/game_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/DockerClient/game_client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DockerClient/pit.py" beforeDir="false" afterPath="$PROJECT_DIR$/DockerClient/pit.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DockerClient/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/DockerClient/player.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datatypes.py" beforeDir="false" afterPath="$PROJECT_DIR$/datatypes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Games/Connect4/Connect4Game.py" beforeDir="false" afterPath="$PROJECT_DIR$/Games/Connect4/Connect4Game.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Games/Connect4/keras/NNet.py" beforeDir="false" afterPath="$PROJECT_DIR$/Games/Connect4/keras/NNet.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fastAPIServer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fastAPIServer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lobby.py" beforeDir="false" afterPath="$PROJECT_DIR$/lobby.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/Path.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/Path.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/socketServer.py" beforeDir="false" afterPath="$PROJECT_DIR$/socketServer.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,21 +34,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.StartClient.executor": "Run",
-    "Python.StartServer.executor": "Run",
-    "Python.game_client.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Network",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.StartClient.executor&quot;: &quot;Run&quot;,
+    &quot;Python.StartServer.executor&quot;: &quot;Run&quot;,
+    &quot;Python.game_client.executor&quot;: &quot;Run&quot;,
+    &quot;Python.socketServer.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Network&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -62,6 +68,9 @@
       <updated>1715418517418</updated>
       <workItem from="1715418519267" duration="2000" />
       <workItem from="1715418558436" duration="10308000" />
+      <workItem from="1715516566872" duration="22189000" />
+      <workItem from="1715587685726" duration="95000" />
+      <workItem from="1715592994752" duration="1696000" />
     </task>
     <servers />
   </component>
@@ -81,7 +90,8 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Plattform_fuer_Vergleich_von_Spiele_KIs$game_client.coverage" NAME="game_client Coverage Results" MODIFIED="1715487337582" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DockerClient" />
-    <SUITE FILE_PATH="coverage/Plattform_fuer_Vergleich_von_Spiele_KIs$StartClient.coverage" NAME="StartClient Coverage Results" MODIFIED="1715491813488" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DockerClient" />
-    <SUITE FILE_PATH="coverage/Plattform_fuer_Vergleich_von_Spiele_KIs$StartServer.coverage" NAME="StartServer Coverage Results" MODIFIED="1715491763757" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Plattform_fuer_Vergleich_von_Spiele_KIs$StartClient.coverage" NAME="StartClient Coverage Results" MODIFIED="1715595089977" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DockerClient" />
+    <SUITE FILE_PATH="coverage/Plattform_fuer_Vergleich_von_Spiele_KIs$socketServer.coverage" NAME="socketServer Coverage Results" MODIFIED="1715583670096" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Plattform_fuer_Vergleich_von_Spiele_KIs$StartServer.coverage" NAME="StartServer Coverage Results" MODIFIED="1715594587657" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
