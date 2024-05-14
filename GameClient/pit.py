@@ -6,7 +6,7 @@ import threading
 from Tools.datatypes import GameConfig, EResponse
 from Tools.utils import dotdict
 from GameClient.arena import Arena
-from GameClient.mcts import MCTS
+from Tools.mcts import MCTS
 from GameClient.player import Player
 from starlette.websockets import WebSocket
 from Tools.datatypes import EDifficulty, Response
@@ -56,7 +56,7 @@ class Pit:
                     player1 = Player(game, self.game_client).play
                     player2 = Player(game, self.game_client).play
         except AttributeError:
-            return Response(EResponse.ERROR, "Game mode does not exist!")
+            return Response(EResponse.ERROR, "Game mode does not exist!", {"mode": self.game_config.mode.name})
 
         self.arena = Arena(player1, player2, game, self.game_client)
         self.start_arena(num_games)
@@ -87,13 +87,3 @@ class Pit:
     def start_arena(self, num_games: int):
         thread = threading.Thread(target=self.run_async_function_in_thread, args=[num_games], daemon=True)
         thread.start()
-        # new thread ?
-        # await self.arena.playGame(verbose=True)
-        # wins_player1, wins_player2, draws = await self.arena.playGames(num_games)
-
-        #await self.game_client.send_cmd("broadcast", "arena",
-        #                                {"response_code": EResponse.SUCCESS.value,
-        #                                 "response_msg": "Game evaluated",
-        #                                 "wins_player1": wins_player1,
-        #                                 "wins_player2": wins_player2,
-        #                                 "draws": draws})

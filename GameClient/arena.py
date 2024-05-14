@@ -79,24 +79,27 @@ class Arena:
             if verbose:  # same as with blunder_history
                 self.history.append((board, curPlayer, action, it))
             if isinstance(players[curPlayer + 1], type(Player.play)):  # user (AI) is in charge to make a turn
-                user_action = players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer))  # the canonicalForm
+                action = await players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer))  # the canonicalForm
                 # of the board is the argument for the player function (lambda x : ... (x) / play(self,board))
                 # players are at index 0 and 2 => curPlayer + 1 ==> -1 + 1 = 0; 1 + 1 = 2
-                #async with self.stop_lock:
-                #    if self.stop:
-                #        break
-                if verbose:  # if evaluation is running (multiple games), blunder_history should not be created,
-                    # except for the last game
-                    ref_actions = players[-curPlayer + 1](self.game.getCanonicalForm(board, curPlayer)).sort()
-                    upper_half = len(ref_actions) // 2
-                    bad_actions = ref_actions[:upper_half]
-                    for a in bad_actions:  # comparing move with rather bad moves for show_blunder function
-                        if a == user_action:
-                            self.blunder_history.append((it, user_action))
+                async with self.stop_lock:
+                    if self.stop:
+                        break
+                #if verbose:  # if evaluation is running (multiple games), blunder_history should not be created,
+                #    # except for the last game
+                #    ref_actions = players[-curPlayer + 1](self.game.getCanonicalForm(board, curPlayer))
+                #    print(f"{ref_actions=}")
+                #    ref_actions = ref_actions.sort()
+                #    upper_half = len(ref_actions) // 2
+                #    bad_actions = ref_actions[:upper_half]
+                #    for a in bad_actions:  # comparing move with rather bad moves for show_blunder function
+                #        if a == action:
+                #            self.blunder_history.append((it, action))
             else:  # website AI is in charge of making a turn
-                action = np.argmax(await players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer)))
+                action = np.argmax(players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer)))
+                print(f"{action=}")
             valids = self.game.getValidMoves(self.game.getCanonicalForm(board, curPlayer), 1)
-
+            print(valids, valids[action])
             if valids[action] == 0:
                 log.error(f'Action {action} is not valid!')
                 log.debug(f'valids = {valids}')
@@ -197,11 +200,12 @@ class Arena:
         await self.playGame(board=tmp[-1][0], curPlayer=tmp[-1][1], it=tmp[-1][3])
 
     async def draw_valid_moves(self, from_pos: int):
-        img1, img2 = self.game.draw(self.game.getCanonicalForm(self.history[-1][0], -1), True, -1, from_pos)
-        await self.game_client.send_image(img1, img2)
+        #img1, img2 = self.game.draw(self.game.getCanonicalForm(self.history[-1][0], -1), True, -1, from_pos)
+        # await self.game_client.send_image(img1, img2)
         representation = self.game.draw_terminal(self.history[-1][0], True, -1, from_pos)
-        await self.game_client.send_cmd("broadcast", "arena", {"response_code": EResponse.SUCCESS.value,
-                                                               "response_msg": representation})
+        return representation
+        # await self.game_client.send_cmd("broadcast", "arena", {"response_code": EResponse.SUCCESS.value,
+        #                                                       "response_msg": representation})
 
     async def show_blunder(self) -> list:
         return self.blunder_history

@@ -160,59 +160,54 @@ class FastAPIServer:
                 await self.socket_server.send_cmd(game_client, "play", "create", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "valid_moves":
-                await self.socket_server.send_cmd(game_client, "play", "valid_moves")
-                #else:
-                #    await self.socket_server.send_cmd(game_client, "play", "valid_moves",
-                #                                      {"payload": readObject.get("payload")})
+                # pos
+                await self.socket_server.send_cmd(game_client, "play", "valid_moves", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "make_move":
-                await self.socket_server.send_cmd(game_client, "play", "make_move",
-                                                  {"payload": readObject.get("payload")})
+                # num, move
+                await self.socket_server.send_cmd(game_client, "play", "make_move", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "undo_move":
-                if readObject.get("payload")["num"] <= 0:  # ?? => int-Wert? xxx
-                    await self.send_response(client, EResponse.ERROR,
-                                             "Amount of moves to be undone must be greater than 0")
-                await self.socket_server.send_cmd(game_client, "play", "undo_move",
-                                                  {"payload": readObject.get("payload")})
+                # num
+                await self.socket_server.send_cmd(game_client, "play", "undo_move", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "give_up":
-                await self.socket_server.send_cmd(game_client, "play", "give_up")
+                await self.socket_server.send_cmd(game_client, "play", "give_up", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "quit":
-                await self.socket_server.send_cmd(game_client, "play", "quit")
+                await self.socket_server.send_cmd(game_client, "play", "quit", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "new_game":
-                await self.socket_server.send_cmd(game_client, "play", "new_game")
+                await self.socket_server.send_cmd(game_client, "play", "new_game", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "show_blunder":
-                await self.socket_server.send_cmd(game_client, "play", "show_blunder")
+                await self.socket_server.send_cmd(game_client, "play", "show_blunder", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "timeline":
+                # num
                 if readObject.get("payload")["num"] < 0:  # ?? xxx
-                    await self.send_response(client, EResponse.ERROR,
-                                             "Index must be greater than or equal to 0")
-                await self.socket_server.send_cmd(game_client, "play", "timeline",
-                                                  {"payload": readObject.get("payload")})
+                    await self.send_response(client, EResponse.ERROR, "Index must be greater than or equal to 0")
+                    return
+                await self.socket_server.send_cmd(game_client, "play", "timeline", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "step":
-                await self.socket_server.send_cmd(game_client, "play", "step")
+                await self.socket_server.send_cmd(game_client, "play", "step", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "unstep":
-                await self.socket_server.send_cmd(game_client, "play", "unstep")
+                await self.socket_server.send_cmd(game_client, "play", "unstep", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "evaluate":
-                if readObject.get("payload")["game_config"]["mode"].value != "playerai_vs_ai":  # ?? xxx
-                    await self.send_response(client, EResponse.ERROR,
-                                             "Only playerai_vs_ai mode is supported")
-                if readObject.get("payload")["num"] > 100:  # ?? xxx
-                    await self.send_response(client, EResponse.ERROR,
-                                             "Not more than 100 games supported")
-                await self.socket_server.send_cmd(game_client, "play", "evaluate",
-                                                  {"payload": readObject.get("payload")})
+                # mode, num
+                # @if readObject.get("payload")["game_config"]["mode"].value != "playerai_vs_ai":  # ?? xxx
+                # @    await self.send_response(client, EResponse.ERROR, "Only playerai_vs_ai mode is supported")
+                # @if readObject.get("payload")["num"] > 100:  # ?? xxx
+                # @    await self.send_response(client, EResponse.ERROR,"Not more than 100 games supported")
+                await self.socket_server.send_cmd(game_client, "play", "evaluate", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "stop_evaluate":
                 await self.socket_server.send_cmd(game_client, "play", "stop_evaluate")
+            case _:
+                await self.send_response(client, EResponse.ERROR, f"Command '{command_key}' not found!")
 
     # *************************************************************************************************************
 

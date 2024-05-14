@@ -1,6 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass
-from GameClient.neural_net import NeuralNet
+from Tools.neural_net import NeuralNet
 
 from Games.Connect4.Connect4Game import Connect4Game
 from Games.Connect4.keras.NNet import NNetWrapper as Connect4NNet
@@ -53,7 +53,10 @@ class GameConfig:
     difficulty: EDifficulty | Enum
 
     def __call__(self) -> bool:
-        for x in self.__dict__:
-            if x is None:
-                return False
+        if self.game is None:
+            return False
+        if self.mode is None:
+            return False
+        if self.difficulty is None:
+            return False
         return True

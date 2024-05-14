@@ -5,7 +5,7 @@ import sys
 
 sys.path.append('../..')
 from Tools.utils import *
-from GameClient.neural_net import NeuralNet
+from Tools.neural_net import NeuralNet
 
 import logging
 

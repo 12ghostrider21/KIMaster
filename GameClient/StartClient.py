@@ -8,7 +8,7 @@ def main():
     port = sys.argv[1] if len(sys.argv) > 1 else "12345"
     port = int(port)
     host = sys.argv[2] if len(sys.argv) > 2 else "localhost"
-    key = sys.argv[3] if len(sys.argv) > 3 else "04d58c2f61857b4409219f4014054ff7379b212e8845924c5cc036a331dac1da"
+    key = sys.argv[3] if len(sys.argv) > 3 else "de49c3aa78ea774b16875b0af41c6730234d70c64147bd785fa3e604799e975d"
 
 
     game_client = GameClient(port=port, host=host, key=key).run()

@@ -48,7 +48,7 @@ class Connect4Game(IGame):
             # 0 used to represent unfinished game.
             return 0
 
-    def getCanonicalForm(self, board, player):
+    def getCanonicalForm(self, board, player) -> np.array:
         # Flip player from 1 to -1
         return board * player
 
@@ -61,7 +61,7 @@ class Connect4Game(IGame):
 
     def draw_terminal(self, board, valid_moves, *args: any):
         if valid_moves:
-            return '\nMoves: ' + str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
+            return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
         else:
             return (" -----------------------\n" +
                     ' '.join(map(str, range(len(board[0])))) +
