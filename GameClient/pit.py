@@ -1,3 +1,5 @@
+import time
+from asyncio import create_task, Task
 import asyncio
 import os
 import pathlib
@@ -11,11 +13,34 @@ from GameClient.player import Player
 from starlette.websockets import WebSocket
 from Tools.datatypes import EDifficulty, Response
 
+
 class Pit:
     def __init__(self, game_config: GameConfig, game_client):
         self.game_config: GameConfig | None = game_config
         self.game_client: WebSocket = game_client
         self.arena: Arena | None = None
+        self.arena_task: Task | None = None  # not used for now
+
+    def new_arena_task(self) -> None:
+        # no task exist
+        if self.arena_task is None:
+            self.arena_task: Task = create_task(self.arena.playGame(verbose=True))
+            print("Task created!")
+            return
+
+        # task stopped or done
+        if self.arena_task.done() or self.arena_task.cancelled():
+            self.arena_task: Task = create_task(self.arena.playGame(verbose=True))
+            print("Task created!")
+            return
+
+        # task is running, stopping it!
+        self.arena_task.cancel()
+        print("Cancel")
+        while True:
+            print(self.arena_task.done(), self.arena_task.cancelled())
+            time.sleep(1)
+
 
     def init_game(self, num_games: int, game_config: GameConfig | None) -> Response:
         if game_config is not None:  # if the arg is none, it's a re-init e.g. via "new_game"
@@ -57,12 +82,11 @@ class Pit:
             return Response(EResponse.ERROR, "Game mode does not exist!", {"mode": self.game_config.mode.name})
 
         player3 = lambda x: mcts.getActionProb(x, temp=1)
-
         self.arena = Arena(player1, player2, player3, game, self.game_client)
-        asyncio.create_task(self.arena.playGame(verbose=True))
 
         # self.start_arena(num_games)
         if num_games == 1:
+            # self.new_arena_task() method in testing phase
             asyncio.create_task(self.arena.playGame(verbose=True))
             return Response(EResponse.SUCCESS, "Game initialized")
         else:
@@ -75,21 +99,3 @@ class Pit:
         args = dotdict({'numMCTSSims': difficulty.value, 'cpuct': 1.0})
         mcts = MCTS(game, nn, args)
         return mcts
-
-    """
-    def run_async_function_in_thread(self, num_games: int):
-        # Neuen Event-Loop für den Thread erstellen
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-        if num_games == 1:
-            # Async-Funktion im Event-Loop des Threads ausführen
-            loop.run_until_complete(self.arena.playGame(verbose=True))
-        else:
-            loop.run_until_complete(self.arena.playGames(num_games, train=False))  # return values gone ?
-        loop.close()
-
-    def start_arena(self, num_games: int):
-        thread = threading.Thread(target=self.run_async_function_in_thread, args=[num_games], daemon=True)
-        thread.start()
-    """
