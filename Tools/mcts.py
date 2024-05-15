@@ -52,7 +52,7 @@ class MCTS():
 
         s = self.game.stringRepresentation(canonicalBoard)
         counts = [self.Nsa[(s, a)] if (s, a) in self.Nsa else 0 for a in range(self.game.getActionSize())] # in a list for every
-                            # acion (move) having the count saved into a list or otherwise 0 is added
+                            # action (move) having the count saved into a list or otherwise 0 is added
                             # s = state of the game (node/ board)
                             # letzten Endes: bei mehreren MCTS-Simulationsdurchgängen (numMCTSSims), welche Kanten dort
                             # eben am häufigsten abgelaufen wurden ==> tendentiell die besten actions dann

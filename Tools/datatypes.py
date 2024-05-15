@@ -11,6 +11,7 @@ class EResponse(Enum):
     ERROR = 400
 
 
+
 @dataclass
 class Response:
     response_code: EResponse

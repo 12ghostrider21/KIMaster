@@ -106,7 +106,7 @@ class FastAPIServer:
                     await self.send_response(client, EResponse.ERROR, f"Pos: '{pos}' unknown!")
                     return
                 if not self.socket_server.lobby_manager.swap_to(pos, client):
-                    await self.send_response(client, EResponse.ERROR, f"Pos: '{pos}' already full!")
+                    await self.send_response(client, EResponse.ERROR, f"Pos: '{pos}' already occupied!")
                     return
                 await self.send_response(client, EResponse.SUCCESS, f"Client swapped to: '{pos}'!")
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -115,7 +115,7 @@ class FastAPIServer:
                 if pos is None:
                     await self.send_response(client, EResponse.ERROR, "Client not in a lobby!")
                     return
-                await self.send_response(client, EResponse.SUCCESS, f"Client Pos is: '{pos}'!")
+                await self.send_response(client, EResponse.SUCCESS, f"Client pos is: '{pos}'!")
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "list":
                 status: dict = self.socket_server.lobby_manager.lobby_status(lobby_key)
@@ -157,22 +157,23 @@ class FastAPIServer:
 
         match command_key:
             case "create":
+                # game, mode, difficulty
                 await self.socket_server.send_cmd(game_client, "play", "create", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "valid_moves":
-                # pos
+                # [pos]
                 await self.socket_server.send_cmd(game_client, "play", "valid_moves", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "make_move":
-                # num, move
+                # move
                 await self.socket_server.send_cmd(game_client, "play", "make_move", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "undo_move":
                 # num
                 await self.socket_server.send_cmd(game_client, "play", "undo_move", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            case "give_up":
-                await self.socket_server.send_cmd(game_client, "play", "give_up", data)
+            case "surrender":
+                await self.socket_server.send_cmd(game_client, "play", "surrender", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "quit":
                 await self.socket_server.send_cmd(game_client, "play", "quit", data)
@@ -180,14 +181,11 @@ class FastAPIServer:
             case "new_game":
                 await self.socket_server.send_cmd(game_client, "play", "new_game", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            case "show_blunder":
-                await self.socket_server.send_cmd(game_client, "play", "show_blunder", data)
+            case "blunder":
+                await self.socket_server.send_cmd(game_client, "play", "blunder", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "timeline":
                 # num
-                if readObject.get("payload")["num"] < 0:  # ?? xxx
-                    await self.send_response(client, EResponse.ERROR, "Index must be greater than or equal to 0")
-                    return
                 await self.socket_server.send_cmd(game_client, "play", "timeline", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "step":
@@ -197,11 +195,8 @@ class FastAPIServer:
                 await self.socket_server.send_cmd(game_client, "play", "unstep", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "evaluate":
-                # mode, num
-                # @if readObject.get("payload")["game_config"]["mode"].value != "playerai_vs_ai":  # ?? xxx
-                # @    await self.send_response(client, EResponse.ERROR, "Only playerai_vs_ai mode is supported")
-                # @if readObject.get("payload")["num"] > 100:  # ?? xxx
-                # @    await self.send_response(client, EResponse.ERROR,"Not more than 100 games supported")
+                # game, difficulty, num
+                data.update({"mode": "playerai_vs_ai"})
                 await self.socket_server.send_cmd(game_client, "play", "evaluate", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "stop_evaluate":

@@ -29,15 +29,13 @@ class Pit:
         difficulty = self.game_config.difficulty
         player1 = None
         player2 = None
-        folder = None
-        file = None
 
         match game_name:  # to be replaced with a query (DB)
             case "connect4":
                 path = os.path.abspath("../resources/pretrained_models/connect4/best.h5")
                 folder = os.path.dirname(path)
                 file = os.path.basename(path)
-            case _:
+            case _:  # dürfte überflüssig sein
                 return Response(EResponse.ERROR, "File not found", {"game": game_name})
 
         mcts = self.init_nn(game, nnet, folder, file, difficulty)
@@ -55,14 +53,20 @@ class Pit:
                 case "playerai_vs_playerai":
                     player1 = Player(game, self.game_client).play
                     player2 = Player(game, self.game_client).play
-        except AttributeError:
+        except AttributeError:  # dürfte überflüssig sein
             return Response(EResponse.ERROR, "Game mode does not exist!", {"mode": self.game_config.mode.name})
 
-        self.arena = Arena(player1, player2, game, self.game_client)
-        self.start_arena(num_games)
+        player3 = lambda x: mcts.getActionProb(x, temp=1)
+
+        self.arena = Arena(player1, player2, player3, game, self.game_client)
+        asyncio.create_task(self.arena.playGame(verbose=True))
+
+        # self.start_arena(num_games)
         if num_games == 1:
+            asyncio.create_task(self.arena.playGame(verbose=True))
             return Response(EResponse.SUCCESS, "Game initialized")
         else:
+            asyncio.create_task(self.arena.playGames(num_games, train=False))
             return Response(EResponse.SUCCESS, "Evaluation runs")
 
     def init_nn(self, game, nnet, folder: str, file: str, difficulty: EDifficulty = EDifficulty.hard.value):
@@ -72,6 +76,7 @@ class Pit:
         mcts = MCTS(game, nn, args)
         return mcts
 
+    """
     def run_async_function_in_thread(self, num_games: int):
         # Neuen Event-Loop für den Thread erstellen
         loop = asyncio.new_event_loop()
@@ -81,9 +86,10 @@ class Pit:
             # Async-Funktion im Event-Loop des Threads ausführen
             loop.run_until_complete(self.arena.playGame(verbose=True))
         else:
-            loop.run_until_complete(self.arena.playGames(num_games))  # return values gone ?
+            loop.run_until_complete(self.arena.playGames(num_games, train=False))  # return values gone ?
         loop.close()
 
     def start_arena(self, num_games: int):
         thread = threading.Thread(target=self.run_async_function_in_thread, args=[num_games], daemon=True)
         thread.start()
+    """

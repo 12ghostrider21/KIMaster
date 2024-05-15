@@ -208,13 +208,15 @@ class IGame(ABC):
 
         Parameters:
             board (numpy.array): The game board represented as a numpy array.
-
             valid_moves: Whether displaying / drawing valid moves or not.
             *args: first arg is cur_player(int): The current player (1 for one player, -1 for the other player).
                    second arg is from_pos (int): The from_pos to get the valid moves for. Wrong indices need
                         to be handled (send error message via GameClient)
 
-        Output for terminal need to be sent via GameClient
+        Notes:
+            -Needs to handle invalid from_pos for displaying valid moves (None / invalid pos). If invalid
+            throw a ValueError.
+
 
         Returns:
             str: The terminal representation of the board.
@@ -225,7 +227,7 @@ class IGame(ABC):
         pass
 
     @abstractmethod
-    def draw(self, board: np.array, valid_moves: bool, *args: any) -> (bytes, bytes):
+    def draw(self, board: np.array, valid_moves: bool, *args: any) -> bytes:
         """
         Draw the game representation onto a Pygame surface.
 
@@ -236,7 +238,6 @@ class IGame(ABC):
         Parameters:
             board (np.array): A NumPy array representing the game state. The array should contain
                 the necessary information to visualize the current state of the game.
-            cur_player: The current player (1 for one player, -1 for the other player).
             valid_moves: Whether displaying / drawing valid moves or not.
             *args: first arg is cur_player (int): The current player (1 for one player, -1 for the other player).
                    second arg is from_pos (int): The from_pos to get the valid moves for. Wrong indices
@@ -246,8 +247,6 @@ class IGame(ABC):
           process. The interpretation of these arguments depends on the specific implementation
           of the `draw` method.
 
-        Drawn board need to be sent via GameClient
-
         Returns:
             bytes (from pygame.Surface)
 
@@ -255,6 +254,9 @@ class IGame(ABC):
         - The `board` parameter should be a NumPy array representing the game state in a structured
           format suitable for visualization. The specific structure and meaning of the array's
           contents are defined by the concrete implementations of `Drawable`.
+
+        - Needs to handle invalid from_pos for displaying valid moves (None / invalid pos). If invalid
+          throw a ValueError.
 
         - The method should handle the rendering of the game state based on the provided `board`
           data and any additional optional arguments (`args`). The resulting surface should

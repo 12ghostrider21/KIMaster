@@ -9,6 +9,7 @@ class Player:
 
     move = None
     stop = False
+    player_pos = ""
     move_lock = asyncio.Lock()  # locks all variables inside the locked code block (cls.move)
     stop_lock = asyncio.Lock()  # locks all variables inside the locked code block (cls.stop)
 
@@ -24,11 +25,11 @@ class Player:
                     if valid_moves[Player.move]:
                         tmp = Player.move
                         Player.move = None
-                        await self.game_client.send_response(EResponse.SUCCESS, "Valid move")
+                        await self.game_client.send_response(EResponse.SUCCESS, Player.player_pos, "Valid move.")
                         break
                     else:
                         Player.move = None
-                        await self.game_client.send_response(EResponse.ERROR, "Invalid move")
+                        await self.game_client.send_response(EResponse.ERROR, Player.player_pos, "Invalid move!")
             await asyncio.sleep(0.1)
         return tmp
 
@@ -38,6 +39,7 @@ class Player:
             cls.stop = flag
 
     @classmethod
-    async def set_move(cls, move):
+    async def set_move(cls, move, player_pos: str):
         async with cls.move_lock:
             cls.move = move
+            cls.player_pos = player_pos

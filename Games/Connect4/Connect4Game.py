@@ -120,4 +120,4 @@ class Connect4Game(IGame):
                                        TOKENSIZE - 5)  # yellow tokens
 
         img = bytes(pygame.image.tostring(surface, 'RGBA'))
-        return img, img
+        return img
