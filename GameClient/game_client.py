@@ -1,17 +1,13 @@
-import asyncio
 import json
+import ast
 from enum import Enum
-
 import websockets
 from websockets import ConnectionClosedError
+from starlette.websockets import WebSocketDisconnect
 
 from GameClient.player import Player
 from GameClient.pit import Pit
-from starlette.websockets import WebSocketDisconnect
 from Tools.datatypes import EResponse, GameConfig, EGame, EGameMode, EDifficulty
-import ast
-
-from Tools.i_game import IGame
 
 
 class GameClient:
@@ -41,8 +37,8 @@ class GameClient:
         json_string = await self.websocket.recv()
         return json.loads(json_string)
 
-    async def send_image(self, img_p1: bytes, img_p2: bytes):
-        await self.send_cmd("client", "img")
+    async def broadcast_image(self, img_p1: bytes, img_p2: bytes):
+        await self.send_cmd("img", "broadcast")
         await self.websocket.send(img_p1)
         await self.websocket.send(img_p2)
 
@@ -53,7 +49,9 @@ class GameClient:
         cmd = json.dumps(cmd)
         await self.websocket.send(cmd)
 
-    async def send_response(self, response_code: EResponse, p_pos: str, response_msg: str | None = None,
+    async def send_response(self, response_code: EResponse,
+                            p_pos: str,
+                            response_msg: str | None = None,
                             data: dict | None = None):
         cmd = {"response_code": response_code.value, "response_msg": response_msg, "player_pos": p_pos}
         if data is not None:
@@ -76,7 +74,7 @@ class GameClient:
                 break
             player_pos: str = read_object.get("player_pos")
             command_key: str | None = read_object.get("command_key")
-            if self.pit is None and command_key not in ("create", "evaluate"):
+            if self.pit is None and command_key not in ["create", "evaluate"]:
                 await self.send_response(EResponse.ERROR, player_pos, "You need to create a game first!")
                 continue
             match command_key:

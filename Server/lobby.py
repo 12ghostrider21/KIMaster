@@ -5,9 +5,9 @@ from starlette.websockets import WebSocket
 
 class Lobby:
     def __init__(self, key: str):
-        self._p1: WebSocket | None = None
-        self._p2: WebSocket | None = None
-        self._spectator_list: list[WebSocket] = []
+        self.p1: WebSocket | None = None
+        self.p2: WebSocket | None = None
+        self.spectator_list: list[WebSocket] = []
         self.key: str = key
         self.game_client: WebSocket | None = None
 
@@ -16,27 +16,27 @@ class Lobby:
         return False
 
     def empty(self) -> bool:
-        return self._p1 is None and self._p2 is None and len(self._spectator_list) == 0
+        return self.p1 is None and self.p2 is None and len(self.spectator_list) == 0
 
     def client_in_lobby(self, client: WebSocket) -> bool:
-        if client == self._p1 or client == self._p2:
+        if client == self.p1 or client == self.p2:
             return True
-        return client in self._spectator_list
+        return client in self.spectator_list
 
     def join(self, client: WebSocket) -> bool:
         if self.client_in_lobby(client):
             print(f"Client is already in lobby {self.key}.")
             return False
 
-        if self._p1 is None:
-            self._p1 = client
+        if self.p1 is None:
+            self.p1 = client
             print(f"Player 1 joined successfully lobby {self.key}.")
             return True
-        if self._p2 is None:
-            self._p2 = client
+        if self.p2 is None:
+            self.p2 = client
             print(f"Player 2 joined successfully lobby {self.key}.")
             return True
-        self._spectator_list.append(client)
+        self.spectator_list.append(client)
         print(f"Client joined as a spectator in lobby {self.key}.")
         return True
 
@@ -45,72 +45,60 @@ class Lobby:
             print(f"Client {client} not in Lobby {self.key}")
             return False
 
-        if client == self._p1:
-            self._p1 = None
+        if client == self.p1:
+            self.p1 = None
             print(f"Player 1 left lobby {self.key}")
             return True
-        if client == self._p2:
-            self._p2 = None
+        if client == self.p2:
+            self.p2 = None
             print(f"Player 2 left lobby {self.key}")
             return True
-        self._spectator_list.remove(client)
+        self.spectator_list.remove(client)
         print(f"Spectator {client} left lobby {self.key}")
         return True
 
     def swap_to_p1(self, client: WebSocket) -> bool:
-        if self._p1 is None:
-            self._p1 = client
-            if client == self._p2:
-                self._p2 = None
+        if self.p1 is None:
+            self.p1 = client
+            if client == self.p2:
+                self.p2 = None
                 return True
-            if client in self._spectator_list:
-                self._spectator_list.remove(client)
+            if client in self.spectator_list:
+                self.spectator_list.remove(client)
             return True
         return False
 
     def swap_to_p2(self, client: WebSocket) -> bool:
-        if self._p2 is None:
-            self._p2 = client
-            if client == self._p1:
-                self._p1 = None
+        if self.p2 is None:
+            self.p2 = client
+            if client == self.p1:
+                self.p1 = None
                 return True
-            if client in self._spectator_list:
-                self._spectator_list.remove(client)
+            if client in self.spectator_list:
+                self.spectator_list.remove(client)
             return True
         return False
 
     def swap_to_spectator(self, client: WebSocket) -> bool:
-        if client == self._p1:
-            self._spectator_list.append(client)
-            self._p1 = None
+        if client == self.p1:
+            self.spectator_list.append(client)
+            self.p1 = None
             return True
-        if client == self._p2:
-            self._spectator_list.append(client)
-            self._p2 = None
+        if client == self.p2:
+            self.spectator_list.append(client)
+            self.p2 = None
             return True
         return False
 
     def __dict__(self) -> dict:
-        p1_status = "True" if self._p1 else "False"
-        p2_status = "True" if self._p2 else "False"
-        spectator_count = len(self._spectator_list)
+        p1_status = "True" if self.p1 else "False"
+        p2_status = "True" if self.p2 else "False"
+        spectator_count = len(self.spectator_list)
         game = "True" if self.game_client else "False"
         return {"P1": p1_status, "P2": p2_status, "Spectators": spectator_count, "GameClient": game, "key": self.key}
 
     def __str__(self):
         return f"{self.__dict__()}"
-
-    @property
-    def p1(self):
-        return self._p1
-
-    @property
-    def p2(self):
-        return self._p2
-
-    @property
-    def spectator_list(self):
-        return self._spectator_list
 
 
 class LobbyManager:
@@ -203,10 +191,14 @@ class LobbyManager:
     # ***************************************************************************
     # GameClients
 
-    def lobby_of_game_client(self, game_client: WebSocket) -> Lobby | None:
-        for lobby in self.lobbies.values():
-            if lobby.game_client == game_client:
-                return lobby
+    def lobby_of_game_client(self, game_client: WebSocket = None, lobby_key: str = None) -> Lobby | None:
+        if game_client:
+            for lobby in self.lobbies.values():
+                if lobby.game_client == game_client:
+                    return lobby
+            return None
+        if lobby_key:
+            return self.lobbies.get(lobby_key, None)
         return None
 
     def connect_game_client(self, lobby_key: str, game_client: WebSocket):

@@ -16,7 +16,7 @@ class Connect4Game(IGame):
         return self._base_board.np_pieces
 
     def getBoardSize(self):
-        return (self._base_board.height, self._base_board.width)
+        return self._base_board.height, self._base_board.width
 
     def getActionSize(self):
         return self._base_board.width
@@ -68,7 +68,7 @@ class Connect4Game(IGame):
                     '\n' + str(board) + '\n' +
                     " -----------------------\n")
 
-    def draw(self, board, valid_moves, *args: any):
+    def draw(self, board: np.array, valid_moves: bool, *args: any):
         row_count = board.shape[0]
         col_count = board.shape[1]
         SQUARESIZE = 100

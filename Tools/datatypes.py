@@ -2,14 +2,17 @@ from enum import Enum
 from dataclasses import dataclass
 from Tools.neural_net import NeuralNet
 
+# imports for Connect4
 from Games.Connect4.Connect4Game import Connect4Game
 from Games.Connect4.keras.NNet import NNetWrapper as Connect4NNet
+
+
+# imports for ...
 
 
 class EResponse(Enum):
     SUCCESS = 200
     ERROR = 400
-
 
 
 @dataclass
@@ -19,15 +22,15 @@ class Response:
     data: dict | None
 
     def __init__(self, response_code: EResponse, response_msg: str, data: dict | None = None):
-        self.response_code = response_code
-        self.response_msg = response_msg
-        self.data = data
+        self.response_code: EResponse = response_code
+        self.response_msg: str = response_msg
+        self.data: dict | None = data
 
 
 class EGame(Enum):
+    connect4 = (Connect4Game, Connect4NNet)
     # othello = "othello"
     # tictactoe = "tictactoe"
-    connect4 = (Connect4Game, Connect4NNet)
     # nim = "nim"
     # checkers = "checkers"
     # go = "go"

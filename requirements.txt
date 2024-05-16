@@ -6,3 +6,5 @@ tqdm~=4.66.4
 uvicorn~=0.29.0
 pydantic~=2.7.1
 coloredlogs~=15.0.1
+starlette~=0.37.2
+websockets~=12.0

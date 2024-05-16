@@ -1,4 +1,7 @@
+import asyncio
 import json
+
+import uvicorn
 from fastapi import FastAPI
 from starlette.websockets import WebSocket, WebSocketState, WebSocketDisconnect
 
@@ -17,50 +20,52 @@ class SocketServer:
             lobby: Lobby = self.lobby_manager.lobby_of_game_client(game_client)
             while True:
                 try:
-                    readObject: dict = await game_client.receive_json()
+                    read_object: dict = await game_client.receive_json()
                 except json.decoder.JSONDecodeError:
                     await self.send_response(game_client, EResponse.ERROR, "Received data is not a correct json!")
                     continue
                 except WebSocketDisconnect:
                     break
 
-                if readObject.get("response_code"):
-                    client: WebSocket | list[WebSocket] = {"p1": lobby.p1, "p2": lobby.p2, "sp": lobby.spectator_list}.get(readObject.get("player_pos"))
+                client: WebSocket | list[WebSocket] = {"p1": lobby.p1,
+                                                       "p2": lobby.p2,
+                                                       "sp": lobby.spectator_list
+                                                       }.get(read_object.get("player_pos"))
+
+                if read_object.get("response_code"):
                     try:
-                        readObject.pop("player_pos")
+                        read_object.pop("player_pos")
                     except KeyError:
                         pass
                     if isinstance(client, list) or client is None:
                         await self.send_broadcast(lobby=lobby,
-                                                  response_code=readObject.get("response_code"),
-                                                  response_msg=readObject.get("response_msg"),
-                                                  data=readObject)
+                                                  response_code=read_object.get("response_code"),
+                                                  response_msg=read_object.get("response_msg"),
+                                                  data=read_object)
                         continue
                     await self.send_response(client=client,
-                                             response_code=readObject.get("response_code"),
-                                             response_msg=readObject.get("response_msg"),
-                                             data=readObject)
+                                             response_code=read_object.get("response_code"),
+                                             response_msg=read_object.get("response_msg"),
+                                             data=read_object)
                     continue
 
                 # command handling
-                command: str = readObject.get("command")
+                command: str = read_object.get("command")
+                command_key: str = read_object.get("command_key")
+                lobby_key: str = read_object.get("key")
                 match command:
                     case "exit":
                         break
-                    case "client":
+                    case "img":
                         # code for img
-                        pass
-                    #case "broadcast":
-                    #    entries_to_delete = ["response_code", "response_msg"]
-                    #    cleansed_data = {key: val for key, val in readObject.get("data") if key not in entries_to_delete}
-                    #    await self.send_response(lobby.p1, response_code=readObject.get("data")["response_code"],
-                    #                             response_msg=readObject.get("data")["response_msg"],
-                    #                             data=cleansed_data if len(cleansed_data) > 0 else None)
-                    #    await self.send_response(lobby.p2, response_code=readObject.get("data")["response_code"],
-                    #                             response_msg=readObject.get("data")["response_msg"],
-                    #                             data=cleansed_data if len(cleansed_data) > 0 else None)
+                        img_p1: bytes = await game_client.receive_bytes()
+                        if command_key == "broadcast":
+                            img_p2: bytes = await game_client.receive_bytes()
+                            await self.broadcast_image(img_p1, img_p2, game_client)
+                            continue
+                        # send to a specific client
+
                     case "login":
-                        lobby_key: str = readObject.get("key")
                         lobby: Lobby = self.lobby_manager.lobbies.get(lobby_key)
                         if lobby is None:
                             await self.send_response(game_client, EResponse.ERROR, "Lobby does not exist", {"key": lobby_key})
@@ -70,8 +75,6 @@ class SocketServer:
                     case _:
                         await self.send_response(game_client, EResponse.ERROR, f"Command: '{command}' not found!")
             await self.disconnect(game_client)
-
-    # *************************************************************************************************************
 
     # *************************************************************************************************************
 
@@ -95,17 +98,25 @@ class SocketServer:
 
     async def send_response(self, client: WebSocket, response_code: EResponse | int, response_msg: str,
                             data: dict | None = None):
-        if isinstance(response_code, int):
-            response_code = response_code
-        elif isinstance(response_code, EResponse):
+        if isinstance(response_code, EResponse):
             response_code = response_code.value
-
         cmd = {"response_code": response_code, "response_msg": response_msg}
         if data is not None:
             cmd.update(data)
         if cmd.get("player_pos"):
             cmd.pop("player_pos")
         await client.send_json(cmd)
+
+    async def broadcast_image(self, img_p1: bytes, img_p2: bytes, game_client: WebSocket) -> None:
+        lobby: Lobby = self.lobby_manager.lobby_of_game_client(game_client)
+        tasks = [asyncio.create_task(self.send_image(lobby.p1, img_p1)), asyncio.create_task(self.send_image(lobby.p2, img_p2))]
+        for sp in lobby.spectator_list:
+            tasks.append(asyncio.create_task(self.send_image(sp, img_p1)))
+        await asyncio.gather(*tasks)  # send all images at the same time
+
+    async def send_image(self, client: WebSocket | None, img: bytes):
+        if client:  # every None client will be ignored (broadcast)
+            await client.send_bytes(img)
 
     async def disconnect(self, game_client: WebSocket):
         if game_client.client_state == WebSocketState.CONNECTED:
@@ -114,6 +125,5 @@ class SocketServer:
         print(f"GameClient disconnected as: {game_client}")
 
     def run(self, host: str, port: int):
-        import uvicorn
         print(f"SocketServer is running on {host}:{port}")
         uvicorn.run(self.__app, host=host, port=port, log_level="info", ws_ping_timeout=None)
