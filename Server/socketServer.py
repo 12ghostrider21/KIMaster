@@ -27,16 +27,17 @@ class SocketServer:
                 except WebSocketDisconnect:
                     break
 
-                client: WebSocket | list[WebSocket] = {"p1": lobby.p1,
-                                                       "p2": lobby.p2,
-                                                       "sp": lobby.spectator_list
-                                                       }.get(read_object.get("player_pos"))
 
                 if read_object.get("response_code"):
                     try:
                         read_object.pop("player_pos")
                     except KeyError:
                         pass
+
+                    client: WebSocket | list[WebSocket] = {"p1": lobby.p1,
+                                                           "p2": lobby.p2,
+                                                           "sp": lobby.spectator_list
+                                                           }.get(read_object.get("player_pos"))
                     if isinstance(client, list) or client is None:
                         await self.send_broadcast(lobby=lobby,
                                                   response_code=read_object.get("response_code"),

@@ -3,7 +3,6 @@ import asyncio
 import numpy as np
 from tqdm import tqdm
 
-import GameClient.game_client
 from GameClient.player import Player
 from Tools.datatypes import EResponse
 
@@ -31,7 +30,7 @@ class Arena:
         self.player2 = player2
         self.player3 = player3  # nnet evaluating users moves (function: blunder)
         self.game = game
-        self.game_client: GameClient.game_client.GameClient = game_client
+        self.game_client = game_client
         self.stop = False
         self.stop_lock = asyncio.Lock()
         self.history = []  # (board, curPlayer, iterator)
