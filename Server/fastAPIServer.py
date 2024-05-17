@@ -9,12 +9,15 @@ from lobby import Lobby
 from e_response import EResponse
 from socketServer import SocketServer
 
+from dockerAPI import DockerAPI
+
 
 class FastAPIServer:
     def __init__(self):
         self.__app = FastAPI()
         self.socket_server: SocketServer = SocketServer()
         self.active_connections: list[WebSocket] = []
+        self.docker_api: DockerAPI = DockerAPI() 
 
         @self.__app.websocket("/ws")
         async def websocket_endpoint(client: WebSocket):
@@ -60,6 +63,7 @@ class FastAPIServer:
                 if not self.socket_server.lobby_manager.client_in_lobby(client):
                     lobby_key: str = self.socket_server.lobby_manager.create_lobby()
                     self.socket_server.lobby_manager.join(lobby_key, client)
+                    self.docker_api.startGameClient(lobby_key)
                     await self.send_response(client, EResponse.SUCCESS, "Lobby created!", {"key": lobby_key})
                 else:
                     await self.send_response(client, EResponse.ERROR, "Client already in a lobby!")
@@ -215,6 +219,7 @@ class FastAPIServer:
             self.socket_server.lobby_manager.leave(client)
             if lobby.empty():
                 if self.socket_server.lobby_manager.remove_lobby(lobby.key):
+                    self.docker_api.stopGameClient(lobby.key)
                     print(f"Lobby {lobby.key} removed!")
         print(f"FrontEnd Client disconnected as: {client}")
         self.active_connections.remove(client)
