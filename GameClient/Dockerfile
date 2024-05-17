@@ -16,7 +16,7 @@ ENV LOBBY_KEY="e318ad20ae5b57426f8970a2fe644942740d2c1e2554c327ff4449029b0109c1"
 
 EXPOSE ${PORT_TO_GAME_CLIENT}
 
-CMD ["python", "StartClient.py", ""]
+CMD ["python", "StartClient.py"]
 
 
 
