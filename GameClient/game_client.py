@@ -39,10 +39,14 @@ class GameClient:
         json_string = await self.websocket.recv()
         return json.loads(json_string)
 
-    async def broadcast_image(self, img_p1: bytes, img_p2: bytes):
+    async def send_image(self, img: bytes, player_pos: str):
+        await self.send_cmd("img", "", {"player_pos": player_pos})
+        await self.websocket.send(img)
+
+    async def broadcast_image(self, img1: bytes, img2: bytes):
         await self.send_cmd("img", "broadcast")
-        await self.websocket.send(img_p1)
-        await self.websocket.send(img_p2)
+        await self.websocket.send(img1)
+        await self.websocket.send(img2)
 
     async def send_cmd(self, command: str, command_key: str, data: dict | None = None):
         cmd = {"command": command, "command_key": command_key}
@@ -52,7 +56,7 @@ class GameClient:
         await self.websocket.send(cmd)
 
     async def send_response(self, response_code: EResponse,
-                            p_pos: str,
+                            p_pos: str | None,
                             response_msg: str | None = None,
                             data: dict | None = None):
         cmd = {"response_code": response_code.value, "response_msg": response_msg, "player_pos": p_pos}
@@ -82,9 +86,11 @@ class GameClient:
             match command_key:
                 case "create":
                     if self.pit:
-                        await self.send_response(EResponse.ERROR, player_pos, "Cannot create a new game, "
-                                                                              "while another one is still running!")
-                        continue
+                        if self.pit.arena_task:
+                            if not self.pit.arena_task.done():
+                                await self.send_response(EResponse.ERROR, player_pos, "Another game still"
+                                                                                      " running! Surrender first!")
+                                continue
                     game_config: GameConfig = self.extract_game_config(read_object)
                     if not game_config():  # get new game_config and call check if correct
                         await self.send_response(EResponse.ERROR, player_pos,
@@ -106,16 +112,20 @@ class GameClient:
                         try:
                             pos = int(pos)
                         except ValueError:
-                            await self.send_response(EResponse.ERROR, player_pos, f"Pos: '{pos}' is not a pos!", {"pos": pos})
+                            await self.send_response(EResponse.ERROR, player_pos, f"Pos: '{pos}' is not a pos!",
+                                                     {"pos": pos})
                             continue
                         if pos < 0:
-                            await self.send_response(EResponse.ERROR, player_pos, "Pos must be greater than or equal to 0!")
+                            await self.send_response(EResponse.ERROR, player_pos,
+                                                     "Pos must be greater than or equal to 0!")
                             continue
-                    representation = await self.pit.arena.draw_valid_moves(pos)
-                    if representation is None:
+                    result = await self.pit.arena.draw_valid_moves(pos)
+                    if result is None:
                         await self.send_response(EResponse.ERROR, player_pos, "Invalid from_pos!")
                         continue
+                    img, representation = result
                     await self.send_response(EResponse.SUCCESS, player_pos, "Valid moves:", {"moves": representation})
+                    await self.send_image(img, player_pos)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "make_move":
                     move = read_object.get("move")
@@ -135,23 +145,30 @@ class GameClient:
                     try:
                         num = int(num)
                     except ValueError:
-                        await self.send_response(EResponse.ERROR, player_pos, f"num: '{num}' is not an int!", {"num": num})
+                        await self.send_response(EResponse.ERROR, player_pos, f"num: '{num}' is not an int!",
+                                                 {"num": num})
                         continue
                     if num <= 0:
                         await self.send_response(EResponse.ERROR, player_pos,
                                                  "Amount of moves to be undone must be greater than 0!")
                         continue
-                    await self.pit.arena.stop_game()
                     await self.pit.stop_play(player_pos)
                     await asyncio.sleep(0.5)
                     await self.pit.arena.undo_move(num)
+                    await self.pit.stop_play(player_pos)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "surrender":
-                    await self.pit.arena.stop_game()
                     await self.pit.stop_play(player_pos)
-                    await self.send_response(EResponse.SUCCESS, player_pos, "Successfully surrendered.")
+                    winner = -1 if player_pos == "p1" else 1  # winner is the opposite player of the one who surrenders
+                    # p1 == 1 ; p2 == -1 at arena
+                    await self.pit.arena_task
+                    await self.send_response(EResponse.SUCCESS, None, "Game over: ",
+                                             {"result": winner})
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "quit":
+                    if not self.pit.arena_task.done():
+                        await self.send_response(EResponse.ERROR, player_pos, "Game still running. "
+                                                                              "Please surrender first")
                     await self.send_response(EResponse.SUCCESS, player_pos, "Game quit.")
                     # inject code to shut down docker container (and delete data)
                     break
@@ -159,6 +176,9 @@ class GameClient:
                 case "new_game":
                     await self.pit.set_move(None, player_pos)  # if a move was set in Player after game over
                     # otherwise Player.play is called, move not None => automatically returned and executed
+                    if not self.pit.arena_task.done():
+                        await self.send_response(EResponse.ERROR, player_pos, "Game still running. "
+                                                                              "Please surrender first")
                     response = self.pit.init_game(num_games=1, game_config=self.pit.game_config)
                     await self.send_response(response_code=response.response_code,
                                              p_pos=player_pos,
@@ -182,31 +202,21 @@ class GameClient:
                     try:
                         num = int(num)
                     except ValueError:
-                        await self.send_response(EResponse.ERROR, player_pos, f"num: '{num}' is not an int!", {"num": num})
+                        await self.send_response(EResponse.ERROR, player_pos, f"num: '{num}' is not an int!",
+                                                 {"num": num})
                         continue
                     if num < 0:
                         await self.send_response(EResponse.ERROR, player_pos,
                                                  "Index must be greater than or equal to 0!")
                         continue
-                    representation = await self.pit.arena.timeline(start_index=num)
-                    if representation is None:
-                        await self.send_response(EResponse.ERROR, player_pos, "Invalid timeline index!")
-                        continue
-                    await self.send_response(EResponse.SUCCESS, player_pos, "", {"board": representation})
+                    await self.handle_timeline(player_pos, "", num)
+
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "step":
-                    representation = await self.pit.arena.timeline(step=True)
-                    if representation is None:
-                        await self.send_response(EResponse.ERROR, player_pos, "Invalid timeline index!")
-                        continue
-                    await self.send_response(EResponse.SUCCESS, player_pos, "", {"board": representation})
+                    await self.handle_timeline(player_pos, "step")
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "unstep":
-                    representation = await self.pit.arena.timeline(unstep=True)
-                    if representation is None:
-                        await self.send_response(EResponse.ERROR, player_pos, "Invalid timeline index!")
-                        continue
-                    await self.send_response(EResponse.SUCCESS, player_pos, "", {"board": representation})
+                    await self.handle_timeline(player_pos, "unstep")
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "evaluate":
                     num = read_object.get("num")
@@ -217,7 +227,8 @@ class GameClient:
                     try:
                         num = int(num)
                     except ValueError:
-                        await self.send_response(EResponse.ERROR, player_pos, f"num: '{num}' is not an int!", {"num": num})
+                        await self.send_response(EResponse.ERROR, player_pos, f"num: '{num}' is not an int!",
+                                                 {"num": num})
                         continue
                     if num > 100:
                         await self.send_response(EResponse.ERROR, player_pos,
@@ -239,10 +250,25 @@ class GameClient:
                                              response_msg=response.response_msg,
                                              data=response.data)
                 case "stop_evaluate":
-                    await self.pit.arena.stop_game()
                     await self.pit.stop_play(player_pos)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         await self.websocket.close()
+
+    async def handle_timeline(self, player_pos: str, step: str, *args: int):
+        if args and isinstance(args[0], int):  # initial timeline start with timeline index
+            result = await self.pit.arena.timeline(start_index=args[0])
+        else:
+            if step == "step":
+                result = await self.pit.arena.timeline(step=True)
+            elif step == "unstep":
+                result = await self.pit.arena.timeline(unstep=True)
+        if result is None:
+            await self.send_response(EResponse.ERROR, player_pos, "Invalid timeline index!")
+            return
+        img, representation = result
+
+        await self.send_response(EResponse.SUCCESS, player_pos, "", {"board": representation})
+        await self.send_image(img, player_pos)
 
     def extract_game_config(self, command: dict) -> GameConfig:
         c_game = self.get_enum(EGame, command.get("game"))

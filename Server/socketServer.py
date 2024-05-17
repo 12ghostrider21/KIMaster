@@ -59,15 +59,15 @@ class SocketServer:
                         break
                     case "img":
                         # code for img
-                        img_p1: bytes = await game_client.receive_bytes()
+                        img1: bytes = await game_client.receive_bytes()
                         if command_key == "broadcast":
-                            img_p2: bytes = await game_client.receive_bytes()
-                            await self.broadcast_image(img_p1, img_p2, game_client)
+                            img2: bytes = await game_client.receive_bytes()
+                            await self.broadcast_image(img1, img2, game_client)
                             continue
                         # send image to a specific client
                         lobby: Lobby = self.lobby_manager.lobby_of_game_client(game_client)
                         client = lobby.get_client_by_string(read_object.get("player_pos"))
-                        await self.send_image(client, img_p1)
+                        await self.send_image(client, img1)
                         continue
                     case "login":
                         lobby: Lobby = self.lobby_manager.lobbies.get(lobby_key)

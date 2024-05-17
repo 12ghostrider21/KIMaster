@@ -3,7 +3,7 @@ from e_response import EResponse
 
 
 class Player:
-    def __init__(self, game, game_client):
+    def __init__(self, game, game_client, eval: bool = False, ):
         self.game = game
         self.game_client = game_client
         self.move = None
@@ -11,6 +11,7 @@ class Player:
         self.move_lock = asyncio.Lock()  # locks all variables inside the locked code block
         self.stop_lock = asyncio.Lock()  # locks all variables inside the locked code block
         self.player_pos = ""
+        self.eval = eval
 
     async def play(self, board):
         valid_moves = self.game.getValidMoves(board, 1)
@@ -25,11 +26,13 @@ class Player:
                     if valid_moves[self.move]:
                         tmp = self.move
                         self.move = None
-                        await self.game_client.send_response(EResponse.SUCCESS, self.player_pos, "Valid move.")
+                        if not self.eval:
+                            await self.game_client.send_response(EResponse.SUCCESS, self.player_pos, "Valid move.")
                         break
                     else:
                         self.move = None
-                        await self.game_client.send_response(EResponse.ERROR, self.player_pos, "Invalid move!")
+                        if not self.eval:
+                            await self.game_client.send_response(EResponse.ERROR, self.player_pos, "Invalid move!")
             await asyncio.sleep(0.1)
         return tmp
 
