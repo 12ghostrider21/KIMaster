@@ -5,7 +5,7 @@ import uvicorn
 from fastapi import FastAPI
 from starlette.websockets import WebSocket, WebSocketState, WebSocketDisconnect
 
-from Tools.datatypes import EResponse
+from Tools.e_response import EResponse
 from lobby import LobbyManager, Lobby
 
 

@@ -1,5 +1,5 @@
 import asyncio
-from Tools.datatypes import EResponse
+from Tools.game_config import EResponse
 
 
 class Player:

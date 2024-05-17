@@ -7,7 +7,7 @@ from starlette.websockets import WebSocketDisconnect
 
 from GameClient.player import Player
 from GameClient.pit import Pit
-from Tools.datatypes import EResponse, GameConfig, EGame, EGameMode, EDifficulty
+from Tools.game_config import EResponse, GameConfig, EGame, EGameMode, EDifficulty
 
 
 class GameClient:
