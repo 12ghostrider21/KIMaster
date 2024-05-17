@@ -106,11 +106,11 @@ class Pit:
         if player_pos == "p2":
             await self.player2.set_move(move, player_pos)
 
-    async def stop_game(self, player_pos: str):
+    async def stop_play(self, player_pos: str):
         if player_pos == "p1":
-            await self.player1.stop_game()
+            await self.player1.stop_play()
         if player_pos == "p2":
-            await self.player2.stop_game()
+            await self.player2.stop_play()
 
 
     def init_nn(self, game, nnet, folder: str, file: str, difficulty: EDifficulty = EDifficulty.hard.value):

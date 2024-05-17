@@ -142,13 +142,13 @@ class GameClient:
                                                  "Amount of moves to be undone must be greater than 0!")
                         continue
                     await self.pit.arena.stop_game()
-                    await self.pit.stop_game(player_pos)
-                    await asyncio.sleep(1)
+                    await self.pit.stop_play(player_pos)
+                    await asyncio.sleep(0.5)
                     await self.pit.arena.undo_move(num)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "surrender":
                     await self.pit.arena.stop_game()
-                    await self.pit.stop_game(player_pos)
+                    await self.pit.stop_play(player_pos)
                     await self.send_response(EResponse.SUCCESS, player_pos, "Successfully surrendered.")
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "quit":
@@ -240,7 +240,7 @@ class GameClient:
                                              data=response.data)
                 case "stop_evaluate":
                     await self.pit.arena.stop_game()
-                    await self.pit.stop_game(player_pos)
+                    await self.pit.stop_play(player_pos)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         await self.websocket.close()
 

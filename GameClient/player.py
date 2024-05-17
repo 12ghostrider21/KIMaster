@@ -33,7 +33,7 @@ class Player:
             await asyncio.sleep(0.1)
         return tmp
 
-    async def stop_game(self, flag: bool = True):
+    async def stop_play(self, flag: bool = True):
         async with self.stop_lock:
             self.stop = flag
 
