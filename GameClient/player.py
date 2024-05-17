@@ -1,5 +1,5 @@
 import asyncio
-from Tools.e_response import EResponse
+from e_response import EResponse
 
 
 class Player:
