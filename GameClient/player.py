@@ -16,13 +16,13 @@ class Player:
         valid_moves = self.game.getValidMoves(board, 1)
         while True:
             async with self.stop_lock:
+                print("reached1")
                 if self.stop:
                     self.stop = False
                     return None
             async with self.move_lock:
-                print("reached1")
                 if self.move is not None:
-                    print("reached2")
+
                     if valid_moves[self.move]:
                         tmp = self.move
                         self.move = None

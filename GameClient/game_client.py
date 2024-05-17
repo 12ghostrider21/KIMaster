@@ -123,9 +123,7 @@ class GameClient:
                     move = self.parse_input(move)
                     if move is None:
                         await self.send_response(EResponse.ERROR, player_pos, "Invalid move!")
-                    print("reached11")
                     await self.pit.set_move(move, player_pos)
-                    print("reached12")
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "undo_move":
                     num = read_object.get("num")
@@ -142,11 +140,11 @@ class GameClient:
                                                  "Amount of moves to be undone must be greater than 0!")
                         continue
                     await self.pit.arena.undo_move(num)
-                    await Player.stop_game()
+                    await self.pit.stop_game(player_pos)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "surrender":
                     await self.pit.arena.stop_game()
-                    await Player.stop_game()
+                    await self.pit.stop_game(player_pos)
                     await self.send_response(EResponse.SUCCESS, player_pos, "Successfully surrendered.")
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "quit":
@@ -155,7 +153,7 @@ class GameClient:
                     break
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "new_game":
-                    await Player.set_move(None, player_pos)  # if a move was set in Player after game over
+                    await self.pit.set_move(None, player_pos)  # if a move was set in Player after game over
                     # otherwise Player.play is called, move not None => automatically returned and executed
                     response = self.pit.init_game(num_games=1, game_config=self.pit.game_config)
                     await self.send_response(response_code=response.response_code,
@@ -238,7 +236,7 @@ class GameClient:
                                              data=response.data)
                 case "stop_evaluate":
                     await self.pit.arena.stop_game()
-                    await Player.stop_game()
+                    await self.pit.stop_game(player_pos)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         await self.websocket.close()
 
