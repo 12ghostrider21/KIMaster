@@ -123,7 +123,9 @@ class GameClient:
                     move = self.parse_input(move)
                     if move is None:
                         await self.send_response(EResponse.ERROR, player_pos, "Invalid move!")
-                    await Player.set_move(move, player_pos)
+                    print("reached11")
+                    await self.pit.set_move(move, player_pos)
+                    print("reached12")
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "undo_move":
                     num = read_object.get("num")

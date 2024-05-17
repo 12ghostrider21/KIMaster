@@ -19,6 +19,8 @@ class Pit:
         self.game_client: WebSocket = game_client
         self.arena: Arena | None = None
         self.arena_task: Task | None = None
+        self.player1: Player | None = None
+        self.player2: Player | None = None
 
     def start_game(self, num_games: int, verbose: bool, board: np.array, cur_player: int, it: int) -> Response:
         # check if game is set
@@ -55,8 +57,9 @@ class Pit:
         game_name = self.game_config.game.name
         nnet = self.game_config.game.value[1]    # get the right NNet
         difficulty = self.game_config.difficulty
-        player1 = None
-        player2 = None
+        self.player1 = Player(game, self.game_client)
+        self.player2 = Player(game, self.game_client)
+
 
         # load pretrained model
         try:
@@ -74,17 +77,17 @@ class Pit:
             mcts = self.init_nn(game, nnet, folder, file, difficulty)
             match self.game_config.mode.value:
                 case "player_vs_player":
-                    player1 = Player(game, self.game_client).play
-                    player2 = Player(game, self.game_client).play
+                    play1 = self.player1.play
+                    play2 = self.player2.play
                 case "player_vs_ai":
-                    player1 = Player(game, self.game_client).play
-                    player2 = lambda x: mcts.getActionProb(x, temp=0)
+                    play1 = self.player1.play
+                    play2 = lambda x: mcts.getActionProb(x, temp=0)
                 case "playerai_vs_ai":
-                    player1 = Player(game, self.game_client).play
-                    player2 = lambda x: mcts.getActionProb(x, temp=0)
+                    play1 = self.player1.play
+                    play2 = lambda x: mcts.getActionProb(x, temp=0)
                 case "playerai_vs_playerai":
-                    player1 = Player(game, self.game_client).play
-                    player2 = Player(game, self.game_client).play
+                    play1 = self.player1.play
+                    play2 = self.player2.play
                 case _:
                     return Response(EResponse.ERROR, "Game mode does not exist!",
                                     {"mode": self.game_config.mode.name})
@@ -92,10 +95,16 @@ class Pit:
             return Response(EResponse.ERROR, "Game mode does not exist!",
                             {"mode": self.game_config.mode.name})
 
-        player3 = lambda x: mcts.getActionProb(x, temp=1)
-        self.arena = Arena(player1, player2, player3, game, self.game_client)
+        play3 = lambda x: mcts.getActionProb(x, temp=1)
+        self.arena = Arena(play1, play2, play3, game, self.game_client)
         # start with default values
         return self.start_game(num_games,  verbose=True, board=None, cur_player=1, it=0)
+
+    async def set_move(self, move, player_pos: str):
+        if player_pos == "p1":
+            await self.player1.set_move(move, player_pos)
+        if player_pos == "p2":
+            await self.player2.set_move(move, player_pos)
 
     def init_nn(self, game, nnet, folder: str, file: str, difficulty: EDifficulty = EDifficulty.hard.value):
         nn = nnet(game)

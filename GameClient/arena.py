@@ -181,6 +181,7 @@ class Arena:
                                      {"wins": one_won,
                                       "losses": num - one_won - draws,
                                       "draws": draws})
+
         return one_won, two_won, draws
 
     def player_to_txt(self, cur_player: int):

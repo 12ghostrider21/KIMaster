@@ -15,9 +15,9 @@ class Lobby:
         return self.p1 is None and self.p2 is None and len(self.spectator_list) == 0
 
     def get_client_by_string(self, pos: str) -> WebSocket | None:
-        if pos is "p1":
+        if pos == "p1":
             return self.p1
-        if pos is "p2":
+        if pos == "p2":
             return self.p2
         return None
 
