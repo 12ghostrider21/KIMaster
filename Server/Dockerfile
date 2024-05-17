@@ -19,4 +19,4 @@ EXPOSE ${FAST_API_PORT}
 EXPOSE ${PORT_TO_GAME_CLIENT}
 
 WORKDIR /app/Server
- CMD ["python", "StartServer.py"]
+CMD ["python", "StartServer.py"]
