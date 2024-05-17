@@ -11,12 +11,15 @@ class Lobby:
         self.key: str = key
         self.game_client: WebSocket | None = None
 
-    def start(self) -> bool:
-        # add start requirements
-        return False
-
     def empty(self) -> bool:
         return self.p1 is None and self.p2 is None and len(self.spectator_list) == 0
+
+    def get_client_by_string(self, pos: str) -> WebSocket | None:
+        if pos is "p1":
+            return self.p1
+        if pos is "p2":
+            return self.p2
+        return None
 
     def client_in_lobby(self, client: WebSocket) -> bool:
         if client == self.p1 or client == self.p2:
