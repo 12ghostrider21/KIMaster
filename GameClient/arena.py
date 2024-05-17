@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 
 from GameClient.player import Player
-from Tools.game_config import EResponse
+from Tools.e_response import EResponse
 
 log = logging.getLogger(__name__)
 
@@ -205,7 +205,6 @@ class Arena:
                 if len(self.history) == 1:  # if hand in amount is too high ==> going back to at least init_state of
                     # the board
                     break
-        await self.stop_game()
         tmp = self.history[-1]
         self.history.pop()  # additional pop because the same state is added in play again when calling play
         self.game_client.pit.start_game(num_games=1, verbose=True, board=tmp[0], cur_player=tmp[1], it=tmp[2])

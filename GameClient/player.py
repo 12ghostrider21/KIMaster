@@ -1,5 +1,5 @@
 import asyncio
-from Tools.game_config import EResponse
+from Tools.e_response import EResponse
 
 
 class Player:
@@ -16,7 +16,6 @@ class Player:
         valid_moves = self.game.getValidMoves(board, 1)
         while True:
             async with self.stop_lock:
-                print("reached1")
                 if self.stop:
                     self.stop = False
                     return None

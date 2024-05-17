@@ -8,7 +8,7 @@ def main():
     port = sys.argv[1] if len(sys.argv) > 1 else "12345"
     port = int(port)
     host = sys.argv[2] if len(sys.argv) > 2 else "localhost"
-    key = sys.argv[3] if len(sys.argv) > 3 else "d129a48a15959bcc1fbc866a5451016d568a0098ee5d0a7b84a63cb9badedb98"
+    key = sys.argv[3] if len(sys.argv) > 3 else "01d0b78f1d2dfce138d3381eeb949190d6cdb987730159a876c8014afcfa7ea1"
 
     game_client = GameClient(port=port, host=host, key=key).run()
     asyncio.get_event_loop().run_until_complete(game_client)

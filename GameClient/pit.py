@@ -5,10 +5,10 @@ from asyncio import create_task, Task
 import numpy as np
 from starlette.websockets import WebSocket
 
-from Tools.game_config import GameConfig, EResponse
+from Tools.game_config import GameConfig, EDifficulty
+from Tools.e_response import EResponse, Response
 from Tools.utils import dotdict
 from Tools.mcts import MCTS
-from Tools.game_config import EDifficulty, Response
 from arena import Arena
 from player import Player
 

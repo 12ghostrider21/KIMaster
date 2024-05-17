@@ -7,7 +7,9 @@ from starlette.websockets import WebSocketDisconnect
 
 from GameClient.player import Player
 from GameClient.pit import Pit
-from Tools.game_config import EResponse, GameConfig, EGame, EGameMode, EDifficulty
+from Tools.game_config import GameConfig, EGame, EGameMode, EDifficulty
+from Tools.e_response import EResponse
+import asyncio
 
 
 class GameClient:
@@ -139,8 +141,10 @@ class GameClient:
                         await self.send_response(EResponse.ERROR, player_pos,
                                                  "Amount of moves to be undone must be greater than 0!")
                         continue
-                    await self.pit.arena.undo_move(num)
+                    await self.pit.arena.stop_game()
                     await self.pit.stop_game(player_pos)
+                    await asyncio.sleep(1)
+                    await self.pit.arena.undo_move(num)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "surrender":
                     await self.pit.arena.stop_game()
