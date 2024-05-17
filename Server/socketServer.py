@@ -5,7 +5,7 @@ import uvicorn
 from fastapi import FastAPI
 from starlette.websockets import WebSocket, WebSocketState, WebSocketDisconnect
 
-from Tools.e_response import EResponse
+from e_response import EResponse
 from lobby import LobbyManager, Lobby
 
 
@@ -32,6 +32,7 @@ class SocketServer:
                         read_object.pop("player_pos")
                     except KeyError:
                         pass
+
 
                     client: WebSocket | list[WebSocket] = {"p1": lobby.p1,
                                                            "p2": lobby.p2,
