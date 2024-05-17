@@ -1,10 +1,10 @@
 from enum import Enum
 from dataclasses import dataclass
-from Tools.neural_net import NeuralNet
+from neural_net import NeuralNet
 
 # imports for Connect4
-from Games.Connect4.Connect4Game import Connect4Game
-from Games.Connect4.keras.NNet import NNetWrapper as Connect4NNet
+from GameClient.Games.Connect4.Connect4Game import Connect4Game
+from GameClient.Games.Connect4.keras.Connect4NNet import Connect4NNet
 
 
 # imports for ...
