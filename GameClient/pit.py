@@ -63,7 +63,7 @@ class Pit:
 
         # load pretrained model
         try:
-            path = os.path.abspath(f"../resources/pretrained_models/{game_name}/best.h5")
+            path = os.path.abspath(f"pretrained_models/{game_name}/best.h5")
             folder = os.path.dirname(path)
             file = os.path.basename(path)
         except FileNotFoundError:
