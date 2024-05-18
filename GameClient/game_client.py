@@ -88,8 +88,8 @@ class GameClient:
                     if self.pit:
                         if self.pit.arena_task:
                             if not self.pit.arena_task.done():
-                                await self.send_response(EResponse.ERROR, player_pos, "Another game still"
-                                                                                      " running! Surrender first!")
+                                await self.send_response(EResponse.ERROR, player_pos, "Game still running. "
+                                                                                      "Please surrender first")
                                 continue
                     game_config: GameConfig = self.extract_game_config(read_object)
                     if not game_config():  # get new game_config and call check if correct
@@ -100,7 +100,7 @@ class GameClient:
                                                   "difficulty": read_object.get("difficulty")})
                         continue
                     self.pit = Pit(game_config, self)
-                    response = self.pit.init_game(num_games=1, game_config=game_config)
+                    response = await self.pit.init_game(num_games=1, game_config=game_config)
                     await self.send_response(response_code=response.response_code,
                                              p_pos=player_pos,
                                              response_msg=response.response_msg,
@@ -135,6 +135,7 @@ class GameClient:
                     move = self.parse_input(move)
                     if move is None:
                         await self.send_response(EResponse.ERROR, player_pos, "Invalid move!")
+                        continue
                     await self.pit.set_move(move, player_pos)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "undo_move":
@@ -153,9 +154,7 @@ class GameClient:
                                                  "Amount of moves to be undone must be greater than 0!")
                         continue
                     await self.pit.stop_play(player_pos)
-                    await asyncio.sleep(0.5)
                     await self.pit.arena.undo_move(num)
-                    await self.pit.stop_play(player_pos)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "surrender":
                     await self.pit.stop_play(player_pos)
@@ -179,7 +178,8 @@ class GameClient:
                     if not self.pit.arena_task.done():
                         await self.send_response(EResponse.ERROR, player_pos, "Game still running. "
                                                                               "Please surrender first")
-                    response = self.pit.init_game(num_games=1, game_config=self.pit.game_config)
+                        continue
+                    response = await self.pit.init_game(num_games=1, game_config=self.pit.game_config)
                     await self.send_response(response_code=response.response_code,
                                              p_pos=player_pos,
                                              response_msg=response.response_msg,
@@ -210,7 +210,6 @@ class GameClient:
                                                  "Index must be greater than or equal to 0!")
                         continue
                     await self.handle_timeline(player_pos, "", num)
-
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "step":
                     await self.handle_timeline(player_pos, "step")
@@ -219,6 +218,12 @@ class GameClient:
                     await self.handle_timeline(player_pos, "unstep")
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "evaluate":
+                    if self.pit:
+                        if self.pit.arena_task:
+                            if not self.pit.arena_task.done():
+                                await self.send_response(EResponse.ERROR, player_pos, "Game still running. "
+                                                                                      "Please surrender first")
+                                continue
                     num = read_object.get("num")
                     if num is None:
                         await self.send_response(EResponse.ERROR, player_pos,
@@ -230,9 +235,9 @@ class GameClient:
                         await self.send_response(EResponse.ERROR, player_pos, f"num: '{num}' is not an int!",
                                                  {"num": num})
                         continue
-                    if num > 100:
+                    if num == 1 or num > 100:
                         await self.send_response(EResponse.ERROR, player_pos,
-                                                 "Not more than 100 games supported at evaluation!")
+                                                 "Not 1 or more than 100 games supported at evaluation!")
                         continue
                     game_config: GameConfig = self.extract_game_config(read_object)
                     if not game_config():  # get new game_config and call check if correct
@@ -244,14 +249,15 @@ class GameClient:
                         continue
 
                     self.pit = Pit(game_config, self)
-                    response = self.pit.init_game(num_games=num, game_config=game_config)
+                    response = await self.pit.init_game(num_games=num, game_config=game_config)
                     await self.send_response(response_code=response.response_code,
                                              p_pos=player_pos,
                                              response_msg=response.response_msg,
                                              data=response.data)
+                # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "stop_evaluate":
                     await self.pit.stop_play(player_pos)
-                # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    await self.pit.arena_task
         await self.websocket.close()
 
     async def handle_timeline(self, player_pos: str, step: str, *args: int):

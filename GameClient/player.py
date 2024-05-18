@@ -33,7 +33,7 @@ class Player:
                         self.move = None
                         if not self.eval:
                             await self.game_client.send_response(EResponse.ERROR, self.player_pos, "Invalid move!")
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.025)
         return tmp
 
     async def stop_play(self, flag: bool = True):

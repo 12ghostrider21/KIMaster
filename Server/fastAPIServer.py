@@ -200,7 +200,8 @@ class FastAPIServer:
                 await self.socket_server.send_cmd(game_client, "play", "evaluate", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "stop_evaluate":
-                await self.socket_server.send_cmd(game_client, "play", "stop_evaluate")
+                await self.socket_server.send_cmd(game_client, "play", "stop_evaluate", data)
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case _:
                 await self.send_response(client, EResponse.ERROR, f"Command '{command_key}' not found!")
 

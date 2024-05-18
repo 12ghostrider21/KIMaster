@@ -22,18 +22,14 @@ class Pit:
         self.player1: Player | None = None
         self.player2: Player | None = None
 
-    def start_game(self, num_games: int, verbose: bool, board: np.array, cur_player: int, it: int) -> Response:
+    async def start_game(self, num_games: int, verbose: bool, board: np.array, cur_player: int, it: int) -> Response:
         # check if game is set
         if self.game_config is None:
-            return Response(EResponse.ERROR, "Game not initialized!")
+            return Response(EResponse.ERROR, "Game not correctly initialized!")
         if self.arena_task is not None:
-            # task is running, stopping it!
-            while not self.arena_task.done():
-                self.arena_task.cancel()
-                print("Waiting on Arena cancel!")
-                time.sleep(0.5)
-        # no task exist                 or canceled                 or done
-        if self.arena_task is None or self.arena_task.cancelled() or self.arena_task.done():
+            await self.arena_task
+        # no task exist                        or done
+        if self.arena_task is None or self.arena_task.done():
             if num_games == 1:
                 self.arena_task = create_task(self.arena.playGame(verbose=verbose,
                                                                   board=board,
@@ -44,7 +40,7 @@ class Pit:
                 self.arena_task = create_task(self.arena.playGames(num_games, train=False))
                 return Response(EResponse.SUCCESS, "Evaluation runs")
 
-    def init_game(self, num_games: int, game_config: GameConfig | None) -> Response:
+    async def init_game(self, num_games: int, game_config: GameConfig | None) -> Response:
         if self.game_config is None and game_config is None:  # check if init is right!
             return Response(EResponse.ERROR, "Game config is None, cant init game!")
         if game_config is not None:  # if the arg is none, it's a re-init e.g. via "new_game"
@@ -62,7 +58,7 @@ class Pit:
 
         # load pretrained model
         try:
-            path = os.path.abspath(f"pretrained_models/{game_name}/best.h5")
+            path = os.path.abspath(f"../resources/pretrained_models/{game_name}/best.h5")
             folder = os.path.dirname(path)
             file = os.path.basename(path)
         except FileNotFoundError:
@@ -97,7 +93,7 @@ class Pit:
         evaluator = lambda x: mcts.getActionProb(x, temp=1)
         self.arena = Arena(play1, play2, evaluator, game, self.game_client)
         # start with default values
-        return self.start_game(num_games, verbose=True, board=None, cur_player=1, it=0)
+        return await self.start_game(num_games, verbose=True, board=None, cur_player=1, it=0)
 
     async def set_move(self, move, player_pos: str):
         if player_pos == "p1":

@@ -138,7 +138,7 @@ class Arena:
             # eval is always against alphaZeroAI => the users AI is always player1 => curPlayer = 1
             await self.send_response(EResponse.SUCCESS, 1, "Evaluation finished",
                                      {"wins": one_won,
-                                      "losses": num - one_won - draws,
+                                      "losses": two_won,
                                       "draws": draws})
 
         return one_won, two_won, draws
@@ -180,15 +180,18 @@ class Arena:
 
     async def undo_move(self, amount: int):
         if len(self.history) >= 3:  # otherwise the user would try to undo a move he hasn't done yet
-            for _ in range(amount * 2 + 1):  # amount * 2 because undoing enemies move as well; +1 because after the
-                # loop, history gets appended once again
+            final_amount = amount * 2  # amount * 2 because undoing enemies move as well
+            if self.game_client.pit.arena_task.done() and self.history[-1][1] == -1:  # if game is finished, special
+                # rules are applied (subtract 1 when being the winner (user/userAI) in order to have correct logic)
+                final_amount -= 1
+            for _ in range(final_amount):
                 self.history.pop()
                 if len(self.history) == 1:  # if hand in amount is too high ==> going back to at least init_state of
                     # the board
                     break
         tmp = self.history[-1]
-        self.history.pop()  # additional pop because the same state is added in play again when calling play
-        self.game_client.pit.start_game(num_games=1, verbose=True, board=tmp[0], cur_player=tmp[1], it=tmp[2])
+        self.history.pop()  # additional pop because the same state is added again at the beginning of play
+        await self.game_client.pit.start_game(num_games=1, verbose=True, board=tmp[0], cur_player=tmp[1], it=tmp[2])
         await self.send_response(EResponse.SUCCESS, tmp[1], "Move successfully undone")
 
     async def draw_valid_moves(self, from_pos: int):
