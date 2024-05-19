@@ -11,10 +11,10 @@ def main():
     #host_socket_server = sys.argv[3] if len(sys.argv) > 3 else "0.0.0.0"
     #host_fast_api = sys.argv[4] if len(sys.argv) > 4 else "0.0.0.0"
 
-    port_socket_server = int(os.environ["PORT_TO_GAME_CLIENT"])
+    port_socket_server = int(os.environ["SOCKET_SERVER_PORT"])
+    host_socket_server = os.environ["HOST_OF_API"]
     port_fast_api = int(os.environ["FAST_API_PORT"])
-    host_socket_server = os.environ["HOST_SOCKET_SERVER"]
-    host_fast_api = os.environ["HOST_FAST_API"]
+    host_fast_api = os.environ["HOST_OF_API"]
 
     # Initialize and run FastAPI server
     fastapi_server = FastAPIServer()

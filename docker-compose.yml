@@ -7,16 +7,15 @@ services:
     restart: always
     container_name: swtp-server
     environment:
-      -  PORT_TO_GAME_CLIENT=12345
-      -  FAST_API_PORT=8000
-      -  HOST_SOCKET_SERVER=swtp-server
-      -  HOST_FAST_API=swtp-server
-      -  NETWORK=swpt-net
+      - HOST_OF_API=swtp-server
+      - FAST_API_PORT=8000
+      - SOCKET_SERVER_PORT=12345
+      - NETWORK=swtp-net
     ports:
       - "12345:12345"
       - "8000:8000"
     networks:
-      - swpt-net
+      - swtp-net
     volumes:
       - //var/run/docker.sock:/var/run/docker.sock
   
@@ -25,21 +24,13 @@ services:
       context: ./
       dockerfile: ./GameClient/Dockerfile
     image: game-client-img
-    environment:
-      - PORT_TO_GAME_CLIENT=12345
-      - HOST_SOCKET_SERVER=swtp-server
-      - LOBBY_KEY=MISSING_LOBBY_KEY
     networks:
-      - swpt-net
-    expose:
-      - "12345"
+      - swtp-net
     depends_on:
       - swtp-server
 
-    
-
 networks:
-  swpt-net:
+  swtp-net:
     name: swtp-net
 
   

@@ -6,8 +6,8 @@ from game_client import GameClient
 def main():
     # Extract command-line arguments or use default values
     try:
-        port = int(os.environ["PORT_TO_GAME_CLIENT"])
-        host = os.environ["HOST_SOCKET_SERVER"]
+        port = int(os.environ["SOCKET_SERVER_PORT"])
+        host = os.environ["HOST_OF_API"]
         key = os.environ["LOBBY_KEY"]
     except Exception:
         port = 12345

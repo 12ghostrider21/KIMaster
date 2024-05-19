@@ -1,22 +1,21 @@
 FROM python:3.11.9
 
+# Specify default env here. 
+ENV LOBBY_KEY=MISSING_LOBBY_KEY
+ENV HOST_OF_API=swtp-server
+ENV SOCKET_SERVER_PORT=12345
+
 WORKDIR /app
 
 ADD ./GameClient/requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY ./GameClient ./GameClient
-
-COPY  ../Tools ./GameClient
-
 WORKDIR /app/GameClient
 
-ENV PORT_TO_GAME_CLIENT=12345
-ENV HOST_SOCKET_SERVER=swtp-server
-ENV LOBBY_KEY=MISSING_LOBBY_KEY
+ADD ./GameClient .
 
-EXPOSE ${PORT_TO_GAME_CLIENT}
+ADD  ../Tools .
 
 CMD ["python", "-u", "StartClient.py"]
 
