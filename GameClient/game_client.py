@@ -5,11 +5,13 @@ import websockets
 from websockets import ConnectionClosedError
 from starlette.websockets import WebSocketDisconnect
 
-from GameClient.player import Player
-from GameClient.pit import Pit
+from player import Player
+from pit import Pit
 from game_config import GameConfig, EGame, EGameMode, EDifficulty
 from e_response import EResponse
 import asyncio
+
+import os
 
 
 class GameClient:
@@ -22,6 +24,7 @@ class GameClient:
 
     async def connect(self):
         url = f"ws://{self.host}:{self.port}/ws"
+        print(f"Socket URL: {url}")
         try:
             self.websocket = await websockets.connect(url, ping_interval=None)
             await self.send_cmd("login", "", {"key": self.key})

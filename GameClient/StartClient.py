@@ -12,7 +12,7 @@ def main():
     except Exception:
         port = 12345
         host = "0.0.0.0"
-        key = ""
+        key = "43204118ec74bc8cd7102542738d2e529cdc19bf2ffa5614fde000e95188b3f0"
 
     game_client = GameClient(port=port, host=host, key=key).run()
     asyncio.get_event_loop().run_until_complete(game_client)
