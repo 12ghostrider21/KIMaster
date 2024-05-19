@@ -1,13 +1,15 @@
 import json
-import subprocess
 import threading
+import uvicorn
 
 from fastapi import FastAPI
 from starlette.websockets import WebSocket, WebSocketDisconnect, WebSocketState
 
-from Server.lobby import Lobby
-from Tools.datatypes import EResponse
-from Server.socketServer import SocketServer
+from lobby import Lobby
+from e_response import EResponse
+from socketServer import SocketServer
+
+from dockerAPI import DockerAPI
 
 
 class FastAPIServer:
@@ -15,6 +17,7 @@ class FastAPIServer:
         self.__app = FastAPI()
         self.socket_server: SocketServer = SocketServer()
         self.active_connections: list[WebSocket] = []
+        self.docker_api: DockerAPI = DockerAPI() 
 
         @self.__app.websocket("/ws")
         async def websocket_endpoint(client: WebSocket):
@@ -45,38 +48,39 @@ class FastAPIServer:
 
     # *************************************************************************************************************
     # handling
-    async def handle_debug_command(self, client: WebSocket, readObject: dict) -> None:
-        lobby_key: str = readObject.get("key")
-        command_key: str = readObject.get("command_key")
+    async def handle_debug_command(self, client: WebSocket, read_object: dict) -> None:
+        lobby_key: str = read_object.get("key")
+        command_key: str = read_object.get("command_key")
         match command_key:
             case "list_lobby":
                 print(self.socket_server.lobby_manager.lobbies)
 
-    async def handle_lobby_command(self, client: WebSocket, readObject: dict) -> None:
-        lobby_key: str = readObject.get("key")
-        command_key: str = readObject.get("command_key")
+    async def handle_lobby_command(self, client: WebSocket, read_object: dict) -> None:
+        lobby_key: str = read_object.get("key")
+        command_key: str = read_object.get("command_key")
         match command_key:
             case "create":
                 if not self.socket_server.lobby_manager.client_in_lobby(client):
                     lobby_key: str = self.socket_server.lobby_manager.create_lobby()
                     self.socket_server.lobby_manager.join(lobby_key, client)
+                    self.docker_api.startGameClient(lobby_key)
                     await self.send_response(client, EResponse.SUCCESS, "Lobby created!", {"key": lobby_key})
                 else:
                     await self.send_response(client, EResponse.ERROR, "Client already in a lobby!")
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            case "start":
-                lobby: Lobby = self.socket_server.lobby_manager.lobby_of_client(client)
-                if lobby:
-                    # add start requirements
-                    if lobby.start():
-                        # dummy start, replace with docker container (test from alex pc, change to your path)
-                        command = rf'start cmd /k python C:\Users\alex\PycharmProjects\Plattform-fuer-Vergleich-von-Spiele-KIs\DockerClient\StartClient.py 12345 localhost {lobby_key}'
-                        subprocess.Popen(command, shell=True)
-                        await self.send_response(client, EResponse.SUCCESS, "Lobby starting!")
-                    else:
-                        await self.send_response(client, EResponse.ERROR, "Lobby not ready to start!")
-                else:
-                    await self.send_response(client, EResponse.ERROR, "Client not in a lobby!")
+            #case "start":
+            #    lobby: Lobby = self.socket_server.lobby_manager.lobby_of_client(client)
+            #    if lobby:
+            #        # add start requirements
+            #        if lobby.start():
+            #            # dummy start, replace with docker container (test from alex pc, change to your path)
+            #            command = rf'start cmd /k python C:\Users\alex\PycharmProjects\Plattform-fuer-Vergleich-von-Spiele-KIs\DockerClient\StartClient.py 12345 localhost {lobby_key}'
+            #            subprocess.Popen(command, shell=True)
+            #            await self.send_response(client, EResponse.SUCCESS, "Lobby starting!")
+            #        else:
+            #            await self.send_response(client, EResponse.ERROR, "Lobby not ready to start!")
+            #    else:
+            #        await self.send_response(client, EResponse.ERROR, "Client not in a lobby!")
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "join":
                 if not self.socket_server.lobby_manager.lobby_exist(lobby_key):
@@ -97,7 +101,7 @@ class FastAPIServer:
                 await self.send_response(client, EResponse.SUCCESS, f"Client left lobby")
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "swap":
-                pos: str = readObject.get("pos")
+                pos: str = read_object.get("pos")
                 lobby: Lobby = self.socket_server.lobby_manager.lobby_of_client(client)
                 if lobby is None:
                     await self.send_response(client, EResponse.ERROR, "Client not in a lobby!")
@@ -129,31 +133,27 @@ class FastAPIServer:
 
     # *************************************************************************************************************
 
-    async def handle_play_command(self, client: WebSocket, readObject: dict) -> None:
-        lobby_key: str = readObject.get("key")
-        command_key: str = readObject.get("command_key")
-        if not self.socket_server.lobby_manager.lobby_exist(lobby_key):
-            await self.send_response(client, EResponse.ERROR, f"Lobby does not exist!", {"key": lobby_key})
-            return
+    async def handle_play_command(self, client: WebSocket, read_object: dict) -> None:
+        command_key: str = read_object.get("command_key")
         lobby = self.socket_server.lobby_manager.lobby_of_client(client)
         if lobby is None:
             await self.send_response(client, EResponse.ERROR, "Client not in a lobby!")
             return
-        pos = self.socket_server.lobby_manager.get_pos_of_client(client)
-        if not (pos == "p1" or pos == "p2"):
-            await self.send_response(client, EResponse.ERROR, "Client has no permission to play!")
-            return
-
         game_client = lobby.game_client
         if game_client is None:
-            await self.send_response(client, EResponse.ERROR, "No Gameclient connected!", {"key": lobby_key})
+            await self.send_response(client, EResponse.ERROR, "No Game client connected! Try later again.")
             return
+        pos = self.socket_server.lobby_manager.get_pos_of_client(client)
+        if pos is None:
+            await self.send_response(client, EResponse.ERROR, "'pos' entry not set!", {"pos": pos})
+            return
+        if pos == "sp":  # check if command is from a spectator!
+            await self.send_response(client, EResponse.ERROR, "A spectator can not play!")
+            return
+        # mask data from read_object
 
-        data = {"player_pos": self.socket_server.lobby_manager.get_pos_of_client(client)}
-        data.update(readObject)
-        if data.get("player_pos") == "sp":  # check if command is from a spectator!
-            await self.send_response(client, EResponse.ERROR, "A spectator cant play!")
-            return
+        data = {"player_pos": pos, "key": lobby.key}
+        data.update(read_object)
 
         match command_key:
             case "create":
@@ -200,7 +200,8 @@ class FastAPIServer:
                 await self.socket_server.send_cmd(game_client, "play", "evaluate", data)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "stop_evaluate":
-                await self.socket_server.send_cmd(game_client, "play", "stop_evaluate")
+                await self.socket_server.send_cmd(game_client, "play", "stop_evaluate", data)
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case _:
                 await self.send_response(client, EResponse.ERROR, f"Command '{command_key}' not found!")
 
@@ -219,32 +220,33 @@ class FastAPIServer:
             self.socket_server.lobby_manager.leave(client)
             if lobby.empty():
                 if self.socket_server.lobby_manager.remove_lobby(lobby.key):
+                    self.docker_api.stopGameClient(lobby.key)
                     print(f"Lobby {lobby.key} removed!")
         print(f"FrontEnd Client disconnected as: {client}")
         self.active_connections.remove(client)
 
-    async def send_cmd(self, client: WebSocket, command: str, command_key: str, data: dict | None = None):
+    async def send_cmd(self, client: WebSocket,
+                       command: str, command_key: str,
+                       data: dict | None = None):
         cmd = {"command": command, "command_key": command_key}
         if data is not None:
             cmd.update(data)
         await client.send_json(cmd)
 
-    async def send_response(self, client: WebSocket, response_code: EResponse, response_msg: str,
+    async def send_response(self, client: WebSocket,
+                            response_code: EResponse,
+                            response_msg: str,
                             data: dict | None = None):
         cmd = {"response_code": response_code.value, "response_msg": response_msg}
         if data is not None:
             cmd.update(data)
         await client.send_json(cmd)
 
-    async def send_image(self, image_bytes: bytes, websocket: WebSocket):
-        await websocket.send_bytes(image_bytes)
-
     def run(self, host: str, port: int):
-        import uvicorn
         print(f"FastApiServer is running on {host}:{port}")
         uvicorn.run(self.__app, host=host, port=port, log_level="info", ws_ping_timeout=None)
 
-    def start(self, host_FastAPI, port_FastAPI, host_SocketServer, port_SocketServer):
-        t0 = threading.Thread(target=self.socket_server.run, args=(host_SocketServer, port_SocketServer))
-        t1 = threading.Thread(target=self.run, args=(host_FastAPI, port_FastAPI))
+    def start(self, host_fast_api, port_fast_api, host_socket_server, port_socket_server):
+        t0 = threading.Thread(target=self.socket_server.run, args=(host_socket_server, port_socket_server))
+        t1 = threading.Thread(target=self.run, args=(host_fast_api, port_fast_api))
         t0.start(), t1.start()
