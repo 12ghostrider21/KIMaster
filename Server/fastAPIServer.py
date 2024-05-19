@@ -30,7 +30,6 @@ class FastAPIServer:
                     continue
                 except WebSocketDisconnect:
                     break
-
                 # command handling
                 command: str = readObject.get("command")
                 match command:
@@ -68,20 +67,6 @@ class FastAPIServer:
                 else:
                     await self.send_response(client, EResponse.ERROR, "Client already in a lobby!")
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            #case "start":
-            #    lobby: Lobby = self.socket_server.lobby_manager.lobby_of_client(client)
-            #    if lobby:
-            #        # add start requirements
-            #        if lobby.start():
-            #            # dummy start, replace with docker container (test from alex pc, change to your path)
-            #            command = rf'start cmd /k python C:\Users\alex\PycharmProjects\Plattform-fuer-Vergleich-von-Spiele-KIs\DockerClient\StartClient.py 12345 localhost {lobby_key}'
-            #            subprocess.Popen(command, shell=True)
-            #            await self.send_response(client, EResponse.SUCCESS, "Lobby starting!")
-            #        else:
-            #            await self.send_response(client, EResponse.ERROR, "Lobby not ready to start!")
-            #    else:
-            #        await self.send_response(client, EResponse.ERROR, "Client not in a lobby!")
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "join":
                 if not self.socket_server.lobby_manager.lobby_exist(lobby_key):
                     await self.send_response(client, EResponse.ERROR, f"Lobby '{lobby_key}' does not exist!")
@@ -95,10 +80,14 @@ class FastAPIServer:
                 await self.send_response(client, EResponse.SUCCESS, f"Joined lobby!", {"key": lobby_key})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "leave":
+                lobby: Lobby = self.socket_server.lobby_manager.lobby_of_client(client)
                 if not self.socket_server.lobby_manager.leave(client):
                     await self.send_response(client, EResponse.ERROR, f"Client not in a lobby to leave!")
                     return
                 await self.send_response(client, EResponse.SUCCESS, f"Client left lobby")
+                if lobby:
+                    if lobby.empty():
+                        self.docker_api.stopGameClient(lobby.key)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "swap":
                 pos: str = read_object.get("pos")
