@@ -107,14 +107,56 @@ class OthelloGame(IGame):
         pass
 
     def draw(self, board, valid_moves, *args: any):
-        pass
+        row_count = board.shape[0]
+        col_count = board.shape[1]
+        SQUARESIZE = 100
+        WIDTH = col_count * SQUARESIZE
+        HEIGHT = row_count * SQUARESIZE
 
+        color_board = (3, 138, 70)
+        color_grid = (0, 0, 0)
+        color_shadow = (50, 50, 50, 150)
+        color_ply_one = (0, 0, 0) # black
+        color_ply_minus_one = (255, 255, 255) # white
+        color_valid = (144, 238, 144) # turquoise
 
+        pygame.init()
 
+        surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        surface.fill(color_board)
 
+        for row in range(len(board)):
+            for col in range(len(board[row])):
+                center = (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE + SQUARESIZE // 2)
+                radius = SQUARESIZE // 3
 
+                pygame.draw.rect(surface, color_grid,
+                                 (col * SQUARESIZE, row * SQUARESIZE, SQUARESIZE, SQUARESIZE),
+                                 1)   # show grid
+                if valid_moves and row == 0 and col in [i for (i, valid) in enumerate(self.getValidMoves(board, 0)) if valid]:
+                    pygame.draw.circle(surface, color_valid,
+                                       (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE + SQUARESIZE // 2),
+                                       SQUARESIZE // 3)  # displaying valid moves
+                if board[row][col] == 1: 
+                    '''pygame.draw.circle(surface, color_shadow,
+                                       (center[0] + 2, center[1] + 2), 
+                                       radius + 1) # shadow'''
+                    pygame.draw.circle(surface,  color_ply_one,
+                                       (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE + SQUARESIZE // 2),
+                                       SQUARESIZE // 3)
+                elif board[row][col] == -1:
+                    '''pygame.draw.circle(surface, color_shadow,
+                                       (center[0] + 2, center[1] + 2), 
+                                       radius + 1) # shadow'''
+                    pygame.draw.circle(surface,  color_ply_minus_one,
+                                       (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE+ SQUARESIZE // 2),
+                                       SQUARESIZE // 3)
+                    pygame.draw.arc(surface, (0, 0, 0),
+                                    pygame.Rect(center[0] - radius, center[1] - radius, 2 * radius, 2 * radius),
+                                    0, np.pi * 2, 1)
 
-
+        img = pygame.image.tostring(surface, 'RGBA')
+        return img
 
 """
     @staticmethod

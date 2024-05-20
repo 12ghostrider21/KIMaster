@@ -100,15 +100,65 @@ class TicTacToeGame(IGame):
         pass
 
     def draw(self, board, valid_moves, *args: any):
-        pass
+        row_count = board.shape[0]
+        col_count = board.shape[1]
+        SQUARESIZE = 100
+        WIDTH = col_count * SQUARESIZE
+        HEIGHT = row_count * SQUARESIZE
 
+        color_filling = (252, 252, 244) # colorscheme = "light"  # when implementing dark mode / high contrast
+        color_grid = (172, 244, 230) # light blue
+        color_X = (24, 188, 156) # turqoise
+        color_O = (44, 62, 80) # dark blue
+        #color_valid = (144, 238, 144) # turquoise
 
+        pygame.init()
 
+        surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        surface.fill(color_filling)
 
+        """ when implementing dark mode / high contrast
+        # setting color based on color arg
+        if args:
+            if "colorscheme" in args[1]:
+                colorscheme = args[1]["colorscheme"]
+            if colorscheme == "dark":
+                color = (71, 71, 71)
+        """
 
+        for row in range(1, row_count):
+            pygame.draw.line(surface, color_grid,
+                             (0, row * SQUARESIZE),
+                             (WIDTH, row * SQUARESIZE),
+                             7)
+        for col in range(1, col_count):
+            pygame.draw.line(surface, color_grid,
+                             (col * SQUARESIZE, 0),
+                             (col * SQUARESIZE, HEIGHT),
+                             7)
 
+        for row in range(len(board)):
+            for col in range(len(board[row])):
+                '''if valid_moves and row == 0 and col in [i for (i, valid) in enumerate(self.getValidMoves(board, 0)) if valid]:
+                    pygame.draw.circle(surface, color_valid,
+                                       (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE + SQUARESIZE // 2),
+                                       SQUARESIZE // 8)'''
+                if board[row][col] == 1:
+                    pygame.draw.line(surface, color_X, 
+                                     (col * SQUARESIZE + 15, row * SQUARESIZE + 15),
+                                     (col * SQUARESIZE + SQUARESIZE - 15, row * SQUARESIZE + SQUARESIZE - 15), 
+                                     13)
+                    pygame.draw.line(surface, color_X, 
+                                     (col * SQUARESIZE + 15, row * SQUARESIZE + SQUARESIZE - 15),
+                                     (col * SQUARESIZE + SQUARESIZE - 15, row * SQUARESIZE + 15), 
+                                     13)
+                elif board[row][col] == -1:
+                    pygame.draw.circle(surface, color_O,
+                                       (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE + SQUARESIZE // 2),
+                                       SQUARESIZE // 2 - 15, 10)
 
-
+        img = pygame.image.tostring(surface, 'RGBA')
+        return img
 
 
 """

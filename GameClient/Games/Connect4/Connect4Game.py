@@ -74,50 +74,48 @@ class Connect4Game(IGame):
         SQUARESIZE = 100
         WIDTH = col_count * SQUARESIZE
         HEIGHT = (row_count + 1) * SQUARESIZE
-        TOKENSIZE = 50
+        TOKENSIZE = SQUARESIZE // 2
 
-        # colorscheme = "light"  # when implementing dark mode / high contrast
-        color = (252, 252, 244)
+        color_filling = (252, 252, 244) # colorscheme = "light"  # when implementing dark mode / high contrast
+        color_ply_one = (252, 239, 0) # yellow
+        color_ply_minus_one = (244, 58, 58) # red
+        color_valid = (144, 238, 144) # turquoise
 
         pygame.init()
 
         # creating empty surface and filling it with the appropriate color
-        surface = pygame.Surface((WIDTH, HEIGHT))
-
-        # drawing blue board frame
+        surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         surface.fill((45, 116, 216))
+        pygame.draw.rect(surface, color_filling, pygame.Rect(0, 0, WIDTH, SQUARESIZE))
 
         """ when implementing dark mode / high contrast
         # setting color based on color arg
         if args:
             if "colorscheme" in args[1]:
                 colorscheme = args[1]["colorscheme"]
-
-        if colorscheme == "dark":
-            color = (71, 71, 71)
+            if colorscheme == "dark":
+                color = (71, 71, 71)
         """
-
-        pygame.draw.rect(surface, color, pygame.Rect(0, 0, WIDTH, SQUARESIZE))
 
         # draw board
         for col in range(col_count):
             for row in range(row_count):
-
-                pygame.draw.circle(surface, color, (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE +
-                                                    TOKENSIZE), TOKENSIZE - 5)  # holes in the board
-                if valid_moves and row == 0 and col in [i for (i, valid) in
-                                                        enumerate(self.getValidMoves(board, 0)) if valid]:
-                    pygame.draw.circle(surface, (239, 191, 191), (
-                        col * SQUARESIZE + TOKENSIZE, row * SQUARESIZE + TOKENSIZE),
+                pygame.draw.circle(surface, color_filling, 
+                                   (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE), 
+                                   TOKENSIZE - 5)  # holes in the board
+                if valid_moves and row == 0 and col in [i for (i, valid) in enumerate(self.getValidMoves(board, 0)) if valid]:
+                    pygame.draw.circle(surface, color_valid,
+                                       (col * SQUARESIZE + TOKENSIZE, row * SQUARESIZE + TOKENSIZE), 
                                        TOKENSIZE - 5)  # displaying valid moves
                 if board[row][col] == -1:
-                    pygame.draw.circle(surface, (244, 58, 58), (
-                    col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE),
-                                      TOKENSIZE - 5)  # red tokens
+                    self.draw_chip(surface, color_ply_minus_one, (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE), TOKENSIZE - 5)
                 elif board[row][col] == 1:
-                    pygame.draw.circle(surface, (252, 239, 0), (
-                    col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE),
-                                       TOKENSIZE - 5)  # yellow tokens
+                    self.draw_chip(surface, color_ply_one, (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE), TOKENSIZE - 5)
 
-        img = bytes(pygame.image.tostring(surface, 'RGBA'))
+        img = pygame.image.tostring(surface, 'RGBA')
         return img
+
+    def draw_chip(self, surface, color, position, radius):
+        pygame.draw.circle(surface, color, position, radius)
+        dark_edge_color = (color[0] // 2, color[1] // 2, color[2] // 2)
+        pygame.draw.circle(surface, dark_edge_color, position, radius, 3)
