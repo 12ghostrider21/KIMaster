@@ -104,7 +104,29 @@ class OthelloGame(IGame):
         return b.countDiff(player)
 
     def draw_terminal(self, board, valid_moves, *args: any):
-        pass
+        if valid_moves:
+            return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
+        else:
+            horizontal_border = '+' + '-' * (4 * len(board[0]) - 1) + '+\n'
+            output = horizontal_border
+
+            for row in range(len(board)):
+                row_str = '|'
+                for col in range(len(board[row])):
+                    if board[row][col] == 0:
+                        row_str += '   |'
+                    elif board[row][col] == 1:
+                        row_str += ' O |'
+                    else:
+                        row_str += ' X |'
+                output += row_str + '\n' + horizontal_border
+
+            '''column_letters = '|'
+            for col in range(len(board[0])):
+                column_letters += f' {chr(col + 65)} |'
+            output += column_letters + '\n' + horizontal_border'''
+
+            return output
 
     def draw(self, board, valid_moves, *args: any):
         row_count = board.shape[0]

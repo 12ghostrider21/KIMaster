@@ -63,10 +63,27 @@ class Connect4Game(IGame):
         if valid_moves:
             return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
         else:
-            return (" -----------------------\n" +
-                    ' '.join(map(str, range(len(board[0])))) +
-                    '\n' + str(board) + '\n' +
-                    " -----------------------\n")
+            horizontal_border = '+' + '-' * (4 * len(board[0]) - 1) + '+\n'
+
+            output = horizontal_border # board
+            for row in range(len(board)):
+                row_str = '|'
+                for col in range(len(board[row])):
+                    if board[row][col] == 0:
+                        row_str += '   |'
+                    elif board[row][col] == 1:
+                        row_str += ' O |'
+                    else:
+                        row_str += ' X |'
+                output += row_str + '\n' + horizontal_border
+
+            output += horizontal_border # board index
+            column_numbers = '|'
+            for col in range(len(board[0])):
+                column_numbers += f' {col + 1} |'
+            output += column_numbers + '\n'
+
+            return output
 
     def draw(self, board: np.array, valid_moves: bool, *args: any):
         row_count = board.shape[0]

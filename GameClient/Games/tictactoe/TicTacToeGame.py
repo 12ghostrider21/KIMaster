@@ -97,7 +97,25 @@ class TicTacToeGame(IGame):
         return board.tostring()
 
     def draw_terminal(self, board, valid_moves, *args: any):
-        pass
+        if valid_moves:
+            return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
+        else:
+            output = "\n"
+            for row in range(3):
+                for col in range(3):
+                    if board[row][col] == 0:
+                        output += '   '
+                    elif board[row][col] == 1:
+                        output += ' X '
+                    else:
+                        output += ' O '
+                    if col < 2:
+                        output += '|'
+                output += '\n'
+                if row < 2:
+                    output += '-----------\n'
+
+            return output
 
     def draw(self, board, valid_moves, *args: any):
         row_count = board.shape[0]
