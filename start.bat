@@ -1,2 +1,2 @@
 docker-compose build
-docker-compose up -d swtp-server
+docker-compose up -d swtp-server swtp-frontend

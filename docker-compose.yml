@@ -29,11 +29,20 @@ services:
     depends_on:
       - swtp-server
 
+  swtp-frontend:
+    build:
+      context: ./
+      dockerfile: ./Frontend/Dockerfile
+    image: frontend-img
+    restart: always
+    container_name: swtp-frontend
+    networks:
+      - swtp-net
+    depends_on:
+      - swtp-server
+    ports:
+      - "8080:8080"
+
 networks:
   swtp-net:
     name: swtp-net
-
-  
-
-
-  
