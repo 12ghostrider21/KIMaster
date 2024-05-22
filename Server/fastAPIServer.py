@@ -69,25 +69,26 @@ class FastAPIServer:
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "join":
                 if not self.socket_server.lobby_manager.lobby_exist(lobby_key):
-                    await self.send_response(client, EResponse.ERROR, f"Lobby '{lobby_key}' does not exist!")
+                    await self.send_response(client, EResponse.ERROR, f"Lobby does not exist!",{"key": lobby_key})
                     return
                 if self.socket_server.lobby_manager.client_in_lobby(client):
                     await self.send_response(client, EResponse.ERROR, "Client already in a lobby!")
                     return
                 if not self.socket_server.lobby_manager.join(lobby_key, client):
-                    await self.send_response(client, EResponse.ERROR, f"Failed to join lobby '{lobby_key}'!")
+                    await self.send_response(client, EResponse.ERROR, f"Failed to join lobby!", {"key": lobby_key})
                     return
                 await self.send_response(client, EResponse.SUCCESS, f"Joined lobby!", {"key": lobby_key})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "leave":
                 lobby: Lobby = self.socket_server.lobby_manager.lobby_of_client(client)
                 if not self.socket_server.lobby_manager.leave(client):
-                    await self.send_response(client, EResponse.ERROR, f"Client not in a lobby to leave!")
+                    await self.send_response(client, EResponse.ERROR, f"Client not in a lobby!")
                     return
-                await self.send_response(client, EResponse.SUCCESS, f"Client left lobby")
+                await self.send_response(client, EResponse.SUCCESS, f"Client left lobby!")
                 if lobby:
                     if lobby.empty():
                         self.docker_api.stopGameClient(lobby.key)
+                        self.docker_api.removeGameClient(lobby.key)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "swap":
                 pos: str = read_object.get("pos")
@@ -96,12 +97,12 @@ class FastAPIServer:
                     await self.send_response(client, EResponse.ERROR, "Client not in a lobby!")
                     return
                 if pos not in ["p1", "p2", "sp"]:
-                    await self.send_response(client, EResponse.ERROR, f"Pos: '{pos}' unknown!")
+                    await self.send_response(client, EResponse.ERROR, f"Pos unknown!", {"pos": pos})
                     return
                 if not self.socket_server.lobby_manager.swap_to(pos, client):
-                    await self.send_response(client, EResponse.ERROR, f"Pos: '{pos}' already occupied!")
+                    await self.send_response(client, EResponse.ERROR, f"Pos already occupied!", {"pos": pos})
                     return
-                await self.send_response(client, EResponse.SUCCESS, f"Client swapped to: '{pos}'!")
+                await self.send_response(client, EResponse.SUCCESS, f"Client swapped!", {"pos": pos})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "pos":
                 pos = self.socket_server.lobby_manager.get_pos_of_client(client)
@@ -110,7 +111,7 @@ class FastAPIServer:
                     return
                 await self.send_response(client, EResponse.SUCCESS, f"Client pos is: '{pos}'!")
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            case "list":
+            case "status":
                 status: dict = self.socket_server.lobby_manager.lobby_status(lobby_key)
                 if status is None:
                     await self.send_response(client, EResponse.ERROR, f"Lobby:'{lobby_key}' not found!")
