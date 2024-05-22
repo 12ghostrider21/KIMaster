@@ -153,8 +153,10 @@ export default {
       };
 
       this.socket.onmessage = (event) => {
+   
         this.receivedJSONObject=JSON.parse(event.data);
-        if (this.receivedJSONObject.response_msg ==="Lobby_created!") this.lobbyKey=this.receivedJSONObject.key;
+        if (this.receivedJSONObject.key!= null) {this.lobbyKey=this.receivedJSONObject.key;}
+       
       };
     },
     disconnect() {
