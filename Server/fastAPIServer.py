@@ -206,10 +206,11 @@ class FastAPIServer:
             await client.close(code=1000, reason="Server initiated closure")
         lobby: Lobby = self.socket_server.lobby_manager.lobby_of_client(client)
         if lobby:
-            self.socket_server.lobby_manager.leave(client)
-            if lobby.empty():
-                if self.socket_server.lobby_manager.remove_lobby(lobby.key):
+            if lobby.leave(client):  # true if in lobby
+                if lobby.empty():
+                    self.socket_server.lobby_manager.remove_lobby(lobby.key)
                     self.docker_api.stopGameClient(lobby.key)
+                    self.docker_api.removeGameClient(lobby.key)
                     print(f"Lobby {lobby.key} removed!")
         print(f"FrontEnd Client disconnected as: {client}")
         self.active_connections.remove(client)

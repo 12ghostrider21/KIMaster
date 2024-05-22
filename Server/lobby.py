@@ -127,7 +127,9 @@ class LobbyManager:
 
     def remove_lobby(self, lobby_key: str) -> bool:
         removed = self.lobbies.pop(lobby_key, None)
-        return removed is not None
+        if removed is None:
+            return False
+        return True
 
     def lobby_exist(self, lobby_key: str) -> bool:
         return lobby_key in self.lobbies.keys()
