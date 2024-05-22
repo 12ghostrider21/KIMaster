@@ -4,7 +4,6 @@
       <div class="grid-section">
         Lobby:
         <button @click="createLobby">Create Lobby</button>
-        <button @click="startLobby">Start Lobby</button>
         <input type="text" v-model="lobbyKey" placeholder="Enter Lobby Key">
         <button @click="joinLobby">Join Lobby</button>
         <button @click="leaveLobby">Leave Lobby</button>
@@ -15,7 +14,7 @@
         </select>
         <br>
         <button @click="showPos">Lobby Pos</button>
-        <button @click="showLobbyList">Lobby List</button>
+        <button @click="showLobbyList">Lobby Status</button>
         <h1>WebSocket Connection Status: {{ connectionStatus }}</h1>
       </div>
     </div>
@@ -24,19 +23,20 @@
       <div class="grid-section">
         Play:
         <select v-model="game" >
-          <option value="tictactoe">Tic Tac toe</option>
+          <option value='connect4'>Vier Gewinnt</option>
+          <option value="tictactoe">Tic Tac Toe</option>
           <option value="othello">Othello</option>
         </select>
         <select v-model="mode">
           <option value="player_vs_player">Player vs Player</option>
-          <option value="player_vs_ai">Player vs Ai</option>
+          <option value='player_vs_ai'>Player vs Ai</option>
           <option value="playerai_vs_ai">Player Ai vs Ai</option>
           <option value="playerai_vs_playerai">Player Ai vs Player Ai</option>
         </select>
         <select v-model="difficulty" >
           <option value="easy">Easy</option>
           <option value="medium">Medium</option>
-          <option value="hard">Hard</option>
+          <option value='hard'>Hard</option>
         </select>
         <button @click="playCreate">Create </button>
         <br>
@@ -50,12 +50,14 @@
         <input type="number" id="undoNum" v-model="undoNum"  min="1" step="1">
         <button @click="playUndoMove">Undo Moves</button>
         <button @click="playSurrender">Surrender</button>
-        <button @click="playQuit">Quit</button>
         <button @click="playNewGame">New Game</button>
         <button @click="playBlunder">Blunder</button>
         <button @click="playTimeLine">TimeLine</button>
         <button @click="playStep">Step</button>
         <button @click="playUnstep">Unstep</button>
+        <br>
+        <input type="number" id="evaluateNum" v-model="evaluateNum"  min="1" step="1">
+        <button @click="playEvaluate">Evaluate</button>
         <br>
         <label for="moveSwitch">Valid Moves Instead of Make Move:</label>
         <input type="checkbox" id="moveSwitch" v-model="validMoveInsteadOfMakeMove">
@@ -68,10 +70,10 @@
         <img
             width="300"
             height="300"
-            ref="imageRef"
             class="imageRef"
-            src="../assets/tictactoe_board.png"
-            alt="Tic Tac Toe Board"
+            ref="imageRef"
+            v-if="imageSrc" :src="imageSrc" 
+            alt="Received Image" 
             @click="trackMousePosition"
             style="display: block; margin: auto;"
         />
@@ -109,6 +111,9 @@
   </div>
 </template>
 <script>
+
+import imagePath from '../assets/tictactoe_board.png';
+
 export default {
   data() {
     return {
@@ -117,9 +122,9 @@ export default {
       lobbyKey: null,
       position: null,
       receivedJSONObject: null,
-      game:"tictactoe",
-      mode:"player_vs_ai",
-      difficulty:"hard",
+      game:'connect4',
+      mode:'player_vs_ai',
+      difficulty:'hard',
       mouseX:null,
       mouseY:null,
       boardWidth:3,
@@ -127,6 +132,7 @@ export default {
       fromPos:null,
       toPos:null,
       undoNum:1,
+      imageSrc:imagePath,
       timeLineNum:0,
       validMoveInsteadOfMakeMove:false,
 
@@ -154,8 +160,13 @@ export default {
 
       this.socket.onmessage = (event) => {
    
-        this.receivedJSONObject=JSON.parse(event.data);
+        try { this.receivedJSONObject=JSON.parse(event.data);
         if (this.receivedJSONObject.key!= null) {this.lobbyKey=this.receivedJSONObject.key;}
+      } catch (e) {
+        const blob = new Blob([data], { type: 'image/jpeg' }); 
+        const url = URL.createObjectURL(blob);
+        this.imageSrc = url;
+      }
        
       };
     },
@@ -166,6 +177,7 @@ export default {
     },
     sendMessage(data) {
       if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+        console.log(data);
         this.socket.send(JSON.stringify(data));
       } else {
         console.error('WebSocket connection is not open.');
@@ -180,13 +192,6 @@ export default {
       this.sendMessage(data);
     },
 
-    startLobby() {
-      const data = {
-        command: 'lobby',
-        command_key: 'start'
-      };
-      this.sendMessage(data);
-    },
 
     joinLobby() {
       const data = {
@@ -225,7 +230,7 @@ export default {
     showLobbyList() {
       const data = {
         command: 'lobby',
-        command_key: 'list'
+        command_key: 'status'
       };
       this.sendMessage(data);
     },
@@ -244,7 +249,6 @@ export default {
     playValidMoves(){  const data = {
       command: 'play',
       command_key: 'valid_moves',
-      pos: this.fromPos
     };
       this.sendMessage(data);
       },
@@ -252,7 +256,7 @@ export default {
 
     playMakeMove(){
       const data = {
-      command: 'play',
+        command: 'play',
         command_key: 'make_move',
         pos: this.toPos
     };
@@ -266,6 +270,7 @@ export default {
       };
       this.sendMessage(data);
     },
+
     playSurrender() {
       const data = {
         command: 'play',
@@ -274,13 +279,6 @@ export default {
       this.sendMessage(data);
     },
 
-    playQuit() {
-      const data = {
-        command: 'play',
-        command_key: 'quit',
-      };
-      this.sendMessage(data);
-    },
     playNewGame() {
       const data = {
         command: 'play',
@@ -288,6 +286,7 @@ export default {
       };
       this.sendMessage(data);
     },
+
     playBlunder() {
       const data = {
         command: 'play',
@@ -321,6 +320,18 @@ export default {
       this.sendMessage(data);
     },
 
+    playEvaluate(){
+      const data = {
+        command: 'play',
+        command_key: 'evaluate',
+        num: this.evaluateNum,
+        game: this.game,
+        mode: this.mode,
+        difficulty: this.difficulty,
+      }
+      this.sendMessage(data);
+    },
+
     trackMousePosition(event) {
     this.mouseX = event.clientX;
     this.mouseY = event.clientY;
@@ -335,7 +346,7 @@ export default {
       this.fromPos=this.toPos; //TODO: Achtung nur für Debug, muss geändert werden für merhzügige Spiele!
       this.playValidMoves();}
   },
-    addPair() {
+    addPair() {  //TODO Verbessern, scheint noch kein richtiges JSON zu sein
       if (this.newKey && this.newValue) {
         this.userSentJSON[this.newKey] = this.newValue;
         this.newKey = '';
