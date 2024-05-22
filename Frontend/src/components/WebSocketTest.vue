@@ -163,7 +163,7 @@ export default {
         try { this.receivedJSONObject=JSON.parse(event.data);
         if (this.receivedJSONObject.key!= null) {this.lobbyKey=this.receivedJSONObject.key;}
       } catch (e) {
-        const blob = new Blob([data], { type: 'image/jpeg' }); 
+        const blob = new Blob([data], { type: 'image/png' }); 
         const url = URL.createObjectURL(blob);
         this.imageSrc = url;
       }
@@ -230,7 +230,8 @@ export default {
     showLobbyList() {
       const data = {
         command: 'lobby',
-        command_key: 'status'
+        command_key: 'status',
+        key: this.lobbyKey,
       };
       this.sendMessage(data);
     },
@@ -387,7 +388,7 @@ export default {
 @media (min-width: 1024px) {
   #app {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(autofill, 0.5fr);
     grid-gap: 1rem;
   }
 }
