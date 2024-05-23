@@ -5,11 +5,23 @@
         Lobby:
         <button @click="createLobby">Create Lobby</button>
         <input type="text" v-model="lobbyKey" placeholder="Enter Lobby Key">
-        <button @click="joinLobby">Join Lobby</button>
+       
+        <br>
+        
+        <label for="joinLobbyPosition">Join as:</label>
+    <select id="joinLobbyPosition" v-model="joinLobbyPosition">
+        <option value="p1">Player 1</option>
+        <option value="p2">Player 2</option>
+        <option value="sp">Spectator</option>
+        <option value=null>null</option>
+    </select>
+    <button @click="joinLobby">Join Lobby</button>
+        <br>
         <button @click="leaveLobby">Leave Lobby</button>
         <select v-model="position" @change="swapPositionInLobby">
           <option value="p1">Player 1</option>
           <option value="p2">Player 2</option>
+          <option value="sp">Spectator</option>
           <option value="sp">Spectator</option>
         </select>
         <br>
@@ -136,6 +148,7 @@ export default {
       socket: null,
       lobbyKey: null,
       position: null,
+      joinLobbyPosition: null,
       receivedJSONObject: null,
       game:'connect4',
       mode:'player_vs_ai',
@@ -218,6 +231,8 @@ export default {
         command: 'lobby',
         command_key: 'join',
         key: this.lobbyKey,
+        pos: this.joinLobbyPosition,
+
       };
       this.sendMessage(data);
     },
@@ -251,7 +266,6 @@ export default {
       const data = {
         command: 'lobby',
         command_key: 'status',
-        key: this.lobbyKey,
       };
       this.sendMessage(data);
     },
