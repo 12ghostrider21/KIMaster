@@ -62,25 +62,40 @@
         <label for="moveSwitch">Valid Moves Instead of Make Move:</label>
         <input type="checkbox" id="moveSwitch" v-model="validMoveInsteadOfMakeMove">
         <br>
+        <label for="twoTurnGame">Activate two turn Game (fromPos-> toPos):</label>
+        <input type="checkbox" id="twoTurnGame" v-model="twoTurnGame">
+        <br>
       </div>
     </div>
 
     <div class="box">
-      <div class="grid-section">
-        <img
-            width="300"
-            height="300"
-            class="imageRef"
-            ref="imageRef"
-            v-if="imageSrc" :src="imageSrc" 
-            alt="Received Image" 
-            @click="trackMousePosition"
-            style="display: block; margin: auto;"
-        />
-      </div>
-    </div>
+  <div class="grid-section" style="position: relative;">
+    <img
+      width="300"
+      height="300"
+      class="imageRef"
+      ref="imageRef"
+      v-if="imageSrc"
+      :src="imageSrc"
+      alt="Received Image"
+      @click="trackMousePosition"
+      @mousemove="highlightCellOnHover"
+      style="display: block; margin: auto; position: relative;"
+    />
+    <div
+      v-if="hoveredCell"
+      class="highlight-cell"
+      :style="{
+        width: `${300 / boardWidth}px`,
+        height: `${300 / boardHeight}px`,
+        top: `${(hoveredCell.y - 1) * (300 / boardHeight)}px`,
+        left: `${(hoveredCell.x - 1) * (300 / boardWidth)}px`
+      }"
+    ></div>
+  </div>
+</div>
 
-    <div class="box">
+    <div class="box limited-width-box">
       <div class="grid-section">
         <h2>Received From Server:</h2>
         <pre>{{ receivedJSONObject }}</pre>
@@ -128,17 +143,22 @@ export default {
       mouseX:null,
       mouseY:null,
       boardWidth:7,
-      boardHeight:6,
+      boardHeight:7,
+
+      turnSelect:true,
       fromPos:null,
       toPos:null,
       undoNum:1,
       imageSrc:imagePath,
       timeLineNum:0,
+
       validMoveInsteadOfMakeMove:false,
+      twoTurnGame:false,
 
       newKey: null,
       newValue:null,
       userSentJSON: {},
+      hoveredCell: null,
     };
   },
   methods: {
@@ -254,15 +274,31 @@ export default {
       this.sendMessage(data);
       },
 
+    playValidMoves(fromPos)  {  const data = {
+      command: 'play',
+      command_key: 'valid_moves',
+      fromPos:fromPos,
+    };
+      this.sendMessage(data);
+      },
+
 
     playMakeMove(){
-      const data = {
+      let data;
+      if (!this.twoTurnGame)
+      {data = {
         command: 'play',
         command_key: 'make_move',
         move: this.toPos
-    };
+    };}
+    else { data = {
+        command: 'play',
+        command_key: 'make_move',
+        move: [this.fromPos, this.toPos]
+    };}
     this.sendMessage(data);
     },
+
     playUndoMove() {
       const data = {
         command: 'play',
@@ -341,12 +377,25 @@ export default {
     this.mouseY = this.mouseY - imageRect.top;
     this.mouseX = Math.ceil(this.mouseX / (this.$refs.imageRef.offsetWidth / this.boardWidth));
     this.mouseY = Math.ceil(this.mouseY / (this.$refs.imageRef.offsetHeight / this.boardHeight));
-    this.toPos=this.mouseX+(this.boardHeight*this.mouseY-this.boardHeight -1);
+    if (this.twoTurnGame) {
+      if (this.turnSelect) {this.fromPos=this.mouseX+(this.boardHeight*this.mouseY-this.boardHeight -1); 
+                            this.turnSelect=false;
+                            this.playValidMoves(this.fromPos);}
+      else {                this.toPos=this.mouseX+(this.boardHeight*this.mouseY-this.boardHeight -1);
+                            this.turnSelect=true
+                            this.playMakeMove();
+      }
+    }
+    else {this.toPos=this.mouseX+(this.boardHeight*this.mouseY-this.boardHeight -1);
+
+
     if (!this.validMoveInsteadOfMakeMove)this.playMakeMove();
     else {
       this.fromPos=this.toPos; //TODO: Achtung nur für Debug, muss geändert werden für merhzügige Spiele!
-      this.playValidMoves();}
+      this.playValidMoves();}}
   },
+
+
     addPair() {  //TODO Verbessern, scheint noch kein richtiges JSON zu sein
       if (this.newKey && this.newValue) {
         this.userSentJSON[this.newKey] = this.newValue;
@@ -359,6 +408,16 @@ export default {
       this.sendMessage(JSON.stringify(this.userSentJSON));
       this.userSentJSON = {};
     },
+    highlightCellOnHover(event) {
+  const imageRect = this.$refs.imageRef.getBoundingClientRect();
+  const mouseX = event.clientX - imageRect.left;
+  const mouseY = event.clientY - imageRect.top;
+  const cellX = Math.ceil(mouseX / (this.$refs.imageRef.offsetWidth / this.boardWidth));
+  const cellY = Math.ceil(mouseY / (this.$refs.imageRef.offsetHeight / this.boardHeight));
+
+  // Set the hovered cell coordinates
+  this.hoveredCell = { x: cellX, y: cellY };
+},
 
 
 },
@@ -383,6 +442,20 @@ export default {
   border: 2px solid white;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.limited-width-box {
+  width: 350px; 
+  overflow: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.highlight-cell {
+  position: absolute;
+  background-color: rgba(255, 255, 0, 0.5);
+  pointer-events: none;
+  z-index: 10;
 }
 
 @media (min-width: 1024px) {
