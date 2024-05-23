@@ -341,7 +341,7 @@ export default {
     this.mouseY = this.mouseY - imageRect.top;
     this.mouseX = Math.ceil(this.mouseX / (this.$refs.imageRef.offsetWidth / this.boardWidth));
     this.mouseY = Math.ceil(this.mouseY / (this.$refs.imageRef.offsetHeight / this.boardHeight));
-    this.toPos=this.mouseX+(this.boardHeight*this.mouseY-this.boardHeight);
+    this.toPos=this.mouseX+(this.boardHeight*this.mouseY-this.boardHeight -1);
     if (!this.validMoveInsteadOfMakeMove)this.playMakeMove();
     else {
       this.fromPos=this.toPos; //TODO: Achtung nur für Debug, muss geändert werden für merhzügige Spiele!
