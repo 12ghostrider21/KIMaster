@@ -4,7 +4,8 @@ import os
 
 class DockerAPI:
 
-    def startGameClient(self, token: str):
+    @staticmethod
+    def startGameClient(token: str):
 
         # init client to communicate with docker API 
         docker_client = docker.from_env()
@@ -13,8 +14,7 @@ class DockerAPI:
         docker_client.containers.run('game-client-img',  # image to run
                                      name=token,  # set token as name of the container
                                      network=os.environ['NETWORK'],  # set network, to connect to on startup
-                                     remove=False,
-                                     # Set True to auto remove -
+                                     remove=True,  # Set True to auto remove -
                                      # Can make debugging harder, because container logs will be removed too
                                      detach=True,  # Run container in detached mode
                                      environment={
@@ -25,7 +25,8 @@ class DockerAPI:
                                      }
                                      )
 
-    def stopGameClient(self, token: str):
+    @staticmethod
+    def stopGameClient(token: str):
         print(f'Trying to stop GameClient: {token}')
         docker_client = docker.from_env()
 
@@ -39,7 +40,8 @@ class DockerAPI:
                 f'Failed Stopping GameClient {token}: '
                 f'docker ran into an error, when trying to stop GameClient Container: {token}')
 
-    def removeGameClient(self, token: str):
+    @staticmethod
+    def removeGameClient(token: str):
         print(f'Trying to remove GameClient: {token}')
         docker_client = docker.from_env()
         try:

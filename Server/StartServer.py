@@ -1,16 +1,25 @@
 from fastAPIServer import FastAPIServer
-import sys
 import os
 
-def main():
-    # Extract command-line arguments or use default values
-    #port_socket_server = sys.argv[1] if len(sys.argv) > 1 else "12345"
-    # port_socket_server = int(port_socket_server)
-    #port_fast_api = sys.argv[2] if len(sys.argv) > 2 else "8000"
-    #port_fast_api = int(port_fast_api)
-    #host_socket_server = sys.argv[3] if len(sys.argv) > 3 else "0.0.0.0"
-    #host_fast_api = sys.argv[4] if len(sys.argv) > 4 else "0.0.0.0"
 
+def main():
+    """
+    Main function to initialize and run the Server.
+
+    This function retrieves the necessary environment variables to configure
+    the FastAPI server and socket server. It initializes the FastAPIServer
+    object and starts the server with the specified configuration.
+
+    Environment Variables:
+    - SOCKET_SERVER_PORT: The port number for the socket server.
+    - HOST_OF_API: The host address for both the FastAPI and socket server.
+    - FAST_API_PORT: The port number for the FastAPI server.
+
+    Raises:
+    - KeyError: If any of the required environment variables are not set.
+    - ValueError: If the environment variables for port numbers are not valid integers.
+    """
+    # Retrieve and convert environment variables
     port_socket_server = int(os.environ["SOCKET_SERVER_PORT"])
     host_socket_server = os.environ["HOST_OF_API"]
     port_fast_api = int(os.environ["FAST_API_PORT"])
@@ -18,17 +27,13 @@ def main():
 
     # Initialize and run FastAPI server
     fastapi_server = FastAPIServer()
-    fastapi_server.start(host_socket_server=host_socket_server,
-                         host_fast_api=host_fast_api,
-                         port_fast_api=port_fast_api,
-                         port_socket_server=port_socket_server)
+    fastapi_server.start(
+        host_socket_server=host_socket_server,
+        host_fast_api=host_fast_api,
+        port_fast_api=port_fast_api,
+        port_socket_server=port_socket_server
+    )
 
 
 if __name__ == "__main__":
     main()
-    #if len(sys.argv) == 1 or len(sys.argv) == 5:
-    #    main()
-    #else:
-    #    # Print usage and exit if arguments are incorrect
-    #    print("Usage: python StartServer.py port_SocketServer:12345 port_FastAPI:8000 host_SocketServer host_FastAPI")
-    #    sys.exit(1)

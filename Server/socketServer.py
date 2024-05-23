@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from starlette.websockets import WebSocket, WebSocketState, WebSocketDisconnect
 
 from e_response import EResponse
-from lobby import LobbyManager, Lobby
+from lobby_manager import LobbyManager, Lobby
 
 
 class SocketServer:
@@ -17,7 +17,7 @@ class SocketServer:
         @self.__app.websocket("/ws")
         async def websocket_endpoint(game_client: WebSocket):
             await self.connect(game_client)
-            lobby: Lobby = self.lobby_manager.lobby_of_game_client(game_client)
+            lobby: Lobby = self.lobby_manager.get_lobby(game_client)
             while True:
                 try:
                     read_object: dict = await game_client.receive_json()
@@ -32,7 +32,6 @@ class SocketServer:
                         read_object.pop("player_pos")
                     except KeyError:
                         pass
-
 
                     client: WebSocket | list[WebSocket] = {"p1": lobby.p1,
                                                            "p2": lobby.p2,
@@ -65,16 +64,17 @@ class SocketServer:
                             await self.broadcast_image(img1, img2, game_client)
                             continue
                         # send image to a specific client
-                        lobby: Lobby = self.lobby_manager.lobby_of_game_client(game_client)
+                        lobby: Lobby = self.lobby_manager.get_lobby(game_client)
                         client = lobby.get_client_by_string(read_object.get("player_pos"))
                         await self.send_image(client, img1)
                         continue
                     case "login":
                         lobby: Lobby = self.lobby_manager.lobbies.get(lobby_key)
                         if lobby is None:
-                            await self.send_response(game_client, EResponse.ERROR, "Lobby does not exist", {"key": lobby_key})
+                            await self.send_response(game_client, EResponse.ERROR, "Lobby does not exist",
+                                                     {"key": lobby_key})
                             continue
-                        lobby.game_client = game_client
+                        self.lobby_manager.connect_game_client(lobby_key, game_client)
                         await self.send_response(game_client, EResponse.SUCCESS, "Joined lobby!", {"key": lobby_key})
                     case _:
                         await self.send_response(game_client, EResponse.ERROR, f"Command: '{command}' not found!")
@@ -92,7 +92,7 @@ class SocketServer:
         await game_client.send_json(cmd)
 
     async def send_broadcast(self, lobby: Lobby, response_code: EResponse | int, response_msg: str,
-                            data: dict | None = None):
+                             data: dict | None = None):
         if lobby.p1:
             await self.send_response(lobby.p1, response_code, response_msg, data)
         if lobby.p2:
@@ -112,8 +112,9 @@ class SocketServer:
         await client.send_json(cmd)
 
     async def broadcast_image(self, img_p1: bytes, img_p2: bytes, game_client: WebSocket) -> None:
-        lobby: Lobby = self.lobby_manager.lobby_of_game_client(game_client)
-        tasks = [asyncio.create_task(self.send_image(lobby.p1, img_p1)), asyncio.create_task(self.send_image(lobby.p2, img_p2))]
+        lobby: Lobby = self.lobby_manager.get_lobby(game_client)
+        tasks = [asyncio.create_task(self.send_image(lobby.p1, img_p1)),
+                 asyncio.create_task(self.send_image(lobby.p2, img_p2))]
         for sp in lobby.spectator_list:
             tasks.append(asyncio.create_task(self.send_image(sp, img_p1)))
         await asyncio.gather(*tasks)  # send all images at the same time

@@ -15,9 +15,8 @@ class GameClient:
         self.host: str = host
         self.port: int = port
         self.key: str = key
-        self.pit: Pit | None = Pit(GameConfig(), self)
+        self.pit: Pit | None = None
         self.websocket = None
-
 
     async def connect(self):
         url = f"ws://{self.host}:{self.port}/ws"
@@ -85,13 +84,12 @@ class GameClient:
                 continue
             match command_key:
                 case "create":
-                    #continue
-                    #if self.pit:
-                    #    if self.pit.arena_task:
-                    #        if not self.pit.arena_task.done():
-                    #            await self.send_response(EResponse.ERROR, player_pos, "Game still running. "
-                    #                                                                  "Please surrender first")
-                    #            continue
+                    if self.pit:
+                        if self.pit.arena_task:
+                            if not self.pit.arena_task.done():
+                                await self.send_response(EResponse.ERROR, player_pos, "Game still running. "
+                                                                                      "Please surrender first")
+                                continue
                     game_config: GameConfig = self.extract_game_config(read_object)
                     if not game_config():  # get new game_config and call check if correct
                         await self.send_response(EResponse.ERROR, player_pos,
@@ -171,7 +169,6 @@ class GameClient:
                         await self.send_response(EResponse.ERROR, player_pos, "Game still running. "
                                                                               "Please surrender first")
                     await self.send_response(EResponse.SUCCESS, player_pos, "Game quit.")
-                    # inject code to shut down docker container (and delete data)
                     break
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "new_game":
