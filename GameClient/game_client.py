@@ -4,14 +4,10 @@ from enum import Enum
 import websockets
 from websockets import ConnectionClosedError
 from starlette.websockets import WebSocketDisconnect
-
-from player import Player
 from pit import Pit
+
 from game_config import GameConfig, EGame, EGameMode, EDifficulty
 from e_response import EResponse
-import asyncio
-
-import os
 
 
 class GameClient:
@@ -19,8 +15,9 @@ class GameClient:
         self.host: str = host
         self.port: int = port
         self.key: str = key
+        self.pit: Pit | None = Pit(GameConfig(), self)
         self.websocket = None
-        self.pit: Pit | None = None
+
 
     async def connect(self):
         url = f"ws://{self.host}:{self.port}/ws"

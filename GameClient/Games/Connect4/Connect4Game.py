@@ -1,3 +1,5 @@
+import io
+
 import numpy as np
 import pygame
 from i_game import IGame
@@ -129,8 +131,11 @@ class Connect4Game(IGame):
                 elif board[row][col] == 1:
                     self.draw_chip(surface, color_ply_one, (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE), TOKENSIZE - 5)
 
-        img = pygame.image.tostring(surface, 'RGBA')
-        return img
+        byte_io = io.BytesIO()
+        pygame.image.save(surface, byte_io, 'PNG')
+        png_bytes = byte_io.getvalue()
+        byte_io.close()
+        return png_bytes
 
     def draw_chip(self, surface, color, position, radius):
         pygame.draw.circle(surface, color, position, radius)

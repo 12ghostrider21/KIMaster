@@ -33,9 +33,9 @@ class EDifficulty(Enum):
 
 @dataclass
 class GameConfig:
-    game: list[EGame, NeuralNet] | Enum
-    mode: EGameMode | Enum
-    difficulty: EDifficulty | Enum
+    game: list[EGame, NeuralNet] | Enum = None
+    mode: EGameMode | Enum = None
+    difficulty: EDifficulty | Enum = None
 
     def __call__(self) -> bool:
         if self.game is None:

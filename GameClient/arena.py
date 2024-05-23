@@ -164,7 +164,7 @@ class Arena:
     async def send_board(self, board: np.array, cur_player: int):
         representation = self.game.draw_terminal(board, False, cur_player)
         await self.send_response(EResponse.SUCCESS,
-                                 None, "", {"board": representation})
+                                 None, "", {"board": representation, "player": cur_player})
         img1 = self.game.draw(board, False, cur_player)
         img2 = self.game.draw(board, False, -cur_player)
         await self.game_client.broadcast_image(img1, img2)
