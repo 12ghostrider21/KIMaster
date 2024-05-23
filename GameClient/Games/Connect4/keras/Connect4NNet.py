@@ -1,12 +1,7 @@
-import sys
-sys.path.append('..')
-
 from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
 from tensorflow.keras.optimizers.legacy import Adam
 from tensorflow.keras.activations import *
-# import tensorflow.compat
-# import tensorflow as tf
 
 def relu_bn(inputs):
     relu1 = relu(inputs)

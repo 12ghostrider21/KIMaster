@@ -3,7 +3,7 @@ import asyncio
 import numpy as np
 from tqdm import tqdm
 
-from GameClient.player import Player
+from player import Player
 from e_response import EResponse
 
 log = logging.getLogger(__name__)

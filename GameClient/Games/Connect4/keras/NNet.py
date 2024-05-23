@@ -1,15 +1,8 @@
 import os
 import time
 import numpy as np
-import sys
-
-sys.path.append('../..')
-from Tools.utils import *
-from Tools.neural_net import NeuralNet
-
-import logging
-
-log = logging.getLogger(__name__)
+from utils import dotdict
+from neural_net import NeuralNet
 
 from .Connect4NNet import Connect4NNet as onnet
 
@@ -26,6 +19,7 @@ args = dotdict({
 
 class NNetWrapper(NeuralNet):
     def __init__(self, game):
+        super().__init__(game)
         self.nnet = onnet(game, args)
         self.nnet.model.summary()
         self.board_x, self.board_y = game.getBoardSize()
@@ -77,4 +71,3 @@ class NNetWrapper(NeuralNet):
         #if not os.path.exists(filepath):
         #raise("No model in path {}".format(filepath))
         self.nnet.model.load_weights(filepath)
-        log.info('Loading Weights...')

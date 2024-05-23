@@ -88,12 +88,13 @@ class GameClient:
                 continue
             match command_key:
                 case "create":
-                    if self.pit:
-                        if self.pit.arena_task:
-                            if not self.pit.arena_task.done():
-                                await self.send_response(EResponse.ERROR, player_pos, "Game still running. "
-                                                                                      "Please surrender first")
-                                continue
+                    #continue
+                    #if self.pit:
+                    #    if self.pit.arena_task:
+                    #        if not self.pit.arena_task.done():
+                    #            await self.send_response(EResponse.ERROR, player_pos, "Game still running. "
+                    #                                                                  "Please surrender first")
+                    #            continue
                     game_config: GameConfig = self.extract_game_config(read_object)
                     if not game_config():  # get new game_config and call check if correct
                         await self.send_response(EResponse.ERROR, player_pos,
@@ -102,6 +103,7 @@ class GameClient:
                                                   "mode": read_object.get("mode"),
                                                   "difficulty": read_object.get("difficulty")})
                         continue
+
                     self.pit = Pit(game_config, self)
                     response = await self.pit.init_game(num_games=1, game_config=game_config)
                     await self.send_response(response_code=response.response_code,

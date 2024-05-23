@@ -47,7 +47,6 @@ class Pit:
             if not game_config():  # check if all values in game_config are available
                 return Response(EResponse.ERROR, "A value in game_config is not set!")
             self.game_config = game_config
-
         # get all values for init or set default values
         game = self.game_config.game.value[0]()  # create new game instance of Game import of EGame
         game_name = self.game_config.game.name
@@ -58,7 +57,8 @@ class Pit:
 
         # load pretrained model
         try:
-            path = os.path.abspath(f"../resources/pretrained_models/{game_name}/best.h5")
+            path = os.path.abspath(f"../GameClient/pretrained_models/{game_name}/best.h5")
+            print(path)
             folder = os.path.dirname(path)
             file = os.path.basename(path)
         except FileNotFoundError:

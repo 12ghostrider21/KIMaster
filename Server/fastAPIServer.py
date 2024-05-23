@@ -25,6 +25,8 @@ class FastAPIServer:
             while True:
                 try:
                     readObject: dict = await client.receive_json()
+                    if isinstance(readObject, str):
+                        readObject = json.loads(readObject)
                 except json.decoder.JSONDecodeError:
                     await self.send_response(client, EResponse.ERROR, "Received data is not a correct json!")
                     continue
