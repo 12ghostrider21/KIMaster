@@ -127,8 +127,8 @@ export default {
       difficulty:'hard',
       mouseX:null,
       mouseY:null,
-      boardWidth:3,
-      boardHeight:3,
+      boardWidth:7,
+      boardHeight:6,
       fromPos:null,
       toPos:null,
       undoNum:1,
@@ -163,7 +163,7 @@ export default {
         try { this.receivedJSONObject=JSON.parse(event.data);
         if (this.receivedJSONObject.key!= null) {this.lobbyKey=this.receivedJSONObject.key;}
       } catch (e) {
-        const blob = new Blob([data], { type: 'image/png' }); 
+        const blob = new Blob([event.data], { type: 'image/png' }); 
         const url = URL.createObjectURL(blob);
         this.imageSrc = url;
       }
@@ -259,7 +259,7 @@ export default {
       const data = {
         command: 'play',
         command_key: 'make_move',
-        pos: this.toPos
+        move: this.toPos
     };
     this.sendMessage(data);
     },
