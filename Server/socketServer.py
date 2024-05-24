@@ -6,7 +6,8 @@ from fastapi import FastAPI
 from starlette.websockets import WebSocket, WebSocketState, WebSocketDisconnect
 
 from e_response import EResponse
-from lobby_manager import LobbyManager, Lobby
+from lobby_manager import LobbyManager
+from lobby import Lobby
 
 
 class SocketServer:
