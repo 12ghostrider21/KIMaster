@@ -177,7 +177,22 @@ export default {
   methods: {
 
     connect() {
-      this.socket = new WebSocket('ws://localhost:8000/ws'); //TODO change to Back End Adress
+     
+     const currentUrl = window.location.href;
+
+
+if (currentUrl.startsWith('http://') && currentUrl.includes(':8085')) {
+
+let modifiedUrl = currentUrl.replace('http://', 'ws://').replace(':8085', ':8000/ws');
+console.log(modifiedUrl);
+if (modifiedUrl.endsWith('/')) {
+      modifiedUrl = modifiedUrl.slice(0, -1);
+    }
+    console.log("2: " + modifiedUrl);
+
+this.socket = new WebSocket(modifiedUrl);} //TODO change to proper adress, for now it's hacked together
+else {this.socket = new WebSocket('ws://localhost:8000/ws');} //Static URL if adress not in the correct format
+
 
       this.socket.onopen = () => {
         this.connectionStatus = 'Connected';
