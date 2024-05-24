@@ -130,12 +130,7 @@ class Connect4Game(IGame):
                     self.draw_chip(surface, color_ply_minus_one, (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE), TOKENSIZE - 5)
                 elif board[row][col] == 1:
                     self.draw_chip(surface, color_ply_one, (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE), TOKENSIZE - 5)
-
-        byte_io = io.BytesIO()
-        pygame.image.save(surface, byte_io, 'PNG')
-        png_bytes = byte_io.getvalue()
-        byte_io.close()
-        return png_bytes
+        return surface
 
     def draw_chip(self, surface, color, position, radius):
         pygame.draw.circle(surface, color, position, radius)

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
+from pygame import surface
 
 
 class IGame(ABC):
@@ -226,7 +227,7 @@ class IGame(ABC):
         pass
 
     @abstractmethod
-    def draw(self, board: np.array, valid_moves: bool, *args: any) -> bytes:
+    def draw(self, board: np.array, valid_moves: bool, *args: any) -> surface:
         """
         Draw the game representation onto a Pygame surface.
 
@@ -247,7 +248,7 @@ class IGame(ABC):
           of the `draw` method.
 
         Returns:
-            bytes (from pygame.Surface)
+            pygame.Surface
 
         Notes:
         - The `board` parameter should be a NumPy array representing the game state in a structured
@@ -277,9 +278,8 @@ class IGame(ABC):
                 for j in range(board.shape[1]):
                     if board[i, j] == 1:
                         pygame.draw.rect(surface, (0, 0, 0), (j * cell_size, i * cell_size, cell_size, cell_size))
-            img = bytes(pygame.image.tostring(surface, 'RGBA'))
 
-            return img, img
+            return surface
         """
         pass
 

@@ -1,6 +1,9 @@
+import io
 import json
 import ast
 from enum import Enum
+
+from pygame import surface, image
 import websockets
 from websockets import ConnectionClosedError
 from starlette.websockets import WebSocketDisconnect
@@ -17,6 +20,14 @@ class GameClient:
         self.key: str = key
         self.pit: Pit | None = None
         self.websocket = None
+
+    @staticmethod
+    def surface_to_png(img: surface) -> bytes:
+        byte_io = io.BytesIO()
+        image.save(img, byte_io, 'PNG')
+        png_bytes = byte_io.getvalue()
+        byte_io.close()
+        return png_bytes
 
     async def connect(self):
         url = f"ws://{self.host}:{self.port}/ws"
@@ -38,14 +49,14 @@ class GameClient:
         json_string = await self.websocket.recv()
         return json.loads(json_string)
 
-    async def send_image(self, img: bytes, player_pos: str):
+    async def send_image(self, img: surface, player_pos: str):
         await self.send_cmd("img", "", {"player_pos": player_pos})
-        await self.websocket.send(img)
+        await self.websocket.send(self.surface_to_png(img))
 
-    async def broadcast_image(self, img1: bytes, img2: bytes):
+    async def broadcast_image(self, img1: surface, img2: surface):
         await self.send_cmd("img", "broadcast")
-        await self.websocket.send(img1)
-        await self.websocket.send(img2)
+        await self.websocket.send(self.surface_to_png(img1))
+        await self.websocket.send(self.surface_to_png(img2))
 
     async def send_cmd(self, command: str, command_key: str, data: dict | None = None):
         cmd = {"command": command, "command_key": command_key}
