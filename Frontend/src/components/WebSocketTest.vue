@@ -116,6 +116,14 @@
   </div>
 <div class="box">
   <div class="grid-section">
+    <div style="display: inline-block;">
+     <label for="commandInUserJSON">command:</label>
+     <input id="commandKeyInUserJSON" type="text" v-model="commandInUserJSON" placeholder="Enter Command">
+    </div>
+    <div style="display: inline-block;">
+      <label for="commandKeyInUserJSON">command_key:</label>
+      <input id="commandKeyInUserJSON" type="text" v-model="commandKeyInUserJSON" placeholder="Enter Command Key">
+    </div>
   <h1>Key-Value Pair Input</h1>
   <div class="grid-section">
     <form @submit.prevent="addPair">
@@ -171,6 +179,8 @@ export default {
       newKey: null,
       newValue:null,
       userSentJSON: {},
+      commandInUserJSON:null,
+      commandKeyInUserJSON:null,
       hoveredCell: null,
     };
   },
@@ -184,11 +194,10 @@ export default {
 if (currentUrl.startsWith('http://') && currentUrl.includes(':8085')) {
 
 let modifiedUrl = currentUrl.replace('http://', 'ws://').replace(':8085', ':8000/ws');
-console.log(modifiedUrl);
 if (modifiedUrl.endsWith('/')) {
       modifiedUrl = modifiedUrl.slice(0, -1);
     }
-    console.log("2: " + modifiedUrl);
+
 
 this.socket = new WebSocket(modifiedUrl);} //TODO change to proper adress, for now it's hacked together
 else {this.socket = new WebSocket('ws://localhost:8000/ws');} //Static URL if adress not in the correct format
@@ -434,6 +443,8 @@ else {this.socket = new WebSocket('ws://localhost:8000/ws');} //Static URL if ad
     },
 
     sendUserSentJSON(){
+      this.userSentJSON["command"] = this.commandInUserJSON;
+      this.userSentJSON["command_key"] = this.commandKeyInUserJSON;
       this.sendMessage(JSON.stringify(this.userSentJSON));
       this.userSentJSON = {};
     },
