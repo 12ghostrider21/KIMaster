@@ -45,6 +45,8 @@ class FastAPIServer:
                     command = read_object.get("command")
                     if command == "exit":
                         break
+                    elif command == "debug":
+                        await self.handle_debug_command(client, read_object)
                     elif command == "play":
                         await self.handle_play_command(client, read_object)
                     elif command == "lobby":
@@ -115,6 +117,19 @@ class FastAPIServer:
         """
         Thread(target=self.socket_server.run, args=(host_socket_server, port_socket_server)).start()
         Thread(target=self.run, args=(host_fast_api, port_fast_api)).start()
+
+    async def handle_debug_command(self, client: WebSocket, read_object: dict):
+        command_key = read_object.get("command_key")
+        lobby_manager = self.socket_server.lobby_manager
+
+        match command_key:
+            case "active_container":
+                await self.send_response(client, EResponse.SUCCESS, "List of active GameClients.", lobby_manager.docker.list_running_containers())
+            case "toggle_game_client_debug":
+                value = lobby_manager.docker.toggle_debug()
+                await self.send_response(client, EResponse.SUCCESS, "GameClient debug toggled.", {"debug": value})
+            case _:
+                await self.send_response(client, EResponse.ERROR, f"Command '{command_key}' not found!")
 
     async def handle_lobby_command(self, client: WebSocket, read_object: dict):
         """

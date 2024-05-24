@@ -40,7 +40,7 @@ class LobbyManager:
         """
         key: str = self._generate_lobby_key()
         self.lobbies[key] = Lobby(key)
-        self.docker.startGameClient(key)
+        self.docker.start_game_client(key)
         return key
 
     def lobby_exist(self, lobby_key: str) -> bool:
@@ -95,14 +95,13 @@ class LobbyManager:
             return False  # client not in a lobby to leave
         if not lobby.leave(client):
             return False  # error on leave
-        if lobby.is_empty():
-            threading.Thread(target=self.__delete_task, args=[lobby.key]).start()
+        if lobby.is_empty():  # delete game_client on empty lobby
+            threading.Thread(target=self.__delete_task, args=[lobby.key]).start()  # leave without waiting on delete
         return True  # successfully left
 
     def __delete_task(self, lobby_key):
         self.remove_lobby(lobby_key)
-        self.docker.stopGameClient(lobby_key)
-        self.docker.removeGameClient(lobby_key)
+        self.docker.stop_game_client(lobby_key)
 
     def join_lobby(self, lobby_key: str, client: WebSocket, pos: str) -> bool:
         """
