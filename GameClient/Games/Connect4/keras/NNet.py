@@ -1,8 +1,8 @@
 import os
 import time
 import numpy as np
-from utils import dotdict
-from neural_net import NeuralNet
+from Tools.utils import dotdict
+from Tools.neural_net import NeuralNet
 
 from .Connect4NNet import Connect4NNet as onnet
 

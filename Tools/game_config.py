@@ -1,6 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass
-from neural_net import NeuralNet
+from Tools.neural_net import NeuralNet
 
 # imports for Connect4
 from Games.Connect4.Connect4Game import Connect4Game

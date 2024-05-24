@@ -2,14 +2,20 @@ FROM python:3.11.9
 
 WORKDIR /app
 
-ADD ./Server/requirements_server.txt .
+ADD ./Server/requirements.txt .
+RUN pip install -r requirements.txt
 
-RUN pip install -r requirements_server.txt
+# Set the PYTHONPATH environment variable
+ENV PYTHONPATH=/app
 
+# Set the working directory in the container
 WORKDIR /app/Server
 
-ADD ../Tools/e_response.py .
+# Copy specific files from the Server directory
+ADD Server /app/Server
 
-ADD ./Server .
+# Copy the Tools directory
+ADD Tools /app/Tools
 
+# Run StartServer.py when the container launches
 CMD ["python", "-u", "StartServer.py"]

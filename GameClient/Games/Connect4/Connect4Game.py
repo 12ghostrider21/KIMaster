@@ -2,7 +2,7 @@ import io
 
 import numpy as np
 import pygame
-from i_game import IGame
+from Tools.i_game import IGame
 from .Connect4Logic import Board
 
 

@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 
 from player import Player
-from e_response import EResponse
+from Tools.e_response import EResponse
 
 log = logging.getLogger(__name__)
 

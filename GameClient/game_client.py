@@ -6,8 +6,8 @@ from websockets import ConnectionClosedError
 from starlette.websockets import WebSocketDisconnect
 from pit import Pit
 
-from game_config import GameConfig, EGame, EGameMode, EDifficulty
-from e_response import EResponse
+from Tools.game_config import GameConfig, EGame, EGameMode, EDifficulty
+from Tools.e_response import EResponse
 
 
 class GameClient:

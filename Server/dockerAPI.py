@@ -14,7 +14,7 @@ class DockerAPI:
         docker_client.containers.run('game-client-img',  # image to run
                                      name=token,  # set token as name of the container
                                      network=os.environ['NETWORK'],  # set network, to connect to on startup
-                                     remove=True,  # Set True to auto remove -
+                                     remove=False,  # Set True to auto remove -
                                      # Can make debugging harder, because container logs will be removed too
                                      detach=True,  # Run container in detached mode
                                      environment={

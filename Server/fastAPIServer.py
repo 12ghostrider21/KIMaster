@@ -5,7 +5,7 @@ from threading import Thread
 from starlette.websockets import WebSocket, WebSocketDisconnect, WebSocketState
 
 from lobby import Lobby
-from e_response import EResponse
+from Tools.e_response import EResponse
 from socketServer import SocketServer
 
 
