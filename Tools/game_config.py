@@ -2,16 +2,21 @@ from enum import Enum
 from dataclasses import dataclass
 from Tools.neural_net import NeuralNet
 
-# imports for Connect4
-from Games.Connect4.Connect4Game import Connect4Game
-from Games.Connect4.keras.NNet import NNetWrapper as Connect4NNet
+
+from Games.tictactoe.TicTacToeGame import TicTacToeGame
+from Games.tictactoe.keras.NNet import NNetWrapper as TicTacToeNNet
+from Games.othello.OthelloGame import OthelloGame
+from Games.othello.pytorch.NNet import NNetWrapper as OthelloNNet
+from Games.connect4.Connect4Game import Connect4Game
+from Games.connect4.keras.NNet import NNetWrapper as Connect4NNet
+
 
 
 # imports for ...
 class EGame(Enum):
+    tictactoe = (TicTacToeGame, TicTacToeNNet)
+    othello = (OthelloGame, OthelloNNet)
     connect4 = (Connect4Game, Connect4NNet)
-    # othello = "othello"
-    # tictactoe = "tictactoe"
     # nim = "nim"
     # checkers = "checkers"
     # go = "go"

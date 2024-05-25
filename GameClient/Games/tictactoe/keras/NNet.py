@@ -7,11 +7,10 @@ import numpy as np
 import math
 import sys
 sys.path.append('..')
-from Tools.utils import *
+from Tools.utils import dotdict
 from Tools.neural_net import NeuralNet
 
-import argparse
-from TicTacToeNNet import TicTacToeNNet as onnet
+from .TicTacToeNNet import TicTacToeNNet as onnet
 
 """
 NeuralNet wrapper class for the TicTacToeNNet.
@@ -76,11 +75,5 @@ class NNetWrapper(NeuralNet):
         self.nnet.model.save_weights(filepath)
 
     def load_checkpoint(self, folder='checkpoint', filename='checkpoint.pth.tar'):
-        # change extension
-        filename = filename.split(".")[0] + ".h5"
-
-        # https://github.com/pytorch/examples/blob/master/imagenet/main.py#L98
-        filepath = os.path.join(folder, filename)
-        if not os.path.exists(filepath):
-            raise("No model in path '{}'".format(filepath))
+        filepath = f"{folder}/{filename}"
         self.nnet.model.load_weights(filepath)

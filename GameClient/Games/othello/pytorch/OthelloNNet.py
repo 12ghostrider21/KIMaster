@@ -1,6 +1,6 @@
 import sys
 sys.path.append('..')
-from utils import *
+from Tools.utils import *
 
 import argparse
 import torch

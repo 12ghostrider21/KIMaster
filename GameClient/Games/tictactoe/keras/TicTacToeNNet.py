@@ -1,11 +1,11 @@
 import sys
 sys.path.append('..')
-from utils import *
+from Tools.utils import *
 
 import argparse
 from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
-from tensorflow.keras.optimizers import *
+from tensorflow.keras.optimizers.legacy import Adam
 
 """
 NeuralNet for the game of TicTacToe.

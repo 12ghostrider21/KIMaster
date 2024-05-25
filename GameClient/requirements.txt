@@ -5,3 +5,4 @@ numpy~=1.26.4
 pygame~=2.5.2
 tensorflow~=2.14.0
 tqdm~=4.66.4
+torch~=2.2.2

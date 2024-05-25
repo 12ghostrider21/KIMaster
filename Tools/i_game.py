@@ -202,16 +202,19 @@ class IGame(ABC):
         pass
 
     @abstractmethod
-    def draw_terminal(self, board: np.array, valid_moves: bool, *args: any) -> str:
+    def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any) -> str:
         """
         Displays a terminal representation of the game board for debugging purposes.
 
         Parameters:
             board (numpy.array): The game board represented as a numpy array.
             valid_moves: Whether displaying / drawing valid moves or not.
-            *args: first arg is cur_player(int): The current player (1 for one player, -1 for the other player).
-                   second arg is from_pos (int): The from_pos to get the valid moves for. Wrong indices need
-                        to be handled (send error message via GameClient)
+            cur_player: The current player (1 for one player, -1 for the other player).
+            args: first arg is from_pos (int): The from_pos to get the valid moves for.
+                    That argument is only for games where to move tokens.
+                    For Games in which to just one-time set tokens, this arg is redundant
+                    and need to get no further attention.
+                    Wrong indices need to raise a ValueError.
 
         Notes:
             -Needs to handle invalid from_pos for displaying valid moves (None / invalid pos). If invalid
@@ -227,7 +230,7 @@ class IGame(ABC):
         pass
 
     @abstractmethod
-    def draw(self, board: np.array, valid_moves: bool, *args: any) -> surface:
+    def draw(self, board: np.array, valid_moves: bool, cur_player: int, *args: any) -> surface:
         """
         Draw the game representation onto a Pygame surface.
 
@@ -239,13 +242,12 @@ class IGame(ABC):
             board (np.array): A NumPy array representing the game state. The array should contain
                 the necessary information to visualize the current state of the game.
             valid_moves: Whether displaying / drawing valid moves or not.
-            *args: first arg is cur_player (int): The current player (1 for one player, -1 for the other player).
-                   second arg is from_pos (int): The from_pos to get the valid moves for. Wrong indices
-                        need to be handled (send error message via GameClient)
-
-        *args (Any): Additional optional arguments that can be passed to customize the drawing
-          process. The interpretation of these arguments depends on the specific implementation
-          of the `draw` method.
+            cur_player: The current player (1 for one player, -1 for the other player).
+            args: first arg is from_pos (int): The from_pos to get the valid moves for.
+                    That argument is only for games where to move tokens.
+                    For Games in which to just one-time set tokens, this arg is redundant
+                    and need to get no further attention.
+                    Wrong indices need to raise a ValueError.
 
         Returns:
             pygame.Surface

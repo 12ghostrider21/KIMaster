@@ -31,7 +31,7 @@ class SocketServer:
                 try:
                     read_object: dict = await game_client.receive_json()
                 except json.decoder.JSONDecodeError:
-                    await self.send_response(game_client, EResponse.ERROR, "Received data is not a correct JSON!")
+                    await self.send_response(game_client, EResponse.NONVALIDJSON, "Received data is not a correct JSON!")
                     continue
                 except WebSocketDisconnect:
                     break
@@ -80,13 +80,14 @@ class SocketServer:
                         # Handle login command
                         lobby: Lobby = self.lobby_manager.lobbies.get(lobby_key)
                         if lobby is None:
-                            await self.send_response(game_client, EResponse.ERROR, "Lobby does not exist",
+                            await self.send_response(game_client, EResponse.L_LOBBYNOTEXIST, "Lobby does not exist",
                                                      {"key": lobby_key})
                             continue
                         self.lobby_manager.connect_game_client(lobby_key, game_client)
-                        await self.send_response(game_client, EResponse.SUCCESS, "Joined lobby!", {"key": lobby_key})
+                        await self.send_response(game_client, EResponse.L_JOINED, "Joined lobby!", {"key": lobby_key})
                     case _:
-                        await self.send_response(game_client, EResponse.ERROR, f"Command: '{command}' not found!")
+                        await self.send_response(game_client, EResponse.COMMANDNOTFOUND,
+                                                 f"Command: '{command}' not found!")
             await self.disconnect(game_client)
 
     async def connect(self, client: WebSocket):

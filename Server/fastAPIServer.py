@@ -34,12 +34,11 @@ class FastAPIServer:
                         if isinstance(read_object, str):
                             read_object = json.loads(read_object)
 
-                        if any(e not in self.__mask for e in read_object):
-                            await self.send_response(client, EResponse.ERROR, "Payload has an illegal key!")
-                            continue
+                        read_object = {k: v for k, v in read_object.items() if k in self.__mask}
 
                     except json.JSONDecodeError:
-                        await self.send_response(client, EResponse.ERROR, "Received payload is not a correct JSON!")
+                        await self.send_response(client, EResponse.NONVALIDJSON,
+                                                 "Received payload is not correct JSON!")
                         continue
 
                     command = read_object.get("command")
@@ -52,7 +51,8 @@ class FastAPIServer:
                     elif command == "lobby":
                         await self.handle_lobby_command(client, read_object)
                     else:
-                        await self.send_response(client, EResponse.ERROR, "Command not found!", {"command": command})
+                        await self.send_response(client, EResponse.COMMANDNOTFOUND,
+                                                 f"Command: '{command}' not found!")
             except WebSocketDisconnect:
                 await self.disconnect(client)
 
@@ -124,12 +124,14 @@ class FastAPIServer:
 
         match command_key:
             case "active_container":
-                await self.send_response(client, EResponse.SUCCESS, "List of active GameClients.", lobby_manager.docker.list_running_containers())
+                await self.send_response(client, EResponse.D_CONTAINER, "List of active GameClients:",
+                                         lobby_manager.docker.list_running_containers())
             case "toggle_game_client_debug":
                 value = lobby_manager.docker.toggle_debug()
-                await self.send_response(client, EResponse.SUCCESS, "GameClient debug toggled.", {"debug": value})
+                await self.send_response(client, EResponse.D_TOGGLE, "GameClient debug toggled.",
+                                         {"debug": value})
             case _:
-                await self.send_response(client, EResponse.ERROR, f"Command '{command_key}' not found!")
+                await self.send_response(client, EResponse.COMMANDNOTFOUND, f"Command '{command_key}' not found!")
 
     async def handle_lobby_command(self, client: WebSocket, read_object: dict):
         """
@@ -146,63 +148,66 @@ class FastAPIServer:
             case "create":
                 lobby = lobby_manager.get_lobby(client)
                 if lobby:
-                    await self.send_response(client, EResponse.ERROR, "Client already in a lobby!", {"key": lobby.key})
+                    await self.send_response(client, EResponse.L_CLIENT, "Client already in a lobby!")
                 else:
                     new_lobby_key = lobby_manager.create_lobby()
                     lobby_manager.join_lobby(new_lobby_key, client, "p1")
-                    await self.send_response(client, EResponse.SUCCESS, "Lobby created!", {"key": new_lobby_key})
+                    await self.send_response(client, EResponse.L_CREATED, "Lobby created!",
+                                             {"key": new_lobby_key})
 
             case "join":
                 if lobby_manager.get_lobby(client):
-                    await self.send_response(client, EResponse.ERROR, "Cannot join multiple lobbies!")
+                    await self.send_response(client, EResponse.L_CLIENT, "Client already in a lobby!")
                     return
                 lobby_key = read_object.get("key")
                 pos = read_object.get("pos")
                 if not lobby_manager.lobby_exist(lobby_key):
-                    await self.send_response(client, EResponse.ERROR, "Lobby does not exist!", {"key": lobby_key})
+                    await self.send_response(client, EResponse.L_LOBBYNOTEXIST,
+                                             "Lobby does not exist!", {"key": lobby_key})
                 elif lobby_manager.join_lobby(lobby_key, client, pos):
-                    await self.send_response(client, EResponse.SUCCESS, "Joined lobby!", {
+                    await self.send_response(client, EResponse.L_JOINED, "Joined lobby!", {
                         "key": lobby_key,
                         "pos": lobby_manager.get_pos_of_client(client)
                     })
                 else:
-                    await self.send_response(client, EResponse.ERROR, "Failed to join lobby! Maybe blocked?",
+                    await self.send_response(client, EResponse.L_JOINFAILURE, "Failed to join lobby! Maybe blocked?",
                                              {"key": lobby_key})
 
             case "leave":
                 if not lobby_manager.leave_lobby(client):
-                    await self.send_response(client, EResponse.ERROR, "Client not in a lobby!")
+                    await self.send_response(client, EResponse.L_CLIENTNOTEXIST, "Client not in a lobby!")
                 else:
-                    await self.send_response(client, EResponse.SUCCESS, "Client left lobby!")
+                    await self.send_response(client, EResponse.L_LEFT, "Client left lobby.")
 
             case "swap":
                 pos = read_object.get("pos")
                 lobby = lobby_manager.get_lobby(client)
                 if not lobby:
-                    await self.send_response(client, EResponse.ERROR, "Client not in a lobby!")
+                    await self.send_response(client, EResponse.L_CLIENTNOTEXIST, "Client not in a lobby!")
                 elif pos not in ["p1", "p2", "sp"]:
-                    await self.send_response(client, EResponse.ERROR, "Position unknown!", {"pos": pos})
+                    await self.send_response(client, EResponse.L_POSUNKNOWN, "Position unknown!", {"pos": pos})
                 elif not lobby_manager.swap_to(pos, client):
-                    await self.send_response(client, EResponse.ERROR, "Position already occupied!", {"pos": pos})
+                    await self.send_response(client, EResponse.L_POSOCCUPIED, "Position already occupied!",
+                                             {"pos": pos})
                 else:
-                    await self.send_response(client, EResponse.SUCCESS, "Client swapped!", {"pos": pos})
+                    await self.send_response(client, EResponse.L_SWAPPED, "Client swapped!", {"pos": pos})
 
             case "pos":
                 pos = lobby_manager.get_pos_of_client(client)
                 if not pos:
-                    await self.send_response(client, EResponse.ERROR, "Client not in a lobby!")
+                    await self.send_response(client, EResponse.L_CLIENTNOTEXIST, "Client not in a lobby!")
                 else:
-                    await self.send_response(client, EResponse.SUCCESS, "Client position is:", {"pos": pos})
+                    await self.send_response(client, EResponse.L_POS, "Client position is:", {"pos": pos})
 
             case "status":
                 lobby = lobby_manager.get_lobby(client)
                 if not lobby:
-                    await self.send_response(client, EResponse.ERROR, "Client not in a lobby!")
+                    await self.send_response(client, EResponse.L_CLIENTNOTEXIST, "Client not in a lobby!")
                 else:
-                    await self.send_response(client, EResponse.SUCCESS, "Status of lobby.", lobby.status())
+                    await self.send_response(client, EResponse.L_STATUS, "Status of lobby.", lobby.status())
 
             case _:
-                await self.send_response(client, EResponse.ERROR, f"Command '{command_key}' not found!")
+                await self.send_response(client, EResponse.COMMANDNOTFOUND, f"Command '{command_key}' not found!")
 
     async def handle_play_command(self, client: WebSocket, read_object: dict):
         """
@@ -216,17 +221,17 @@ class FastAPIServer:
         lobby = self.socket_server.lobby_manager.get_lobby(client)
 
         if not lobby:
-            await self.send_response(client, EResponse.ERROR, "Client not in a lobby!")
+            await self.send_response(client, EResponse.L_CLIENTNOTEXIST, "Client not in a lobby!")
             return
 
         game_client = lobby.game_client
         if not game_client:
-            await self.send_response(client, EResponse.ERROR, "No Game client connected! Try later again.")
+            await self.send_response(client, EResponse.P_NOGAMECLIENT, "No game client connected! Try again later.")
             return
 
         pos = self.socket_server.lobby_manager.get_pos_of_client(client)
         if pos == "sp":
-            await self.send_response(client, EResponse.ERROR, "A spectator cannot play!")
+            await self.send_response(client, EResponse.P_NOPERMISSION, "A spectator can not play!")
             return
 
         data = {"player_pos": pos, "key": lobby.key, **read_object}
@@ -235,4 +240,4 @@ class FastAPIServer:
                            "blunder", "timeline", "step", "unstep", "evaluate", "stop_evaluate"}:
             await self.socket_server.send_cmd(game_client, "play", command_key, data)
         else:
-            await self.send_response(client, EResponse.ERROR, f"Command '{command_key}' not found!")
+            await self.send_response(client, EResponse.COMMANDNOTFOUND, f"Command '{command_key}' not found!")

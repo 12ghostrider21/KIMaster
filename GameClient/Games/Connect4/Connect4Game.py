@@ -1,7 +1,9 @@
+import io
+
 import numpy as np
 import pygame
 from Tools.i_game import IGame
-from Connect4Logic import Board
+from .Connect4Logic import Board
 
 
 class Connect4Game(IGame):
@@ -59,13 +61,13 @@ class Connect4Game(IGame):
     def stringRepresentation(self, board):
         return board.tostring()
 
-    def draw_terminal(self, board, valid_moves, *args: any):
+    def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         if valid_moves:
             return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
         else:
             horizontal_border = '+' + '-' * (4 * len(board[0]) - 1) + '+\n'
 
-            output = horizontal_border # board
+            output = horizontal_border  # board
             for row in range(len(board)):
                 row_str = '|'
                 for col in range(len(board[row])):
@@ -77,7 +79,7 @@ class Connect4Game(IGame):
                         row_str += ' X |'
                 output += row_str + '\n' + horizontal_border
 
-            output += horizontal_border # board index
+            output += horizontal_border  # board index
             column_numbers = '|'
             for col in range(len(board[0])):
                 column_numbers += f' {col + 1} |'
@@ -85,7 +87,7 @@ class Connect4Game(IGame):
 
             return output
 
-    def draw(self, board: np.array, valid_moves: bool, *args: any):
+    def draw(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         row_count = board.shape[0]
         col_count = board.shape[1]
         SQUARESIZE = 100
@@ -93,41 +95,35 @@ class Connect4Game(IGame):
         HEIGHT = (row_count + 1) * SQUARESIZE
         TOKENSIZE = SQUARESIZE // 2
 
-        color_filling = (252, 252, 244) # colorscheme = "light"  # when implementing dark mode / high contrast
-        color_ply_one = (252, 239, 0) # yellow
-        color_ply_minus_one = (244, 58, 58) # red
-        color_valid = (144, 238, 144) # turquoise
+        color_background = (252, 252, 244)  # cream
+        color_ply_one = (252, 239, 0)  # yellow
+        color_ply_minus_one = (244, 58, 58)  # red
+        color_valid = (144, 238, 144)  # turquoise
 
         pygame.init()
 
         # creating empty surface and filling it with the appropriate color
         surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         surface.fill((45, 116, 216))
-        pygame.draw.rect(surface, color_filling, pygame.Rect(0, 0, WIDTH, SQUARESIZE))
-
-        """ when implementing dark mode / high contrast
-        # setting color based on color arg
-        if args:
-            if "colorscheme" in args[1]:
-                colorscheme = args[1]["colorscheme"]
-            if colorscheme == "dark":
-                color = (71, 71, 71)
-        """
+        pygame.draw.rect(surface, color_background, pygame.Rect(0, 0, WIDTH, SQUARESIZE))
 
         # draw board
         for col in range(col_count):
             for row in range(row_count):
-                pygame.draw.circle(surface, color_filling, 
-                                   (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE), 
+                pygame.draw.circle(surface, color_background,
+                                   (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE),
                                    TOKENSIZE - 5)  # holes in the board
-                if valid_moves and row == 0 and col in [i for (i, valid) in enumerate(self.getValidMoves(board, 0)) if valid]:
+                if valid_moves and row == 0 and col in [i for (i, valid) in
+                                                        enumerate(self.getValidMoves(board, 0)) if valid]:
                     pygame.draw.circle(surface, color_valid,
-                                       (col * SQUARESIZE + TOKENSIZE, row * SQUARESIZE + TOKENSIZE), 
+                                       (col * SQUARESIZE + TOKENSIZE, row * SQUARESIZE + TOKENSIZE),
                                        TOKENSIZE - 5)  # displaying valid moves
                 if board[row][col] == -1:
-                    self.draw_chip(surface, color_ply_minus_one, (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE), TOKENSIZE - 5)
+                    self.draw_chip(surface, color_ply_minus_one,
+                                   (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE), TOKENSIZE - 5)
                 elif board[row][col] == 1:
-                    self.draw_chip(surface, color_ply_one, (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE), TOKENSIZE - 5)
+                    self.draw_chip(surface, color_ply_one,
+                                   (col * SQUARESIZE + TOKENSIZE, (row + 1) * SQUARESIZE + TOKENSIZE), TOKENSIZE - 5)
         return surface
 
     def draw_chip(self, surface, color, position, radius):

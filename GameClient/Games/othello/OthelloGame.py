@@ -1,8 +1,11 @@
+#from __future__ import print_function
+#import sys
+#sys.path.append('..')
+#from Game import Game
 import numpy as np
 import pygame
 from Tools.i_game import IGame
-from OthelloLogic import Board
-
+from .OthelloLogic import Board
 
 class OthelloGame(IGame):
     square_content = {
@@ -15,7 +18,7 @@ class OthelloGame(IGame):
     def getSquarePiece(piece):
         return OthelloGame.square_content[piece]
 
-    def __init__(self, n):
+    def __init__(self, n=6):
         self.n = n
 
     def getInitBoard(self):
@@ -29,30 +32,30 @@ class OthelloGame(IGame):
 
     def getActionSize(self):
         # return number of actions
-        return self.n * self.n + 1
+        return self.n*self.n + 1
 
     def getNextState(self, board, player, action):
         # if player takes action on board, return next (board,player)
         # action must be a valid move
-        if action == self.n * self.n:
+        if action == self.n*self.n:
             return (board, -player)
         b = Board(self.n)
         b.pieces = np.copy(board)
-        move = (int(action / self.n), action % self.n)
+        move = (int(action/self.n), action%self.n)
         b.execute_move(move, player)
         return (b.pieces, -player)
 
     def getValidMoves(self, board, player):
         # return a fixed size binary vector
-        valids = [0] * self.getActionSize()
+        valids = [0]*self.getActionSize()
         b = Board(self.n)
         b.pieces = np.copy(board)
-        legalMoves = b.get_legal_moves(player)
-        if len(legalMoves) == 0:
-            valids[-1] = 1
+        legalMoves =  b.get_legal_moves(player)
+        if len(legalMoves)==0:
+            valids[-1]=1
             return np.array(valids)
         for x, y in legalMoves:
-            valids[self.n * x + y] = 1
+            valids[self.n*x+y]=1
         return np.array(valids)
 
     def getGameEnded(self, board, player):
@@ -70,11 +73,11 @@ class OthelloGame(IGame):
 
     def getCanonicalForm(self, board, player):
         # return state if player==1, else return -state if player==-1
-        return player * board
+        return player*board
 
     def getSymmetries(self, board, pi):
         # mirror, rotational
-        assert (len(pi) == self.n ** 2 + 1)  # 1 for pass
+        assert(len(pi) == self.n**2+1)  # 1 for pass
         pi_board = np.reshape(pi[:-1], (self.n, self.n))
         l = []
 
@@ -100,7 +103,7 @@ class OthelloGame(IGame):
         b.pieces = np.copy(board)
         return b.countDiff(player)
 
-    def draw_terminal(self, board, valid_moves, *args: any):
+    def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         if valid_moves:
             return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
         else:
@@ -125,15 +128,15 @@ class OthelloGame(IGame):
 
             return output
 
-    def draw(self, board, valid_moves, *args: any):
+    def draw(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         row_count = board.shape[0]
         col_count = board.shape[1]
         SQUARESIZE = 100
         WIDTH = col_count * SQUARESIZE
         HEIGHT = row_count * SQUARESIZE
 
-        color_board = (3, 138, 70)
-        color_grid = (0, 0, 0)
+        color_background = (252, 252, 244)  # cream
+        color_grid = (172, 244, 230)  # light blue
         color_shadow = (50, 50, 50, 150)
         color_ply_one = (0, 0, 0)  # black
         color_ply_minus_one = (255, 255, 255)  # white
@@ -142,7 +145,7 @@ class OthelloGame(IGame):
         pygame.init()
 
         surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-        surface.fill(color_board)
+        surface.fill(color_background)
 
         for row in range(len(board)):
             for col in range(len(board[row])):
@@ -151,49 +154,27 @@ class OthelloGame(IGame):
 
                 pygame.draw.rect(surface, color_grid,
                                  (col * SQUARESIZE, row * SQUARESIZE, SQUARESIZE, SQUARESIZE),
-                                 1)  # show grid
-                if valid_moves and row == 0 and col in [i for (i, valid) in enumerate(self.getValidMoves(board, 0)) if
-                                                        valid]:
+                                 1)   # show grid
+                valids = self.getValidMoves(board, cur_player)
+                if valid_moves and valids[(row * len(board[row])) + col]:
                     pygame.draw.circle(surface, color_valid,
                                        (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE + SQUARESIZE // 2),
                                        SQUARESIZE // 3)  # displaying valid moves
-                if board[row][col] == 1:
+                if board[row][col] == 1: 
                     '''pygame.draw.circle(surface, color_shadow,
                                        (center[0] + 2, center[1] + 2), 
                                        radius + 1) # shadow'''
-                    pygame.draw.circle(surface, color_ply_one,
+                    pygame.draw.circle(surface,  color_ply_one,
                                        (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE + SQUARESIZE // 2),
                                        SQUARESIZE // 3)
                 elif board[row][col] == -1:
                     '''pygame.draw.circle(surface, color_shadow,
                                        (center[0] + 2, center[1] + 2), 
                                        radius + 1) # shadow'''
-                    pygame.draw.circle(surface, color_ply_minus_one,
-                                       (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE + SQUARESIZE // 2),
+                    pygame.draw.circle(surface,  color_ply_minus_one,
+                                       (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE+ SQUARESIZE // 2),
                                        SQUARESIZE // 3)
                     pygame.draw.arc(surface, (0, 0, 0),
                                     pygame.Rect(center[0] - radius, center[1] - radius, 2 * radius, 2 * radius),
                                     0, np.pi * 2, 1)
-
-        img = pygame.image.tostring(surface, 'RGBA')
-        return img
-
-
-"""
-    @staticmethod
-    def display(board):
-        n = board.shape[0]
-        print("   ", end="")
-        for y in range(n):
-            print(y, end=" ")
-        print("")
-        print("-----------------------")
-        for y in range(n):
-            print(y, "|", end="")    # print the row #
-            for x in range(n):
-                piece = board[y][x]    # get the piece to print
-                print(OthelloGame.square_content[piece], end=" ")
-            print("|")
-
-        print("-----------------------")
-        """
+        return surface

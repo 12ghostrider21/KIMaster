@@ -1,10 +1,9 @@
 import logging
-import asyncio
 import numpy as np
 from tqdm import tqdm
 
 from player import Player
-from Tools.e_response import EResponse
+from Tools.e_response import Response, EResponse
 
 log = logging.getLogger(__name__)
 
@@ -34,6 +33,7 @@ class Arena:
         self.history = []  # (board, cur_player, iterator)
         self.blunder_history = []  # (iterator, action, curPlayer)
         self.timeline_start: int = 0
+        self.swapped = False
 
     async def send_response(self, response_code: EResponse, cur_player: int | None, response_msg: str,
                             data: dict | None = None):
@@ -58,10 +58,12 @@ class Arena:
             board = self.game.getInitBoard()
 
         while self.game.getGameEnded(board, cur_player) == 0:  # 0 if game is not finished
-            if verbose and not eval:
+            if verbose or eval:
                 await self.send_board(board, cur_player)
-            if verbose:
-                self.history.append((board, cur_player, it))
+                if verbose:
+                    self.history.append((board, cur_player, it))
+                    if not eval:
+                        await self.send_board_representation(board, cur_player)
 
             # user / userAI in turn
             if not isinstance(players[cur_player + 1], type(Player.play)):
@@ -86,12 +88,12 @@ class Arena:
 
         if verbose:
             self.history.append((board, cur_player, it))
-            if not eval:
-                await self.send_board(board, cur_player)
-                await self.send_response(EResponse.SUCCESS, None, "Game over: ",
-                                         {"result": -cur_player,
+            if verbose and not eval:
+                await self.send_board_representation(board, cur_player)
+                await self.send_response(EResponse.P_GAMEOVER, None, "Game over:",
+                                         {"result": round(cur_player * self.game.getGameEnded(board, cur_player)),
                                           "turn": it})
-        return -cur_player
+        return round(cur_player * self.game.getGameEnded(board, cur_player))
 
     async def playGames(self, num, train=True):
         """
@@ -112,7 +114,9 @@ class Arena:
         for i in [1, 2]:
             break_outer = False
             for j in tqdm(range(half), desc=f"Arena.playGames ({i})"):
-                if i == 1 and j == 0:
+                if train:
+                    game_result = await self.playGame(verbose=False, eval=False)
+                elif i == 1 and j == 0:  # in order to track blunder and timeline for at least 1 game of the evaluation
                     game_result = await self.playGame(verbose=True, eval=True)
                 else:
                     game_result = await self.playGame(verbose=False, eval=True)
@@ -130,13 +134,14 @@ class Arena:
             if break_outer:
                 break
             self.player1, self.player2 = self.player2, self.player1
+            self.swapped = True if not self.swapped else False
             tmp = one_won
             one_won = two_won
             two_won = tmp
 
         if not train:
             # eval is always against alphaZeroAI => the users AI is always player1 => curPlayer = 1
-            await self.send_response(EResponse.SUCCESS, 1, "Evaluation finished",
+            await self.send_response(EResponse.P_EVALOVER, 1, "Evaluation finished:",
                                      {"wins": one_won,
                                       "losses": two_won,
                                       "draws": draws})
@@ -152,24 +157,30 @@ class Arena:
 
         # sorting it and getting the worse half of all possible actions
         sorted_list = sorted(ref_actions)
-        upper_half = len(sorted_list) // 2
-        bad_actions = sorted_list[:upper_half]
+        filtered_list = [action for action in sorted_list if action != 0]
+        upper_half = len(filtered_list) // 2
+        bad_actions = filtered_list[:upper_half]
 
         # getting the indices of the bad moves (the positions on the board (= move))
-        bad_actions = np.flatnonzero(np.isin(np.array(bad_actions), np.array(ref_actions)))
+        bad_actions = np.flatnonzero(np.isin(np.array(ref_actions), np.array(bad_actions)))
         for a in bad_actions:  # comparing move with rather bad moves for show_blunder function
             if action == a:
                 self.blunder_history.append((it, action, cur_player))
 
     async def send_board(self, board: np.array, cur_player: int):
+        await self.send_response(EResponse.P_BOARD, cur_player, "", {"board": board.tolist()})
+
+    async def send_board_representation(self, board: np.array, cur_player: int):
         representation = self.game.draw_terminal(board, False, cur_player)
-        await self.send_response(EResponse.SUCCESS,
-                                 None, "", {"board": representation, "player": cur_player})
+        await self.send_response(EResponse.P_REPRESENTATION,
+                                 None, "", {"representation": representation})
         img1 = self.game.draw(board, False, cur_player)
         img2 = self.game.draw(board, False, -cur_player)
         await self.game_client.broadcast_image(img1, img2)
 
-    def player_to_txt(self, cur_player: int):
+    def player_to_txt(self, cur_player: int) -> str | None:
+        if self.swapped:
+            cur_player = -cur_player
         match cur_player:
             case 1:
                 return "p1"
@@ -178,7 +189,7 @@ class Arena:
             case _:
                 return None
 
-    async def undo_move(self, amount: int):
+    async def undo_move(self, amount: int) -> Response:
         if len(self.history) >= 3:  # otherwise the user would try to undo a move he hasn't done yet
             final_amount = amount * 2  # amount * 2 because undoing enemies move as well
             if self.game_client.pit.arena_task.done() and self.history[-1][1] == -1:  # if game is finished, special
@@ -189,14 +200,17 @@ class Arena:
                 if len(self.history) == 1:  # if hand in amount is too high ==> going back to at least init_state of
                     # the board
                     break
+        it = self.history[-1][2]
+        self.blunder_history = [self.blunder_history[i] for i in range(len(self.blunder_history))
+                                if self.blunder_history[i][0] < it]
         tmp = self.history[-1]
         self.history.pop()  # additional pop because the same state is added again at the beginning of play
         await self.game_client.pit.start_game(num_games=1, verbose=True, board=tmp[0], cur_player=tmp[1], it=tmp[2])
-        await self.send_response(EResponse.SUCCESS, tmp[1], "Move successfully undone")
+        return Response(EResponse.P_VALIDUNDO, "Move successfully undone.")
 
     async def draw_valid_moves(self, from_pos: int):
         try:
-            img = self.game.draw(self.game.getCanonicalForm(self.history[-1][0], -self.history[-1][1]), True,
+            img = self.game.draw(self.game.getCanonicalForm(self.history[-1][0], self.history[-1][1]), True,
                                  self.history[-1][1], from_pos)
             representation = self.game.draw_terminal(self.history[-1][0], True, self.history[-1][1], from_pos)
             return img, representation
