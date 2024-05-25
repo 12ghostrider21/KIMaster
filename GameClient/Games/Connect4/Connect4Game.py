@@ -1,9 +1,7 @@
-import io
-
 import numpy as np
 import pygame
 from Tools.i_game import IGame
-from .Connect4Logic import Board
+from Connect4Logic import Board
 
 
 class Connect4Game(IGame):

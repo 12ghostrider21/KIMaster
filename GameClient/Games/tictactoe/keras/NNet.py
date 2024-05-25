@@ -7,11 +7,11 @@ import numpy as np
 import math
 import sys
 sys.path.append('..')
-from utils import *
-from NeuralNet import NeuralNet
+from Tools.utils import *
+from Tools.neural_net import NeuralNet
 
 import argparse
-from .TicTacToeNNet import TicTacToeNNet as onnet
+from TicTacToeNNet import TicTacToeNNet as onnet
 
 """
 NeuralNet wrapper class for the TicTacToeNNet.

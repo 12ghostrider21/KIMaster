@@ -4,15 +4,13 @@ import time
 
 import numpy as np
 from tqdm import tqdm
-
-sys.path.append('../../')
-from utils import *
-from NeuralNet import NeuralNet
+from Tools.utils import *
+from Tools.neural_net import NeuralNet
 
 import torch
 import torch.optim as optim
 
-from .OthelloNNet import OthelloNNet as onnet
+from OthelloNNet import OthelloNNet as onnet
 
 args = dotdict({
     'lr': 0.001,
