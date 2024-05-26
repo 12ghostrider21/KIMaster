@@ -10,7 +10,7 @@ sys.path.append('..')
 from Tools.utils import dotdict
 from Tools.neural_net import NeuralNet
 
-from .TicTacToeNNet import TicTacToeNNet as onnet
+from TicTacToeNNet import TicTacToeNNet as onnet
 
 """
 NeuralNet wrapper class for the TicTacToeNNet.

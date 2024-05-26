@@ -9,7 +9,7 @@ from websockets import ConnectionClosedError
 from starlette.websockets import WebSocketDisconnect
 from pit import Pit
 
-from Tools.game_config import GameConfig, EGame, EGameMode, EDifficulty
+from Tools.Game_Config import GameConfig, EGameMode, EDifficulty, GameEnum
 from Tools.Response import R_CODE
 
 
@@ -20,6 +20,7 @@ class GameClient:
         self.key: str = key
         self.pit: Pit | None = None
         self.websocket = None
+        GameEnum.update(directory="Games")
 
     @staticmethod
     def surface_to_png(img: surface) -> bytes:
@@ -308,7 +309,7 @@ class GameClient:
         await self.send_image(img, player_pos)
 
     def extract_game_config(self, command: dict) -> GameConfig:
-        c_game = self.get_enum(EGame, command.get("game"))
+        c_game = GameEnum.get(command.get("game"))
         c_mode = self.get_enum(EGameMode, command.get("mode"))
         c_difficulty = self.get_enum(EDifficulty, command.get("difficulty"))
         return GameConfig(game=c_game, mode=c_mode, difficulty=c_difficulty)

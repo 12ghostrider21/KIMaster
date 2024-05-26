@@ -1,5 +1,5 @@
 from Tools.Game_dev import IGame, np, pygame
-from .TicTacToeLogic import Board
+from TicTacToeLogic import Board
 
 """
 Game class implementation for the game of TicTacToe.

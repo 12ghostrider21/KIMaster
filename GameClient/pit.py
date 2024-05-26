@@ -5,7 +5,7 @@ from asyncio import create_task, Task
 import numpy as np
 from starlette.websockets import WebSocket
 
-from Tools.game_config import GameConfig, EDifficulty
+from Tools.Game_Config import GameConfig, EDifficulty
 from Tools.Response import R_CODE, Response
 from Tools.utils import dotdict
 from Tools.mcts import MCTS
@@ -55,30 +55,24 @@ class Pit:
             self.game_config = game_config
 
         # get all values for init or set default values
-        game = self.game_config.game.value[0]()  # create new game instance of Game import of EGame
-        game_name = self.game_config.game.name
-        nnet = self.game_config.game.value[1]  # get the right NNet
+        game = self.game_config.game.game_class()  # create new game instance of Game import of EGame
+        game_name = self.game_config.game.game_name
+        network_class = self.game_config.game.nnet_class # get the right NNet
         difficulty = self.game_config.difficulty
         self.player1 = Player(game, self.game_client, True if num_games > 1 else False)
         self.player2 = Player(game, self.game_client, True if num_games > 1 else False)
+        folder, file = None, "best.h5"
 
-        # load pretrained model
-        try:
-            path = os.path.abspath(f"../GameClient/pretrained_models/{game_name}/best.h5")
-            folder = os.path.dirname(path)
-            file = os.path.basename(path)
-        except FileNotFoundError:
-            log.error(f"Pretrained model file not found! Game: {game_name}")
-            return
-        except IsADirectoryError:
-            log.error(f"Pretrained model is a directory not a file! Game: {game_name}")
-            return
-        except Exception:
-            log.error(f"Unknown exception on load of pretrained model! Game: {game_name}")
-            return
+        for dirpath, dirnames, filenames in os.walk("../GameClient/pretrained_models"):
+            for dir_name in dirnames:
+                if dir_name.lower() == game_name.lower():  # find correct directory
+                    folder = f"{dirpath}/{dir_name}"
+                    if not os.path.exists(f"{dirpath}/{folder}/{file}"):
+                        print(f"Pretrained model file not found! Game: {game_name}")
+                    break
 
         try:
-            mcts = self.init_nn(game, nnet, folder, file, difficulty)
+            mcts = self.init_nn(game, network_class, folder, file, difficulty)
             match self.game_config.mode.value:
                 case "player_vs_player":
                     play1 = self.player1.play

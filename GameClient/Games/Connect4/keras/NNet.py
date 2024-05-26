@@ -4,7 +4,7 @@ import numpy as np
 from Tools.utils import dotdict
 from Tools.neural_net import NeuralNet
 
-from .Connect4NNet import Connect4NNet as onnet
+from Connect4NNet import Connect4NNet as onnet
 
 args = dotdict({
     'lr': 0.001,

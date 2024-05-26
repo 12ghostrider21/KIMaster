@@ -1,5 +1,5 @@
 from Tools.Game_dev import IGame, np, pygame
-from .OthelloLogic import Board
+from OthelloLogic import Board
 
 
 class OthelloGame(IGame):
