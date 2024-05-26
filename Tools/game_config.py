@@ -7,8 +7,8 @@ from Games.tictactoe.TicTacToeGame import TicTacToeGame
 from Games.tictactoe.keras.NNet import NNetWrapper as TicTacToeNNet
 from Games.othello.OthelloGame import OthelloGame
 from Games.othello.pytorch.NNet import NNetWrapper as OthelloNNet
-from Games.connect4.Connect4Game import Connect4Game
-from Games.connect4.keras.NNet import NNetWrapper as Connect4NNet
+from Games.Connect4.Connect4Game import Connect4Game
+from Games.Connect4.keras.NNet import NNetWrapper as Connect4NNet
 
 
 
