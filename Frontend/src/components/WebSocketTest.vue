@@ -373,7 +373,7 @@ else {this.socket = new WebSocket('ws://localhost:8000/ws');} //Static URL if ad
     playTimeLine() {
       const data = {
         command: 'play',
-        command_key: 'timeLine',
+        command_key: 'timeline',
         num: this.timeLineNum,
       };
       this.sendMessage(data);
