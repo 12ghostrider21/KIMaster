@@ -5,6 +5,7 @@ from threading import Thread
 from starlette.websockets import WebSocketState
 
 from Tools.Response import R_CODE
+from Tools.Game_Config import GameEnum
 from socketServer import SocketServer
 
 
@@ -205,7 +206,6 @@ class FastAPIServer:
                     await self.send_response(client, R_CODE.L_CLIENTNOTEXIST, "Client not in a lobby!")
                 else:
                     await self.send_response(client, R_CODE.L_STATUS, "Status of lobby.", lobby.status())
-
             case _:
                 await self.send_response(client, R_CODE.COMMANDNOTFOUND, f"Command '{command_key}' not found!")
 
@@ -237,7 +237,7 @@ class FastAPIServer:
         data = {"player_pos": pos, "key": lobby.key, **read_object}
 
         if command_key in {"create", "valid_moves", "make_move", "undo_move", "surrender", "quit", "new_game",
-                           "blunder", "timeline", "step", "unstep", "evaluate", "stop_evaluate"}:
+                           "blunder", "timeline", "step", "unstep", "evaluate", "stop_evaluate", "games"}:
             await self.socket_server.send_cmd(game_client, "play", command_key, data)
         else:
             await self.send_response(client, R_CODE.COMMANDNOTFOUND, f"Command '{command_key}' not found!")

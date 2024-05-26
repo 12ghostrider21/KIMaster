@@ -55,25 +55,19 @@ class Pit:
             self.game_config = game_config
 
         # get all values for init or set default values
-        game = self.game_config.game.game_class()  # create new game instance of Game import of EGame
-        game_name = self.game_config.game.game_name
-        network_class = self.game_config.game.nnet_class # get the right NNet
-        difficulty = self.game_config.difficulty
+        game = self.game_config.game.game_class()           # get the game_class
+        network_class = self.game_config.game.nnet_class    # get the right NNet
+        h5_folder = self.game_config.game.h5_folder         # get the .h5 trained model path
+        h5_file = self.game_config.game.h5_file_name        # get the .h5 file
+        difficulty = self.game_config.difficulty            # get the play difficulty
+        mode = self.game_config.mode                        # get the play mode
+
         self.player1 = Player(game, self.game_client, True if num_games > 1 else False)
         self.player2 = Player(game, self.game_client, True if num_games > 1 else False)
-        folder, file = None, "best.h5"
-
-        for dirpath, dirnames, filenames in os.walk("../GameClient/pretrained_models"):
-            for dir_name in dirnames:
-                if dir_name.lower() == game_name.lower():  # find correct directory
-                    folder = f"{dirpath}/{dir_name}"
-                    if not os.path.exists(f"{dirpath}/{folder}/{file}"):
-                        print(f"Pretrained model file not found! Game: {game_name}")
-                    break
 
         try:
-            mcts = self.init_nn(game, network_class, folder, file, difficulty)
-            match self.game_config.mode.value:
+            mcts = self.init_nn(game, network_class, h5_folder, h5_file, difficulty)
+            match mode.value:
                 case "player_vs_player":
                     play1 = self.player1.play
                     play2 = self.player2.play

@@ -2,7 +2,9 @@ import ast
 import importlib.util
 import os
 import sys
-from Tools.Game_Config import Entry
+from dataclasses import asdict
+
+from .entry import Entry
 
 
 class GameEnumMeta(type):
@@ -63,8 +65,20 @@ class GameEnumMeta(type):
                 wrapper_class = self.__load_class(game_path_pytorch, "NNet.py", "NNetWrapper")
             elif os.path.exists(game_path_keras):
                 wrapper_class = self.__load_class(game_path_keras, "NNet.py", "NNetWrapper")
+
+            path = os.path.abspath(directory).replace(os.path.basename(directory), "")
+            h5_folder, h5_file = None, None  # init default values
+            for dirpath, dirnames, filenames in os.walk(path):
+                for file in filenames:
+                    if file.endswith(".h5"):
+                        if game.lower() == os.path.basename(dirpath).lower():
+                            h5_folder = dirpath
+                            h5_file = file
+                            if h5_file.lower() == "best.h5".lower():
+                                break
+
             if game_class and wrapper_class:
-                entry_list.append(Entry(game, game_class, wrapper_class))
+                entry_list.append(Entry(game, game_class, wrapper_class, h5_folder, h5_file))
             else:
                 raise FileNotFoundError(f"Game: {game} does not have a keras or pytorch module!")
         return entry_list
@@ -85,7 +99,10 @@ class GameEnum(metaclass=GameEnumMeta):
         return None
 
     @classmethod
-    def update(cls, directory: str):
+    def update(cls, directory: str) -> None:
         for e in cls.get_entries(directory):
             cls.add(e.game_name, e)
 
+    @classmethod
+    def check_entry(cls, entry: Entry) -> bool:
+        return all(value is not None for value in asdict(entry).values())

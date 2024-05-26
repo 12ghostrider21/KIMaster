@@ -42,6 +42,7 @@ class R_CODE(Enum):
     P_BLUNDER = 212
     P_BLUNDERLIST = 213
     P_TIMELINE = 214
+    P_GAMES = 215
 
     # Play error = 250 - 300
     P_NOGAMECLIENT = 250
@@ -58,6 +59,8 @@ class R_CODE(Enum):
     P_INVALIDTIMELINE = 261
     P_NOEVALUATION = 262
     P_INVALIDEVALUATION = 263
+    P_NOAVAILABLEGAMES = 264
+    P_GAMENOTAWAILABLE = 265
 
     # Debug success = 300 - 350
     D_CONTAINER = 300
