@@ -11,17 +11,10 @@ from pit import Pit
 
 from Tools.Game_Config import GameConfig, EGameMode, EDifficulty, GameEnum
 from Tools.Response import R_CODE
+from Tools.game_states import GAMESTATE
 
 
 class GameClient:
-    def __init__(self, host: str, port: int, key: str):
-        self.host: str = host
-        self.port: int = port
-        self.key: str = key
-        self.pit: Pit | None = None
-        self.websocket = None
-        GameEnum.update(directory="Games")
-
     @staticmethod
     def surface_to_png(img: surface) -> bytes:
         byte_io = io.BytesIO()
@@ -29,6 +22,18 @@ class GameClient:
         png_bytes = byte_io.getvalue()
         byte_io.close()
         return png_bytes
+
+    def __init__(self, host: str, port: int, key: str):
+        self.host: str = host
+        self.port: int = port
+        self.key: str = key
+        self.pit: Pit | None = None
+        self.websocket = None
+        GameEnum.update(directory="Games")
+        self.state: GAMESTATE = GAMESTATE.WAITING
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # network
 
     async def connect(self):
         url = f"ws://{self.host}:{self.port}/ws"
@@ -76,6 +81,8 @@ class GameClient:
         cmd = json.dumps(cmd)
         await self.websocket.send(cmd)
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # operation loop
     async def run(self):
         loop = await self.connect()
         while loop:
@@ -89,16 +96,30 @@ class GameClient:
             except ConnectionClosedError:
                 print("Server closed!")
                 break
-            p_pos: str = read_object.get("p_pos")
-            command_key: str | None = read_object.get("command_key")
-            if self.pit is None and command_key not in ["create", "evaluate", "quit", "games"]:
-                await self.send_response(R_CODE.P_NOINIT, p_pos, "You need to create a game first!")
-                continue
-            if self.pit:
-                if self.pit.arena_task:
-                    if self.pit.arena_task.done() and command_key in ["valid_moves", "make_move", "surrender"]:
+            p_pos: str = read_object.get("player_pos")
+            command_key: str = read_object.get("command_key")
+            print(self.state, read_object)
+            match self.state:
+                case GAMESTATE.WAITING:
+                    if command_key not in ["create", "evaluate", "quit", "games"]:
                         await self.send_response(R_CODE.P_NOINIT, p_pos, "You need to create a game first!")
                         continue
+                    # create -> Running
+                    # evaluate -> EVALUATE
+                case GAMESTATE.RUNNING:
+                    if command_key not in ["valid_moves", "make_move", "undo_move", "surrender", "blunder"]:
+                        await self.send_response(R_CODE.P_STILLRUNNING, p_pos,
+                                                 "Game still running. Please surrender first!")
+                        continue
+
+                    # surrender -> FINISHED
+                    # make_move (won or lost) -> FINISHED
+                case GAMESTATE.FINISHED:
+                    if command_key not in ["new_game", "timeline", "step", "unstep", "blunder", "quit", "create"]:
+                        await self.send_response(R_CODE.P_GAMEOVER, p_pos,
+                                                 "Game is over, you can not play anymore!")
+                        continue
+                    # new_game -> RUNNING
 
             match command_key:
                 case "create":
@@ -129,6 +150,7 @@ class GameClient:
                                              p_pos=None,
                                              response_msg=response.response_msg,
                                              data=response.data)
+                    self.state = GAMESTATE.RUNNING
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "valid_moves":
                     pos = read_object.get("pos")
@@ -162,7 +184,7 @@ class GameClient:
                     if move is None:
                         await self.send_response(R_CODE.P_INVALIDMOVE, p_pos, "Invalid move!")
                         continue
-                    print(move)
+                    print(f"Make move: {move=}")
                     await self.pit.set_move(move, p_pos)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "undo_move":
@@ -194,13 +216,11 @@ class GameClient:
                     await self.pit.arena_task
                     await self.send_response(R_CODE.P_SURRENDER, None, "Game over:",
                                              {"result": winner})
+                    self.state = GAMESTATE.FINISHED
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "quit":
-                    if not self.pit.arena_task.done():
-                        await self.send_response(R_CODE.P_STILLRUNNING, p_pos,
-                                                 "Game still running. Please surrender first!")
-                        continue
                     await self.send_response(R_CODE.P_QUIT, p_pos, "Game quit.")
+                    await self.send_cmd("game_client", "quit")
                     break
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "new_game":
@@ -215,6 +235,7 @@ class GameClient:
                                              p_pos=p_pos,
                                              response_msg=response.response_msg,
                                              data=response.data)
+                    self.state = GAMESTATE.RUNNING
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "blunder":
                     blunder = await self.pit.arena.show_blunder(p_pos)
@@ -299,10 +320,17 @@ class GameClient:
                                              p_pos=p_pos,
                                              response_msg=response.response_msg,
                                              data=response.data)
+                    self.state = GAMESTATE.EVALUATE
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "stop_evaluate":
                     await self.pit.stop_play(p_pos)
                     await self.pit.arena_task
+                    self.state = GAMESTATE.WAITING
+                case _:
+                    print(f"DEBUG: {command_key}")
+            # update game_state value in lobby
+            print(self.state)
+            await self.send_cmd("game_client", "state", {"state": self.state.name})
         await self.websocket.close()
 
     async def handle_timeline(self, player_pos: str, step: str, *args: int):

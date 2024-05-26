@@ -6,6 +6,7 @@ from starlette.websockets import WebSocketState
 
 from Tools.Response import R_CODE
 from Tools.Game_Config import GameEnum
+from Tools.game_states import GAMESTATE
 from socketServer import SocketServer
 
 
@@ -176,6 +177,11 @@ class FastAPIServer:
                                              {"key": lobby_key})
 
             case "leave":
+                lobby = lobby_manager.get_lobby(client)
+                if lobby:
+                    if lobby.state.name == GAMESTATE.RUNNING.name and lobby_manager.get_pos_of_client(client) != "sp":
+                        await self.send_response(client, R_CODE.P_STILLRUNNING, "Game is running! Surrender first!")
+                        return
                 if not lobby_manager.leave_lobby(client):
                     await self.send_response(client, R_CODE.L_CLIENTNOTEXIST, "Client not in a lobby!")
                 else:
@@ -184,15 +190,21 @@ class FastAPIServer:
             case "swap":
                 pos = read_object.get("pos")
                 lobby = lobby_manager.get_lobby(client)
+
                 if not lobby:
                     await self.send_response(client, R_CODE.L_CLIENTNOTEXIST, "Client not in a lobby!")
-                elif pos not in ["p1", "p2", "sp"]:
+                    return
+                if lobby.state == GAMESTATE.RUNNING:
+                    await self.send_response(client, R_CODE.P_STILLRUNNING, "Game is running! Surrender first!")
+                    return
+                if pos not in ["p1", "p2", "sp"]:
                     await self.send_response(client, R_CODE.L_POSUNKNOWN, "Position unknown!", {"pos": pos})
-                elif not lobby_manager.swap_to(pos, client):
+                    return
+                if not lobby_manager.swap_to(pos, client):
                     await self.send_response(client, R_CODE.L_POSOCCUPIED, "Position already occupied!",
                                              {"pos": pos})
-                else:
-                    await self.send_response(client, R_CODE.L_SWAPPED, "Client swapped!", {"pos": pos})
+                    return
+                await self.send_response(client, R_CODE.L_SWAPPED, "Client swapped!", {"pos": pos})
 
             case "pos":
                 pos = lobby_manager.get_pos_of_client(client)
@@ -220,6 +232,10 @@ class FastAPIServer:
         """
         command_key = read_object.get("command_key")
         lobby = self.socket_server.lobby_manager.get_lobby(client)
+        if lobby.quit:     # game client was quit or crashed
+            await self.send_response(client, R_CODE.GAMECLIENTQUIT,
+                                     "GameClient not available anymore, please create a new lobby!")
+            return
 
         if not lobby:
             await self.send_response(client, R_CODE.L_CLIENTNOTEXIST, "Client not in a lobby!")

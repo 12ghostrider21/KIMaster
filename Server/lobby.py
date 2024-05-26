@@ -1,4 +1,5 @@
 from starlette.websockets import WebSocket
+from Tools.game_states import GAMESTATE
 
 # ********************************************************************************************************************
 # Lobby class to manage a single lobby's clients and their roles (player 1, player 2, spectators).
@@ -17,6 +18,11 @@ class Lobby:
         self.p2: WebSocket | None = None
         self.spectator_list: list[WebSocket] = []
         self.game_client: WebSocket | None = None
+        self.quit: bool = False
+        self.state: GAMESTATE = GAMESTATE.WAITING
+
+    def get_client(self, pos: str) -> WebSocket | list[WebSocket]:
+        return {"p1": self.p1, "p2": self.p2, "sp": self.spectator_list}.get(pos)
 
     def is_empty(self) -> bool:
         """
@@ -160,6 +166,7 @@ class Lobby:
                 "P2": "True" if self.p2 else "False",
                 "Spectators": len(self.spectator_list),
                 "GameClient": "True" if self.game_client else "False",
+                "GameState": self.state.name,
                 "key": self.key}
 
     def __str__(self):

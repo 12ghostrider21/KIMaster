@@ -8,6 +8,7 @@ class R_CODE(Enum):
     COMMANDNOTFOUND = 50
     NONVALIDJSON = 51
     INTERNALERROR = 52
+    GAMECLIENTQUIT = 53
 
     # Lobby success = 100 -150
     L_CREATED = 100

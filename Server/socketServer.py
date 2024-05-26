@@ -4,6 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 from starlette.websockets import WebSocket, WebSocketState, WebSocketDisconnect
 from Tools.Response import R_CODE
+from Tools.game_states import GAMESTATE
 from lobby_manager import LobbyManager
 from lobby import Lobby
 
@@ -41,11 +42,7 @@ class SocketServer:
                         read_object.pop("player_pos")
                     except KeyError:
                         pass
-
-                    client: WebSocket | list[WebSocket] = {"p1": lobby.p1,
-                                                           "p2": lobby.p2,
-                                                           "sp": lobby.spectator_list
-                                                           }.get(read_object.get("player_pos"))
+                    client: WebSocket = lobby.get_client(read_object.get("player_pos"))
                     if isinstance(client, list) or client is None:
                         await self.send_broadcast(lobby=lobby,
                                                   response_code=read_object.get("response_code"),
@@ -65,6 +62,14 @@ class SocketServer:
                 match command:
                     case "exit":
                         break
+                    case "game_client":
+                        match command_key:
+                            case "state":
+                                for s in GAMESTATE:
+                                    if s.name == read_object.get("state"):
+                                        lobby.state = s
+                            case "quit":
+                                lobby.quit = True
                     case "img":
                         # Handle image reception and broadcasting
                         img1: bytes = await game_client.receive_bytes()

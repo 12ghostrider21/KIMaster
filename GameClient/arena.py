@@ -3,6 +3,9 @@ from tqdm import tqdm
 
 from player import Player
 from Tools.Response import *
+from Tools.game_states import GAMESTATE
+
+
 
 
 class Arena:
@@ -88,6 +91,7 @@ class Arena:
                 await self.send_response(R_CODE.P_GAMEOVER, None, "Game over:",
                                          {"result": round(cur_player * self.game.getGameEnded(board, cur_player)),
                                           "turn": it})
+                self.game_client.state = GAMESTATE.FINISHED
         return round(cur_player * self.game.getGameEnded(board, cur_player))
 
     async def playGames(self, num, train=True):
@@ -140,7 +144,7 @@ class Arena:
                                      {"wins": one_won,
                                       "losses": two_won,
                                       "draws": draws})
-
+        self.game_client.state = GAMESTATE.FINISHED
         return one_won, two_won, draws
 
     def evaluate_blunder(self, action):
