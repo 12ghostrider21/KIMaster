@@ -171,7 +171,8 @@ class FastAPIServer:
                         "pos": lobby_manager.get_pos_of_client(client)
                     })
                 else:
-                    await self.send_response(client, R_CODE.L_JOINFAILURE, "Failed to join lobby! Maybe blocked?",
+                    await self.send_response(client, R_CODE.L_JOINFAILURE,
+                                             "Failed to join lobby! Maybe position blocked?",
                                              {"key": lobby_key})
 
             case "leave":
