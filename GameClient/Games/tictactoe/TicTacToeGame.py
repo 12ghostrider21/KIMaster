@@ -1,6 +1,4 @@
-import numpy as np
-import pygame
-from Tools.i_game import IGame
+from Tools.Game_dev import IGame, np, pygame
 from .TicTacToeLogic import Board
 
 """
@@ -78,7 +76,7 @@ class TicTacToeGame(IGame):
         # mirror, rotational
         assert (len(pi) == self.n ** 2 + 1)  # 1 for pass
         pi_board = np.reshape(pi[:-1], (self.n, self.n))
-        l = []
+        x = []
 
         for i in range(1, 5):
             for j in [True, False]:
@@ -87,8 +85,8 @@ class TicTacToeGame(IGame):
                 if j:
                     newB = np.fliplr(newB)
                     newPi = np.fliplr(newPi)
-                l += [(newB, list(newPi.ravel()) + [pi[-1]])]
-        return l
+                x += [(newB, list(newPi.ravel()) + [pi[-1]])]
+        return x
 
     def stringRepresentation(self, board):
         # 8x8 numpy array (canonical board)

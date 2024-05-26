@@ -1,8 +1,4 @@
-import io
-
-import numpy as np
-import pygame
-from Tools.i_game import IGame
+from Tools.Game_dev import IGame, np, pygame
 from .Connect4Logic import Board
 
 
