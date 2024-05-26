@@ -1,7 +1,3 @@
-#from __future__ import print_function
-#import sys
-#sys.path.append('..')
-#from Game import Game
 import numpy as np
 import pygame
 from Tools.i_game import IGame
@@ -16,6 +12,8 @@ Date: Jan 5, 2018.
 
 Based on the OthelloGame by Surag Nair.
 """
+
+
 class TicTacToeGame(IGame):
     def __init__(self, n=3):
         self.n = n
@@ -27,34 +25,34 @@ class TicTacToeGame(IGame):
 
     def getBoardSize(self):
         # (a,b) tuple
-        return (self.n, self.n)
+        return self.n, self.n
 
     def getActionSize(self):
         # return number of actions
-        return self.n*self.n + 1
+        return self.n * self.n + 1
 
     def getNextState(self, board, player, action):
         # if player takes action on board, return next (board,player)
         # action must be a valid move
-        if action == self.n*self.n:
-            return (board, -player)
+        if action == self.n * self.n:
+            return board, -player
         b = Board(self.n)
         b.pieces = np.copy(board)
-        move = (int(action/self.n), action%self.n)
+        move = (int(action / self.n), action % self.n)
         b.execute_move(move, player)
-        return (b.pieces, -player)
+        return b.pieces, -player
 
     def getValidMoves(self, board, player):
         # return a fixed size binary vector
-        valids = [0]*self.getActionSize()
+        valids = [0] * self.getActionSize()
         b = Board(self.n)
         b.pieces = np.copy(board)
-        legalMoves =  b.get_legal_moves(player)
-        if len(legalMoves)==0:
-            valids[-1]=1
+        legalMoves = b.get_legal_moves(player)
+        if len(legalMoves) == 0:
+            valids[-1] = 1
             return np.array(valids)
         for x, y in legalMoves:
-            valids[self.n*x+y]=1
+            valids[self.n * x + y] = 1
         return np.array(valids)
 
     def getGameEnded(self, board, player):
@@ -74,11 +72,11 @@ class TicTacToeGame(IGame):
 
     def getCanonicalForm(self, board, player):
         # return state if player==1, else return -state if player==-1
-        return player*board
+        return player * board
 
     def getSymmetries(self, board, pi):
         # mirror, rotational
-        assert(len(pi) == self.n**2+1)  # 1 for pass
+        assert (len(pi) == self.n ** 2 + 1)  # 1 for pass
         pi_board = np.reshape(pi[:-1], (self.n, self.n))
         l = []
 
@@ -117,7 +115,7 @@ class TicTacToeGame(IGame):
 
             return output
 
-    def draw(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
+    def draw(self, board: np.array, valid_moves: bool, cur_player: int, *args: any) -> pygame.surface:
         row_count = board.shape[0]
         col_count = board.shape[1]
         SQUARESIZE = 100
@@ -153,13 +151,13 @@ class TicTacToeGame(IGame):
                                        (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE + SQUARESIZE // 2),
                                        SQUARESIZE // 8)
                 if board[row][col] == 1:
-                    pygame.draw.line(surface, color_X, 
+                    pygame.draw.line(surface, color_X,
                                      (col * SQUARESIZE + 15, row * SQUARESIZE + 15),
-                                     (col * SQUARESIZE + SQUARESIZE - 15, row * SQUARESIZE + SQUARESIZE - 15), 
+                                     (col * SQUARESIZE + SQUARESIZE - 15, row * SQUARESIZE + SQUARESIZE - 15),
                                      13)
-                    pygame.draw.line(surface, color_X, 
+                    pygame.draw.line(surface, color_X,
                                      (col * SQUARESIZE + 15, row * SQUARESIZE + SQUARESIZE - 15),
-                                     (col * SQUARESIZE + SQUARESIZE - 15, row * SQUARESIZE + 15), 
+                                     (col * SQUARESIZE + SQUARESIZE - 15, row * SQUARESIZE + 15),
                                      13)
                 elif board[row][col] == -1:
                     pygame.draw.circle(surface, color_O,

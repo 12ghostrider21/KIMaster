@@ -1,8 +1,7 @@
-from dataclasses import dataclass
 from enum import Enum
 
 
-class EResponse(Enum):
+class R_CODE(Enum):
     # General success = 0 - 50
 
     # General error = 50 - 100
@@ -65,15 +64,3 @@ class EResponse(Enum):
     D_TOGGLE = 301
 
     # Debug error = 350 - 400
-
-
-@dataclass
-class Response:
-    response_code: EResponse
-    response_msg: str
-    data: dict | None
-
-    def __init__(self, response_code: EResponse, response_msg: str, data: dict | None = None):
-        self.response_code: EResponse = response_code
-        self.response_msg: str = response_msg
-        self.data: dict | None = data

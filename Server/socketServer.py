@@ -3,7 +3,7 @@ import json
 import uvicorn
 from fastapi import FastAPI
 from starlette.websockets import WebSocket, WebSocketState, WebSocketDisconnect
-from Tools.e_response import EResponse
+from Tools.Response import R_CODE
 from lobby_manager import LobbyManager
 from lobby import Lobby
 
@@ -31,7 +31,7 @@ class SocketServer:
                 try:
                     read_object: dict = await game_client.receive_json()
                 except json.decoder.JSONDecodeError:
-                    await self.send_response(game_client, EResponse.NONVALIDJSON, "Received data is not a correct JSON!")
+                    await self.send_response(game_client, R_CODE.NONVALIDJSON, "Received data is not a correct JSON!")
                     continue
                 except WebSocketDisconnect:
                     break
@@ -80,13 +80,13 @@ class SocketServer:
                         # Handle login command
                         lobby: Lobby = self.lobby_manager.lobbies.get(lobby_key)
                         if lobby is None:
-                            await self.send_response(game_client, EResponse.L_LOBBYNOTEXIST, "Lobby does not exist",
+                            await self.send_response(game_client, R_CODE.L_LOBBYNOTEXIST, "Lobby does not exist",
                                                      {"key": lobby_key})
                             continue
                         self.lobby_manager.connect_game_client(lobby_key, game_client)
-                        await self.send_response(game_client, EResponse.L_JOINED, "Joined lobby!", {"key": lobby_key})
+                        await self.send_response(game_client, R_CODE.L_JOINED, "Joined lobby!", {"key": lobby_key})
                     case _:
-                        await self.send_response(game_client, EResponse.COMMANDNOTFOUND,
+                        await self.send_response(game_client, R_CODE.COMMANDNOTFOUND,
                                                  f"Command: '{command}' not found!")
             await self.disconnect(game_client)
 
@@ -105,7 +105,7 @@ class SocketServer:
             cmd.update(data)
         await game_client.send_json(cmd)
 
-    async def send_broadcast(self, lobby: Lobby, response_code: EResponse | int, response_msg: str,
+    async def send_broadcast(self, lobby: Lobby, response_code: R_CODE | int, response_msg: str,
                              data: dict | None = None):
         """
         Broadcast a message to all clients in a lobby.
@@ -117,12 +117,12 @@ class SocketServer:
         for c in lobby.spectator_list:
             await self.send_response(c, response_code, response_msg, data)
 
-    async def send_response(self, client: WebSocket, response_code: EResponse | int, response_msg: str,
+    async def send_response(self, client: WebSocket, response_code: R_CODE | int, response_msg: str,
                             data: dict | None = None):
         """
         Send a response to a client.
         """
-        if isinstance(response_code, EResponse):
+        if isinstance(response_code, R_CODE):
             response_code = response_code.value
         cmd = {"response_code": response_code, "response_msg": response_msg}
         if data is not None:

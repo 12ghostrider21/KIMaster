@@ -6,7 +6,7 @@ import numpy as np
 from starlette.websockets import WebSocket
 
 from Tools.game_config import GameConfig, EDifficulty
-from Tools.e_response import EResponse, Response
+from Tools.Response import R_CODE, Response
 from Tools.utils import dotdict
 from Tools.mcts import MCTS
 from arena import Arena
@@ -39,10 +39,10 @@ class Pit:
                                                                   board=board,
                                                                   cur_player=cur_player,
                                                                   it=it))
-                return Response(EResponse.P_INIT, "Game initialized")
+                return Response(R_CODE.P_INIT, "Game initialized")
             else:
                 self.arena_task = create_task(self.arena.playGames(num_games, train=False))
-                return Response(EResponse.P_EVAL, "Evaluation runs")
+                return Response(R_CODE.P_EVAL, "Evaluation runs")
 
     async def init_game(self, num_games: int, game_config: GameConfig | None) -> Response | None:
         if self.game_config is None and game_config is None:

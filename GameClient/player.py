@@ -1,5 +1,5 @@
 import asyncio
-from Tools.e_response import EResponse
+from Tools.Response import *
 
 
 class Player:
@@ -25,17 +25,17 @@ class Player:
                     if self.move >= len(valid_moves):
                         self.move = None
                         if not self.eval:
-                            await self.game_client.send_response(EResponse.P_INVALIDMOVE, self.player_pos, "Invalid move!")
+                            await self.game_client.send_response(R_CODE.P_INVALIDMOVE, self.player_pos, "Invalid move!")
                     elif valid_moves[self.move]:
                         tmp = self.move
                         self.move = None
                         if not self.eval:
-                            await self.game_client.send_response(EResponse.P_VALIDMOVE, self.player_pos, "Valid move.")
+                            await self.game_client.send_response(R_CODE.P_VALIDMOVE, self.player_pos, "Valid move.")
                         break
                     else:
                         self.move = None
                         if not self.eval:
-                            await self.game_client.send_response(EResponse.P_INVALIDMOVE, self.player_pos, "Invalid move!")
+                            await self.game_client.send_response(R_CODE.P_INVALIDMOVE, self.player_pos, "Invalid move!")
             await asyncio.sleep(0.025)
         return tmp
 
