@@ -147,7 +147,7 @@ Gameclient crashed or closed -> message to Client
 # Examples
 ## Lobby:
 ```json
-{"command": "lobby", "command_key": "create", "key": "lobby_key"}
+{"command": "lobby", "command_key": "create"}
 ```
 ```json
 {"command": "lobby", "command_key": "join", "key": "lobby_key"}
