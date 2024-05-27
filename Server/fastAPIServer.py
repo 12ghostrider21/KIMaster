@@ -5,7 +5,6 @@ from threading import Thread
 from starlette.websockets import WebSocketState
 
 from Tools.Response import R_CODE
-from Tools.Game_Config import GameEnum
 from Tools.game_states import GAMESTATE
 from socketServer import SocketServer
 
@@ -53,8 +52,7 @@ class FastAPIServer:
                     elif command == "lobby":
                         await self.handle_lobby_command(client, read_object)
                     else:
-                        await self.send_response(client, R_CODE.COMMANDNOTFOUND,
-                                                 f"Command: '{command}' not found!")
+                        await self.send_response(client, R_CODE.COMMANDNOTFOUND,{"command": command})
             except WebSocketDisconnect:
                 await self.disconnect(client)
 
@@ -81,17 +79,16 @@ class FastAPIServer:
         self.connected_users.remove(client)
         print(f"FrontEnd Client disconnected: {client}")
 
-    async def send_response(self, client: WebSocket, response_code: R_CODE, response_msg: str, data=None):
+    async def send_response(self, client: WebSocket, code: R_CODE, data=None):
         """
         Send a response to the WebSocket client.
 
         Args:
             client (WebSocket): The WebSocket client connection.
-            response_code (EResponse): The response code.
-            response_msg (str): The response message.
+            code (EResponse): The response code.
             data (dict, optional): Additional data to send.
         """
-        cmd = {"response_code": response_code.value, "response_msg": response_msg}
+        cmd = {"response_code": code.value.code, "response_msg": code.value.msg}
         if data:
             cmd.update(data)
         await client.send_json(cmd)
@@ -126,14 +123,12 @@ class FastAPIServer:
 
         match command_key:
             case "active_container":
-                await self.send_response(client, R_CODE.D_CONTAINER, "List of active GameClients:",
-                                         lobby_manager.docker.list_running_containers())
+                await self.send_response(client, R_CODE.D_CONTAINER, lobby_manager.docker.list_running_containers())
             case "toggle_game_client_debug":
                 value = lobby_manager.docker.toggle_debug()
-                await self.send_response(client, R_CODE.D_TOGGLE, "GameClient debug toggled.",
-                                         {"debug": value})
+                await self.send_response(client, R_CODE.D_TOGGLE, {"debug": value})
             case _:
-                await self.send_response(client, R_CODE.COMMANDNOTFOUND, f"Command '{command_key}' not found!")
+                await self.send_response(client, R_CODE.COMMANDNOTFOUND, {"command": command_key})
 
     async def handle_lobby_command(self, client: WebSocket, read_object: dict):
         """
@@ -150,77 +145,72 @@ class FastAPIServer:
             case "create":
                 lobby = lobby_manager.get_lobby(client)
                 if lobby:
-                    await self.send_response(client, R_CODE.L_CLIENT, "Client already in a lobby!")
+                    await self.send_response(client, R_CODE.L_CLIENT)
                 else:
                     new_lobby_key = lobby_manager.create_lobby()
                     lobby_manager.join_lobby(new_lobby_key, client, "p1")
-                    await self.send_response(client, R_CODE.L_CREATED, "Lobby created!",
-                                             {"key": new_lobby_key})
+                    await self.send_response(client, R_CODE.L_CREATED, {"key": new_lobby_key})
 
             case "join":
                 if lobby_manager.get_lobby(client):
-                    await self.send_response(client, R_CODE.L_CLIENT, "Client already in a lobby!")
+                    await self.send_response(client, R_CODE.L_CLIENT)
                     return
                 lobby_key = read_object.get("key")
                 pos = read_object.get("pos")
                 if not lobby_manager.lobby_exist(lobby_key):
-                    await self.send_response(client, R_CODE.L_LOBBYNOTEXIST,
-                                             "Lobby does not exist!", {"key": lobby_key})
+                    await self.send_response(client, R_CODE.L_LOBBYNOTEXIST, {"key": lobby_key})
                 elif lobby_manager.join_lobby(lobby_key, client, pos):
-                    await self.send_response(client, R_CODE.L_JOINED, "Joined lobby!", {
+                    await self.send_response(client, R_CODE.L_JOINED, {
                         "key": lobby_key,
                         "pos": lobby_manager.get_pos_of_client(client)
                     })
                 else:
-                    await self.send_response(client, R_CODE.L_JOINFAILURE,
-                                             "Failed to join lobby! Maybe position blocked?",
-                                             {"key": lobby_key})
+                    await self.send_response(client, R_CODE.L_JOINFAILURE, {"key": lobby_key})
 
             case "leave":
                 lobby = lobby_manager.get_lobby(client)
                 if lobby:
                     if lobby.state.name == GAMESTATE.RUNNING.name and lobby_manager.get_pos_of_client(client) != "sp":
-                        await self.send_response(client, R_CODE.P_STILLRUNNING, "Game is running! Surrender first!")
+                        await self.send_response(client, R_CODE.P_STILLRUNNING)
                         return
                 if not lobby_manager.leave_lobby(client):
-                    await self.send_response(client, R_CODE.L_CLIENTNOTEXIST, "Client not in a lobby!")
+                    await self.send_response(client, R_CODE.L_CLIENTNOTEXIST)
                 else:
-                    await self.send_response(client, R_CODE.L_LEFT, "Client left lobby.")
+                    await self.send_response(client, R_CODE.L_LEFT)
 
             case "swap":
                 pos = read_object.get("pos")
                 lobby = lobby_manager.get_lobby(client)
 
                 if not lobby:
-                    await self.send_response(client, R_CODE.L_CLIENTNOTEXIST, "Client not in a lobby!")
+                    await self.send_response(client, R_CODE.L_CLIENTNOTEXIST)
                     return
                 if lobby.state == GAMESTATE.RUNNING:
-                    await self.send_response(client, R_CODE.P_STILLRUNNING, "Game is running! Surrender first!")
+                    await self.send_response(client, R_CODE.P_STILLRUNNING)
                     return
                 if pos not in ["p1", "p2", "sp"]:
-                    await self.send_response(client, R_CODE.L_POSUNKNOWN, "Position unknown!", {"pos": pos})
+                    await self.send_response(client, R_CODE.L_POSUNKNOWN, {"pos": pos})
                     return
                 if not lobby_manager.swap_to(pos, client):
-                    await self.send_response(client, R_CODE.L_POSOCCUPIED, "Position already occupied!",
-                                             {"pos": pos})
+                    await self.send_response(client, R_CODE.L_POSOCCUPIED,{"pos": pos})
                     return
-                await self.send_response(client, R_CODE.L_SWAPPED, "Client swapped!", {"pos": pos})
+                await self.send_response(client, R_CODE.L_SWAPPED,{"pos": pos})
 
             case "pos":
                 pos = lobby_manager.get_pos_of_client(client)
                 if not pos:
-                    await self.send_response(client, R_CODE.L_CLIENTNOTEXIST, "Client not in a lobby!")
+                    await self.send_response(client, R_CODE.L_CLIENTNOTEXIST)
                 else:
-                    await self.send_response(client, R_CODE.L_POS, "Client position is:", {"pos": pos})
+                    await self.send_response(client, R_CODE.L_POS, {"pos": pos})
 
             case "status":
                 lobby = lobby_manager.get_lobby(client)
                 if not lobby:
-                    await self.send_response(client, R_CODE.L_CLIENTNOTEXIST, "Client not in a lobby!")
+                    await self.send_response(client, R_CODE.L_CLIENTNOTEXIST)
                 else:
-                    await self.send_response(client, R_CODE.L_STATUS, "Status of lobby.", lobby.status())
+                    await self.send_response(client, R_CODE.L_STATUS, lobby.status())
             case _:
-                await self.send_response(client, R_CODE.COMMANDNOTFOUND, f"Command '{command_key}' not found!")
+                await self.send_response(client, R_CODE.COMMANDNOTFOUND, {"command:": command_key})
 
     async def handle_play_command(self, client: WebSocket, read_object: dict):
         """
@@ -232,23 +222,23 @@ class FastAPIServer:
         """
         command_key = read_object.get("command_key")
         lobby = self.socket_server.lobby_manager.get_lobby(client)
-        if lobby.quit:     # game client was quit or crashed
-            await self.send_response(client, R_CODE.GAMECLIENTQUIT,
-                                     "GameClient not available anymore, please create a new lobby!")
-            return
+        if lobby:
+            if lobby.quit:     # game client was quit or crashed
+                await self.send_response(client, R_CODE.GAMECLIENTQUIT)
+                return
 
         if not lobby:
-            await self.send_response(client, R_CODE.L_CLIENTNOTEXIST, "Client not in a lobby!")
+            await self.send_response(client, R_CODE.L_CLIENTNOTEXIST)
             return
 
         game_client = lobby.game_client
         if not game_client:
-            await self.send_response(client, R_CODE.P_NOGAMECLIENT, "No game client connected! Try again later.")
+            await self.send_response(client, R_CODE.P_NOGAMECLIENT)
             return
 
         pos = self.socket_server.lobby_manager.get_pos_of_client(client)
         if pos == "sp":
-            await self.send_response(client, R_CODE.P_NOPERMISSION, "A spectator can not play!")
+            await self.send_response(client, R_CODE.P_NOPERMISSION)
             return
 
         data = {"player_pos": pos, "key": lobby.key, **read_object}
@@ -257,4 +247,4 @@ class FastAPIServer:
                            "blunder", "timeline", "step", "unstep", "evaluate", "stop_evaluate", "games"}:
             await self.socket_server.send_cmd(game_client, "play", command_key, data)
         else:
-            await self.send_response(client, R_CODE.COMMANDNOTFOUND, f"Command '{command_key}' not found!")
+            await self.send_response(client, R_CODE.COMMANDNOTFOUND, {"command": command_key})

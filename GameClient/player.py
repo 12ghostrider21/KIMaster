@@ -25,17 +25,17 @@ class Player:
                     if self.move >= len(valid_moves):
                         self.move = None
                         if not self.eval:
-                            await self.game_client.send_response(R_CODE.P_INVALIDMOVE, self.player_pos, "Invalid move!")
+                            await self.game_client.send_response(R_CODE.P_INVALIDMOVE, self.player_pos)
                     elif valid_moves[self.move]:
                         tmp = self.move
                         self.move = None
                         if not self.eval:
-                            await self.game_client.send_response(R_CODE.P_VALIDMOVE, self.player_pos, "Valid move.")
+                            await self.game_client.send_response(R_CODE.P_VALIDMOVE, self.player_pos)
                         break
                     else:
                         self.move = None
                         if not self.eval:
-                            await self.game_client.send_response(R_CODE.P_INVALIDMOVE, self.player_pos, "Invalid move!")
+                            await self.game_client.send_response(R_CODE.P_INVALIDMOVE, self.player_pos)
             await asyncio.sleep(0.025)
         return tmp
 

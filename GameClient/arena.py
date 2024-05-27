@@ -6,8 +6,6 @@ from Tools.Response import *
 from Tools.game_states import GAMESTATE
 
 
-
-
 class Arena:
     """
     An Arena class where any 2 agents can be pit against each other.
@@ -35,11 +33,9 @@ class Arena:
         self.timeline_start: int = 0
         self.swapped = False
 
-    async def send_response(self, response_code: R_CODE, cur_player: int | None, response_msg: str,
-                            data: dict | None = None):
-        await self.game_client.send_response(response_code=response_code,
+    async def send_response(self, response_code: R_CODE, cur_player: int | None, data: dict = None):
+        await self.game_client.send_response(code=response_code,
                                              p_pos=self.player_to_txt(cur_player),
-                                             response_msg=response_msg,
                                              data=data)
 
     # an episode = 1 Game played
@@ -88,7 +84,7 @@ class Arena:
             self.history.append((board, cur_player, it))
             if verbose and not eval:
                 await self.send_board_representation(board, cur_player)
-                await self.send_response(R_CODE.P_GAMEOVER, None, "Game over:",
+                await self.send_response(R_CODE.P_GAMEOVER, None,
                                          {"result": round(cur_player * self.game.getGameEnded(board, cur_player)),
                                           "turn": it})
                 self.game_client.state = GAMESTATE.FINISHED
@@ -140,10 +136,9 @@ class Arena:
 
         if not train:
             # eval is always against alphaZeroAI => the users AI is always player1 => curPlayer = 1
-            await self.send_response(R_CODE.P_EVALOVER, 1, "Evaluation finished:",
-                                     {"wins": one_won,
-                                      "losses": two_won,
-                                      "draws": draws})
+            await self.send_response(R_CODE.P_EVALOVER, 1, {"wins": one_won,
+                                                            "losses": two_won,
+                                                            "draws": draws})
         self.game_client.state = GAMESTATE.FINISHED
         return one_won, two_won, draws
 
@@ -167,12 +162,11 @@ class Arena:
                 self.blunder_history.append((it, action, cur_player))
 
     async def send_board(self, board: np.array, cur_player: int):
-        await self.send_response(R_CODE.P_BOARD, cur_player, "", {"board": board.tolist()})
+        await self.send_response(R_CODE.P_BOARD, cur_player, {"board": board.tolist()})
 
     async def send_board_representation(self, board: np.array, cur_player: int):
         representation = self.game.draw_terminal(board, False, cur_player)
-        await self.send_response(R_CODE.P_REPRESENTATION,
-                                 None, "", {"representation": representation})
+        await self.send_response(R_CODE.P_REPRESENTATION, None, {"representation": representation})
         img1 = self.game.draw(board, False, cur_player)
         img2 = self.game.draw(board, False, -cur_player)
         await self.game_client.broadcast_image(img1, img2)
@@ -205,7 +199,7 @@ class Arena:
         tmp = self.history[-1]
         self.history.pop()  # additional pop because the same state is added again at the beginning of play
         await self.game_client.pit.start_game(num_games=1, verbose=True, board=tmp[0], cur_player=tmp[1], it=tmp[2])
-        return Response(R_CODE.P_VALIDUNDO, "Move successfully undone.")
+        return Response(R_CODE.P_VALIDUNDO)
 
     async def draw_valid_moves(self, from_pos: int):
         try:

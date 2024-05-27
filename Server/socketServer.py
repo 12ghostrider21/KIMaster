@@ -32,27 +32,23 @@ class SocketServer:
                 try:
                     read_object: dict = await game_client.receive_json()
                 except json.decoder.JSONDecodeError:
-                    await self.send_response(game_client, R_CODE.NONVALIDJSON, "Received data is not a correct JSON!")
+                    await self.send_response(game_client, R_CODE.NONVALIDJSON)
                     continue
                 except WebSocketDisconnect:
                     break
 
-                if read_object.get("response_code"):
+                code: R_CODE = read_object.get("response_code")
+
+                if code:
                     try:
-                        read_object.pop("player_pos")
+                        read_object.pop("player_pos")  # remove internal information
                     except KeyError:
                         pass
                     client: WebSocket = lobby.get_client(read_object.get("player_pos"))
                     if isinstance(client, list) or client is None:
-                        await self.send_broadcast(lobby=lobby,
-                                                  response_code=read_object.get("response_code"),
-                                                  response_msg=read_object.get("response_msg"),
-                                                  data=read_object)
+                        await self.send_broadcast(lobby, code, read_object)
                         continue
-                    await self.send_response(client=client,
-                                             response_code=read_object.get("response_code"),
-                                             response_msg=read_object.get("response_msg"),
-                                             data=read_object)
+                    await self.send_response(client, code, read_object)
                     continue
 
                 # Handle different commands
@@ -85,14 +81,12 @@ class SocketServer:
                         # Handle login command
                         lobby: Lobby = self.lobby_manager.lobbies.get(lobby_key)
                         if lobby is None:
-                            await self.send_response(game_client, R_CODE.L_LOBBYNOTEXIST, "Lobby does not exist",
-                                                     {"key": lobby_key})
+                            await self.send_response(game_client, R_CODE.L_LOBBYNOTEXIST, {"key": lobby_key})
                             continue
                         self.lobby_manager.connect_game_client(lobby_key, game_client)
-                        await self.send_response(game_client, R_CODE.L_JOINED, "Joined lobby!", {"key": lobby_key})
+                        await self.send_response(game_client, R_CODE.L_JOINED, {"key": lobby_key})
                     case _:
-                        await self.send_response(game_client, R_CODE.COMMANDNOTFOUND,
-                                                 f"Command: '{command}' not found!")
+                        await self.send_response(game_client, R_CODE.COMMANDNOTFOUND, {"command": command})
             await self.disconnect(game_client)
 
     async def connect(self, client: WebSocket):
@@ -101,7 +95,7 @@ class SocketServer:
         """
         await client.accept()
 
-    async def send_cmd(self, game_client: WebSocket, command: str, command_key: str, data: dict | None = None):
+    async def send_cmd(self, game_client: WebSocket, command: str, command_key: str, data: dict = None):
         """
         Send a command to a game client.
         """
@@ -110,26 +104,27 @@ class SocketServer:
             cmd.update(data)
         await game_client.send_json(cmd)
 
-    async def send_broadcast(self, lobby: Lobby, response_code: R_CODE | int, response_msg: str,
-                             data: dict | None = None):
+    async def send_broadcast(self, lobby: Lobby, code: R_CODE, data: dict = None):
         """
         Broadcast a message to all clients in a lobby.
         """
+        if isinstance(code, int):  # GameClient int value -> R_Code
+            for c in R_CODE:
+                if c.value.code == code:
+                    code = c
+                    break
         if lobby.p1:
-            await self.send_response(lobby.p1, response_code, response_msg, data)
+            await self.send_response(lobby.p1, code, data)
         if lobby.p2:
-            await self.send_response(lobby.p2, response_code, response_msg, data)
+            await self.send_response(lobby.p2, code, data)
         for c in lobby.spectator_list:
-            await self.send_response(c, response_code, response_msg, data)
+            await self.send_response(c, code, data)
 
-    async def send_response(self, client: WebSocket, response_code: R_CODE | int, response_msg: str,
-                            data: dict | None = None):
+    async def send_response(self, client: WebSocket, code: R_CODE, data: dict = None):
         """
         Send a response to a client.
         """
-        if isinstance(response_code, R_CODE):
-            response_code = response_code.value
-        cmd = {"response_code": response_code, "response_msg": response_msg}
+        cmd = {"response_code": code.value.code, "response_msg": code.value.msg}
         if data is not None:
             cmd.update(data)
         if cmd.get("player_pos"):
@@ -147,7 +142,7 @@ class SocketServer:
             tasks.append(asyncio.create_task(self.send_image(sp, img_p1)))
         await asyncio.gather(*tasks)  # Send all images concurrently
 
-    async def send_image(self, client: WebSocket | None, img: bytes):
+    async def send_image(self, client: WebSocket, img: bytes):
         """
         Send an image to a client.
         """

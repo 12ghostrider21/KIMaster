@@ -1,18 +1,12 @@
-import logging
-import os
 from asyncio import create_task, Task
-
 import numpy as np
 from starlette.websockets import WebSocket
-
 from Tools.Game_Config import GameConfig, EDifficulty
 from Tools.Response import R_CODE, Response
 from Tools.utils import dotdict
 from Tools.mcts import MCTS
 from arena import Arena
 from player import Player
-
-log = logging.getLogger(__name__)
 
 
 class Pit:
@@ -28,7 +22,6 @@ class Pit:
                                                                                                              None):
         # check if game is set
         if self.game_config is None:
-            log.error("Game config is None")
             return
         if self.arena_task is not None and not self.arena_task.done():
             await self.arena_task
@@ -39,28 +32,26 @@ class Pit:
                                                                   board=board,
                                                                   cur_player=cur_player,
                                                                   it=it))
-                return Response(R_CODE.P_INIT, "Game initialized")
+                return Response(R_CODE.P_INIT)
             else:
                 self.arena_task = create_task(self.arena.playGames(num_games, train=False))
-                return Response(R_CODE.P_EVAL, "Evaluation runs")
+                return Response(R_CODE.P_EVAL)
 
     async def init_game(self, num_games: int, game_config: GameConfig | None) -> Response | None:
         if self.game_config is None and game_config is None:
-            log.error("Game config is None")
             return
         if game_config is not None:  # if the arg is none, it's a re-init e.g. via "new_game"
             if not game_config():
-                log.error("Parameter in game config is missing")
                 return
             self.game_config = game_config
 
         # get all values for init or set default values
-        game = self.game_config.game.game_class()           # get the game_class
-        network_class = self.game_config.game.nnet_class    # get the right NNet
-        h5_folder = self.game_config.game.h5_folder         # get the .h5 trained model path
-        h5_file = self.game_config.game.h5_file_name        # get the .h5 file
-        difficulty = self.game_config.difficulty            # get the play difficulty
-        mode = self.game_config.mode                        # get the play mode
+        game = self.game_config.game.game_class()  # get the game_class
+        network_class = self.game_config.game.nnet_class  # get the right NNet
+        h5_folder = self.game_config.game.h5_folder  # get the .h5 trained model path
+        h5_file = self.game_config.game.h5_file_name  # get the .h5 file
+        difficulty = self.game_config.difficulty  # get the play difficulty
+        mode = self.game_config.mode  # get the play mode
 
         self.player1 = Player(game, self.game_client, True if num_games > 1 else False)
         self.player2 = Player(game, self.game_client, True if num_games > 1 else False)
@@ -80,11 +71,9 @@ class Pit:
                 case "playerai_vs_playerai":
                     play1 = self.player1.play
                     play2 = self.player2.play
-                case _:
-                    log.error(f"Game mode does not exist! Game mode: {self.game_config.mode.name}")
+                case _: # Game mode does not exist!
                     return
-        except AttributeError:
-            log.error(f"Game mode does not exist: {self.game_config.mode.name}")
+        except AttributeError:  # Game mode does not exist!
             return
 
         evaluator = lambda x: mcts.getActionProb(x, temp=1)
