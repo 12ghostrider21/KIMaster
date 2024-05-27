@@ -12,6 +12,7 @@ from pit import Pit
 from Tools.Game_Config import GameConfig, EGameMode, EDifficulty, GameEnum
 from Tools.Response import R_CODE
 from Tools.game_states import GAMESTATE
+import pickle
 
 
 class GameClient:
@@ -63,6 +64,14 @@ class GameClient:
         await self.send_cmd("img", "broadcast")
         await self.websocket.send(self.surface_to_png(img1))
         await self.websocket.send(self.surface_to_png(img2))
+
+    async def send_save(self, player_pos):
+        save_file = pickle.dumps(self.pit.arena)
+        await self.send_cmd("game_client", "save", {"player_pos": player_pos})
+        await self.websocket.send(save_file)
+
+    async def load_save(self):
+        return pickle.loads(self.websocket.recv())
 
     async def send_cmd(self, command: str, command_key: str, data: dict | None = None):
         cmd = {"command": command, "command_key": command_key}

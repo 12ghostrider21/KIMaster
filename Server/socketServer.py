@@ -66,6 +66,8 @@ class SocketServer:
                                         lobby.state = s
                             case "quit":
                                 lobby.quit = True
+                            case "save":
+                                file = game_client.receive_bytes()
                     case "img":
                         # Handle image reception and broadcasting
                         img1: bytes = await game_client.receive_bytes()
@@ -148,6 +150,10 @@ class SocketServer:
         """
         if client:  # Ignore None clients (broadcast)
             await client.send_bytes(img)
+
+    async def send_save(self, client: WebSocket, file: bytes):
+        if client:
+            await client.send_bytes(file)
 
     async def disconnect(self, game_client: WebSocket):
         """
