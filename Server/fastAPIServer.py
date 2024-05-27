@@ -124,7 +124,7 @@ class FastAPIServer:
         match command_key:
             case "active_container":
                 await self.send_response(client, R_CODE.D_CONTAINER, lobby_manager.docker.list_running_containers())
-            case "toggle_game_client_debug":
+            case "game_client":
                 value = lobby_manager.docker.toggle_debug()
                 await self.send_response(client, R_CODE.D_TOGGLE, {"debug": value})
             case _:
@@ -145,7 +145,7 @@ class FastAPIServer:
             case "create":
                 lobby = lobby_manager.get_lobby(client)
                 if lobby:
-                    await self.send_response(client, R_CODE.L_CLIENT)
+                    await self.send_response(client, R_CODE.L_CLIENTINLOBBY)
                 else:
                     new_lobby_key = lobby_manager.create_lobby()
                     lobby_manager.join_lobby(new_lobby_key, client, "p1")
@@ -153,7 +153,7 @@ class FastAPIServer:
 
             case "join":
                 if lobby_manager.get_lobby(client):
-                    await self.send_response(client, R_CODE.L_CLIENT)
+                    await self.send_response(client, R_CODE.L_CLIENTINLOBBY)
                     return
                 lobby_key = read_object.get("key")
                 pos = read_object.get("pos")
