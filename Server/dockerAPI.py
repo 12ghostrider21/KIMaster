@@ -1,7 +1,7 @@
-import json
 import docker
 import os
 from docker.errors import ContainerError, ImageNotFound, APIError, NotFound
+
 
 class DockerAPI:
     # Default Docker image for the game client
