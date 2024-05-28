@@ -18,8 +18,17 @@ class Lobby:
         self.p2: WebSocket | None = None
         self.spectator_list: list[WebSocket] = []
         self.game_client: WebSocket | None = None
-        self.quit: bool = False
         self.state: GAMESTATE = GAMESTATE.WAITING
+        self.game: str | None = None
+        self.mode: str | None = None
+        self.difficulty: str | None = None
+
+    def ready_tp_start(self) -> bool:
+        if self.mode in ["player_vs_player", "playerai_vs_playerai"]:
+            return self.p1 is not None and self.p2 is not None
+        if self.mode in ["player_vs_ai", "playerai_vs_ai"]:
+            return self.p1 is not None and self.p2 is None
+        raise TypeError("Mode is not available", self.mode)
 
     def get_client(self, pos: str) -> WebSocket | list[WebSocket]:
         return {"p1": self.p1, "p2": self.p2, "sp": self.spectator_list}.get(pos)
