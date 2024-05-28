@@ -212,11 +212,6 @@ class GameClient:
                     await self.send_response(R_CODE.P_SURRENDER, None, {"result": winner})
                     self.state = GAMESTATE.FINISHED
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                case "quit":
-                    await self.send_cmd("game_client", "quit")
-                    await self.send_response(R_CODE.P_QUIT, p_pos)
-                    break
-                # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "new_game":
                     if not self.pit.arena_task.done():
                         await self.send_response(R_CODE.P_STILLRUNNING, p_pos)
