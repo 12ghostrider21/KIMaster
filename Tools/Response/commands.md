@@ -4,7 +4,6 @@
 - **COMMANDNOTFOUND** = 50, "System is unable to find the command."
 - **NONVALIDJSON** = 51, "This error indicates that the JSON data provided is not valid."
 - **INTERNALERROR** = 52, "This represents an internal system error. It is a generic error that suggests something went wrong within the system."
-- **GAMECLIENTQUIT** = 53, "This error occurs when the game client unexpectedly quits or disconnects."
 
 # Lobby success = 100 -150
 - **L_CREATED** = 100, "The lobby has been successfully created."
@@ -22,6 +21,7 @@
 - **L_POSUNKNOWN** = 154, "The position within the lobby is unknown."
 - **L_POSOCCUPIED** = 155, "The position within the lobby is already occupied."
 - **L_LOBBYKEY** = 156, "There is an error with the lobby key, such as an invalid or missing key."
+- **L_LOBBYNOTREADY** = 157, "Lobby does not have enough players to start!"
 
 # Play success = 200 - 250
 - **P_INIT** = 200, "The play has been successfully initialized."
@@ -35,7 +35,6 @@
 - **P_MOVES** = 208, "The list of possible moves has been successfully retrieved."
 - **P_VALIDUNDO** = 209, "A valid undo action has been performed."
 - **P_SURRENDER** = 210, "A player has surrendered successfully."
-- **P_QUIT** = 211, "The player has quit the game successfully."
 - **P_BLUNDER** = 212, "A blunder [serious mistake] has been identified in the play."
 - **P_BLUNDERLIST** = 213, "The list of blunders has been successfully retrieved."
 - **P_TIMELINE** = 214, "The timeline of events in the game has been successfully retrieved."
@@ -64,10 +63,6 @@ D_CONTAINER = 300, "The debug container has been successfully created or accesse
 D_TOGGLE = 301, "The debug toggle action has been successfully performed."
 
 # Universal Messages
-GameClient quit -> message to Server
-```json
-{"command": "game_client", "command_key": "quit"}
-```
 GameClient status change -> message to Server
 ```json
 {"command": "game_client", "command_key": "state", "state": $LobbyState}
@@ -105,21 +100,21 @@ Gameclient crashed or closed -> message to Client
 **Parameter** with "[]" do not need to be spezified.
 
 # Play Commands
-| key       | Parameter   | Success code| Error code    | Return      | Discription |
-|-----------|-------------|-------------|---------------|-------------|-------------|
-|valid_moves| pos         | 208         | 252, 257      | image       | Returns a new image from game with hightlighted positions of possible moves.
-| make_move | pos         | 207         | 252, 255, 256 | None        | Make a move on current game. - **Pos** can be an int or an tuple[int, int]. Like [from, to] [2, 3]|
-| undo_move | num         | 209         | 252, 258, 259 | None        | Undo the last **num** moves.|
-| surrender | None        | 210         | 252           | result      | Client surrender active game and a broadcast message get triggered.|
-| quit      | None        | 211         | 254           | None        | The GameClient will disconnect and the lobby can not be played anymore. All play data gets lost.|
-| new_game  | None        | 200         | 52, 252, 254  | None        | Will start a new Game with last set configuration.|
-| blunder   | None        | 212, 213    | 252           | blunder     | After finished game, **blunder** will show the bad moves the client did.|
-| timeline  | num         | 214         | 252, 260, 261 | represantation, image | After finished game.**timeline** display the **num** move of the game.|
-| step      | None        | 214         | 252, 261      | represantation, image | After finished game. Step to next **timeline** index.|
-| unstep    | None        | 214         | 252, 261      | represantation, image | After finished game. Step to bevore **timeline** index.|
-| games     | None        | 215         | 52, 253       | game_name   | Will list all available games for the current lobby.|
-| create    | game, mode, difficulty|200| 52, 254, 265  | None        | Will initialise a **game_config** and start the game.|
-| evaluate  | game, difficulty, num | 201, 203 | 254, 262, 263 | wins, losses, draws |Will play up to **num** [max=100] games in a row and returns the evaluatuin stats.|
+| key       | Parameter   | Success code| Error code        | Return      | Discription |
+|-----------|-------------|-------------|-------------------|-------------|-------------|
+|valid_moves| pos         | 208         | 252, 257          | image       | Returns a new image from game with hightlighted positions of possible moves.
+| make_move | pos         | 207         | 252, 255, 256     | None        | Make a move on current game. - **Pos** can be an int or an tuple[int, int]. Like [from, to] [2, 3]|
+| undo_move | num         | 209         | 252, 258, 259     | None        | Undo the last **num** moves.|
+| surrender | None        | 210         | 252               | result      | Client surrender active game and a broadcast message get triggered.|
+| quit      | None        | 211         | 254               | None        | The GameClient will disconnect and the lobby can not be played anymore. All play data gets lost.|
+| new_game  | None        | 200         | 52, 252, 254      | None        | Will start a new Game with last set configuration.|
+| blunder   | None        | 212, 213    | 252               | blunder     | After finished game, **blunder** will show the bad moves the client did.|
+| timeline  | num         | 214         | 252, 260, 261     | represantation, image | After finished game.**timeline** display the **num** move of the game.|
+| step      | None        | 214         | 252, 261          | represantation, image | After finished game. Step to next **timeline** index.|
+| unstep    | None        | 214         | 252, 261          | represantation, image | After finished game. Step to bevore **timeline** index.|
+| games     | None        | 215         | 52, 253           | game_name   | Will list all available games for the current lobby.|
+| create    | game, mode, difficulty|200| 52, 254, 265, 157 | None        | Will initialise a **game_config** and start the game.|
+| evaluate  | game, difficulty, num | 201, 203 | 254, 262, 263, 157 | wins, losses, draws |Will play up to **num** [max=100] games in a row and returns the evaluatuin stats.|
 | stop_evaluate | None    | 203         | 252           | wins, losses, draws | Will stop a active Evaluation and returns evaluation stats
 
 ### Parameter difficulty:

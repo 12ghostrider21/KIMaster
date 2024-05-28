@@ -10,10 +10,9 @@ class R_CODE(Enum):
     NONVALIDJSON = RText(51, "This error indicates that the JSON data provided is not valid.")
     INTERNALERROR = RText(52, "This represents an internal system error."
                               " It is a generic error that suggests something went wrong within the system.")
-    GAMECLIENTQUIT = RText(53, "This error occurs when the game client unexpectedly quits or disconnects.")
 
     # Lobby success = 100 -150
-    L_CREATED = RText(100, "The lobby has been successfully created.")
+    LS_CREATED = RText(100, "The lobby has been successfully created.")
     L_JOINED = RText(101, "The player has successfully joined the lobby.")
     L_LEFT = RText(102, "The player has successfully left the lobby.")
     L_SWAPPED = RText(103, "The player has successfully swapped positions within the lobby.")
@@ -28,6 +27,7 @@ class R_CODE(Enum):
     L_POSUNKNOWN = RText(154, "The position within the lobby is unknown.")
     L_POSOCCUPIED = RText(155, "The position within the lobby is already occupied.")
     L_LOBBYKEY = RText(156, "There is an error with the lobby key, such as an invalid or missing key.")
+    L_LOBBYNOTREADY = RText(157, "Lobby does not have enough players to start!")
 
     # Play success = 200 - 250
     P_INIT = RText(200, "The play has been successfully initialized.")
@@ -41,7 +41,6 @@ class R_CODE(Enum):
     P_MOVES = RText(208, "The list of possible moves has been successfully retrieved.")
     P_VALIDUNDO = RText(209, "A valid undo action has been performed.")
     P_SURRENDER = RText(210, "A player has surrendered successfully.")
-    P_QUIT = RText(211, "The player has quit the game successfully.")
     P_BLUNDER = RText(212, "A blunder (serious mistake) has been identified in the play.")
     P_BLUNDERLIST = RText(213, "The list of blunders has been successfully retrieved.")
     P_TIMELINE = RText(214, "The timeline of events in the game has been successfully retrieved.")
