@@ -1,7 +1,4 @@
 from pytest import fixture
-from json import dumps as to_json
-from websockets.sync.client import connect
-from threading import Event
 
 @fixture
 def create_lobby_msg():
@@ -9,7 +6,7 @@ def create_lobby_msg():
         "command": "lobby",
         "command_key": "create" 
     }
-    return to_json(msg)
+    return msg
 
 @fixture
 def web_socket_uri():
@@ -18,3 +15,12 @@ def web_socket_uri():
 @fixture
 def max_response_time():
     return 3.0
+
+@fixture
+def join_lobby_msg():
+    msg = {
+        "command":"lobby",
+        "command_key":"join",
+        "key":""
+    }
+    return msg
