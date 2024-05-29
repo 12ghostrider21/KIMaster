@@ -20,10 +20,16 @@ async def send(msg:dict, conn: ClientConnection) -> dict:
 @pytest.mark.asyncio
 async def test_websocket_connection(web_socket_uri, max_response_time):
     '''Checks if a workin connection could be established at all'''
-    async with connect(web_socket_uri) as conn:
-        pong_waiter = await conn.ping("healthcheck")
-        latency = await pong_waiter
-        assert latency <= max_response_time
+    async for conn in connect(web_socket_uri):
+        try:
+            pong_waiter = await conn.ping("healthcheck")
+            latency = await pong_waiter
+            assert latency <= max_response_time
+            await conn.close()
+            break
+        except ConnectionRefusedError as e:
+            continue
+        
 
 
 
@@ -124,6 +130,9 @@ async def test_joining_multiple_lobbies(web_socket_uri, create_lobby_msg, join_l
             assert res_second_join["response_code"] == 150
 
 
+
+# TODO: Test for response_code 152
+
 @pytest.mark.asyncio
 async def test_leaving_current_lobby(web_socket_uri, create_lobby_msg, leave_lobby_msg):
     # connect to server
@@ -157,4 +166,45 @@ async def test_leaving_non_existing_lobby(web_socket_uri, leave_lobby_msg):
         # check if the response_code meets the specification in commands_and_command_keys 
         assert "response_code" in res_leave
         assert res_leave["response_code"] == 153
+
+@pytest.mark.asyncio
+async def test_swap_player(web_socket_uri, create_lobby_msg, swap_msg):
+    # connect to server
+    conn_p1: ClientConnection = await connect(web_socket_uri)
+
+    # p1 creates lobby
+    await send(create_lobby_msg, conn_p1)
+    
+    # swap from player 1 to player 2 (only possible when only one player is in the lobby)
+    res_swap = await send(swap_msg, conn_p1)
+    assert res_swap["pos"] == swap_msg["pos"]
+    assert res_swap["response_code"] == 103
+
+    await conn_p1.close()
+
+
+@pytest.mark.asyncio
+async def test_swap_player_when_occupied(web_socket_uri, create_lobby_msg, join_lobby_msg, swap_msg):
+    # connect to server
+    conn_p1: ClientConnection = await connect(web_socket_uri)
+    conn_p2: ClientConnection = await connect(web_socket_uri)
+
+    # p1 creates lobby
+    res_create = await send(create_lobby_msg, conn_p1)
+    
+    # p2 joins lobby
+    join_lobby_msg["key"] = res_create["key"]
+    join_lobby_msg["pos"] = "p2"
+    await send(join_lobby_msg, conn_p2)
+    
+    # swap from player 1 to player 2
+    res_swap = await send(swap_msg, conn_p1)
+    assert res_swap["pos"] == swap_msg["pos"]
+    assert res_swap["response_code"] == 155
+
+    await conn_p1.close()
+    await conn_p2.close()
+
+
+
 
