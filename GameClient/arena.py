@@ -66,8 +66,8 @@ class Arena:
                 action = await players[cur_player + 1](self.game.getCanonicalForm(board, cur_player))
                 if action is None:
                     return None
-                if verbose:
-                    self.evaluate_blunder(action)
+                #if verbose:
+                #    self.evaluate_blunder(action)
 
             # websiteAI in turn
             else:
