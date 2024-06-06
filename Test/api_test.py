@@ -204,7 +204,3 @@ async def test_swap_player_when_occupied(web_socket_uri, create_lobby_msg, join_
 
     await conn_p1.close()
     await conn_p2.close()
-
-
-
-

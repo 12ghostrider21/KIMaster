@@ -8,7 +8,7 @@ class DockerAPI:
     image: str = "game-client-img"
 
     def __init__(self):
-        # Initialize Docker client from environment
+        # Initialize Docker Client to connect to Engine
         self.engine = docker.from_env()
         # Debug flag for additional logging and keeping containers after they stop
         self.debug = False

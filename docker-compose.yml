@@ -18,6 +18,7 @@ services:
       - swtp-net
     volumes:
       - //var/run/docker.sock:/var/run/docker.sock
+    # profiles:
   
   swtp-game-client:
     build: 
@@ -53,7 +54,6 @@ services:
       - swtp-net
     depends_on:
       - swtp-server
-      - swtp-frontend
     profiles:
       - test
 
