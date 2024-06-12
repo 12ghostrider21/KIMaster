@@ -18,6 +18,7 @@ services:
       - swtp-net
     volumes:
       - //var/run/docker.sock:/var/run/docker.sock
+    # profiles:
   
   swtp-game-client:
     build: 
@@ -28,6 +29,8 @@ services:
       - swtp-net
     depends_on:
       - swtp-server
+    profiles:
+      - exclude
 
   swtp-frontend:
     build:
@@ -42,6 +45,17 @@ services:
       - swtp-server
     ports:
       - "8085:8080"
+
+  swtp-test:
+    build: ./test
+    image: swtp-test
+    container_name: swtp-test
+    networks:
+      - swtp-net
+    depends_on:
+      - swtp-server
+    profiles:
+      - test
 
 networks:
   swtp-net:
