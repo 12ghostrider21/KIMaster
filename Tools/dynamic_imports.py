@@ -2,6 +2,11 @@ class Importer:
     def __init__(self):
         pass
 
+        self.lambdas: dict = {}
+
+    def game_clinet_games(self):
+        return {}
+
     # import all games from /Games folder and create a instance of it
     # import all NNet.py of each game
     # find directory path of .h5 files of each game

@@ -1,9 +1,12 @@
 import json
+import os.path
 
 import numpy as np
 
 from Games.connect4.Connect4Game import Connect4Game
 from Games.connect4.keras.NNet import NNetWrapper
+
+
 from Tools.mcts import MCTS
 from Tools.utils import dotdict
 
@@ -23,6 +26,8 @@ game = Connect4Game()
 mcts = init_nn(game, NNetWrapper, folder, file)
 func = lambda x: mcts.getActionProb(x, temp=0)
 
+
+# arena
 players = [func, None, func]
 it = 0
 cur_player = 1
