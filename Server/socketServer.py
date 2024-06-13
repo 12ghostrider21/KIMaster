@@ -73,6 +73,8 @@ class SocketServer(AbstractConnectionManager):
                         shape = tuple(read_object["shape"])
                         cur_player = int(read_object.get("cur_player"))
                         game_name = command_key
+                        # todo np.argmax(lamda(game.conanboard( board, cur_player)))
+
                         await self.send_cmd(lobby.game_client, "play", "make_move",
                                                 {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
                     case "draw":
