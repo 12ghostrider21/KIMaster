@@ -12,6 +12,43 @@ class Importer:
     # define server specific method for imports if necessary
 
     """
+    import os
+    import sys
+    import glob
+    import importlib.util
+    
+    # Der Pfad zu deinem Ordner
+    ordner_pfad = os.path.join(os.getcwd(), 'mein_ordner')
+    
+    # Finde alle Python-Dateien im Ordner
+    python_dateien = glob.glob(os.path.join(ordner_pfad, '*.py'))
+    
+    # Gehe durch alle gefundenen Python-Dateien
+    for datei in python_dateien:
+        # Lade die Modul-Spezifikation aus der Datei
+        modul_name = os.path.basename(datei)[:-3]
+        spezifikation = importlib.util.spec_from_file_location(modul_name, datei)
+        modul = importlib.util.module_from_spec(spezifikation)
+        spezifikation.loader.exec_module(modul)
+    
+        # Prüfe, ob die Klasse in dem Modul existiert
+        if hasattr(modul, 'MeineKlasse'):
+            MeineKlasse = getattr(modul, 'MeineKlasse')
+            break
+    else:
+        raise ImportError("MeineKlasse wurde nicht gefunden.")
+    
+    # Erstelle eine Instanz der Klasse
+    objekt = MeineKlasse("Max")
+    
+    # Rufe die Methode auf und drucke das Ergebnis
+    print(objekt.begruessen())
+
+    
+    """
+
+
+    """
     @staticmethod
     def import_class_from_file(filepath: str, class_name: str):
         spec = importlib.util.spec_from_file_location(class_name, filepath)

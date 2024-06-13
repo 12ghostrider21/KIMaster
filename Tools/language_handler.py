@@ -8,7 +8,7 @@ class LanguageHandler:
 
     def _load_csv(self):
         data = {}
-        with open(self.csv_file, mode='r', encoding='ISO-8859-1') as file:
+        with open(self.csv_file, mode='r', encoding='UTF-8') as file:
             reader = csv.DictReader(file, delimiter=";")
             for row in reader:
                 data[row.get("key")] = {k: v for k, v in row.items() if k != "key"}

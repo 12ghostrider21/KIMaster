@@ -9,7 +9,7 @@ from Tools.language_handler import LanguageHandler
 
 def main():
     app = FastAPI()
-    msg_builder = LanguageHandler("../Tools/language_txt.csv")
+    msg_builder = LanguageHandler("../Tools/language.csv")
     socket_server = SocketServer(msg_builder)
     fast_api_server = FastAPIServer(socket_server.manager, msg_builder)
     app.websocket("/ws")(fast_api_server.websocket_endpoint)
