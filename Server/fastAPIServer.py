@@ -1,193 +1,185 @@
-import json
-import uvicorn
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from threading import Thread
-from starlette.websockets import WebSocketState
+# external imports
+from fastapi import WebSocket, WebSocketDisconnect
+from json import loads, JSONDecodeError
 
-from Server.socketServer import SocketServer
-from Tools.Response import R_CODE
-from Tools.game_states import GAMESTATE
+# own files
+from Server.connection_manager import AbstractConnectionManager
+from Server.lobby import Lobby
+from Server.lobby_manager import LobbyManager
+from Tools.Game_Config.difficulty import EDifficulty
+from Tools.Game_Config.mode import EGameMode
+from Tools.language_handler import LanguageHandler
+from Tools.rcode import RCODE
+from Tools.languages import LANGUAGE
 
 
-class FastAPIServer:
-    def __init__(self):
-        self.__app = FastAPI()
-        self.__CMD_mask = ["command", "command_key", "pos", "key", "mode", "game", "difficulty", "num", "move"]
-        self.socket_server = SocketServer()
-        self.connected_users = []
+class FastAPIServer(AbstractConnectionManager):
+    def __init__(self, manager: LobbyManager, msg_builder: LanguageHandler):
+        super().__init__(msg_builder)
+        self.manager: LobbyManager = manager
+        self.__command_mask: list[str] = ["command", "command_key", "pos", "key", "mode", "game", "difficulty", "num",
+                                          "move", "lang"]
+        self.__play_mask: list[str] = ["create", "valid_moves", "make_move", "undo_move", "surrender", "quit",
+                                       "new_game", "blunder", "timeline", "step", "unstep", "evaluate", "stop_evaluate",
+                                       "games"]
 
-        @self.__app.websocket("/ws")
-        async def user_loop(client: WebSocket):
-            await self.connect(client)
-            try:
-                while True:
-                    try:
-                        read_object = await client.receive_json()
-                        if isinstance(read_object, str):
-                            read_object = json.loads(read_object)
-                        read_object = {k: v for k, v in read_object.items() if k in self.__CMD_mask}
-                    except json.JSONDecodeError:
-                        await self.send_response(client, R_CODE.NONVALIDJSON)
-                        continue
-
-                    command = read_object.get("command")
-                    if command == "debug":
-                        await self.handle_debug_command(client, read_object)
-                    elif command == "play":
-                        await self.handle_play_command(client, read_object)
-                    elif command == "lobby":
-                        await self.handle_lobby_command(client, read_object)
-                    else:
-                        await self.send_response(client, R_CODE.COMMANDNOTFOUND, {"command": command})
-            except WebSocketDisconnect:
-                await self.disconnect(client)
-
-    # ******************************************************************************************************************
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
-        self.connected_users.append(websocket)
+        self.active_connections.append(websocket)
 
-    async def disconnect(self, client: WebSocket):
-        if client.client_state == WebSocketState.CONNECTED:
-            await client.close(code=1000, reason="Server initiated closure")
-        self.socket_server.lobby_manager.leave_lobby(client)
-        self.connected_users.remove(client)
-        print(f"FrontEnd Client disconnected: {client}")
+    async def disconnect(self, websocket: WebSocket):
+        self.manager.leave_lobby(websocket)
+        self.active_connections.remove(websocket)
 
-    async def send_response(self, client: WebSocket, code: R_CODE, data=None):
-        cmd = {"response_code": code.value.code, "response_msg": code.value.msg}
-        if data:
-            cmd.update(data)
-        await client.send_json(cmd)
+    async def websocket_endpoint(self, client: WebSocket):
+        await self.connect(client)
+        try:
+            while True:
+                try:
+                    read_object = await client.receive_json()
+                    if isinstance(read_object, str):
+                        read_object = loads(read_object)
+                    # filter read_object
+                    read_object = {k: v for k, v in read_object.items() if k in self.__command_mask}
+                except JSONDecodeError:
+                    await self.send_response(client, RCODE.INVALIDJSON)
+                    continue
 
-    def run(self, host: str, port: int):
-        print(f"FastApiServer is running on {host}:{port}")
-        uvicorn.run(self.__app, host=host, port=port, log_level="info", ws_ping_timeout=None)
+                command = read_object.get("command")
+                match command:
+                    case "debug":
+                        await self.handle_debug_command(client, read_object)
+                    case "lobby":
+                        await self.handle_lobby(client, read_object)
+                    case "play":
+                        await self.handle_play_command(client, read_object)
+                    case "client":
+                        await self.handle_client(client, read_object)
+                    case _:
+                        await self.send_response(client, RCODE.COMMANDNOTFOUND, {"command": command})
+        except WebSocketDisconnect:
+            await self.disconnect(client)
 
-    def start(self, host_fast_api, port_fast_api, host_socket_server, port_socket_server):
-        Thread(target=self.socket_server.run, args=(host_socket_server, port_socket_server)).start()
-        Thread(target=self.run, args=(host_fast_api, port_fast_api)).start()
-
-    # ******************************************************************************************************************
-
+    # *****************************************************************************************************************
+    # handle debug
+    # *****************************************************************************************************************
     async def handle_debug_command(self, client: WebSocket, read_object: dict):
         command_key = read_object.get("command_key")
-        lobby_manager = self.socket_server.lobby_manager
         match command_key:
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "active_container":
-                await self.send_response(client, R_CODE.D_CONTAINER, lobby_manager.docker.list_running_containers())
+                await self.send_response(client=client, code=RCODE.D_CONTAINER,
+                                         data=self.manager.docker.list_containers())
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "game_client":
-                value = lobby_manager.docker.toggle_debug()
-                await self.send_response(client, R_CODE.D_TOGGLE, {"debug": value})
+                self.manager.docker.debug = not self.manager.docker.debug
+                await self.send_response(client=client, code=RCODE.D_TOGGLECLIENT,
+                                         data={"debug": self.manager.docker.debug})
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case _:
-                await self.send_response(client, R_CODE.COMMANDNOTFOUND, {"command": command_key})
+                await self.send_response(client=client, code=RCODE.COMMANDNOTFOUND, data={"command": command_key})
 
-    # ******************************************************************************************************************
-    async def handle_lobby_command(self, client: WebSocket, read_object: dict):
+    # *****************************************************************************************************************
+    # handle lobby
+    # *****************************************************************************************************************
+    async def handle_lobby(self, client: WebSocket, read_object: dict):
         command_key = read_object.get("command_key")
-        lobby_manager = self.socket_server.lobby_manager
         match command_key:
-            # ----------------------------------------------------------------------------------------------------------
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "create":
-                lobby = lobby_manager.get_lobby(client)
+                lobby = self.manager.get_lobby(client)
                 if lobby:
-                    await self.send_response(client, R_CODE.L_CLIENTINLOBBY)
-                else:
-                    new_lobby_key = lobby_manager.create_lobby()
-                    lobby_manager.join_lobby(new_lobby_key, client, "p1")
-                    await self.send_response(client, R_CODE.LS_CREATED, {"key": new_lobby_key})
-            # ----------------------------------------------------------------------------------------------------------
+                    return await self.send_response(client=client, code=RCODE.L_CLIENTALREADYINLOBBY)
+                new_lobby_key = self.manager.create_lobby()
+                self.manager.join_lobby(new_lobby_key, client, "p1")
+                await self.send_response(client=client, code=RCODE.L_CREATED, data={"key": new_lobby_key})
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "join":
-                if lobby_manager.get_lobby(client):
-                    await self.send_response(client, R_CODE.L_CLIENTINLOBBY)
-                    return
+                lobby_key = read_object.get("key")
+                lobby: Lobby = self.manager.get_lobby(lobby_key)
+                if lobby is None:
+                    return await self.send_response(client=client, code=RCODE.L_CLIENTALREADYINLOBBY)
                 lobby_key = read_object.get("key")
                 pos = read_object.get("pos")
-                if not lobby_manager.lobby_exist(lobby_key):
-                    await self.send_response(client, R_CODE.L_LOBBYNOTEXIST, {"key": lobby_key})
-                elif lobby_manager.join_lobby(lobby_key, client, pos):
-                    await self.send_response(client, R_CODE.L_JOINED, {
-                        "key": lobby_key,
-                        "pos": lobby_manager.get_pos_of_client(client)
-                    })
-                else:
-                    await self.send_response(client, R_CODE.L_JOINFAILURE, {"key": lobby_key})
-            # ----------------------------------------------------------------------------------------------------------
+                if not self.manager.lobby_exist(lobby_key):
+                    return await self.send_response(client=client, code=RCODE.L_LOBBYNOTEXIST, data={"key": lobby_key})
+                if not self.manager.join_lobby(lobby_key, client, pos):
+                    return await self.send_response(client=client, code=RCODE.L_JOINFAILURE, data={"key": lobby_key})
+                await self.send_response(client=client, code=RCODE.L_JOINED,
+                                         data={"key": lobby_key, "pos": self.manager.get_pos_of_client(client)})
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "leave":
-                lobby = lobby_manager.get_lobby(client)
-                if lobby:
-                    if lobby.state.name == GAMESTATE.RUNNING.name and lobby_manager.get_pos_of_client(client) != "sp":
-                        await self.send_response(client, R_CODE.P_STILLRUNNING)
-                        return
-                if not lobby_manager.leave_lobby(client):
-                    await self.send_response(client, R_CODE.L_CLIENTNOTEXIST)
-                else:
-                    await self.send_response(client, R_CODE.L_LEFT)
-            # ----------------------------------------------------------------------------------------------------------
+                if not self.manager.leave_lobby(client):
+                    await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
+                await self.send_response(client=client, code=RCODE.L_LEFT)
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "swap":
-                pos = read_object.get("pos")
-                lobby = lobby_manager.get_lobby(client)
-
-                if not lobby:
-                    await self.send_response(client, R_CODE.L_CLIENTNOTEXIST)
-                    return
-                if lobby.state == GAMESTATE.RUNNING:
-                    await self.send_response(client, R_CODE.P_STILLRUNNING)
-                    return
+                pos: str = read_object.get("pos")
+                lobby: Lobby = self.manager.get_lobby(client)
+                if lobby is None:
+                    return await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
                 if pos not in ["p1", "p2", "sp"]:
-                    await self.send_response(client, R_CODE.L_POSUNKNOWN, {"pos": pos})
-                    return
-                if not lobby_manager.swap_to(pos, client):
-                    await self.send_response(client, R_CODE.L_POSOCCUPIED, {"pos": pos})
-                    return
-                await self.send_response(client, R_CODE.L_SWAPPED, {"pos": pos})
-            # ----------------------------------------------------------------------------------------------------------
+                    return await self.send_response(client=client, code=RCODE.L_POSUNKNOWN, data={"pos": pos})
+                if not self.manager.swap_to(pos, client):
+                    return await self.send_response(client=client, code=RCODE.L_POSOCCUPIED, data={"pos": pos})
+                await self.send_response(client=client, code=RCODE.L_SWAPPED, data={"pos": pos})
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "pos":
-                pos = lobby_manager.get_pos_of_client(client)
-                if not pos:
-                    await self.send_response(client, R_CODE.L_CLIENTNOTEXIST)
-                else:
-                    await self.send_response(client, R_CODE.L_POS, {"pos": pos})
-            # ----------------------------------------------------------------------------------------------------------
+                pos: str = self.manager.get_pos_of_client(client)
+                if pos:
+                    await self.send_response(client=client, code=RCODE.L_POS, data={"pos": pos})
+                else:  # client not in lobby
+                    await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
+
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "status":
-                lobby = lobby_manager.get_lobby(client)
-                if not lobby:
-                    await self.send_response(client, R_CODE.L_CLIENTNOTEXIST)
-                else:
-                    await self.send_response(client, R_CODE.L_STATUS, lobby.status())
+                lobby: Lobby = self.manager.get_lobby(client)
+                if lobby:  # success
+                    await self.send_response(client=client, code=RCODE.L_STATUS, data=lobby.status())
+                else:  # client not in lobby
+                    await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case _:
-                await self.send_response(client, R_CODE.COMMANDNOTFOUND, {"command:": command_key})
+                await self.send_response(client=client, code=RCODE.COMMANDNOTFOUND, data={"command_key": command_key})
 
-    # ******************************************************************************************************************
-
+    # *****************************************************************************************************************
+    # handle play
+    # *****************************************************************************************************************
     async def handle_play_command(self, client: WebSocket, read_object: dict):
-        command_key = read_object.get("command_key")
-        lobby = self.socket_server.lobby_manager.get_lobby(client)
+        lobby = self.manager.get_lobby(client)
         if not lobby:
-            await self.send_response(client, R_CODE.L_CLIENTNOTEXIST)
-            return
-
-        game_client = lobby.game_client
-        if not game_client:
-            await self.send_response(client, R_CODE.P_NOGAMECLIENT)
-            return
-
-        pos = self.socket_server.lobby_manager.get_pos_of_client(client)
+            return await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
+        if not lobby.game_client:
+            return await self.send_response(client=client, code=RCODE.P_NOGAMECLIENT)
+        pos: str = self.manager.get_pos_of_client(client)
         if pos == "sp":
-            await self.send_response(client, R_CODE.P_NOPERMISSION)
-            return
+            return await self.send_response(client=client, code=RCODE.P_NOPERMISSION)
+        data = {"p_pos": pos, "key": lobby.key, **read_object}
+        command_key = read_object.get("command_key")
+        if command_key not in self.__play_mask:
+            return await self.send_response(client=client, code=RCODE.COMMANDNOTFOUND,
+                                            data={"command_key": command_key})
+        if command_key == "Create":
+            lobby.game = data.get("game")
+            lobby.difficulty = EDifficulty.get(data.get("difficulty"))
+            lobby.mode = EGameMode.get(data.get("mode"))
+        await self.send_cmd(lobby.game_client, "play", command_key, data)
 
-        data = {"player_pos": pos, "key": lobby.key, **read_object}
-
-        if command_key in {"create", "valid_moves", "make_move", "undo_move", "surrender", "quit", "new_game",
-                           "blunder", "timeline", "step", "unstep", "evaluate", "stop_evaluate", "games"}:
-            if command_key in ["create", "evaluate"]:
-                lobby.mode = read_object.get("mode", lobby.mode)
-                lobby.game = read_object.get("game", lobby.game)
-                lobby.difficulty = read_object.get("difficulty", lobby.difficulty)
-                if not lobby.ready_tp_start():
-                    await self.send_response(client, R_CODE.L_LOBBYNOTREADY)
-                    return
-            await self.socket_server.send_cmd(game_client, "play", command_key, data)
-        else:
-            await self.send_response(client, R_CODE.COMMANDNOTFOUND, {"command": command_key})
+    # *****************************************************************************************************************
+    # handle client
+    # *****************************************************************************************************************
+    async def handle_client(self, client: WebSocket, read_object: dict):
+        command_key = read_object.get("command_key")
+        match command_key:
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "language":
+                lang: str = read_object.get("lang")
+                for e in LANGUAGE:
+                    if e.name.lower() == lang.lower():
+                        self.language = e
+                        await self.send_response(client, RCODE.LANGUAGECHANGED, {"lang": self.language.name})
+                        return
+                await self.send_response(client, RCODE.INVALIDLANGUAGE, {"lang": lang})
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case _:
+                await self.send_response(client, RCODE.COMMANDNOTFOUND, {"command": command_key})

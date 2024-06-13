@@ -1,101 +1,88 @@
-from asyncio import create_task, Task
+import asyncio
+import time
+
 import numpy as np
-from starlette.websockets import WebSocket
-from Tools.Game_Config import GameConfig, EDifficulty
-from Tools.Response import R_CODE, Response
-from Tools.utils import dotdict
-from Tools.mcts import MCTS
-from arena import Arena
-from player import Player
+
+from Tools.Game_Config.game_config import GameConfig, EGameMode, EDifficulty
+from Tools.response import Response, RCODE
+from GameClient.arena import Arena
+from GameClient.player import Player
+import os
+import importlib.util
+import inspect
+from threading import Thread
 
 
 class Pit:
-    def __init__(self, game_config: GameConfig, game_client):
-        self.game_config: GameConfig | None = game_config
-        self.game_client: WebSocket = game_client
-        self.arena: Arena | None = None
-        self.arena_task: Task | None = None
-        self.player1: Player | None = None
-        self.player2: Player | None = None
+    def __init__(self, game_client):
+        self.game_config = GameConfig()
+        self.arena = Arena(game_client)
+        self.game_classes: dict = {}
+        self.player1: Player = Player()
+        self.player2: Player = Player()
+        self.arena_task: Thread = None
 
-    async def start_game(self, num_games: int, verbose: bool, board: np.array, cur_player: int, it: int) -> (Response |
-                                                                                                             None):
-        # check if game is set
-        if self.game_config is None:
+    def stop_arena(self):
+        if self.arena_task is None:
             return
-        if self.arena_task is not None and not self.arena_task.done():
-            await self.arena_task
-        # no task exist                        or done
-        if self.arena_task is None or self.arena_task.done():
-            if num_games == 1:
-                self.arena_task = create_task(self.arena.playGame(verbose=verbose,
-                                                                  board=board,
-                                                                  cur_player=cur_player,
-                                                                  it=it))
-                return Response(R_CODE.P_INIT)
-            else:
-                self.arena_task = create_task(self.arena.playGames(num_games, train=False))
-                return Response(R_CODE.P_EVAL)
+        self.arena.stop = True
+        print("ARENA STOPPING...")
+        while self.arena_task is not None:
+            time.sleep(0.1)
+        self.arena.stop = False
+        return
 
-    async def init_game(self, num_games: int, game_config: GameConfig | None) -> Response | None:
-        if self.game_config is None and game_config is None:
-            return
-        if game_config is not None:  # if the arg is none, it's a re-init e.g. via "new_game"
-            if not game_config():
-                return
-            self.game_config = game_config
+    def init_arena(self, game_config: GameConfig):
+        play1, play2 = None, None
+        match game_config.mode.value:
+            case 0 | 3:
+                play1 = self.player1.play
+                play2 = self.player2.play
+            case 1:
+                play1 = self.player1.play
+                play2 = self.player2.playAI
+            case 2:
+                play1 = self.player1.playAI
+                play2 = self.player2.play
+        game = self.game_classes.get(game_config.game.lower())()
+        self.arena.set_arena(game, game_config.game, play1, play2)
 
-        # get all values for init or set default values
-        game = self.game_config.game.game_class()  # get the game_class
-        network_class = self.game_config.game.nnet_class  # get the right NNet
-        h5_folder = self.game_config.game.h5_folder  # get the .h5 trained model path
-        h5_file = self.game_config.game.h5_file_name  # get the .h5 file
-        difficulty = self.game_config.difficulty  # get the play difficulty
-        mode = self.game_config.mode  # get the play mode
+    def start_game(self, board: np.array, cur_player: int, it: int):
+        self.arena.stop = False
+        self.arena.history.clear()
+        self.arena_task = Thread(target=self.__run_async_method_in_thread, args=(board, cur_player, it), daemon=True)
+        self.arena_task.start()
 
-        self.player1 = Player(game, self.game_client, True if num_games > 1 else False)
-        self.player2 = Player(game, self.game_client, True if num_games > 1 else False)
+    def __run_async_method_in_thread(self, board, cur_player, it):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(self.arena.playGame(board, cur_player, it))
+        loop.close()
 
-        try:
-            mcts = self.init_nn(game, network_class, h5_folder, h5_file, difficulty)
-            match mode.value:
-                case "player_vs_player":
-                    play1 = self.player1.play
-                    play2 = self.player2.play
-                case "player_vs_ai":
-                    play1 = self.player1.play
-                    play2 = lambda x: mcts.getActionProb(x, temp=0)
-                case "playerai_vs_ai":
-                    play1 = self.player1.play
-                    play2 = lambda x: mcts.getActionProb(x, temp=0)
-                case "playerai_vs_playerai":
-                    play1 = self.player1.play
-                    play2 = self.player2.play
-                case _: # Game mode does not exist!
-                    return
-        except AttributeError:  # Game mode does not exist!
-            return
+    def set_move(self, move, pos):
+        if pos == "p1":
+            self.player1.move = move
+        if pos == "p2":
+            self.player2.move = move
 
-        evaluator = lambda x: mcts.getActionProb(x, temp=1)
-        self.arena = Arena(play1, play2, evaluator, game, self.game_client)
-        # start with default values
-        return await self.start_game(num_games, verbose=True, board=None, cur_player=1, it=0)
+    @staticmethod
+    def import_game_classes(directory):
+        pattern: str = "Game.py"
+        imported_classes = {}
 
-    async def set_move(self, move, player_pos: str):
-        if player_pos == "p1":
-            await self.player1.set_move(move, player_pos)
-        if player_pos == "p2":
-            await self.player2.set_move(move, player_pos)
+        for root, _, files in os.walk(directory):
+            for filename in files:
+                if filename.endswith(pattern):
+                    module_name = filename[:-3]
+                    file_path = os.path.join(root, filename)
 
-    async def stop_play(self, player_pos: str):
-        if player_pos == "p1":
-            await self.player1.stop_play()
-        if player_pos == "p2":
-            await self.player2.stop_play()
+                    spec = importlib.util.spec_from_file_location(module_name, file_path)
+                    module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)
 
-    def init_nn(self, game, nnet, folder: str, file: str, difficulty: EDifficulty = EDifficulty.hard.value):
-        nn = nnet(game)
-        nn.load_checkpoint(folder, file)
-        args = dotdict({'numMCTSSims': difficulty.value, 'cpuct': 1.0})
-        mcts = MCTS(game, nn, args)
-        return mcts
+                    for name, obj in inspect.getmembers(module, inspect.isclass):
+                        name = name.replace("Game", "").lower()
+                        if obj.__module__ == module_name:
+                            imported_classes[name] = obj
+                            print("Imported: ", name)
+        return imported_classes

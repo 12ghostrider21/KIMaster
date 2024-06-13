@@ -1,4 +1,4 @@
-FROM python:3.11.9
+FROM python:3.11.9-slim
 
 WORKDIR /app
 
@@ -17,5 +17,7 @@ ADD Server /app/Server
 # Copy the Tools directory
 ADD Tools /app/Tools
 
+ADD Games /app/Games
+
 # Run StartServer.py when the container launches
-CMD ["python", "-u", "StartServer.py"]
+CMD ["python", "-u", "start.py"]

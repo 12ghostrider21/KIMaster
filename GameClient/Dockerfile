@@ -1,15 +1,16 @@
-FROM python:3.11.9
+FROM python:3.11.9-slim
 
-# Specify default env here. 
+# Specify default env here.
 ENV LOBBY_KEY=MISSING_LOBBY_KEY
-ENV HOST_OF_API=swtp-server
-ENV SOCKET_SERVER_PORT=12345
+ENV SERVER_HOST=swtp-server
+ENV SERVER_PORT=8000
+
 # Set the PYTHONPATH environment variable
 ENV PYTHONPATH=/app
 
 WORKDIR /app
 ADD ./GameClient/requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-deps --no-dependencies -r requirements.txt
 
 # Set the working directory in the container
 WORKDIR /app/GameClient
@@ -20,8 +21,8 @@ ADD GameClient /app/GameClient
 # Copy the Tools directory
 ADD Tools /app/Tools
 
+ADD Games /app/Games
+
+
 # Run StartServer.py when the container launches
-CMD ["python", "-u", "StartClient.py"]
-
-
-
+CMD ["python", "-u", "start.py"]

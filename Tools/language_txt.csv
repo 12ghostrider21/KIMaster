@@ -1,0 +1,6 @@
+key;en;de;fr
+50;Internal error!;Interner Fehler!	;Erreur interne !
+51;Provided payload is not a json!;Bereitgestelltes Payload ist kein JSON!;La charge utile fournie n'est pas un JSON !
+52;Command not found!;Befehl nicht gefunden!;Commande non trouvée !
+53;Languge is invalid!;Die Sprache wurde nicht gefunden!;La langue sélectionnée n'existe pas !
+100;Language changed!;Die Sprache wurde geändert!;La langue a été changée !
