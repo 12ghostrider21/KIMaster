@@ -1,8 +1,8 @@
-# external imports
+# External imports
 from fastapi import WebSocket, WebSocketDisconnect
 from json import loads, JSONDecodeError
 
-# own files
+# Own modules
 from Server.connection_manager import AbstractConnectionManager
 from Server.lobby import Lobby
 from Server.lobby_manager import LobbyManager
@@ -23,14 +23,17 @@ class FastAPIServer(AbstractConnectionManager):
                                        "new_game", "blunder", "timeline", "step", "unstep", "evaluate", "stop_evaluate",
                                        "games"]
 
+    # Method to connect a WebSocket client
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
 
+    # Method to disconnect a WebSocket client
     async def disconnect(self, websocket: WebSocket):
         self.manager.leave_lobby(websocket)
         self.active_connections.remove(websocket)
 
+    # Main endpoint for WebSocket connections
     async def websocket_endpoint(self, client: WebSocket):
         await self.connect(client)
         try:
@@ -39,7 +42,7 @@ class FastAPIServer(AbstractConnectionManager):
                     read_object = await client.receive_json()
                     if isinstance(read_object, str):
                         read_object = loads(read_object)
-                    # filter read_object
+                    # Filter read_object based on allowed keys
                     read_object = {k: v for k, v in read_object.items() if k in self.__command_mask}
                 except JSONDecodeError:
                     await self.send_response(client, RCODE.INVALIDJSON)

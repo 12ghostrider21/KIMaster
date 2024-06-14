@@ -4,25 +4,56 @@ from docker.errors import ContainerError, ImageNotFound, APIError, NotFound, Doc
 
 
 class DockerAPI:
+    """
+    Class to interact with Docker to manage game client containers.
+
+    Attributes:
+        image (str): The Docker image name for the game client.
+        engine: The Docker client initialized from the environment.
+        _debug (bool): Flag to enable or disable debug mode.
+    """
     image: str = "game-client-img"
 
     def __init__(self):
+        """
+        Initialize the DockerAPI class, setting up the Docker client.
+        """
         try:
+            # Initialize the Docker client from environment variables
             self.engine = from_env()
         except DockerException:
+            # Handle exception if Docker is not started
             print(f"[DOCKER_API]: Engine not found! Maybe is Docker not started?")
             exit(1)
         self._debug: bool = False
 
     @property
     def debug(self) -> bool:
+        """
+        Get the debug mode status.
+
+        Returns:
+            bool: The current status of debug mode.
+        """
         return self._debug
 
     @debug.setter
     def debug(self, value: bool):
+        """
+        Set the debug mode status.
+
+        Args:
+            value (bool): The new status for debug mode.
+        """
         self._debug = value
 
     def list_containers(self) -> dict:
+        """
+        List all active Docker containers.
+
+        Returns:
+            dict: A dictionary with information about each container.
+        """
         container_info: dict = {}
         for i, container in enumerate(self.engine.containers.list()):
             container_info["count"] = i + 1
@@ -34,6 +65,12 @@ class DockerAPI:
         return container_info
 
     def start_game_client(self, token: str) -> None:
+        """
+        Start a new game client container.
+
+        Args:
+            token (str): The unique token for the game client.
+        """
         if self._debug:
             print(f"[DOCKER_API]: Starting GameClient: {token}")
         try:
@@ -63,6 +100,12 @@ class DockerAPI:
             print(f"[DOCKER_API]: {e}")
 
     def stop_game_client(self, token: str) -> None:
+        """
+        Stop a running game client container.
+
+        Args:
+            token (str): The unique token for the game client.
+        """
         if self._debug:
             print(f"[DOCKER_API]: Stopping GameClient: {token}")
         try:
@@ -78,6 +121,12 @@ class DockerAPI:
             print(f"[DOCKER_API]: {e}")
 
     def remove_game_client(self, token: str) -> None:
+        """
+        Remove a stopped game client container.
+
+        Args:
+            token (str): The unique token for the game client.
+        """
         if self._debug:
             print(f"[DOCKER_API]: Removing GameClient: {token}")
         try:

@@ -4,7 +4,6 @@ import numpy as np
 EPS = 1e-8
 
 
-
 # MCTS resulting in a tree with nodes having v value, Qsa and so on determined => knowing which child node to choose
 # (which action (=move )) based on neural net (probabilities (policy vector), v value)
 
