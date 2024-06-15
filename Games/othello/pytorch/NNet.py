@@ -3,9 +3,10 @@ import sys
 import time
 
 import numpy as np
+from tqdm import tqdm
 
 sys.path.append('../../')
-from Tools.utils import dotdict
+from Tools.utils import dotdict, AverageMeter
 from Tools.neural_net import NeuralNet
 
 import torch
