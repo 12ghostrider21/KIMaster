@@ -10,8 +10,8 @@ from Games.connect4.keras.NNet import NNetWrapper
 from Tools.mcts import MCTS
 from Tools.utils import dotdict
 
-folder = r"C:\Users\alex\OneDrive\02_DEV\01_Python\SWTP\REWORK\Games\connect4\keras"
-file = "best.h5"
+kerasfolder = r"C:\Users\svenr\OneDrive\Studium\04-semester\SWTP\repo\Plattform-fuer-Vergleich-von-Spiele-KIs\Games\connect4\keras"
+h5file = "best.h5"
 
 
 def init_nn(game, nnet, folder: str, file: str):
@@ -23,7 +23,7 @@ def init_nn(game, nnet, folder: str, file: str):
 
 
 game = Connect4Game()
-mcts = init_nn(game, NNetWrapper, folder, file)
+mcts = init_nn(game, NNetWrapper, kerasfolder, h5file)
 func = lambda x: mcts.getActionProb(x, temp=0)
 
 
