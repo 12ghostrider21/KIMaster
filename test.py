@@ -10,8 +10,8 @@ from Games.connect4.keras.NNet import NNetWrapper
 from Tools.mcts import MCTS
 from Tools.utils import dotdict
 
-kerasfolder = r"C:\Users\svenr\OneDrive\Studium\04-semester\SWTP\repo\Plattform-fuer-Vergleich-von-Spiele-KIs\Games\connect4\keras"
 kerasfolder = r"C:\Users\alex\Desktop\SWTP_GIT\Games\connect4\keras"
+kerasfolder = r"C:\Users\svenr\OneDrive\Studium\04-semester\SWTP\repo\Plattform-fuer-Vergleich-von-Spiele-KIs\Games\connect4\keras"
 h5file = "best.h5"
 
 

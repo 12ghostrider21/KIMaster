@@ -24,7 +24,7 @@ class SocketServer(AbstractConnectionManager):
     def __init__(self, msg_builder: LanguageHandler):
         super().__init__(msg_builder)
         self.manager: LobbyManager = LobbyManager()
-        # TODO import class instance
+        # TODO: DONE import class instance
         self.importer: Importer = Importer()
         print(f"{self.importer=}")
 
@@ -83,10 +83,13 @@ class SocketServer(AbstractConnectionManager):
                         game_name = command_key
 
                         board = np.array(array, dtype=dtype).reshape(shape)
-                        # TODO game_classe instanc von game_name
-                        # TODO lamda func of game with correct difficulty  lobby.difficulty
-                        action = np.argmax(self.func(self.game.getCanonicalForm(board, cur_player)))
-                        # todo np.argmax(lamda(game.conanboard( board, cur_player)))
+                        # TODO: DONE game_classe instanc von game_name
+                        game = self.importer.game_classes[game_name]()
+                        # TODO: DONE lamda func of game with correct difficulty  lobby.difficulty
+                        func = self.importer.get_game_func(game_name, lobby.difficulty)
+                        action = np.argmax(Importer().game_funcs)
+                        
+                        np.argmax(func(game.conanboard( board, cur_player)))
 
                         await self.send_cmd(lobby.game_client, "play", "make_move",
                                             {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
@@ -97,7 +100,8 @@ class SocketServer(AbstractConnectionManager):
                         game_name = command_key
                         #for game_name, v in self.imports.items():
                         #    if game_name.lower() == command_key.lower():
-                        # TODO game_classe instanc von game_name
+                        # TODO: DONE game_classe instance von game_name
+                        game = self.importer.game_classes[game_name]()
                         img_surface = self.game.draw(board, valid, cur_player=cur_player)
                         img = self.surface_to_png(img_surface)
                         if p_pos is None:
