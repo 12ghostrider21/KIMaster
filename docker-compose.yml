@@ -4,7 +4,6 @@ services:
       context: ./
       dockerfile: ./Server/Dockerfile
     image: swtp-server-img
-    restart: always
     container_name: swtp-server
     environment:
       - SERVER_HOST=swtp-server

@@ -34,7 +34,7 @@ class Importer:
         print(f"{self.games=}")
         print(f"{game_pys=}")
         print(f"{game_nnet_files=}")
-        print(f"{game_h5s}")
+        print(f"{game_h5s=}")
         # get all game classes
         game_classes = {game: Importer.import_class_from_file(game_pys[game]) for game in self.games}
 
@@ -93,7 +93,7 @@ class Importer:
         # init list for those games to exclude from result
         ignored: list[str] = []
 
-        for root, dir_names, file_names in walk("Games"):
+        for root, dir_names, file_names in walk("/app/Games"):
             # make all lower case, to remove case sensitivity
 
             # get the current game
