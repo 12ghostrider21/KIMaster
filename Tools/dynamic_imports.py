@@ -11,6 +11,11 @@ from Tools.utils import dotdict
 from Tools.i_game import IGame
 from Tools.Game_Config.difficulty import EDifficulty
 
+class exludable_modules(Enum):
+    GAME_PY=1
+    NNET=2
+    H5=3
+
 class Importer:
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -30,9 +35,6 @@ class Importer:
     
     def game_client_games(self) -> dict[str, IGame]:
         return {game:self.game_classes[game]() for game in self.games}
-
-    def server_call(self):
-        pass
     
     def get_game_func(self, game_name:str, difficulty:EDifficulty):
         return self.__game_funcs(game_name, difficulty)
@@ -51,10 +53,10 @@ class Importer:
             return False
         return True
     
-    exludable_modules = Enum('Exludable', ['GAME_PY','NNET', 'H5'])
+    
     
     @staticmethod
-    def crawl_game_files(*modules_to_exclude) -> tuple[set[str], dict[str:str], dict[str:str], dict[str:str]]:
+    def crawl_game_files(*modules_to_exclude) -> set[Iterable]:
         """
     Crawl the game files and categorize them into different dictionaries based on their types.
 
@@ -74,8 +76,8 @@ class Importer:
         game_nnets: dict[str, str] = {}
         game_h5s: dict[str, str] = {}
         
-        excluded_from_result: set[Iterable] = {} # 
-        results: set[Iterable] = {games,game_pys, game_nnets, game_h5s}
+        excluded_from_result: list = [] 
+        results = (games, game_pys, game_nnets, game_h5s)
 
         # init list for those games to exclude from result
         ignored: list[str] = []
@@ -89,34 +91,34 @@ class Importer:
                 current_game = current_game[0]
                 
                 # find *Game.py file of the current game
-                if Importer.exludable_modules.GAME_PY not in modules_to_exclude:
+                if exludable_modules.GAME_PY not in modules_to_exclude:
                     game_py_file_pattern: str = "Game.py"
                     found_game_pys = [f for f in file_names if f.lower().endswith(game_py_file_pattern.lower())]
                     if not Importer.__crawler_helper(found_game_pys, current_game, root, game_pys, ignored,
                                                      "*" + game_py_file_pattern):
                         continue
                 else:
-                    excluded_from_result.add(game_pys)
+                    excluded_from_result.append(game_pys)
                     
                 # find NNet.py files of the current game
-                if Importer.exludable_modules.NNET not in modules_to_exclude:
+                if exludable_modules.NNET not in modules_to_exclude:
                     nnet_file_pattern = "NNet.py"
                     found_nnets = [f for f in file_names if f.lower() == nnet_file_pattern.lower()]
                     if not Importer.__crawler_helper(found_nnets, current_game, root, game_nnets, ignored,
                                                      nnet_file_pattern):
                         continue
                 else:
-                    excluded_from_result.add(game_nnets)
+                    excluded_from_result.append(game_nnets)
                     
                 # find the .h5 of the current game
-                if Importer.exludable_modules.H5 not in modules_to_exclude:
+                if exludable_modules.H5 not in modules_to_exclude:
                     h5_file_pattern = ".h5"
                     found_h5s = [f for f in file_names if f.lower().endswith(h5_file_pattern.lower())]
                     if not Importer.__crawler_helper(found_h5s, current_game, root, game_h5s, ignored,
                                                      "*" + h5_file_pattern):
                         continue
                 else:
-                    excluded_from_result.add(game_h5s)
+                    excluded_from_result.append(game_h5s)
 
             elif len(current_game) > 1:
                 print(

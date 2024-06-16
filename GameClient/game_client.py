@@ -6,7 +6,7 @@ from GameClient.connection_manager import AbstractConnectionManager
 from GameClient.pit import Pit
 from Tools.Game_Config.game_config import GameConfig
 from Tools.rcode import RCODE
-from Tools.dynamic_imports import Importer
+from Tools.dynamic_imports import Importer, exludable_modules
 
 
 class GameClient(AbstractConnectionManager):
@@ -16,7 +16,7 @@ class GameClient(AbstractConnectionManager):
 
     async def run(self):
         await self.connect()
-        self.pit.game_classes = Importer().game_client_games()  # pit.import_game_classes("/app/Games")
+        self.pit.game_classes = Importer(exludable_modules.NNET, exludable_modules.H5).game_client_games()  # pit.import_game_classes("/app/Games")
         while True:
             try:
                 read_object: dict = await self.receive_json()
