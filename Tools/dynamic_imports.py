@@ -3,21 +3,22 @@ import os
 from os.path import splitext, basename, join, split
 from os import walk
 import sys
-from enum import Enum
-from typing import Iterable
+from enum import Enum, auto
 
 from Tools.mcts import MCTS
 from Tools.utils import dotdict
 from Tools.i_game import IGame
 from Tools.Game_Config.difficulty import EDifficulty
 
+
 class exludable_modules(Enum):
-    GAME_PY=1
-    NNET=2
-    H5=3
+    GAME_PY = auto()
+    NNET = auto()
+    H5 = auto()
+
 
 class Importer:
-    def __new__(cls):
+    def __new__(cls, *args):
         if not hasattr(cls, 'instance'):
             cls.instance = super(Importer, cls).__new__(cls)
         return cls.instance
@@ -32,11 +33,11 @@ class Importer:
         args = dotdict({'numMCTSSims': difficulty.value, 'cpuct': 1.0})
         mcts = MCTS(game, nn, args)
         return mcts
-    
+
     def game_client_games(self) -> dict[str, IGame]:
-        return {game:self.game_classes[game]() for game in self.games}
-    
-    def get_game_func(self, game_name:str, difficulty:EDifficulty):
+        return {game: self.game_classes[game]() for game in self.games}
+
+    def get_game_func(self, game_name: str, difficulty: EDifficulty):
         return self.__game_funcs(game_name, difficulty)
 
     @staticmethod
@@ -52,11 +53,9 @@ class Importer:
                 f" To prevent unpredictable behaviour {current_game} will be ignored.")
             return False
         return True
-    
-    
-    
+
     @staticmethod
-    def crawl_game_files(*modules_to_exclude) -> set[Iterable]:
+    def crawl_game_files(*modules_to_exclude) -> tuple[set[str], dict[str, str], dict[str, str], dict[str, str]]:
         """
     Crawl the game files and categorize them into different dictionaries based on their types.
 
@@ -75,8 +74,8 @@ class Importer:
         game_pys: dict[str, str] = {}
         game_nnets: dict[str, str] = {}
         game_h5s: dict[str, str] = {}
-        
-        excluded_from_result: list = [] 
+
+        excluded_from_result: list = []
         results = (games, game_pys, game_nnets, game_h5s)
 
         # init list for those games to exclude from result
@@ -89,7 +88,7 @@ class Importer:
             # only resolve Files if a unique game could be identified
             if len(current_game) == 1:
                 current_game = current_game[0]
-                
+
                 # find *Game.py file of the current game
                 if exludable_modules.GAME_PY not in modules_to_exclude:
                     game_py_file_pattern: str = "Game.py"
@@ -99,7 +98,7 @@ class Importer:
                         continue
                 else:
                     excluded_from_result.append(game_pys)
-                    
+
                 # find NNet.py files of the current game
                 if exludable_modules.NNET not in modules_to_exclude:
                     nnet_file_pattern = "NNet.py"
@@ -109,7 +108,7 @@ class Importer:
                         continue
                 else:
                     excluded_from_result.append(game_nnets)
-                    
+
                 # find the .h5 of the current game
                 if exludable_modules.H5 not in modules_to_exclude:
                     h5_file_pattern = ".h5"
@@ -121,35 +120,38 @@ class Importer:
                     excluded_from_result.append(game_h5s)
 
             elif len(current_game) > 1:
-                print(
-                    f"WARNING: the game {current_game} seems to exist several times. To prevent unpredictable behaviour {current_game} will be ignored. This Error is caused if there are multiple directories with identical names in your GameDirectory.")
+                print(f"WARNING: the game {current_game} seems to exist several times."
+                      f" To prevent unpredictable behaviour {current_game} will be ignored. This Error is caused if "
+                      f"there are multiple directories with identical names in your GameDirectory.")
                 for game in current_game:
                     ignored.append(game)
-                    
-        
+
         # ignore games where Game.py, NNet.py and.h5 files; could not be found
         for game in games:
             for element in [res for res in results if res is not games and res not in excluded_from_result]:
                 if game not in element:
                     ignored.append(game)
-                    print(f"WARNING: A required File is missing for the game {game}. The path of this file is expected to be in this collection {element}. To prevent unstable behaviour the game {game} will be Ignored.")
-                
+                    print(
+                        f"WARNING: A required File is missing for the game {game}. The path of this file is expected "
+                        f"to be in this collection {element}. To prevent unstable behaviour the game {game} will be "
+                        f"Ignored.")
+
         # remove ignored games
         for ignored_game in ignored:
             for r in results:
-                
+
                 if isinstance(r, dict):
                     r.pop(ignored_game, None)
                 elif isinstance(r, set):
                     r.discard(ignored_game)
-                
+
         return results
 
     @staticmethod
-    def import_class_from_file(file_path, class_name = None):
+    def import_class_from_file(file_path, class_name=None):
         module_name: str = splitext(basename(file_path))[0]
-        # try to resolve automaticly 
-        class_name = module_name if class_name == None else class_name
+        # try to resolve automatically
+        class_name = module_name if class_name is None else class_name
         spec = importlib.util.spec_from_file_location(module_name, file_path)
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
@@ -159,16 +161,14 @@ class Importer:
         if hasattr(module, class_name):
             return getattr(module, class_name)
         else:
-            raise ImportError(f"Class {class_name} not found in {file_path}. To make sure your Game can be found, name the class the same as the Game.py file, (but with out the Game.py). The file for the neural net must be named NNet.py")
-
-    @staticmethod
-    def test(*args, **kwargs):
-        print(args, kwargs)
+            raise ImportError(
+                f"Class {class_name} not found in {file_path}. To make sure your Game can be found, name the class "
+                f"the same as the Game.py file, (but with out the Game.py). The file for the neural net must be named "
+                f"NNet.py")
 
     def __init__(self, *modules_to_exclude: exludable_modules):
-        pass
         # get all relevant files related to games
-        self.games, game_pys, game_nnet_files, game_h5s = Importer.crawl_game_files(modules_to_exclude )
+        self.games, game_pys, game_nnet_files, game_h5s = Importer.crawl_game_files(modules_to_exclude)
         print(f"{self.games=}")
         print(f"{game_pys=}")
         print(f"{game_nnet_files=}")
@@ -182,12 +182,13 @@ class Importer:
 
         # CREATE LAMBDAS
         # 1) generate a list of games and difficulty pairs
-        game_diff_pairs:list[tuple[str, EDifficulty]] = [(game, diff) for game in self.games for diff in EDifficulty]
-        
+        game_diff_pairs: list[tuple[str, EDifficulty]] = [(game, diff) for game in self.games for diff in EDifficulty]
+
         # 2) generate the monte carlo tree search for each game and each difficulty
-        wrapper_for_init_nn = lambda game, diff : Importer.init_nn(self.game_classes[game](), game_nnets[game], game_h5s[game], diff)
-        game_mcts = {pair:wrapper_for_init_nn(pair[0], pair[1]) for pair in game_diff_pairs}
-        
+        wrapper_for_init_nn = lambda game, diff: Importer.init_nn(self.game_classes[game](), game_nnets[game],
+                                                                  game_h5s[game], diff)
+        game_mcts = {pair: wrapper_for_init_nn(pair[0], pair[1]) for pair in game_diff_pairs}
+
         # 3) generate functions for each game and difficulty
         self.__game_funcs = {pair: lambda x: game_mcts[pair].getActionProb(x, temp=0) for pair in game_diff_pairs}
 
