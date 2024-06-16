@@ -1,58 +1,75 @@
-import importlib
+import importlib.util
+import os
 from os.path import splitext, basename, join, split
-from os import listdir, walk
+from os import walk
 import sys
 from logging import warn
+
 from Tools.mcts import MCTS
 from Tools.utils import dotdict
+from Tools.i_game import IGame
+from Tools.Game_Config.difficulty import EDifficulty
 
 class Importer:
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-          cls.instance = super(Importer, cls).__new__(cls)
+            cls.instance = super(Importer, cls).__new__(cls)
         return cls.instance
-    
+
     @staticmethod
-    def init_nn(game, nnet, h5_path):
+    def init_nn(game, nnet, h5_path, difficulty: EDifficulty):
         h5_folder_file = split(h5_path)
         folder = h5_folder_file[0]
         file = h5_folder_file[1]
         nn = nnet(game)
         nn.load_checkpoint(folder, file)
-        args = dotdict({'numMCTSSims': 5, 'cpuct': 1.0})
+        args = dotdict({'numMCTSSims': difficulty.value, 'cpuct': 1.0})
         mcts = MCTS(game, nn, args)
         return mcts
 
     def __init__(self):
-            # get all relevant files related to games
-            self.games, game_pys, game_nnet_files, game_h5s = Importer.crawl_game_files()
+        pass
+        # get all relevant files related to games
+        self.games, game_pys, game_nnet_files, game_h5s = Importer.crawl_game_files()
+        print(f"{self.games=}")
+        print(f"{game_pys=}")
+        print(f"{game_nnet_files=}")
+        print(f"{game_h5s}")
+        # get all game classes
+        game_classes = {game: Importer.import_class_from_file(game_pys[game]) for game in self.games}
 
-            # get all game classes
-            game_classes = { game:Importer.import_class_from_file(game_pys[game]) for game in self.games}
+        # import NNet.py of each game
+        #game_nnets = {game: Importer.import_class_from_file(game_nnet_files[game], 'NNetWrapper') for game in
+        #              self.games}
 
-            # import NNet.py of each game
-            game_nnets = {game:Importer.import_class_from_file(game_nnet_files[game], 'NNetWrapper')  for game in self.games}
+        # create lambdas
+        #game_mcts = {game: Importer.init_nn(game_classes[game](), game_nnets[game], game_h5s[game]) for game in
+        #             self.games}
+        #self.game_funcs = {game: lambda x: game_mcts[game].getActionProb(x, temp=0) for game in self.games}
 
-            # create lambdas
-            game_mcts = {game: Importer.init_nn(game_classes[game](), game_nnets[game], game_h5s[game]) for game in self.games}
-            self.game_funcs = {game:lambda x: game_mcts[game].getActionProb(x, temp=0) for game in self.games}
-
-
-    def game_clinet_games(self):
+    def game_client_games(self) -> dict[str, IGame]:
+        # TODO get game_instances()
         return {}
 
+    def server_call(self):
+        pass
+
     @staticmethod
-    def __crawler_helper(found_files: list[str], current_game: str, root:str, target_dict: dict[str, str], ignored: list[str], pattern:str) -> bool :
-        if len(found_files) == 1: # add found file to target if it is unique
-            target_dict.update({current_game:join(root,found_files[0])})
-        elif len(found_files) > 1: # ignore it if it is not unique
+    def __crawler_helper(found_files: list[str], current_game: str, root: str, target_dict: dict[str, str],
+                         ignored: list[str], pattern: str) -> bool:
+        if len(found_files) == 1:  # add found file to target if it is unique
+            target_dict.update({current_game: join(root, found_files[0])})
+        elif len(found_files) > 1:  # ignore it if it is not unique
             ignored.append(current_game)
-            warn(f"could not identify unique {pattern} file for game: {current_game}. Make sure that there is only one file matching the name NNet.py in the {root} directory. To prevent unpredictable behaviour {current_game} will be ignored.")
+            warn(
+                f"could not identify unique {pattern} file for game: {current_game}."
+                f" Make sure that there is only one file matching the name NNet.py in the {root} directory."
+                f" To prevent unpredictable behaviour {current_game} will be ignored.")
             return False
         return True
 
     @staticmethod
-    def crawl_game_files(self) -> tuple[list[str], dict[str:str], dict[str:str], dict[str:str]]:
+    def crawl_game_files() -> tuple[list[str], dict[str:str], dict[str:str], dict[str:str]]:
         """
     Crawl the game files and categorize them into different dictionaries based on their types.
 
@@ -68,47 +85,51 @@ class Importer:
     """
         # init return values
         game_pys: dict[str, str] = {}
-        game_nnets: dict[str,str] = {}
+        game_nnets: dict[str, str] = {}
         game_h5s: dict[str, str] = {}
-        games:list[str] = [game for game in listdir("/app/Games")]
-        results = (games, game_pys, game_nnets, game_h5s)  
-        
+        games: list[str] = [game for game in os.listdir("/app/Games")]
+        results = (games, game_pys, game_nnets, game_h5s)
+
         # init list for those games to exclude from result
         ignored: list[str] = []
-        
+
         for root, dir_names, file_names in walk("Games"):
             # make all lower case, to remove case sensitivity
-            
+
             # get the current game
             current_game = [game for game in games if game.lower() in root.lower()]
-            
+
             # only resolve Files if a unique game could be identified
             if len(current_game) == 1:
                 current_game = current_game[0]
-                
+
                 # find *Game.py file of the current game
                 game_py_file_pattern: str = "Game.py"
                 found_game_pys = [f for f in file_names if f.lower().endswith(game_py_file_pattern.lower())]
-                if not Importer.__crawler_helper(found_game_pys, current_game, root, game_pys, ignored, "*"+game_py_file_pattern):
+                if not Importer.__crawler_helper(found_game_pys, current_game, root, game_pys, ignored,
+                                                 "*" + game_py_file_pattern):
                     continue
-                
+
                 # find NNet.py files of the current game
                 nnet_file_pattern = "NNet.py"
                 found_nnets = [f for f in file_names if f.lower() == nnet_file_pattern.lower()]
-                if not Importer.__crawler_helper(found_nnets, current_game, root, game_nnets, ignored, nnet_file_pattern):
+                if not Importer.__crawler_helper(found_nnets, current_game, root, game_nnets, ignored,
+                                                 nnet_file_pattern):
                     continue
-                
+
                 # find the .h5 of the current game
                 h5_file_pattern = ".h5"
                 found_h5s = [f for f in file_names if f.lower().endswith(h5_file_pattern.lower())]
-                if not Importer.__crawler_helper(found_h5s, current_game, root, game_h5s, ignored, "*"+h5_file_pattern):
+                if not Importer.__crawler_helper(found_h5s, current_game, root, game_h5s, ignored,
+                                                 "*" + h5_file_pattern):
                     continue
-                
+
             elif len(current_game) > 1:
-                warn(f"the game {current_game} seems to exist several times. To prevent unpredictable behaviour {current_game} will be ignored. This Error is caused if there are multiple directories with identical names in your GameDirectory.")
+                warn(
+                    f"the game {current_game} seems to exist several times. To prevent unpredictable behaviour {current_game} will be ignored. This Error is caused if there are multiple directories with identical names in your GameDirectory.")
                 for game in current_game:
                     ignored.append(game)
-        
+
         # remove ignored games
         for ignored_game in ignored:
             for r in results:
@@ -120,12 +141,10 @@ class Importer:
                 except (ValueError, KeyError):
                     pass
         return results
-    
-    
-    
+
     @staticmethod
     def import_class_from_file(file_path, class_name):
-        module_name:str = splitext(basename(file_path))[0]
+        module_name: str = splitext(basename(file_path))[0]
         spec = importlib.util.spec_from_file_location(module_name, file_path)
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
@@ -136,12 +155,16 @@ class Importer:
             return getattr(module, class_name)
         else:
             raise ImportError(f"Class {class_name} not found in {file_path}")
-        
+
     @staticmethod
     def import_class_from_file(file_path):
         class_name = splitext(basename(file_path))[0]
-        return Importer.import_class_from_file(file_path, class_name)    
-    
+        return Importer.import_class_from_file(file_path, class_name)
+
+    @staticmethod
+    def test(*args, **kwargs):
+        print(args, kwargs)
+
     '''
     # USE THIS IF ABOVE DOES NOT WORK !!!!!!
     
@@ -162,8 +185,7 @@ class Importer:
     def import_class_from_file(filepath: str):
         class_name = splitext(basename(filepath))[0]
         Importer.import_class_from_file(filepath, class_name)'''
- 
-    
+
     # DONE import all games from /Games folder and create a instance of it
     # DONE import all NNet.py of each game
     # DONE: find directory path of .h5 files of each game
@@ -208,7 +230,6 @@ class Importer:
 
     
     """
-
 
     """
     @staticmethod
@@ -310,8 +331,6 @@ class Importer:
         return results
     
     """
-
-
 
     """
     loading and creation of MCTS function
