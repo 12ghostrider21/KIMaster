@@ -16,7 +16,9 @@ class GameClient(AbstractConnectionManager):
 
     async def run(self):
         await self.connect()
-        self.pit.game_classes = Importer(exludable_modules.NNET, exludable_modules.H5).game_client_games()  # pit.import_game_classes("/app/Games")
+        self.pit.game_classes = Importer(exludable_modules.NNET, exludable_modules.LAMBDA).get_game_instances()
+        for g in self.pit.game_classes:
+            print("Game: ", g, "Imported!")
         while True:
             try:
                 read_object: dict = await self.receive_json()

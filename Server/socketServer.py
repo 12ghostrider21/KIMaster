@@ -24,9 +24,7 @@ class SocketServer(AbstractConnectionManager):
     def __init__(self, msg_builder: LanguageHandler):
         super().__init__(msg_builder)
         self.manager: LobbyManager = LobbyManager()
-        # TODO: DONE import class instance
         self.importer: Importer = Importer()
-        print(f"{self.importer=}")
 
     async def connect(self, websocket: WebSocket):
         query_params = websocket.query_params
@@ -51,7 +49,7 @@ class SocketServer(AbstractConnectionManager):
 
     async def websocket_endpoint(self, websocket: WebSocket):
         await self.connect(websocket)
-        game: IGame = None
+        game_classes = self.importer.get_game_instances()
         try:
             while True:
                 read_object: dict = await websocket.receive_json()
@@ -83,14 +81,9 @@ class SocketServer(AbstractConnectionManager):
                         game_name = command_key
 
                         board = np.array(array, dtype=dtype).reshape(shape)
-                        # TODO: DONE game_classe instanc von game_name
-                        game = self.importer.game_classes[game_name]()
-                        # TODO: DONE lamda func of game with correct difficulty  lobby.difficulty
+                        game: IGame = game_classes[game_name]
                         func = self.importer.get_game_func(game_name, lobby.difficulty)
-                        action = np.argmax(Importer().game_funcs)
-                        
-                        np.argmax(func(game.conanboard( board, cur_player)))
-
+                        action = np.argmax(func(game.getCanonicalForm(board, cur_player)))
                         await self.send_cmd(lobby.game_client, "play", "make_move",
                                             {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
                     case "draw":
@@ -98,11 +91,8 @@ class SocketServer(AbstractConnectionManager):
                         cur_player: int = read_object.get("cur_player")
                         valid: bool = bool(read_object.get("valid"))
                         game_name = command_key
-                        #for game_name, v in self.imports.items():
-                        #    if game_name.lower() == command_key.lower():
-                        # TODO: DONE game_classe instance von game_name
-                        game = self.importer.game_classes[game_name]()
-                        img_surface = self.game.draw(board, valid, cur_player=cur_player)
+                        game = game_classes[game_name]
+                        img_surface = game.draw(board, valid, cur_player=cur_player)
                         img = self.surface_to_png(img_surface)
                         if p_pos is None:
                             # broadcast
