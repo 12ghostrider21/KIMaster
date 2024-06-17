@@ -46,22 +46,10 @@ class SocketServer(AbstractConnectionManager):
         byte_io.close()
         return png_bytes
 
-    def calc(self, read_object):
-        game = self.importer.get_games()[command_key]
-        array = read_object["board"]
-        dtype = read_object["dtype"]
-        shape = tuple(read_object["shape"])
-        cur_player = int(read_object.get("cur_player"))
-        board = np.array(array, dtype=dtype).reshape(shape)
-        func = self.importer.get_ai_func().get((command_key, lobby.difficulty))
-        print("new_action", func)
-
-        action = func[0](game.getCanonicalForm(board, cur_player))
-
-
     async def websocket_endpoint(self, websocket: WebSocket):
         await self.connect(websocket)
         game_instances: dict[str, IGame] = self.importer.get_games()
+        ai_funcs = self.importer.get_ai_func()
         try:
             while True:
                 read_object: dict = await websocket.receive_json()
@@ -94,7 +82,7 @@ class SocketServer(AbstractConnectionManager):
                         board = np.array(array, dtype=dtype).reshape(shape)
                         valids = game.getValidMoves(board, cur_player)
                         await anyio.sleep(0.5)
-                        func = self.importer.get_ai_func().get((command_key, lobby.difficulty))
+                        func = ai_funcs.get((command_key, lobby.difficulty))
                         print("new_action", func, command_key)
                         action = func[0](game.getCanonicalForm(board, cur_player))
                         if len(valids) < action:

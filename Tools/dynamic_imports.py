@@ -47,7 +47,7 @@ class Importer:
     def __init_nn(game: IGame, nnet, trained_folder: TrainedFolder, difficulty: EDifficulty):
         nn = nnet(game)
         nn.load_checkpoint(trained_folder.folder, trained_folder.file)
-        mcts = MCTS(game, nn, dotdict({'numMCTSSims': 250, 'cpuct': 3.0}))
+        mcts = MCTS(game, nn, dotdict({'numMCTSSims': difficulty.value, 'cpuct': 3.0}))
         return mcts
 
     @staticmethod

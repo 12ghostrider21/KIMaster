@@ -39,7 +39,7 @@ class RCODE(Enum):
     P_VALIDMOVE = 207  # "A valid move has been made."
     P_MOVES = 208  # "The list of possible moves has been successfully retrieved."
     P_VALIDUNDO = 209  # "A valid undo action has been performed."
-    #P_SURRENDER = 210  # "A player has surrendered successfully."
+    P_SURRENDER = 210  # "A player has surrendered successfully."
     #P_BLUNDER = 212  # "A blunder [serious mistake] has been identified in the play."
     #P_BLUNDERLIST = 213  # "The list of blunders has been successfully retrieved."
     #P_TIMELINE = 214  # "The timeline of events in the game has been successfully retrieved."

@@ -72,6 +72,10 @@ class GameClient(AbstractConnectionManager):
                     self.pit.set_move(move, p_pos)
                     await self.send_response(RCODE.P_VALIDMOVE, p_pos)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                case "surrender":
+                    self.pit.stop_arena()
+                    winner = -1 if p_pos == "p1" else 1  # winner is the opposite player of the one who surrenders
+                    await self.send_response(RCODE.P_SURRENDER, None, {"result": winner})
                 case "undo_move":
                     num = read_object.get("num")
                     if num is None:

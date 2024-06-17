@@ -41,6 +41,7 @@ class Pit:
                 play1 = self.player1.playAI
                 play2 = self.player2.play
         game = self.game_classes.get(game_config.game.replace("Game", "").lower())
+        print("new game loaded:", game)
         self.arena.set_arena(game, game_config.game.replace("Game", ""), play1, play2)
 
     def start_game(self, board: np.array, cur_player: int, it: int):
