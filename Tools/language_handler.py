@@ -8,10 +8,10 @@ class LanguageHandler:
 
     def _load_csv(self):
         data = {}
-        with open(self.csv_file, mode='r', encoding='UTF-8') as file:
+        with open(self.csv_file, mode='r', encoding='utf-8-sig') as file:
             reader = csv.DictReader(file, delimiter=";")
             for row in reader:
-                data[row.get("key")] = {k: v for k, v in row.items() if k != "key"}
+                data[row.get(r"key")] = {k: v for k, v in row.items() if k != "key"}
         return data
 
     def get(self, key_id, language):
@@ -19,3 +19,7 @@ class LanguageHandler:
         if entry:
             return entry.get(language, None)
         return None
+
+
+if __name__ == "__main__":
+    l = LanguageHandler("language.csv")
