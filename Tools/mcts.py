@@ -116,8 +116,7 @@ class MCTS:
 
         if s not in self.Ps:  # if no policy already calculated for that state (board position) = leaf node
             # leaf node
-            self.Ps[s], v = self.nnet.predict(
-                canonicalBoard)  # exactly what described in the function doc above happens
+            self.Ps[s], v = self.nnet.predict(canonicalBoard)  # exactly what described in the function doc above happens
             # policy vector for the child nodes (states) of that node (state)
             # and v value for that node is calculated
             valids = self.game.getValidMoves(canonicalBoard,

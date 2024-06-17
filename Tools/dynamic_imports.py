@@ -1,144 +1,108 @@
 import importlib.util
+import io
 import os
-from os.path import splitext, basename, join, split
-from os import walk
 import sys
 from enum import Enum, auto
+from os.path import splitext, basename
 
-from Tools.mcts import MCTS
-from Tools.utils import dotdict
-from Tools.i_game import IGame
+import numpy as np
+
 from Tools.Game_Config.difficulty import EDifficulty
+from Tools.i_game import IGame
+from Tools.mcts import MCTS
+from Tools.trained_folder_dataclass import TrainedFolder
+from Tools.utils import dotdict
 
-
-class exludable_modules(Enum):
+class ExcludeModule(Enum):
     GAME_PY = auto()
     NNET = auto()
     LAMBDA = auto()
 
 
 class Importer:
-    #def __new__(cls, *args):
-    #    if not hasattr(cls, 'instance'):
-    #        cls.instance = super(Importer, cls).__new__(cls)
-    #    return cls.instance
+
+    def __init__(self, directory: str, *exclude: ExcludeModule):
+        self.__game_names, self.__game_pys, self.__game_nnets, self.__game_folder = self.__crawl_game_files(directory)
+        # get all game classes
+        if ExcludeModule.GAME_PY not in exclude:
+            print(f"[{self.__class__.__name__}]", "Importing Game classes...")
+            self.__game_classes = self.__import_game_classes()
+        # import NNet.py of each game
+        if ExcludeModule.NNET not in exclude:
+            print(f"[{self.__class__.__name__}]", "Importing NNet classes...")
+            self.__game_nnets = self.__import_nnet()
+        # create lambda functions for each game and difficulty
+        if ExcludeModule.LAMBDA not in exclude:
+            print(f"[{self.__class__.__name__}]", "Creating AI lambdas functions...")
+            self.__game_funcs = self.__create_lambdas()
+        print(f"[{self.__class__.__name__}]", "Initialised fully.")
+
+    def get_games(self) -> dict[str, IGame]:
+        return {k: game() for k, game in self.__game_classes.items()}
+
+    def get_ai_func(self) -> dict:
+        return self.__game_funcs.copy()
 
     @staticmethod
-    def __init_nn(game, nnet, h5_path, difficulty: EDifficulty):
-        h5_folder_file = split(h5_path)
-        folder = h5_folder_file[0]
-        file = h5_folder_file[1]
+    def __init_nn(game: IGame, nnet, trained_folder: TrainedFolder, difficulty: EDifficulty):
         nn = nnet(game)
-        nn.load_checkpoint(folder, file)
-        args = dotdict({'numMCTSSims': difficulty.value, 'cpuct': 1.0})
-        mcts = MCTS(game, nn, args)
+        nn.load_checkpoint(trained_folder.folder, trained_folder.file)
+        mcts = MCTS(game, nn, dotdict({'numMCTSSims': 250, 'cpuct': 3.0}))
         return mcts
 
-    def get_game_instances(self) -> dict[str, IGame]:
-        return {game: self.game_classes[game]() for game in self.game_names}
-
-    def get_game_funcs(self):
-        return self.game_funcs
-
     @staticmethod
-    def __crawler_helper(found_files: list[str], current_game: str, root: str, target_dict: dict[str, str],
-                         ignored: list[str], pattern: str) -> bool:
-        if len(found_files) == 1:  # add found file to target if it is unique
-            target_dict.update({current_game: join(root, found_files[0])})
-        elif len(found_files) > 1:  # ignore it if it is not unique
-            ignored.append(current_game)
-            print(
-                f"could not identify unique {pattern} file for game: {current_game}."
-                f" Make sure that there is only one file matching the name {pattern} in the {root} directory."
-                f" To prevent unpredictable behaviour {current_game} will be ignored.")
-            return False
-        return True
-
-    @staticmethod
-    def __crawl_game_files() -> tuple[set[str], dict[str, str], dict[str, str], dict[str, str]]:
+    def __crawl_game_files(directory: str) -> tuple[set[str], dict[str, str], dict[str, str], dict[str, TrainedFolder]]:
         """
-    Crawl the game files and categorize them into different dictionaries based on their types.
-
-    Returns:
-        tuple: A tuple containing four elements:
-            - games (list[str]): List of all game names found in the directory.
-            - game_pys (dict[str, str]): Dictionary with game names as keys and paths to their Game.py files as values.
-            - game_nnets (dict[str, str]): Dictionary with game names as keys and paths to their NNet.py files as values
-            - game_h5s (dict[str, str]): Dictionary with game names as keys and paths to their .h5 files as values.
-
-    Raises:
-        Warning: If multiple directories with identical names are found in the GameDirectory.
-    """
-        # init return values
-        games: set[str] = {game for game in os.listdir("../Games")}
+        return game_names, game_pys, game_nnets, game_folder: TrainedFolder
+        """
+        # Initialize return values
+        game_names: set[str] = set(os.listdir(directory))
         game_pys: dict[str, str] = {}
         game_nnets: dict[str, str] = {}
-        game_h5s: dict[str, str] = {}
+        game_folder: dict[str, TrainedFolder] = {}
+        results = (game_names, game_pys, game_nnets, game_folder)
 
-        excluded_from_result: list = []
-        results = (games, game_pys, game_nnets, game_h5s)
+        for root, _, filenames in os.walk(directory):
+            for game in game_names:  # for all found games
+                if game.lower() in root.lower():  # only directory with game_name
+                    for f in filenames:
+                        file_path = os.path.join(root, f)
+                        lower_f = f.lower()
+                        if lower_f.endswith("game.py") and game not in game_pys:
+                            game_pys[game] = file_path
+                        elif lower_f == "nnet.py" and game not in game_nnets:
+                            game_nnets[game] = file_path
+                        elif (lower_f.endswith(".tar") or lower_f.endswith(".h5")) and game not in game_folder:
+                            base_name = os.path.basename(file_path)
+                            base_directory = os.path.dirname(file_path)
+                            game_folder[game] = TrainedFolder(base_directory, base_name)
 
-        # init list for those games to exclude from result
-        ignored: list[str] = []
+        # Identify and remove games missing entries in any of the dictionaries
+        incomplete_games = []
+        for game in list(game_names):
+            missing_parts = []
+            if game not in game_pys:
+                missing_parts.append("Game.py")
+            if game not in game_nnets:
+                missing_parts.append("NNet.py")
+            if game not in game_folder:
+                missing_parts.append("Model file (.tar or .h5)")
+            if missing_parts:
+                incomplete_games.append((game, missing_parts))
+                game_names.discard(game)
+                game_pys.pop(game, None)
+                game_nnets.pop(game, None)
+                game_folder.pop(game, None)
 
-        for root, dir_names, file_names in walk("../Games"):
-            # get the current game
-            current_game = [game for game in games if game.lower() in root.lower()]
+        if incomplete_games:
+            print(f"[{__class__.__name__}]", "Warning: The following games were removed due to missing entries:")
+            for game, missing_parts in incomplete_games:
+                print(f"[{__class__.__name__}]", f"{game} is missing: {', '.join(missing_parts)}")
 
-            # only resolve Files if a unique game could be identified
-            if len(current_game) == 1:
-                current_game = current_game[0]
-
-                # find *Game.py file of the current game
-                game_py_file_pattern: str = "Game.py"
-                found_game_pys = [f for f in file_names if f.lower().endswith(game_py_file_pattern.lower())]
-                if not Importer.__crawler_helper(found_game_pys, current_game, root, game_pys, ignored,
-                                                 "*" + game_py_file_pattern):
-                    continue
-
-                # find NNet.py files of the current game
-                nnet_file_pattern = "NNet.py"
-                found_nnets = [f for f in file_names if f.lower() == nnet_file_pattern.lower()]
-                if not Importer.__crawler_helper(found_nnets, current_game, root, game_nnets, ignored,
-                                                 nnet_file_pattern):
-                    continue
-
-                # find the .h5 of the current game
-                h5_file_pattern = ".h5"
-                found_h5s = [f for f in file_names if f.lower().endswith(h5_file_pattern.lower())]
-                if not Importer.__crawler_helper(found_h5s, current_game, root, game_h5s, ignored,
-                                                 "*" + h5_file_pattern):
-                    continue
-
-            elif len(current_game) > 1:
-                print(f"WARNING: the game {current_game} seems to exist several times."
-                      f" To prevent unpredictable behaviour {current_game} will be ignored. This Error is caused if "
-                      f"there are multiple directories with identical names in your GameDirectory.")
-                for game in current_game:
-                    ignored.append(game)
-
-        # ignore games where Game.py, NNet.py and.h5 files; could not be found
-        for game in games:
-            for element in [res for res in results if res is not games and res not in excluded_from_result]:
-                if game not in element:
-                    ignored.append(game)
-                    print(
-                        f"WARNING: A required File is missing for the game {game}. The path of this file is expected "
-                        f"to be in this collection {element}. To prevent unstable behaviour the game {game} will be "
-                        f"Ignored.")
-
-        # remove ignored games
-        for ignored_game in ignored:
-            for r in results:
-                if isinstance(r, dict):
-                    r.pop(ignored_game, None)
-                elif isinstance(r, set):
-                    r.discard(ignored_game)
         return results
 
     @staticmethod
     def __import_class_from_file(file_path, class_name=None):
-        # TODO try except ModuleNotFoundError -> Ignore missing modules and print them as missing!
         module_name: str = splitext(basename(file_path))[0]
         # try to resolve automatically
         class_name = module_name if class_name is None else class_name
@@ -156,48 +120,34 @@ class Importer:
                 f"the same as the Game.py file, (but with out the Game.py). The file for the neural net must be named "
                 f"NNet.py")
 
-    def __init__(self, *modules_to_exclude: exludable_modules):
-        # get all relevant files related to games
-        self.game_names, self.__game_pys, self.__game_nnet_files, self.__game_h5s = self.__crawl_game_files()
-
-        # get all game classes
-        if exludable_modules.GAME_PY not in modules_to_exclude:
-            self.game_classes = self.__import_game_classes()
-        # import NNet.py of each game
-        if exludable_modules.NNET not in modules_to_exclude:
-            self.game_nnets = self.__import_nnet()
-        # create lambda functions for each game and difficulty
-        if exludable_modules.LAMBDA not in modules_to_exclude:
-            self.game_funcs = self.__create_lambdas()
-
-    def __str__(self):
-        return (f"{self.game_funcs=}\n"
-                f"{self.game_nnets=}\n"
-                f"{self.game_classes=}")
-
     def __import_game_classes(self):
-        return {game: Importer.__import_class_from_file(self.__game_pys[game]) for game in self.game_names}
+        return {game: Importer.__import_class_from_file(self.__game_pys[game]) for game in self.__game_names}
 
     def __import_nnet(self):
-        return {game: Importer.__import_class_from_file(self.__game_nnet_files[game], 'NNetWrapper')
-                           for game in self.game_names}
+        return {game: Importer.__import_class_from_file(self.__game_nnets[game], 'NNetWrapper')
+                for game in self.__game_names}
 
     def __create_lambdas(self):
         # CREATE LAMBDAS
         # 1) generate a list of games and difficulty pairs
-        game_diff_pairs: list[tuple[str, EDifficulty]] = [(game, diff) for game in self.game_names for diff in
+        game_diff_pairs: list[tuple[str, EDifficulty]] = [(game, diff) for game in self.__game_names for diff in
                                                           EDifficulty]
-
         # 2) generate the monte carlo tree search for each game and each difficulty
-        wrapper_for_init_nn = lambda game, diff: Importer.__init_nn(self.game_classes[game](), self.game_nnets[game],
-                                                                    self.__game_h5s[game], diff)
-        game_mcts = {pair: wrapper_for_init_nn(pair[0], pair[1]) for pair in game_diff_pairs}
 
-        # 3) generate functions for each game and difficulty
-        return {pair: lambda x: game_mcts[pair].getActionProb(x, temp=0) for pair in game_diff_pairs}
+        result = {}
+        for game, diff in game_diff_pairs:
+            old = sys.stdout
+            sys.stdout = io.StringIO()
+            mcts = Importer.__init_nn(self.__game_classes[game](), self.__game_nnets[game], self.__game_folder[game], diff)
+            result.update({(game, diff): (lambda x: np.argmax(mcts.getActionProb(x, temp=0)), (game, diff))})
+            sys.stdout = old
+        return result
 
 
 if __name__ == "__main__":
     # For testing purposes
-    i = Importer()
-    print(i)
+    i = Importer("../Games")
+    print(i.get_games())
+    print(i.get_ai_func())
+
+    x = lambda x: 1 + x

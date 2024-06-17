@@ -1,7 +1,4 @@
 import asyncio
-import importlib.util
-import inspect
-import os
 import time
 from threading import Thread
 
@@ -19,7 +16,7 @@ class Pit:
         self.game_classes: dict = {}
         self.player1: Player = Player()
         self.player2: Player = Player()
-        self.arena_task: Thread = None
+        self.arena_task: Thread | None = None
 
     def stop_arena(self):
         if self.arena_task is None:
@@ -44,7 +41,7 @@ class Pit:
                 play1 = self.player1.playAI
                 play2 = self.player2.play
         game = self.game_classes.get(game_config.game.replace("Game", "").lower())
-        self.arena.set_arena(game, game_config.game, play1, play2)
+        self.arena.set_arena(game, game_config.game.replace("Game", ""), play1, play2)
 
     def start_game(self, board: np.array, cur_player: int, it: int):
         self.arena.stop = False
@@ -63,25 +60,3 @@ class Pit:
             self.player1.move = move
         if pos == "p2":
             self.player2.move = move
-
-    @staticmethod
-    def import_game_classes(directory):
-        pattern: str = "Game.py"
-        imported_classes = {}
-
-        for root, _, files in os.walk(directory):
-            for filename in files:
-                if filename.endswith(pattern):
-                    module_name = filename[:-3]
-                    file_path = os.path.join(root, filename)
-
-                    spec = importlib.util.spec_from_file_location(module_name, file_path)
-                    module = importlib.util.module_from_spec(spec)
-                    spec.loader.exec_module(module)
-
-                    for name, obj in inspect.getmembers(module, inspect.isclass):
-                        name = name.replace("Game", "").lower()
-                        if obj.__module__ == module_name:
-                            imported_classes[name] = obj
-                            print("Imported: ", name)
-        return imported_classes

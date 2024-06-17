@@ -6,7 +6,7 @@ from GameClient.connection_manager import AbstractConnectionManager
 from GameClient.pit import Pit
 from Tools.Game_Config.game_config import GameConfig
 from Tools.rcode import RCODE
-from Tools.dynamic_imports import Importer, exludable_modules
+from Tools.dynamic_imports import Importer, ExcludeModule
 
 
 class GameClient(AbstractConnectionManager):
@@ -16,9 +16,7 @@ class GameClient(AbstractConnectionManager):
 
     async def run(self):
         await self.connect()
-        self.pit.game_classes = Importer(exludable_modules.NNET, exludable_modules.LAMBDA).get_game_instances()
-        for g in self.pit.game_classes:
-            print("Game: ", g, "Imported!")
+        self.pit.game_classes = Importer("/app/Games", ExcludeModule.NNET, ExcludeModule.LAMBDA).get_games()
         while True:
             try:
                 read_object: dict = await self.receive_json()
@@ -60,7 +58,6 @@ class GameClient(AbstractConnectionManager):
                     await self.send_response(RCODE.P_MOVES, pos)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "make_move":
-                    # @ check if your turn
                     if self.pit.arena_task is None:
                         await self.send_response(RCODE.P_NOTRUNNING, p_pos)
                         continue    # Ignore moves if game is not running

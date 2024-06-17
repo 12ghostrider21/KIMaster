@@ -1,18 +1,17 @@
-import importlib
+import asyncio
 import io
-import pygame
-from logging import warn
-from os import walk, environ, listdir
-from os.path import join
+from os import environ
+from threading import Thread
+
+import anyio
 import numpy as np
+import pygame
 from fastapi import WebSocket, WebSocketDisconnect
 
+from Tools.dynamic_imports import Importer
 from Tools.i_game import IGame
 from Tools.language_handler import LanguageHandler
-from Tools.mcts import MCTS
 from Tools.rcode import RCODE
-from Tools.utils import dotdict
-from Tools.dynamic_imports import Importer
 from connection_manager import AbstractConnectionManager
 from lobby import Lobby
 from lobby_manager import LobbyManager
@@ -24,7 +23,7 @@ class SocketServer(AbstractConnectionManager):
     def __init__(self, msg_builder: LanguageHandler):
         super().__init__(msg_builder)
         self.manager: LobbyManager = LobbyManager()
-        self.importer: Importer = Importer()
+        self.importer: Importer = Importer("/app/Games")
 
     async def connect(self, websocket: WebSocket):
         query_params = websocket.query_params
@@ -47,15 +46,27 @@ class SocketServer(AbstractConnectionManager):
         byte_io.close()
         return png_bytes
 
+    def calc(self, read_object):
+        game = self.importer.get_games()[command_key]
+        array = read_object["board"]
+        dtype = read_object["dtype"]
+        shape = tuple(read_object["shape"])
+        cur_player = int(read_object.get("cur_player"))
+        board = np.array(array, dtype=dtype).reshape(shape)
+        func = self.importer.get_ai_func().get((command_key, lobby.difficulty))
+        print("new_action", func)
+
+        action = func[0](game.getCanonicalForm(board, cur_player))
+
+
     async def websocket_endpoint(self, websocket: WebSocket):
         await self.connect(websocket)
-        game_classes = self.importer.get_game_instances()
+        game_instances: dict[str, IGame] = self.importer.get_games()
         try:
             while True:
                 read_object: dict = await websocket.receive_json()
                 lobby: Lobby = self.manager.get_lobby(read_object.get("key"))
                 p_pos: str | None = read_object.get("to")  # None is Broadcast
-                lamda_funcs = self.importer.get_game_funcs()
 
                 response = read_object.get("response")
                 if response:
@@ -75,24 +86,29 @@ class SocketServer(AbstractConnectionManager):
                 command_key: str = read_object.get("command_key")
                 match command:
                     case "ai_move":
+                        game = game_instances[command_key]
                         array = read_object["board"]
                         dtype = read_object["dtype"]
                         shape = tuple(read_object["shape"])
                         cur_player = int(read_object.get("cur_player"))
-                        game_name = command_key
                         board = np.array(array, dtype=dtype).reshape(shape)
-                        game: IGame = game_classes[game_name]
-                        func = lamda_funcs.get((game_name, lobby.difficulty))
-                        print(func)  # TODO remove this print and function is stuck!
-                        action = np.argmax(func(game.getCanonicalForm(board, cur_player)))
+                        valids = game.getValidMoves(board, cur_player)
+                        await anyio.sleep(0.5)
+                        func = self.importer.get_ai_func().get((command_key, lobby.difficulty))
+                        print("new_action", func, command_key)
+                        action = func[0](game.getCanonicalForm(board, cur_player))
+                        if len(valids) < action:
+                            print("Invalid action", action)
+                            continue
                         await self.send_cmd(lobby.game_client, "play", "make_move",
                                             {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
+
                     case "draw":
                         board: np.array = np.array(read_object.get("board"))
                         cur_player: int = read_object.get("cur_player")
                         valid: bool = bool(read_object.get("valid"))
                         game_name = command_key
-                        game = game_classes[game_name]
+                        game = game_instances[game_name]
                         img_surface = game.draw(board, valid, cur_player=cur_player)
                         img = self.surface_to_png(img_surface)
                         if p_pos is None:

@@ -1,32 +1,16 @@
 import json
-import os.path
 
 import numpy as np
 
-from Games.connect4.Connect4Game import Connect4Game
-from Games.connect4.keras.NNet import NNetWrapper
-
-
+from Tools.Game_Config.difficulty import EDifficulty
 from Tools.mcts import MCTS
 from Tools.utils import dotdict
 
-kerasfolder = r"C:\Users\alex\Desktop\SWTP_GIT\Games\connect4\keras"
-kerasfolder = r"C:\Users\svenr\OneDrive\Studium\04-semester\SWTP\repo\Plattform-fuer-Vergleich-von-Spiele-KIs\Games\connect4\keras"
-h5file = "best.h5"
+from Tools.dynamic_imports import Importer
 
-
-def init_nn(game, nnet, folder: str, file: str):
-    nn = nnet(game)
-    nn.load_checkpoint(folder, file)
-    args = dotdict({'numMCTSSims': 5, 'cpuct': 1.0})
-    mcts = MCTS(game, nn, args)
-    return mcts
-
-
-game = Connect4Game()
-mcts = init_nn(game, NNetWrapper, kerasfolder, h5file)
-func = lambda x: mcts.getActionProb(x, temp=0)
-
+i = Importer("./Games")
+game = i.get_games()["connect4"]
+func = i.get_ai_func().get(("connect4", EDifficulty.easy))
 
 # arena
 players = [func, None, func]
@@ -37,7 +21,7 @@ while game.getGameEnded(board, cur_player) == 0:  # 0 if game is not finished
 
     p = players[cur_player + 1]
     canonical_board = game.getCanonicalForm(board, cur_player)
-    valids = game.getValidMoves(canonical_board, 1)
+    valids = game.getValidMoves(canonical_board, cur_player)
 
     payload = {"board": board.tolist(),
                "cur_player": cur_player,
@@ -47,8 +31,14 @@ while game.getGameEnded(board, cur_player) == 0:  # 0 if game is not finished
     payload = json.loads(j_board)
     board = np.array(payload["board"], dtype=payload["dtype"]).reshape(payload["shape"])
 
-    action = np.argmax(func(game.getCanonicalForm(board, cur_player)))
-    print(action)
+    while True:
+        print(board.shape, func)
+        action = func[0](game.getCanonicalForm(board, cur_player))
+        if action > len(valids):
+            print("INVALID", action)
+            continue
+        break
+    print(action, len(valids), valids)
 
     board, cur_player = game.getNextState(board, cur_player, action)
     print(board)

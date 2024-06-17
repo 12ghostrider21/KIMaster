@@ -83,6 +83,7 @@ class Arena:
         if not self.stop:
             await self.game_client.broadcast_board(board, cur_player, self.game_name, False)
             await self.game_client.send_response(RCODE.P_GAMEOVER, None,
-                                     {"result": round(cur_player * self.game.getGameEnded(board, cur_player)),
-                                      "turn": it})
+                                                 {"result": round(
+                                                     cur_player * self.game.getGameEnded(board, cur_player)),
+                                                  "turn": it})
         self.game_client.pit.arena_task = None  # deactivate task
