@@ -37,8 +37,8 @@ class Importer:
     def get_game_instances(self) -> dict[str, IGame]:
         return {game: self.game_classes[game]() for game in self.game_names}
 
-    def get_game_func(self, game_name: str, difficulty: EDifficulty):
-        return self.game_funcs.get((game_name, difficulty))
+    def get_game_funcs(self):
+        return self.game_funcs
 
     @staticmethod
     def __crawler_helper(found_files: list[str], current_game: str, root: str, target_dict: dict[str, str],

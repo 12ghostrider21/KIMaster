@@ -55,6 +55,7 @@ class SocketServer(AbstractConnectionManager):
                 read_object: dict = await websocket.receive_json()
                 lobby: Lobby = self.manager.get_lobby(read_object.get("key"))
                 p_pos: str | None = read_object.get("to")  # None is Broadcast
+                lamda_funcs = self.importer.get_game_funcs()
 
                 response = read_object.get("response")
                 if response:
@@ -79,10 +80,10 @@ class SocketServer(AbstractConnectionManager):
                         shape = tuple(read_object["shape"])
                         cur_player = int(read_object.get("cur_player"))
                         game_name = command_key
-
                         board = np.array(array, dtype=dtype).reshape(shape)
                         game: IGame = game_classes[game_name]
-                        func = self.importer.get_game_func(game_name, lobby.difficulty)
+                        func = lamda_funcs.get((game_name, lobby.difficulty))
+                        print(func)  # TODO remove this print and function is stuck!
                         action = np.argmax(func(game.getCanonicalForm(board, cur_player)))
                         await self.send_cmd(lobby.game_client, "play", "make_move",
                                             {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
