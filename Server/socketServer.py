@@ -8,6 +8,7 @@ import numpy as np
 import pygame
 from fastapi import WebSocket, WebSocketDisconnect
 
+from Tools.Game_Config.difficulty import EDifficulty
 from Tools.dynamic_imports import Importer
 from Tools.i_game import IGame
 from Tools.language_handler import LanguageHandler
@@ -15,6 +16,7 @@ from Tools.rcode import RCODE
 from connection_manager import AbstractConnectionManager
 from lobby import Lobby
 from lobby_manager import LobbyManager
+
 
 environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # disable some logging features
 
@@ -78,16 +80,13 @@ class SocketServer(AbstractConnectionManager):
                         array = read_object["board"]
                         dtype = read_object["dtype"]
                         shape = tuple(read_object["shape"])
+                        it = int(read_object["it"])
                         cur_player = int(read_object.get("cur_player"))
                         board = np.array(array, dtype=dtype).reshape(shape)
-                        valids = game.getValidMoves(board, cur_player)
-                        await anyio.sleep(0.5)
-                        func = ai_funcs.get((command_key, lobby.difficulty))
-                        print("new_action", func, command_key)
-                        action = func[0](game.getCanonicalForm(board, cur_player))
-                        if len(valids) < action:
-                            print("Invalid action", action)
-                            continue
+                        print(f"{lobby.game=}")
+                        func = ai_funcs.get(lobby.game).get(lobby.difficulty)
+                        action = func(game.getCanonicalForm(board, cur_player), it)
+
                         await self.send_cmd(lobby.game_client, "play", "make_move",
                                             {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
 

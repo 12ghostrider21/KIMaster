@@ -162,7 +162,7 @@ class FastAPIServer(AbstractConnectionManager):
         if command_key not in self.__play_mask:
             return await self.send_response(client=client, code=RCODE.COMMANDNOTFOUND,
                                             data={"command_key": command_key})
-        if command_key == "Create":
+        if command_key == "create":
             lobby.game = data.get("game")
             lobby.difficulty = EDifficulty.get(data.get("difficulty"))
             lobby.mode = EGameMode.get(data.get("mode"))

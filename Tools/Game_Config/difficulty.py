@@ -2,9 +2,9 @@ from enum import Enum
 
 
 class EDifficulty(Enum):
-    easy = 2
-    medium = 10
-    hard = 50
+    easy = 75
+    medium = 175
+    hard = 275
 
     @staticmethod
     def get(difficulty: str):

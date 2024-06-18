@@ -66,7 +66,9 @@ class Arena:
                                                     data={"board": board.tolist(),
                                                           "cur_player": cur_player,
                                                           "dtype": str(board.dtype),
-                                                          "shape": board.shape})
+                                                          "shape": board.shape,
+                                                          "it": it,
+                                                          "key": self.game_client.key})
                     continue
 
                 if action >= len(valids):

@@ -15,6 +15,10 @@ services:
       - swtp-net
     volumes:
       - //var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      resources:
+        limits:
+          cpus: '0'
 
   swtp-game-client:
     build:

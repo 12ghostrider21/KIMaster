@@ -201,7 +201,7 @@ class IGame(ABC):
         pass
 
     @abstractmethod
-    def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any) -> str:
+    def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int) -> str:
         """
         Displays a terminal representation of the game board for debugging purposes.
 
@@ -229,7 +229,7 @@ class IGame(ABC):
         pass
 
     @abstractmethod
-    def draw(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
+    def draw(self, board: np.array, valid_moves: bool, cur_player: int):
         """
         Draw the game representation onto a Pygame surface.
 

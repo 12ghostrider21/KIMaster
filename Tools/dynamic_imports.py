@@ -13,6 +13,7 @@ from Tools.mcts import MCTS
 from Tools.trained_folder_dataclass import TrainedFolder
 from Tools.utils import dotdict
 
+
 class ExcludeModule(Enum):
     GAME_PY = auto()
     NNET = auto()
@@ -42,13 +43,6 @@ class Importer:
 
     def get_ai_func(self) -> dict:
         return self.__game_funcs.copy()
-
-    @staticmethod
-    def __init_nn(game: IGame, nnet, trained_folder: TrainedFolder, difficulty: EDifficulty):
-        nn = nnet(game)
-        nn.load_checkpoint(trained_folder.folder, trained_folder.file)
-        mcts = MCTS(game, nn, dotdict({'numMCTSSims': difficulty.value, 'cpuct': 3.0}))
-        return mcts
 
     @staticmethod
     def __crawl_game_files(directory: str) -> tuple[set[str], dict[str, str], dict[str, str], dict[str, TrainedFolder]]:
@@ -128,19 +122,26 @@ class Importer:
                 for game in self.__game_names}
 
     def __create_lambdas(self):
-        # CREATE LAMBDAS
-        # 1) generate a list of games and difficulty pairs
-        game_diff_pairs: list[tuple[str, EDifficulty]] = [(game, diff) for game in self.__game_names for diff in
-                                                          EDifficulty]
-        # 2) generate the monte carlo tree search for each game and each difficulty
-
         result = {}
-        for game, diff in game_diff_pairs:
-            old = sys.stdout
-            sys.stdout = io.StringIO()
-            mcts = Importer.__init_nn(self.__game_classes[game](), self.__game_nnets[game], self.__game_folder[game], diff)
-            result.update({(game, diff): (lambda x: np.argmax(mcts.getActionProb(x, temp=0)), (game, diff))})
-            sys.stdout = old
+        for game_name in self.__game_names:
+            old = sys.stdout            # store old stdout
+            sys.stdout = io.StringIO()  # redirect stdout to nothing
+            game = self.__game_classes[game_name]()
+            nn = self.__game_nnets[game_name](game)
+            directory: TrainedFolder = self.__game_folder[game_name]
+            nn.load_checkpoint(directory.folder, directory.file)
+            sys.stdout = old    # restore old stdout
+            result[game_name] = {}
+            for diff in EDifficulty:
+                mcts = MCTS(game, nn, dotdict({'numMCTSSims': diff.value,
+                                               'fpu': 0.,
+                                               'universes': 1,
+                                               'cpuct': 1,
+                                               'prob_fullMCTS': 1.,
+                                               'forced_playouts': False,
+                                               'no_mem_optim': False, }))
+                func = lambda x, n: np.argmax(mcts.getActionProb(x, temp=(0.5 if n <= 6 else 0.)))
+                result.get(game_name).update({diff: func})
         return result
 
 
@@ -149,5 +150,3 @@ if __name__ == "__main__":
     i = Importer("../Games")
     print(i.get_games())
     print(i.get_ai_func())
-
-    x = lambda x: 1 + x
