@@ -1,14 +1,10 @@
-import asyncio
 import io
 from os import environ
-from threading import Thread
 
-import anyio
 import numpy as np
 import pygame
 from fastapi import WebSocket, WebSocketDisconnect
 
-from Tools.Game_Config.difficulty import EDifficulty
 from Tools.dynamic_imports import Importer
 from Tools.i_game import IGame
 from Tools.language_handler import LanguageHandler
@@ -16,7 +12,6 @@ from Tools.rcode import RCODE
 from connection_manager import AbstractConnectionManager
 from lobby import Lobby
 from lobby_manager import LobbyManager
-
 
 environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # disable some logging features
 
@@ -83,7 +78,6 @@ class SocketServer(AbstractConnectionManager):
                         it = int(read_object["it"])
                         cur_player = int(read_object.get("cur_player"))
                         board = np.array(array, dtype=dtype).reshape(shape)
-                        print(f"{lobby.game=}")
                         mcts = ai_funcs.get(lobby.game).get(lobby.difficulty)
                         func = lambda x, n: np.argmax(mcts.getActionProb(x, temp=(0.5 if n <= 6 else 0.)))
                         action = func(game.getCanonicalForm(board, cur_player), it)
