@@ -84,7 +84,8 @@ class SocketServer(AbstractConnectionManager):
                         cur_player = int(read_object.get("cur_player"))
                         board = np.array(array, dtype=dtype).reshape(shape)
                         print(f"{lobby.game=}")
-                        func = ai_funcs.get(lobby.game).get(lobby.difficulty)
+                        mcts = ai_funcs.get(lobby.game).get(lobby.difficulty)
+                        func = lambda x, n: np.argmax(mcts.getActionProb(x, temp=(0.5 if n <= 6 else 0.)))
                         action = func(game.getCanonicalForm(board, cur_player), it)
 
                         await self.send_cmd(lobby.game_client, "play", "make_move",
