@@ -3,6 +3,8 @@ import math
 
 import numpy as np
 
+#@ from multiprocessing import Pool, Manager
+
 EPS = 1e-8
 
 log = logging.getLogger(__name__)
@@ -25,6 +27,16 @@ class MCTS():
         self.Es = {}  # stores game.getGameEnded ended for board s
         self.Vs = {}  # stores game.getValidMoves for board s
 
+        """@
+        self.Qsa = Manager().dict()  # stores Q values for s,a (as defined in the paper)
+        self.Nsa = Manager().dict()  # stores #times edge s,a was visited
+        self.Ns = Manager().dict()  # stores #times board s was visited
+        self.Ps = Manager().dict()  # stores initial policy (returned by neural net)
+
+        self.Es = Manager().dict()  # stores game.getGameEnded ended for board s
+        self.Vs = Manager().dict()  # stores game.getValidMoves for board s
+        """
+
     def getActionProb(self, canonicalBoard, temp=1):
         """
         This function performs numMCTSSims simulations of MCTS starting from
@@ -36,6 +48,11 @@ class MCTS():
         """
         for i in range(self.args.numMCTSSims):
             self.search(canonicalBoard)
+
+        """@
+        with Pool(processes=self.args.numMCTSSims) as pool:
+            pool.map(self.search, [canonicalBoard]*self.args.numMCTSSims)
+        """
 
         s = self.game.stringRepresentation(canonicalBoard)
         counts = [self.Nsa[(s, a)] if (s, a) in self.Nsa else 0 for a in range(self.game.getActionSize())]
