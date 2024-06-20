@@ -140,7 +140,6 @@ class Importer:
                                                'prob_fullMCTS': 1.,
                                                'forced_playouts': False,
                                                'no_mem_optim': False, }))
-                # func = lambda x, n: np.argmax(mcts.getActionProb(x, temp=(0.5 if n <= 6 else 0.)))
                 result.get(game_name).update({diff: mcts})
         return result
 
