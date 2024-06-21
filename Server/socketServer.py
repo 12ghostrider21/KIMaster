@@ -72,12 +72,11 @@ class SocketServer(AbstractConnectionManager):
                 match command:
                     case "ai_move":
                         game = game_instances[command_key]
+                        default = game.getInitBoard()
                         array = read_object["board"]
-                        dtype = read_object["dtype"]
-                        shape = tuple(read_object["shape"])
                         it = int(read_object["it"])
                         cur_player = int(read_object.get("cur_player"))
-                        board = np.array(array, dtype=dtype).reshape(shape)
+                        board = np.array(array, dtype=default.dtype).reshape(default.shape)
                         mcts = ai_funcs.get(lobby.game).get(lobby.difficulty)
                         func = lambda x, n: np.argmax(mcts.getActionProb(x, temp=(0.5 if n <= 6 else 0.)))
                         action = func(game.getCanonicalForm(board, cur_player), it)
@@ -86,11 +85,13 @@ class SocketServer(AbstractConnectionManager):
                                             {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
 
                     case "draw":
-                        board: np.array = np.array(read_object.get("board"))
+                        array: np.array = np.array(read_object.get("board"))
                         cur_player: int = read_object.get("cur_player")
                         valid: bool = bool(read_object.get("valid"))
                         game_name = command_key
                         game = game_instances[game_name]
+                        default = game.getInitBoard()
+                        board = np.array(array, dtype=default.dtype).reshape(default.shape)
                         img_surface = game.draw(board, valid, cur_player=cur_player)
                         img = self.surface_to_png(img_surface)
                         if p_pos is None:

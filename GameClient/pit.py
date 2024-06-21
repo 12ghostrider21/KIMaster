@@ -1,8 +1,4 @@
 import asyncio
-import time
-from threading import Thread
-
-import numpy as np
 
 from GameClient.arena import Arena
 from GameClient.player import Player
@@ -11,22 +7,22 @@ from Tools.Game_Config.game_config import GameConfig
 
 class Pit:
     def __init__(self, game_client):
-        self.game_config = GameConfig()
-        self.arena = Arena(game_client)
-        self.game_classes: dict = {}
+        self.game_client = game_client
+        self.arena: Arena = Arena(game_client)
         self.player1: Player = Player()
         self.player2: Player = Player()
-        self.arena_task: Thread | None = None
 
-    def stop_arena(self):
-        if self.arena_task is None:
-            return
-        self.arena.stop = True
-        print("ARENA STOPPING...")
-        while self.arena_task is not None:
-            time.sleep(0.1)
-        self.arena.stop = False
-        return
+    def start_battle(self):
+        asyncio.create_task(self.arena.play())
+
+    def stop_battle(self):
+        self.arena.stop()
+
+    def set_move(self, move, pos):
+        if pos == "p1":
+            self.player1.move = move
+        if pos == "p2":
+            self.player2.move = move
 
     def init_arena(self, game_config: GameConfig):
         play1, play2 = None, None
@@ -40,24 +36,9 @@ class Pit:
             case 2:
                 play1 = self.player1.playAI
                 play2 = self.player2.play
-        game = self.game_classes.get(game_config.game.replace("Game", "").lower())
-        print("new game loaded:", game)
-        self.arena.set_arena(game, game_config.game.replace("Game", ""), play1, play2)
+        print("new game loaded:", game_config.game_name)
+        self.arena.set_arena(game_config.game, game_config.game_name, play1, play2)
 
-    def start_game(self, board: np.array, cur_player: int, it: int):
-        self.arena.stop = False
-        self.arena.history.clear()
-        self.arena_task = Thread(target=self.__run_async_method_in_thread, args=(board, cur_player, it), daemon=True)
-        self.arena_task.start()
-
-    def __run_async_method_in_thread(self, board, cur_player, it):
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(self.arena.playGame(board, cur_player, it))
-        loop.close()
-
-    def set_move(self, move, pos):
-        if pos == "p1":
-            self.player1.move = move
-        if pos == "p2":
-            self.player2.move = move
+    def get_last_hist_entry(self) -> tuple[list, int, int]:
+        if len(self.arena.history) > 0:
+            return self.arena.history[-1]

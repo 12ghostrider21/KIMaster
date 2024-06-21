@@ -1,48 +1,54 @@
 import json
-from abc import ABC
-
 import numpy as np
-from websockets import connect
+import websockets
+from abc import ABC
 from Tools.rcode import RCODE
 
 
-class AbstractConnectionManager(ABC):
+class WebSocketConnectionManager(ABC):
     def __init__(self, host: str, port: int, key: str):
-        self.websocket = None
+        self.connection = None
         self.uri: str = f"ws://{host}:{port}/game?&login={key}"
         self.key: str = key
 
     async def connect(self):
-        print("connect")
-        self.websocket = await connect(self.uri, ping_interval=None)
+        print("Connecting...")
+        try:
+            self.connection = await websockets.connect(uri=self.uri, ping_interval=None)
+            print("Connected!")
+        except ConnectionRefusedError:
+            print(f"Connection failed to: '{self.uri}'")
+            exit(1)
 
     async def receive_json(self):
-        json_string = await self.websocket.recv()
-        return json.loads(json_string)
+        return json.loads(await self.connection.recv())
 
-    async def send_response(self, code: RCODE, to: str | None, data: dict = None):  # to user
+    async def send_response(self, code: RCODE, to: str | None, data: dict = None):
         cmd = {"response": code.value, "to": to, "key": self.key}
         if data is not None:
             cmd.update(data)
-        await self.websocket.send(json.dumps(cmd))
+        await self.__send_json(json.dumps(cmd))
 
     async def send_cmd(self, command: str, command_key: str, p_pos: str | None, data: dict = None):  # to socket server
         cmd = {"command": command, "command_key": command_key, "to": p_pos, "key": self.key}
         if data is not None:
             cmd.update(data)
-        await self.websocket.send(json.dumps(cmd))
+        await self.__send_json(json.dumps(cmd))
 
     async def send_board(self, board: np.array, cur_player: int, game_name: str, valid: bool):
         cmd = {"command": "draw", "command_key": game_name, "to": "p1" if cur_player == 1 else "p2", "key": self.key,
                "board": board.tolist(), "cur_player": cur_player, "valid": valid}
-        await self.websocket.send(json.dumps(cmd))
+        await self.__send_json(json.dumps(cmd))
 
     async def broadcast_board(self, board: np.array, cur_player: int, game_name: str, valid: bool):
         cmd = {"command": "draw", "command_key": game_name, "to": None, "key": self.key,
                "board": board.tolist(), "cur_player": cur_player, "valid": valid}
-        await self.websocket.send(json.dumps(cmd))
+        await self.__send_json(json.dumps(cmd))
 
     async def close(self):
-        if self.websocket:
-            await self.websocket.close()
+        if self.connection:
+            await self.connection.close()
             print("WebSocket connection closed")
+
+    async def __send_json(self, obj: json):
+        await self.connection.send(obj)

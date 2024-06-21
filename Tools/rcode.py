@@ -44,6 +44,7 @@ class RCODE(Enum):
     #P_BLUNDERLIST = 213  # "The list of blunders has been successfully retrieved."
     #P_TIMELINE = 214  # "The timeline of events in the game has been successfully retrieved."
     #P_GAMES = 215  # "The list of games has been successfully retrieved."
+    P_NOVALIDMOVES = 216  # The Player does not have a valid move anymore
 
     # Play error
     P_NOGAMECLIENT = 250  # "There is no game client available. Try again."

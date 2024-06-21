@@ -78,7 +78,7 @@ class DockerAPI:
                 image=self.image,
                 name=token,
                 network=environ.get("NETWORK"),
-                remove=not self.debug,  # Remove container after it stops unless in debug mode
+                remove=self.debug,  # Remove container after it stops unless in debug mode
                 detach=True,  # Run container in detached mode
                 environment={
                     # Set environment variables for the container
