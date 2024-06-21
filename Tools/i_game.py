@@ -28,11 +28,12 @@ class IGame(ABC):
         pass
 
     @abstractmethod
-    def getBoardSize(self) -> tuple[int, int]:
+    def getBoardSize(self) -> int | tuple[int, int]:
         """
         Get the dimensions of the game board.
 
         Returns:
+            x (int): the one-dimensional size of the game board.
             (x, y) (tuple[int, int]): A tuple representing the dimensions of the game board.
                                        - `x` (int): The number of rows in the board.
                                        - `y` (int): The number of columns in the board.
