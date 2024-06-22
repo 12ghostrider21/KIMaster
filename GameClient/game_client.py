@@ -10,6 +10,9 @@ from Tools.rcode import RCODE
 from Tools.dynamic_imports import Importer, ExcludeModule
 
 
+MAX_EVAL_NUM = 100
+
+
 class GameClient(WebSocketConnectionManager):
     def __init__(self, host: str, port: int, key: str):
         super().__init__(host, port, key)

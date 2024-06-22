@@ -28,7 +28,7 @@ class Arena:
         self.player2 = play2
         self.history.clear()    # reset history on new game configuration
 
-    async def play(self, board: np.array = None, cur_player: int = 1, it: int = 0):
+    async def play(self, board: np.array = None, cur_player: int = 1, it: int = 0, evaluation: bool = False):
         self.running = True
 
         # initialisation of game

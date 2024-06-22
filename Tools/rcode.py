@@ -62,11 +62,12 @@ class RCODE(Enum):
     P_INVALIDUNDO = 259  # "The undo action attempted is invalid."
     P_NOTIMELINE = 260  # "No timeline is available."
     P_INVALIDTIMELINE = 261  # "The timeline specified is invalid."
-    #P_NOEVALUATION = 262  # "No evaluation is available."
-    #P_INVALIDEVALUATION = 263  # "The evaluation attempted is invalid."
+    P_NOEVALUATION = 262  # "No evaluation is available."
+    P_INVALIDEVALUATION = 263  # "The evaluation attempted is invalid."
     #P_NOAVAILABLEGAMES = 264  # "No games are available."
     P_GAMENOTAVAILABLE = 265  # "The specified game is not available."
     P_NOGAMEINIT = 267  # Create a game fist.
+    P_EVALNUMOVER = 268  # The selected num is too high
 
     # Debug
     D_CONTAINER = 300  # "List all active container!"
