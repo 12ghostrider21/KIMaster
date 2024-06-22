@@ -3,7 +3,7 @@ from __future__ import print_function
 import numpy as np
 import time, datetime, os, sys
 sys.path.append('..')
-from utils import *
+from Tools.utils import *
 from multiprocessing import connection, Pipe
 from threading import Thread
 from pytorch_classification.utils import AverageMeter
@@ -11,8 +11,8 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, C
 from keras.models import model_from_json
 from keras import backend as K
 
-from NeuralNet import NeuralNet
-from .CheckersNNet import CheckersNNet as onnet
+from Tools.neural_net import NeuralNet
+from Games.checkers.keras.CheckersNNet import CheckersNNet as onnet
 
 """
 NeuralNet wrapper class for the CheckersNNet.

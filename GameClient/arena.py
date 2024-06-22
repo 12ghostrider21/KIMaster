@@ -34,6 +34,7 @@ class Arena:
         # initialisation of game
         if board is None:
             board = self.game.getInitBoard()
+            print(board, type(board))
         players = [self.player2, None, self.player1]  # array of play functions
 
         while self.running and self.game.getGameEnded(board, cur_player) == 0:

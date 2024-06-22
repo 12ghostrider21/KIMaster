@@ -1,16 +1,8 @@
-import numpy as np
-import torch.utils.model_zoo as model_zoo
-import torch
-import torchvision as tv
-import torch.nn as nn
-from torch.nn.functional import Variable
-from scipy import misc
 import math
-import torch.nn.functional as F
 
+import torch.nn as nn
+import torch.nn.functional as F
 from torchvision.models.resnet import ResNet
-from torchvision.models.resnet import BasicBlock
-from torchvision.models.resnet import Bottleneck
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']

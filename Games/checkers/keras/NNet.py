@@ -1,17 +1,13 @@
-import argparse
 import os
-import shutil
-import time
-import random
-import numpy as np
-import math
 import sys
-sys.path.append('..')
-from utils import *
-from NeuralNet import NeuralNet
+import time
 
-import argparse
-from .CheckersNNet import CheckersNNet as onnet
+import numpy as np
+
+sys.path.append('..')
+from Tools.utils import *
+from Tools.neural_net import NeuralNet
+from Games.checkers.keras.CheckersNNet import CheckersNNet as onnet
 
 """
 NeuralNet wrapper class for the CheckersNNet.

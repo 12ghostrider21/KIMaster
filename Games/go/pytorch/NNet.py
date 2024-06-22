@@ -1,34 +1,17 @@
-import argparse
 import os
-import shutil
 import time
-import random
 import numpy as np
-import math
-import sys
-sys.path.append('../../')
 import pandas as pd
-import argparse
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
-from torchvision import datasets, transforms
 from torch.autograd import Variable
 
+from Tools.utils import *
+from Tools.neural_net import NeuralNet
 
-from .GoAlphaNet import AlphaNet as alpNet
-from .GoAlphaNet import AlphaNetMaker as NetMaker
-from .GoNNet import GoNNet
-
-try:
-    from utils import *
-    from pytorch_classification.utils import Bar, AverageMeter
-    from NeuralNet import NeuralNet
-except:
-    from ...utils import *
-    from ...pytorch_classification.utils import Bar, AverageMeter
-    from ...NeuralNet import NeuralNet
+#from Games.go.pytorch.GoAlphaNet import AlphaNetMaker as NetMaker
+from Games.go.pytorch.GoNNet import GoNNet
+#from pytorch_classification.utils import Bar, AverageMeter
 
 args = dotdict({
     'lr': 0.001,
@@ -39,18 +22,11 @@ args = dotdict({
     'num_channels': 512,
 })
 
-print(args)
-
 
 class NNetWrapper(NeuralNet):
     def __init__(self, game,t='RES'):
         self.netType=t
-        if t=='RES':
-        # self.nnet = onnet(game, args)
-            netMkr=NetMaker(game,args)
-            self.nnet=netMkr.makeNet()
-        else:
-            self.nnet=GoNNet(game,args)
+        self.nnet=GoNNet(game,args)
         self.board_x, self.board_y = game.getBoardSize()
         self.action_size = game.getActionSize()
 
@@ -183,6 +159,7 @@ class NNetWrapper(NeuralNet):
         # https://github.com/pytorch/examples/blob/master/imagenet/main.py#L98
         filepath = os.path.join(folder, filename)
         if not os.path.exists(filepath):
-            raise BaseException("No model in path {}".format(filepath))
-        checkpoint = torch.load(filepath)
+            raise ("No model in path {}".format(filepath))
+        map_location = None if args.cuda else 'cpu'
+        checkpoint = torch.load(filepath, map_location=map_location)
         self.nnet.load_state_dict(checkpoint['state_dict'])

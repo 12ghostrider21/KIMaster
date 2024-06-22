@@ -1,17 +1,4 @@
-import argparse
-import os
-import shutil
 import time
-import random
-import numpy as np
-import math
-import sys
-sys.path.append('..')
-from utils import *
-from NeuralNet import NeuralNet
-
-import argparse
-from .CheckersNNet import CheckersNNet as onnet
 
 """
 Client for contacting NeuralNet in an async way.
@@ -22,6 +9,7 @@ Date: Feb 6, 2018.
 """
 
 import numpy as np
+
 
 class NNet_Client():
     def __init__(self, game, pipe):
@@ -39,7 +27,7 @@ class NNet_Client():
         """
         # timing
         start = time.time()
-        
+
         #print("[",self.id,"] predict(board)")
 
         # preparing input
@@ -47,7 +35,7 @@ class NNet_Client():
         # board = board[np.newaxis, :, :]
 
         # 1 is a normal flag, 0 is a stop flag. Stop flag is usually sent from the main thread.
-        self.pipe.send((1,board))
+        self.pipe.send((1, board))
         ret = self.pipe.recv()
         return ret
 
@@ -56,4 +44,3 @@ class NNet_Client():
 
         #print('PREDICTION TIME TAKEN : {0:03f}'.format(time.time()-start))
         #return pi[0], v[0]
-

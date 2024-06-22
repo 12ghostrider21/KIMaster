@@ -22,11 +22,11 @@ class Board:
     __NEIGHBORS_CACHE = {}
 
     def __init__(self, size=None, np_pieces=None):
-        "Set up initial board configuration."
+        """Set up initial board configuration."""
         self.size = size or DEFAULT_SIZE
 
         if np_pieces is None:
-            self.np_pieces = np.zeros([self.size, self.size], int)
+            self.np_pieces = np.zeros([self.size, self.size])
         else:
             self.np_pieces = np_pieces
             assert self.np_pieces.shape == (self.size, self.size)
@@ -54,7 +54,7 @@ class Board:
                 self.liberty_sets[x][y] = set(self._neighbors((x, y)))
         # separately cache the 2D numpy array of the _size_ of liberty sets
         # at each board position
-        self.liberty_counts = np.zeros((self.size, self.size), dtype=np.int)
+        self.liberty_counts = np.zeros((self.size, self.size))
         self.liberty_counts.fill(-1)
         # initialize liberty_sets of empty board: the set of neighbors of each position
         # similarly to `liberty_sets`, `group_sets[x][y]` points to a set of tuples
@@ -62,7 +62,7 @@ class Board:
         self.group_sets = [[set() for _ in range(self.size)] for _ in range(self.size)]
 
         # on-the-fly record of 'age' of each stone
-        self.stone_ages = np.zeros((self.size, self.size), dtype=np.int) - 1
+        self.stone_ages = np.zeros((self.size, self.size)) - 1
 
         self.enforce_superko = False
         rng = np.random.RandomState(0)
