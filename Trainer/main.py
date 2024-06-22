@@ -3,8 +3,8 @@ import time
 
 from coach import Coach
 
-from Games.othello.OthelloGame import OthelloGame as Game
-from Games.othello.pytorch.NNet import NNetWrapper as nn
+from Games.connect4.Connect4Game import Connect4Game as Game
+from Games.connect4.keras.NNet import NNetWrapper as nn
 from Tools.utils import dotdict
 
 log = logging.getLogger(__name__)
