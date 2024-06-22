@@ -108,8 +108,8 @@ class FastAPIServer(AbstractConnectionManager):
                     return await self.send_response(client=client, code=RCODE.L_LOBBYNOTEXIST, data={"key": lobby_key})
                 if not self.manager.join_lobby(lobby_key, client, pos):
                     return await self.send_response(client=client, code=RCODE.L_JOINFAILURE, data={"key": lobby_key})
-                await self.send_response(client=client, code=RCODE.L_JOINED,
-                                         data={"key": lobby_key, "pos": self.manager.get_pos_of_client(client)})
+                await self.broadcast_response(client_list=lobby.get(None), code=RCODE.L_JOINED,
+                                              data={"key": lobby_key, "pos": self.manager.get_pos_of_client(client)})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "leave":
                 if not self.manager.leave_lobby(client):
