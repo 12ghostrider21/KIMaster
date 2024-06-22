@@ -18,7 +18,8 @@ class Board:
         """Returns all legal moves"""
         moves = []
         for row in range(self.rows):
-            pieces = int(self.pieces[row])
+            #pieces = int(self.pieces[row])
+            pieces = self.pieces[row]
             if pieces == 0:
                 continue
             for i in range(1, (pieces + 1)):

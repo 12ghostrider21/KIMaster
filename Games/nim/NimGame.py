@@ -10,6 +10,7 @@ class NimGame(IGame):
 
     def getInitBoard(self):
         """return initial board (numpy array)"""
+        #@ return Board(self.rows).pieces
         return Board(self.rows)
 
     def getBoardSize(self):
@@ -17,6 +18,7 @@ class NimGame(IGame):
 
     def getActionSize(self):
         """return number of all possible actions"""
+        #@ b = Board(self.rows)
         b = self.getInitBoard()
         return len(b.get_valid_actions())
 
@@ -31,6 +33,16 @@ class NimGame(IGame):
 
     def getValidMoves(self, board, player):
         """returns a binary np.array (1 = still valid action, 0 = invalid"""
+        
+        """@
+        b = Board(self.rows, np.copy(board))
+        valid_moves = b.get_valid_actions()
+        valid_vector = np.zeros(self.getActionSize(), dtype=int)
+        for move in valid_moves:
+            idx = move[0] * self.rows + move[1] - 1  # Convert move to index
+            valid_vector[idx] = 1
+        return valid_vector
+        """
         b = self.getInitBoard()  # fresh game, all possible valid moves
         valids_new = b.get_valid_actions()
 
@@ -41,6 +53,13 @@ class NimGame(IGame):
 
     def getGameEnded(self, board, player):
         """returns 0 if not ended, 1 if player 1 won, -1 if player 1 lost"""
+        
+        """@
+        b = Board(self.rows, np.copy(board))
+        if not b.is_game_over():
+            return 0
+        return 1 if self.winner == 1 else -1
+        """
         b = self.getInitBoard()
         b.pieces = np.copy(board)
         if not b.is_game_over():
@@ -53,6 +72,16 @@ class NimGame(IGame):
 
     def getSymmetries(self, board, pi):
         """rows are interchangeable"""
+
+        """@
+        symmetries = []
+        for perm in self.permute(list(range(self.rows))):
+            new_board = board[perm]
+            new_pi = pi.reshape(self.rows, -1)[perm].flatten()
+            symmetries.append((new_board, new_pi))
+        return symmetries
+        """
+
         b = self.getInitBoard()
         b.pieces = np.copy(board)
 
@@ -91,6 +120,7 @@ class NimGame(IGame):
 
     def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         if valid_moves:
+            #return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
             b = self.getInitBoard()
             b.pieces = np.copy(board)
             return b.get_valid_actions()
