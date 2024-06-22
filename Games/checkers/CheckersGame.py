@@ -1,8 +1,8 @@
 from __future__ import print_function
 import sys, os, datetime
 sys.path.append('..')
-from Tools.igame import IGame, np
-from Games.Checkers.CheckersLogic import Board, Move
+from Tools.i_game import IGame, np
+from Games.checkers.CheckersLogic import Board, Move
 
 """
 Game class implementation for the game of Checkers (Russian variant).

@@ -1,5 +1,5 @@
-from Tools.igame import IGame, np
-from Games.Go.GoLogic import Board
+from Tools.i_game import IGame, np
+from Games.go.GoLogic import Board
 
 
 class GoGame(IGame):
