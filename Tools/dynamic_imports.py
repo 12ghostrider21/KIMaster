@@ -28,6 +28,8 @@ class Importer:
         if ExcludeModule.GAME_PY not in exclude:
             print(f"[{self.__class__.__name__}]", "Importing Game classes...")
             self.__game_classes = self.__import_game_classes()
+            for game in self.__game_classes.keys():
+                print(f"[{self.__class__.__name__}]", f"Game: '{game}' ready to use.")
         # import NNet.py of each game
         if ExcludeModule.NNET not in exclude:
             print(f"[{self.__class__.__name__}]", "Importing NNet classes...")
