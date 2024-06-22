@@ -42,9 +42,12 @@ class RCODE(Enum):
     P_SURRENDER = 210  # "A player has surrendered successfully."
     #P_BLUNDER = 212  # "A blunder [serious mistake] has been identified in the play."
     #P_BLUNDERLIST = 213  # "The list of blunders has been successfully retrieved."
-    #P_TIMELINE = 214  # "The timeline of events in the game has been successfully retrieved."
+    P_TIMELINE = 214  # "The timeline of events in the game has been successfully retrieved."
     #P_GAMES = 215  # "The list of games has been successfully retrieved."
     P_NOVALIDMOVES = 216  # The Player does not have a valid move anymore
+    P_STEP = 217
+    P_UNSTEP = 218
+
 
     # Play error
     P_NOGAMECLIENT = 250  # "There is no game client available. Try again."
@@ -57,12 +60,13 @@ class RCODE(Enum):
     P_INVALIDPOS = 257  # "The position specified is invalid."
     P_NOUNDO = 258  # "No undo action is available."
     P_INVALIDUNDO = 259  # "The undo action attempted is invalid."
-    #P_NOTIMELINE = 260  # "No timeline is available."
-    #P_INVALIDTIMELINE = 261  # "The timeline specified is invalid."
+    P_NOTIMELINE = 260  # "No timeline is available."
+    P_INVALIDTIMELINE = 261  # "The timeline specified is invalid."
     #P_NOEVALUATION = 262  # "No evaluation is available."
     #P_INVALIDEVALUATION = 263  # "The evaluation attempted is invalid."
     #P_NOAVAILABLEGAMES = 264  # "No games are available."
     P_GAMENOTAVAILABLE = 265  # "The specified game is not available."
+    P_NOGAMEINIT = 267  # Create a game fist.
 
     # Debug
     D_CONTAINER = 300  # "List all active container!"
