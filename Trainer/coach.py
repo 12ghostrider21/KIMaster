@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import time
 from collections import deque
 from pickle import Pickler, Unpickler
 from random import shuffle
@@ -78,6 +79,7 @@ class Coach():
         """
 
         for i in range(1, self.args.numIters + 1):
+            start = time.perf_counter()
             # bookkeeping
             log.info(f'Starting Iter #{i} ...')
             # examples of the iteration
@@ -126,6 +128,16 @@ class Coach():
                 log.info('ACCEPTING NEW MODEL')
                 self.nnet.save_checkpoint(folder=self.args.checkpoint, filename=self.getCheckpointFile(i))
                 self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='best.pth.tar')
+            end = time.perf_counter()
+            hours, minutes, seconds = self.seconds_to_hms(end-start)
+
+            print(f"Iteration {i} took: {hours}h {minutes}m {seconds:.2f}s")
+
+    def seconds_to_hms(self, seconds):
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        seconds = seconds % 60
+        return int(hours), int(minutes), seconds
 
     def getCheckpointFile(self, iteration):
         return 'checkpoint_' + str(iteration) + '.pth.tar'

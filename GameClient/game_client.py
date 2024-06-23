@@ -16,7 +16,7 @@ MAX_EVAL_NUM = 100
 class GameClient(WebSocketConnectionManager):
     def __init__(self, host: str, port: int, key: str):
         super().__init__(host, port, key)
-        self.importer: Importer = Importer("../Games", ExcludeModule.LAMBDA, ExcludeModule.NNET)
+        self.importer: Importer = Importer("../Games", ExcludeModule.MCTS, ExcludeModule.NNET)
         self.pit: Pit = Pit(self)
 
     async def run(self):
