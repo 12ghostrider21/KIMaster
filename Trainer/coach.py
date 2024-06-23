@@ -12,6 +12,10 @@ from arena import Arena
 from Tools.mcts import MCTS
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+log.addHandler(console_handler)
 
 
 class Coach():
@@ -27,7 +31,6 @@ class Coach():
         self.args = args
         self.mcts = MCTS(self.game, self.nnet, self.args)
         self.trainExamplesHistory = []  # history of examples from args.numItersForTrainExamplesHistory latest iterations
-        self.skipFirstSelfPlay = False  # can be overriden in loadTrainExamples()
 
     def executeEpisode(self):
         """
@@ -76,28 +79,29 @@ class Coach():
         It then pits the new neural network against the old one and accepts it
         only if it wins >= updateThreshold fraction of games.
         """
-
-        for i in range(1, self.args.numIters + 1):
+        current_it = 0
+        if self.args.load_model:
+            current_it = self.args.current_iteration
+        for i in range(current_it, (current_it + self.args.numIters)):
             # bookkeeping
             log.info(f'Starting Iter #{i} ...')
             # examples of the iteration
-            if not self.skipFirstSelfPlay or i > 1:
-                iterationTrainExamples = deque([], maxlen=self.args.maxlenOfQueue)
+            iterationTrainExamples = deque([], maxlen=self.args.maxlenOfQueue)
 
-                for _ in tqdm(range(self.args.numEps), desc="Self Play"):
-                    self.mcts = MCTS(self.game, self.nnet, self.args)  # reset search tree
-                    iterationTrainExamples += self.executeEpisode()
+            for _ in tqdm(range(self.args.numEps), desc="Self Play"):
+                self.mcts = MCTS(self.game, self.nnet, self.args)  # reset search tree
+                iterationTrainExamples += self.executeEpisode()
 
-                # save the iteration examples to the history 
-                self.trainExamplesHistory.append(iterationTrainExamples)
+            # save the iteration examples to the history
+            self.trainExamplesHistory.append(iterationTrainExamples)
 
             if len(self.trainExamplesHistory) > self.args.numItersForTrainExamplesHistory:
                 log.warning(
                     f"Removing the oldest entry in trainExamples. len(trainExamplesHistory) = {len(self.trainExamplesHistory)}")
                 self.trainExamplesHistory.pop(0)
             # backup history to a file
-            # NB! the examples were collected using the model from the previous iteration, so (i-1)  
-            self.saveTrainExamples(i - 1)
+            # NB! the examples were collected using the model from the previous iteration, so (i-1)
+            self.saveTrainExamples(i)
 
             # shuffle examples before training
             trainExamples = []
@@ -141,7 +145,7 @@ class Coach():
 
     def loadTrainExamples(self):
         modelFile = os.path.join(self.args.load_folder_file[0], self.args.load_folder_file[1])
-        examplesFile = modelFile + ".examples"
+        examplesFile = modelFile
         if not os.path.isfile(examplesFile):
             log.warning(f'File "{examplesFile}" with trainExamples not found!')
             r = input("Continue? [y|n]")
@@ -152,6 +156,3 @@ class Coach():
             with open(examplesFile, "rb") as f:
                 self.trainExamplesHistory = Unpickler(f).load()
             log.info('Loading done!')
-
-            # examples based on the model were already collected (loaded)
-            self.skipFirstSelfPlay = True
