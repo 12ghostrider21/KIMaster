@@ -5,8 +5,8 @@ import re
 
 from coach import Coach
 
-from Games.connect4.Connect4Game import Connect4Game as Game
-from Games.connect4.keras.NNet import NNetWrapper as nn
+from Games.nim.NimGame import NimGame as Game
+from Games.nim.pytorch.NNet import NNetWrapper as nn
 from Tools.utils import dotdict
 
 log = logging.getLogger(__name__)
@@ -15,7 +15,13 @@ console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)
 log.addHandler(console_handler)
 
+
+directory = './temp/'
+
+
 def find_highest_checkpoint_file(directory):
+    if not os.path.isdir(directory):
+        return None, None
     files = os.listdir(directory)
 
     # regex to extract the checkpoint index
@@ -37,32 +43,33 @@ def find_highest_checkpoint_file(directory):
     return highest_file, highest_num
 
 
-directory = './temp/'
-highest_checkpoint_file = find_highest_checkpoint_file(directory)[0]
-highest_iteration = find_highest_checkpoint_file(directory)[1]
+highest_checkpoint_file, highest_iteration = find_highest_checkpoint_file(directory)
+
+if not highest_checkpoint_file or not (os.path.exists(directory + "best.h5") or os.path.exists(directory + "temp.h5")):
+    log.error('No checkpoint file or .h5 file found!')
+    ld_model = False
+    it = 0
+else:
+    ld_model = True
+    it = highest_iteration + 1
 
 args = dotdict({
-    'numIters': 2,
-    'numEps': 2,  # Number of complete self-play games to simulate during a new iteration.
+    'numIters': 3,
+    'numEps': 15,  # Number of complete self-play games to simulate during a new iteration.
     'tempThreshold': 15,
     'updateThreshold': 0.6,
     # During arena playoff, new neural net will be accepted if threshold or more of games are won.
     'maxlenOfQueue': 200000,  # Number of game examples to train the neural networks.
     'numMCTSSims': 25,  # Number of games moves for MCTS to simulate.
-    'arenaCompare': 2,  # Number of games to play during arena play to determine if new net will be accepted.
+    'arenaCompare': 20,  # Number of games to play during arena play to determine if new net will be accepted.
     'cpuct': 1,
 
     'checkpoint': directory,
-    'load_model': True,  # whether to load an existing model & checkpoint.examples (can be set at True always)
+    'load_model': ld_model,  # whether to load an existing model & checkpoint.examples (can be set at True always)
     'load_folder_file': (directory, highest_checkpoint_file),
-    'current_iteration': highest_iteration+1,
+    'current_iteration': it,
     'numItersForTrainExamplesHistory': 20,
-
 })
-
-if not highest_checkpoint_file or not (os.path.exists(directory + "best.h5") or os.path.exists(directory + "temp.h5")):
-    log.error('No checkpoint file or .h5 file found!')
-    args.load_model = False
 
 
 def main():

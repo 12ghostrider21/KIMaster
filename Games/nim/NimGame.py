@@ -10,16 +10,14 @@ class NimGame(IGame):
 
     def getInitBoard(self):
         """return initial board (numpy array)"""
-        #@ return Board(self.rows).pieces
-        return Board(self.rows)
+        return Board(self.rows).pieces
 
     def getBoardSize(self):
         return self.rows
 
     def getActionSize(self):
         """return number of all possible actions"""
-        #@ b = Board(self.rows)
-        b = self.getInitBoard()
+        b = Board(self.rows)
         return len(b.get_valid_actions())
 
     def getNextState(self, board, player, action):
@@ -43,7 +41,7 @@ class NimGame(IGame):
             valid_vector[idx] = 1
         return valid_vector
         """
-        b = self.getInitBoard()  # fresh game, all possible valid moves
+        b = Board(self.rows)  # fresh game, all possible valid moves
         valids_new = b.get_valid_actions()
 
         b.pieces = np.copy(board)  # running game
@@ -60,8 +58,7 @@ class NimGame(IGame):
             return 0
         return 1 if self.winner == 1 else -1
         """
-        b = self.getInitBoard()
-        b.pieces = np.copy(board)
+        b = Board(self.rows, np.copy(board))
         if not b.is_game_over():
             return 0
         return self.winner
