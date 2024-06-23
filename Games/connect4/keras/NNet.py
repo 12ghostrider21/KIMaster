@@ -24,7 +24,6 @@ class NNetWrapper(NeuralNet):
     def __init__(self, game):
         super().__init__(game)
         self.nnet = onnet(game, args)
-        self.nnet.model.summary()
         self.board_x, self.board_y = game.getBoardSize()
         self.action_size = game.getActionSize()
 
@@ -42,16 +41,12 @@ class NNetWrapper(NeuralNet):
         """
         board: np array with board
         """
-        # timing
-        start = time.time()
-
         # preparing input
         board = board[np.newaxis, :, :]
 
         # run
         pi, v = self.nnet.model.predict(board, verbose=False)
 
-        #print('PREDICTION TIME TAKEN : {0:03f}'.format(time.time()-start))
         return pi[0], v[0]
 
     def save_checkpoint(self, folder='checkpoint', filename='checkpoint.pth.tar'):
