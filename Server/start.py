@@ -5,13 +5,20 @@ from fastAPIServer import FastAPIServer
 from socketServer import SocketServer
 from Tools.language_handler import LanguageHandler
 
+from os import environ
+from fastapi import FastAPI
+import uvicorn
+from fastAPIServer import FastAPIServer
+from socketServer import SocketServer
+from Tools.language_handler import LanguageHandler
 
-def main():
+
+def create_app():
     """
-    Main function to set up and run the FastAPI application.
+    Create the FastAPI application.
 
     Initializes the language handler, socket server, and FastAPI server.
-    Configures WebSocket endpoints and runs the application using Uvicorn.
+    Configures WebSocket endpoints.
     """
     # Create a FastAPI application instance
     app = FastAPI()
@@ -29,10 +36,14 @@ def main():
     app.websocket("/ws")(fast_api_server.websocket_endpoint)  # WebSocket endpoint for FastAPIServer
     app.websocket("/game")(socket_server.websocket_endpoint)  # WebSocket endpoint for SocketServer
 
-    # Run the FastAPI application using Uvicorn with the specified host and port from environment variables
-    uvicorn.run(app, host=environ["SERVER_HOST"], port=int(environ["SERVER_PORT"]))
+    return app
 
+
+app = create_app()
 
 if __name__ == "__main__":
     # If this script is run directly, execute the main function
-    main()
+    uvicorn.run("start:app",
+                host=environ["SERVER_HOST"],
+                port=int(environ["SERVER_PORT"]),
+                workers=int(environ["WORKER"]))

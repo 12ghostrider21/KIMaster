@@ -1,3 +1,4 @@
+import asyncio
 import io
 from os import environ
 
@@ -43,6 +44,12 @@ class SocketServer(AbstractConnectionManager):
         byte_io.close()
         return png_bytes
 
+    async def ai_Action(self, game: IGame, board: np.array, it: int, mcts, cur_player, game_client: WebSocket):
+        func = lambda x, n: np.argmax(mcts.getActionProb(x, temp=(0.5 if n <= 6 else 0.)))
+        action = func(game.getCanonicalForm(board, cur_player), it)
+        await self.send_cmd(game_client, "play", "make_move",
+                            {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
+
     async def websocket_endpoint(self, websocket: WebSocket):
         await self.connect(websocket)
         game_instances: dict[str, IGame] = self.importer.get_games()
@@ -78,12 +85,7 @@ class SocketServer(AbstractConnectionManager):
                         cur_player = int(read_object.get("cur_player"))
                         board = np.array(array, dtype=default.dtype).reshape(default.shape)
                         mcts = ai_funcs.get(lobby.game).get(lobby.difficulty)
-                        func = lambda x, n: np.argmax(mcts.getActionProb(x, temp=(0.5 if n <= 6 else 0.)))
-                        action = func(game.getCanonicalForm(board, cur_player), it)
-
-                        await self.send_cmd(lobby.game_client, "play", "make_move",
-                                            {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
-
+                        await asyncio.create_task(self.ai_Action(game, board, it, mcts, cur_player, lobby.game_client))
                     case "draw":
                         array: np.array = np.array(read_object.get("board"))
                         cur_player: int = read_object.get("cur_player")

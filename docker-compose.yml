@@ -9,6 +9,7 @@ services:
       - SERVER_HOST=swtp-server
       - SERVER_PORT=8000
       - NETWORK=swtp-net
+      - WORKER=1
     ports:
       - "8000:8000"
     networks:
