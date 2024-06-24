@@ -123,6 +123,9 @@ class FastAPIServer(AbstractConnectionManager):
                 lobby: Lobby = self.manager.get_lobby(client)
                 if lobby is None:
                     return await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
+                if lobby.game_running:
+                    if client == lobby.p1 or client == lobby.p2:
+                        return await self.send_response(client=client, code=RCODE.L_NOSWAPACTIVEPLAYER)
                 if pos not in ["p1", "p2", "sp"]:
                     return await self.send_response(client=client, code=RCODE.L_POSUNKNOWN, data={"pos": pos})
                 if not self.manager.swap_to(pos, client):
