@@ -3,16 +3,16 @@ from enum import Enum
 
 class RCODE(Enum):
     # General
+    LANGUAGECHANGED = 0
+    INVALIDLANGUAGE = 1  # Language does not exist
+
     INTERNALERROR = 50  # Internal Error (Critical)
     INVALIDJSON = 51  # Received msg is not a json
     COMMANDNOTFOUND = 52  # Command not found
-    INVALIDLANGUAGE = 53  # Language does not exist
-    INVALIDGAME = 54  # Game entered does not exist
-    INVALIDDIFFICULTY = 55  # Difficulty entered does not exist
-    INVALIDMODE = 56  # Game mode entered does not exist
+    INVALIDGAME = 53  # Game entered does not exist
+    INVALIDDIFFICULTY = 54  # Difficulty entered does not exist
+    INVALIDMODE = 55  # Game mode entered does not exist
 
-    # success
-    LANGUAGECHANGED = 0
 
     # Lobby success
     L_CREATED = 100  # "The lobby has been successfully created."
@@ -21,6 +21,7 @@ class RCODE(Enum):
     L_SWAPPED = 103  # "The player has successfully swapped positions within the lobby."
     L_POS = 104  # "The current position in the lobby has been successfully retrieved."
     L_STATUS = 105  # "The status of the lobby has been successfully retrieved."
+    L_GAMES = 106  # "The list of games has been successfully retrieved."
 
     # Lobby error
     L_CLIENTALREADYINLOBBY = 150  # "Client already in a lobby. Client can not join multiple lobby at the same time."
@@ -46,15 +47,13 @@ class RCODE(Enum):
     P_MOVES = 208  # "The list of possible moves has been successfully retrieved."
     P_VALIDUNDO = 209  # "A valid undo action has been performed."
     P_SURRENDER = 210  # "A player has surrendered successfully."
-    #P_BLUNDER = 212  # "A blunder [serious mistake] has been identified in the play."
-    #P_BLUNDERLIST = 213  # "The list of blunders has been successfully retrieved."
+    #P_BLUNDER = 211  # "A blunder [serious mistake] has been identified in the play."
+    #P_BLUNDERLIST = 212  # "The list of blunders has been successfully retrieved."
     P_TIMELINE = 214  # "The timeline of events in the game has been successfully retrieved."
-    #P_GAMES = 215  # "The list of games has been successfully retrieved."
-    P_NOVALIDMOVES = 216  # The Player does not have a valid move anymore
-    P_STEP = 217  # step the timeline
-    P_UNSTEP = 218  # Unstep the timeline
-    P_PLAYER = 219  # sends the current active player
-
+    P_NOVALIDMOVES = 215  # The Player does not have a valid move anymore
+    P_STEP = 216  # step the timeline
+    P_UNSTEP = 217  # Unstep the timeline
+    P_PLAYER = 218  # sends the current active player
 
     # Play error
     P_NOGAMECLIENT = 250  # "There is no game client available. Try again."
@@ -72,9 +71,9 @@ class RCODE(Enum):
     P_NOEVALUATION = 262  # "No evaluation is available."
     P_INVALIDEVALUATION = 263  # "The evaluation attempted is invalid."
     P_GAMENOTAVAILABLE = 265  # "The specified game is not available."
-    P_NOGAMEINIT = 267  # Create a game fist.
-    P_EVALNUMOVER = 268  # The selected num is too high
-    P_NOTYOURTURN = 269  # The Player tried a do a move without its turn.
+    P_NOGAMEINIT = 266  # Create a game fist.
+    P_EVALNUMOVER = 267  # The selected num is too high
+    P_NOTYOURTURN = 268  # The Player tried a do a move without its turn.
 
     # Debug
     D_CONTAINER = 300  # "List all active container!"

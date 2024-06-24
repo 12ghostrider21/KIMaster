@@ -159,6 +159,14 @@ class FastAPIServer(AbstractConnectionManager):
                 else:  # client not in lobby
                     await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            case "games":
+                lobby: Lobby = self.manager.get_lobby(client)
+                if lobby:  # success
+                    await self.send_response(client=client, code=RCODE.L_GAMES,
+                                             data={"games": [k for k in self.importer.get_games().keys()]})
+                else:  # client not in lobby
+                    await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case _:
                 await self.send_response(client=client, code=RCODE.COMMANDNOTFOUND, data={"command_key": command_key})
 
