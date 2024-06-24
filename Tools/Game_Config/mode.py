@@ -6,6 +6,8 @@ class EGameMode(Enum):
     player_vs_kim = 1
     kim_vs_player = 2
     playerai_vs_playerai = 3
+    playerai_vs_kim = 4
+    kim_vs_playerai = 5
 
     @staticmethod
     def get(mode: str):

@@ -38,10 +38,10 @@ class Pit:
             case 0 | 3:
                 play1 = self.player1.play
                 play2 = self.player2.play
-            case 1:
+            case 1 | 4:
                 play1 = self.player1.play
                 play2 = self.player2.playAI
-            case 2:
+            case 2 | 5:
                 play1 = self.player1.playAI
                 play2 = self.player2.play
         print("new game loaded:", game_config.game_name)

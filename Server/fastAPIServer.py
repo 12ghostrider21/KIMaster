@@ -208,9 +208,11 @@ class FastAPIServer(AbstractConnectionManager):
             missing = []
             mode_checks = {
                 0: [("P1", True, " not connected!"), ("P2", True, " not connected!")],          # player_vs_player
-                1: [("P1", True, " not connected!"), ("P2", False, " needs to be empty!")],     # player_vs_ai
-                2: [("P1", False, " needs to be empty!"), ("P2", True, " not connected!")],     # ai_vs_player
-                3: [("P1", True, " not connected!"), ("P2", True, " not connected!")]           # playerai_vs_playerai
+                1: [("P1", True, " not connected!"), ("P2", False, " needs to be empty!")],     # player_vs_KIM
+                2: [("P1", False, " needs to be empty!"), ("P2", True, " not connected!")],     # KIM_vs_player
+                3: [("P1", True, " not connected!"), ("P2", True, " not connected!")],          # playerai_vs_playerai
+                4: [("P1", True, " not connected!"), ("P2", False, " needs to be empty!")],     # playerai_vs_KIM
+                5: [("P1", False, " needs to be empty!"), ("P2", True, " not connected!")]      # KIM_vs_playerai
             }
 
             for player, should_be_connected, message in mode_checks.get(lobby.mode.value, []):
