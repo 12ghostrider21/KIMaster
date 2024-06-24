@@ -42,8 +42,10 @@
         <select v-model="mode">
           <option value="player_vs_player">Player vs Player</option>
           <option value='player_vs_kim'>Player vs Kim</option>
-          <option value="playerai_vs_kim">Player Ai vs Kim</option>
+          <option value="kim_vs_player">Kim vs Player</option>
           <option value="playerai_vs_playerai">Player Ai vs Player Ai</option>
+          <option value="playerai_vs_kim">Player Ai vs Kim</option>
+          <option value="kim_vs_playerai">Kim vs Player Ai</option>
         </select>
         <select v-model="difficulty" >
           <option value="easy">Easy</option>
