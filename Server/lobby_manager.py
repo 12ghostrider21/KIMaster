@@ -53,12 +53,12 @@ class LobbyManager:
                 return lobby
         return None
 
-    def leave_lobby(self, client: WebSocket) -> bool:
+    def leave_lobby(self, client: WebSocket, force_leave: bool) -> bool:
         # Remove a client from their current lobby
         lobby: Lobby = self.get_lobby(client)
         if lobby is None:
             return False  # client not in a lobby to leave
-        if not lobby.leave(client):
+        if not lobby.leave(client, force_leave):
             return False  # error on leave
         if lobby.is_empty():  # delete game_client on empty lobby
             Thread(target=self.__delete_task, args=[lobby.key]).start()  # leave without waiting on delete

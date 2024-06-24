@@ -30,7 +30,7 @@ class FastAPIServer(AbstractConnectionManager):
 
     # Method to disconnect a WebSocket client
     async def disconnect(self, websocket: WebSocket):
-        self.manager.leave_lobby(websocket)
+        self.manager.leave_lobby(websocket, True)
         self.active_connections.remove(websocket)
 
     # Main endpoint for WebSocket connections
@@ -112,7 +112,7 @@ class FastAPIServer(AbstractConnectionManager):
                                               data={"key": lobby_key, "pos": self.manager.get_pos_of_client(client)})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "leave":
-                if not self.manager.leave_lobby(client):
+                if not self.manager.leave_lobby(client, False):
                     if self.manager.get_lobby(client).game_running and self.manager.get_lobby(client).in_lobby(client):
                         return await self.send_response(client=client, code=RCODE.L_NOLEAVEACTIVPLAYER)
                     return await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)

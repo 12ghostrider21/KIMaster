@@ -65,14 +65,14 @@ class Lobby:
         return False
 
     # Remove a client from the lobby
-    def leave(self, client: WebSocket) -> bool:
+    def leave(self, client: WebSocket, force_leave=False) -> bool:
         if client == self.p1:
-            if self.game_running:
+            if self.game_running and not force_leave:
                 return False
             self.p1 = None
             return True
         if client == self.p2:
-            if self.game_running:
+            if self.game_running and not force_leave:
                 return False
             self.p2 = None
             return True
