@@ -47,6 +47,7 @@ class RCODE(Enum):
     P_NOVALIDMOVES = 216  # The Player does not have a valid move anymore
     P_STEP = 217
     P_UNSTEP = 218
+    P_PLAYER = 219  # sends the current active player
 
 
     # Play error

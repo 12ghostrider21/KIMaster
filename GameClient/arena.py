@@ -39,6 +39,7 @@ class Arena:
         while self.running and self.game.getGameEnded(board, cur_player) == 0:
             await asyncio.sleep(0.0001)  # is needed because of optimiser!
             self.history.append([board, cur_player, it])
+            await self.game_client.send_response(code=RCODE.P_PLAYER, to=None, data={"cur_player": cur_player})
             await self.game_client.broadcast_board(board, cur_player, self.game_name, False)
 
             p = players[cur_player + 1]
