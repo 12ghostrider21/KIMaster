@@ -101,22 +101,28 @@ class FastAPIServer(AbstractConnectionManager):
                 lobby_key = read_object.get("key")
                 lobby: Lobby = self.manager.get_lobby(lobby_key)
                 if lobby is None:
-                    return await self.send_response(client=client, code=RCODE.L_CLIENTALREADYINLOBBY)
+                    return await self.send_response(client=client, code=RCODE.L_LOBBYNOTEXIST, data={"key": lobby_key})
                 lobby_key = read_object.get("key")
                 pos = read_object.get("pos")
-                if not self.manager.lobby_exist(lobby_key):
-                    return await self.send_response(client=client, code=RCODE.L_LOBBYNOTEXIST, data={"key": lobby_key})
+                if lobby.game_running:
+                    if pos != "sp":
+                        return await self.send_response(client=client, code=RCODE.L_RUNNINGNOJOIN)
                 if not self.manager.join_lobby(lobby_key, client, pos):
                     return await self.send_response(client=client, code=RCODE.L_JOINFAILURE, data={"key": lobby_key})
                 await self.broadcast_response(client_list=lobby.get(None), code=RCODE.L_JOINED,
-                                              data={"key": lobby_key, "pos": self.manager.get_pos_of_client(client)})
+                                              data={"pos": self.manager.get_pos_of_client(client)})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "leave":
-                if not self.manager.leave_lobby(client, False):
-                    if self.manager.get_lobby(client).game_running and self.manager.get_lobby(client).in_lobby(client):
-                        return await self.send_response(client=client, code=RCODE.L_NOLEAVEACTIVPLAYER)
+                lobby: Lobby = self.manager.get_lobby(client)
+                if lobby is None:
                     return await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
-                await self.send_response(client=client, code=RCODE.L_LEFT)
+                pos = self.manager.get_pos_of_client(client)
+                client_list = lobby.get(None)
+                if not self.manager.leave_lobby(client, False):
+                    if lobby.game_running and lobby.in_lobby(client):
+                        return await self.send_response(client=client, code=RCODE.L_NOLEAVEACTIVPLAYER)
+                await self.broadcast_response(client_list=client_list, code=RCODE.L_LEFT,
+                                              data={"pos": pos})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "swap":
                 pos: str = read_object.get("pos")
@@ -124,8 +130,8 @@ class FastAPIServer(AbstractConnectionManager):
                 if lobby is None:
                     return await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
                 if lobby.game_running:
-                    if client == lobby.p1 or client == lobby.p2:
-                        return await self.send_response(client=client, code=RCODE.L_NOSWAPACTIVEPLAYER)
+                    if lobby.in_lobby(client):
+                        return await self.send_response(client=client, code=RCODE.L_NOSWAP)
                 if pos not in ["p1", "p2", "sp"]:
                     return await self.send_response(client=client, code=RCODE.L_POSUNKNOWN, data={"pos": pos})
                 if not self.manager.swap_to(pos, client):
