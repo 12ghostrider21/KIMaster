@@ -17,7 +17,7 @@ class Lobby:
         # Game difficulty setting, default is 'easy'
         self.difficulty: EDifficulty = EDifficulty.easy
         # Game mode setting, default is 'player vs AI'
-        self.mode: EGameMode = EGameMode.player_vs_ai
+        self.mode: EGameMode = EGameMode.player_vs_kim
         # Placeholder for the game identifier
         self.game: str = ""
         # WebSocket connection for the game client
@@ -64,15 +64,28 @@ class Lobby:
                 return True
         return False
 
-    # Remove a client from the lobby
-    def leave(self, client: WebSocket, force_leave=False) -> bool:
+    def force_leave(self, client: WebSocket) -> bool:
         if client == self.p1:
-            if self.game_running and not force_leave:
+            self.p1 = None
+            return True
+        if client == self.p2:
+            self.p2 = None
+            return True
+        try:
+            self.spectator_list.remove(client)
+            return True
+        except ValueError:
+            return False
+
+    # Remove a client from the lobby
+    def leave(self, client: WebSocket) -> bool:
+        if client == self.p1:
+            if self.game_running:
                 return False
             self.p1 = None
             return True
         if client == self.p2:
-            if self.game_running and not force_leave:
+            if self.game_running:
                 return False
             self.p2 = None
             return True

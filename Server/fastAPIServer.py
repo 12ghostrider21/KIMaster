@@ -8,15 +8,17 @@ from Server.lobby import Lobby
 from Server.lobby_manager import LobbyManager
 from Tools.Game_Config.difficulty import EDifficulty
 from Tools.Game_Config.mode import EGameMode
+from Tools.dynamic_imports import Importer
 from Tools.language_handler import LanguageHandler
 from Tools.rcode import RCODE
 from Tools.languages import LANGUAGE
 
 
 class FastAPIServer(AbstractConnectionManager):
-    def __init__(self, manager: LobbyManager, msg_builder: LanguageHandler):
+    def __init__(self, manager: LobbyManager, msg_builder: LanguageHandler, importer: Importer):
         super().__init__(msg_builder)
         self.manager: LobbyManager = manager
+        self.importer: Importer = importer
         self.__command_mask: list[str] = ["command", "command_key", "pos", "key", "mode", "game", "difficulty", "num",
                                           "move", "lang"]
         self.__play_mask: list[str] = ["create", "valid_moves", "make_move", "undo_move", "surrender", "quit",
@@ -30,7 +32,9 @@ class FastAPIServer(AbstractConnectionManager):
 
     # Method to disconnect a WebSocket client
     async def disconnect(self, websocket: WebSocket):
-        self.manager.leave_lobby(websocket, True)
+        lobby: Lobby = self.manager.get_lobby(websocket)
+        if lobby:
+            lobby.force_leave(websocket)
         self.active_connections.remove(websocket)
 
     # Main endpoint for WebSocket connections
@@ -61,6 +65,8 @@ class FastAPIServer(AbstractConnectionManager):
                     case _:
                         await self.send_response(client, RCODE.COMMANDNOTFOUND, {"command": command})
         except WebSocketDisconnect:
+            await self.disconnect(client)
+        finally:
             await self.disconnect(client)
 
     # *****************************************************************************************************************
@@ -161,7 +167,7 @@ class FastAPIServer(AbstractConnectionManager):
     # *****************************************************************************************************************
     async def handle_play_command(self, client: WebSocket, read_object: dict):
         lobby = self.manager.get_lobby(client)
-        if not lobby:
+        if lobby is None:
             return await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
         if not lobby.game_client:
             return await self.send_response(client=client, code=RCODE.P_NOGAMECLIENT)
@@ -177,6 +183,38 @@ class FastAPIServer(AbstractConnectionManager):
             lobby.game = data.get("game")
             lobby.difficulty = EDifficulty.get(data.get("difficulty"))
             lobby.mode = EGameMode.get(data.get("mode"))
+            if self.importer.get_games().get(lobby.game) is None:
+                return await self.send_response(client=client, code=RCODE.INVALIDGAME,
+                                                data={"game": data.get("game"),
+                                                      "available": [m for m in self.importer.get_games().keys()]})
+            if lobby.difficulty is None:
+                return await self.send_response(client=client, code=RCODE.INVALIDDIFFICULTY,
+                                                data={"difficulty": data.get("difficulty"),
+                                                      "available": [m.name for m in EDifficulty]})
+            if lobby.mode is None:
+                return await self.send_response(client=client, code=RCODE.INVALIDDIFFICULTY,
+                                                data={"mode": data.get("mode"),
+                                                      "available": [m.name for m in EGameMode]})
+
+        if command_key in ["create", "new_game"]:  # prevent a game to start without enough player
+            missing = []
+            mode_checks = {
+                0: [("P1", True, " not connected!"), ("P2", True, " not connected!")],          # player_vs_player
+                1: [("P1", True, " not connected!"), ("P2", False, " needs to be empty!")],     # player_vs_ai
+                2: [("P1", False, " needs to be empty!"), ("P2", True, " not connected!")],     # ai_vs_player
+                3: [("P1", True, " not connected!"), ("P2", True, " not connected!")]           # playerai_vs_playerai
+            }
+
+            for player, should_be_connected, message in mode_checks.get(lobby.mode.value, []):
+                if should_be_connected and getattr(lobby, player.lower()) is None:
+                    missing.append([player, message])
+                elif not should_be_connected and getattr(lobby, player.lower()) is not None:
+                    missing.append([player, message])
+
+            if missing:
+                data = {i[0]: i[1] for i in missing}
+                return await self.send_response(client=client, code=RCODE.L_LOBBYNOTREADY, data=data)
+
         await self.send_cmd(lobby.game_client, "play", command_key, data)
 
     # *****************************************************************************************************************

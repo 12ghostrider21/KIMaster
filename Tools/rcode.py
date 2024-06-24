@@ -3,10 +3,13 @@ from enum import Enum
 
 class RCODE(Enum):
     # General
-    INTERNALERROR = 50
-    INVALIDJSON = 51
-    COMMANDNOTFOUND = 52
-    INVALIDLANGUAGE = 53
+    INTERNALERROR = 50  # Internal Error (Critical)
+    INVALIDJSON = 51  # Received msg is not a json
+    COMMANDNOTFOUND = 52  # Command not found
+    INVALIDLANGUAGE = 53  # Language does not exist
+    INVALIDGAME = 54  # Game entered does not exist
+    INVALIDDIFFICULTY = 55  # Difficulty entered does not exist
+    INVALIDMODE = 56  # Game mode entered does not exist
 
     # success
     LANGUAGECHANGED = 0
@@ -27,7 +30,7 @@ class RCODE(Enum):
     L_POSUNKNOWN = 154  # "The position within the lobby is unknown."
     L_POSOCCUPIED = 155  # "The position within the lobby is already occupied."
     L_LOBBYKEYINVALID = 156        # "There is an error with the lobby key, such as an invalid or missing key."
-    # L_LOBBYNOTREADY = 157          # "Lobby does not have enough players to start!"
+    L_LOBBYNOTREADY = 157          # "Lobby does not have enough players to start!"
     L_NOLEAVEACTIVPLAYER = 158  # Client can not leave as active game as a player
     L_NOSWAP = 159  # Client can not swap in an active game as a player
     L_RUNNINGNOJOIN = 160  # Lobby is already running, join only as spectator
@@ -48,8 +51,8 @@ class RCODE(Enum):
     P_TIMELINE = 214  # "The timeline of events in the game has been successfully retrieved."
     #P_GAMES = 215  # "The list of games has been successfully retrieved."
     P_NOVALIDMOVES = 216  # The Player does not have a valid move anymore
-    P_STEP = 217
-    P_UNSTEP = 218
+    P_STEP = 217  # step the timeline
+    P_UNSTEP = 218  # Unstep the timeline
     P_PLAYER = 219  # sends the current active player
 
 
@@ -68,7 +71,6 @@ class RCODE(Enum):
     P_INVALIDTIMELINE = 261  # "The timeline specified is invalid."
     P_NOEVALUATION = 262  # "No evaluation is available."
     P_INVALIDEVALUATION = 263  # "The evaluation attempted is invalid."
-    #P_NOAVAILABLEGAMES = 264  # "No games are available."
     P_GAMENOTAVAILABLE = 265  # "The specified game is not available."
     P_NOGAMEINIT = 267  # Create a game fist.
     P_EVALNUMOVER = 268  # The selected num is too high

@@ -30,7 +30,7 @@ def create_app():
     socket_server = SocketServer(msg_builder)
 
     # Initialize the FastAPIServer with the socket manager and language handler
-    fast_api_server = FastAPIServer(socket_server.manager, msg_builder)
+    fast_api_server = FastAPIServer(socket_server.manager, msg_builder, socket_server.importer)
 
     # Define WebSocket endpoints
     app.websocket("/ws")(fast_api_server.websocket_endpoint)  # WebSocket endpoint for FastAPIServer

@@ -3,8 +3,8 @@ from enum import Enum
 
 class EGameMode(Enum):
     player_vs_player = 0
-    player_vs_ai = 1
-    ai_vs_player = 2
+    player_vs_kim = 1
+    kim_vs_player = 2
     playerai_vs_playerai = 3
 
     @staticmethod
