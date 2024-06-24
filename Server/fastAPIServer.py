@@ -113,7 +113,9 @@ class FastAPIServer(AbstractConnectionManager):
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "leave":
                 if not self.manager.leave_lobby(client):
-                    await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
+                    if self.manager.get_lobby(client).game_running and self.manager.get_lobby(client).in_lobby(client):
+                        return await self.send_response(client=client, code=RCODE.L_NOLEAVEACTIVPLAYER)
+                    return await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
                 await self.send_response(client=client, code=RCODE.L_LEFT)
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "swap":

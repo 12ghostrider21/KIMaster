@@ -43,6 +43,7 @@ class GameClient(WebSocketConnectionManager):
                     self.pit.init_arena(game_config)
                     self.start_arena()
                     await self.send_response(code=RCODE.P_ARENAINIT, to=p_pos, data=game_config.to_dict())
+                    await self.update()
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "surrender":
                     if not self.is_arena_running():
@@ -162,6 +163,7 @@ class GameClient(WebSocketConnectionManager):
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case _:
                     await self.send_response(code=RCODE.COMMANDNOTFOUND, to=p_pos, data={"command_key": command_key})
+            await self.update()
 
     def start_arena(self, board: np.array = None, cur_player: int = 1, it: int = 0):
         self.pit.start_battle(board=board, cur_player=cur_player, it=it)
@@ -171,6 +173,11 @@ class GameClient(WebSocketConnectionManager):
 
     def is_arena_running(self) -> bool:
         return self.pit.arena.running
+
+    async def update(self):
+        await self.send_cmd("update", "", None,
+                            {"key": self.key,
+                             "game_running": self.is_arena_running()})
 
     def parse_input(self, input_str: str):
         if input_str is None:

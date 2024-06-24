@@ -77,6 +77,10 @@ class SocketServer(AbstractConnectionManager):
                 command: str = read_object.get("command")
                 command_key: str = read_object.get("command_key")
                 match command:
+                    case "update":
+                        game_running: bool = bool(read_object.get("game_running"))
+                        lobby.game_running = game_running
+
                     case "ai_move":
                         game = game_instances[command_key]
                         default = game.getInitBoard()

@@ -28,6 +28,7 @@ class RCODE(Enum):
     L_POSOCCUPIED = 155  # "The position within the lobby is already occupied."
     L_LOBBYKEYINVALID = 156        # "There is an error with the lobby key, such as an invalid or missing key."
     # L_LOBBYNOTREADY = 157          # "Lobby does not have enough players to start!"
+    L_NOLEAVEACTIVPLAYER = 158  # Client can't leave a active game as a player
 
     # Play success
     P_ARENAINIT = 200  # "The Arena has been successfully initialized."

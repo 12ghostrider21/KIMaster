@@ -18,6 +18,7 @@ class Pit:
 
     def start_battle(self, board: np.array, cur_player: int, it: int):
         asyncio.create_task(self.arena.play(board=board, cur_player=cur_player, it=it))
+        self.arena.running = True
 
     def stop_battle(self) -> None:
         self.arena.stop()
