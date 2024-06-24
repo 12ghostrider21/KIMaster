@@ -69,6 +69,7 @@ class RCODE(Enum):
     P_GAMENOTAVAILABLE = 265  # "The specified game is not available."
     P_NOGAMEINIT = 267  # Create a game fist.
     P_EVALNUMOVER = 268  # The selected num is too high
+    P_NOTYOURTURN = 269  # The Player tried a do a move without its turn.
 
     # Debug
     D_CONTAINER = 300  # "List all active container!"

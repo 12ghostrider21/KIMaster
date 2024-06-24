@@ -80,8 +80,10 @@ class GameClient(WebSocketConnectionManager):
                     if move is None:
                         await self.send_response(RCODE.P_INVALIDMOVE, p_pos)
                         continue
-                    self.pit.set_move(move, p_pos)
-                    await self.send_response(RCODE.P_VALIDMOVE, p_pos)
+                    if self.pit.set_move(move, p_pos):
+                        await self.send_response(RCODE.P_VALIDMOVE, p_pos)
+                    else:
+                        await self.send_response(RCODE.P_NOTYOURTURN, p_pos)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "undo_move":
                     if not self.is_arena_running():

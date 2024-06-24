@@ -20,6 +20,7 @@ class Arena:
         self.game_name: str = ""
         self.player1 = None
         self.player2 = None
+        self.cur_player: int = 1    # default start value
 
     def set_arena(self, game: IGame, game_name: str, play1: Callable, play2: Callable):
         self.game = game
@@ -39,6 +40,7 @@ class Arena:
         while self.running and self.game.getGameEnded(board, cur_player) == 0:
             await asyncio.sleep(0.0001)  # is needed because of optimiser!
             self.history.append([board, cur_player, it])
+            self.cur_player = cur_player
             await self.game_client.send_response(code=RCODE.P_PLAYER, to=None, data={"cur_player": cur_player})
             await self.game_client.broadcast_board(board, cur_player, self.game_name, False)
 

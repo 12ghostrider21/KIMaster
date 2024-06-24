@@ -19,14 +19,17 @@ class Pit:
     def start_battle(self, board: np.array, cur_player: int, it: int):
         asyncio.create_task(self.arena.play(board=board, cur_player=cur_player, it=it))
 
-    def stop_battle(self):
+    def stop_battle(self) -> None:
         self.arena.stop()
 
-    def set_move(self, move, pos):
-        if pos == "p1":
-            self.player1.move = move
-        if pos == "p2":
-            self.player2.move = move
+    def set_move(self, move, pos) -> bool:
+        if self.arena.cur_player == (1 if pos == "p1" else -1):
+            if pos == "p1":
+                self.player1.move = move
+            if pos == "p2":
+                self.player2.move = move
+            return True  # is your Turn
+        return False  # not your Turn
 
     def init_arena(self, game_config: GameConfig):
         play1, play2 = None, None
