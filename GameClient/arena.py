@@ -83,6 +83,7 @@ class Arena:
                                                      "turn": it})
         self.time_line_index_p1 = len(self.history)  # update index to history length
         self.time_line_index_p2 = len(self.history)  # update index to history length
+        self.running = False
 
     def stop(self):
         self.running = False
