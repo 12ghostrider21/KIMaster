@@ -41,8 +41,8 @@
         </select>
         <select v-model="mode">
           <option value="player_vs_player">Player vs Player</option>
-          <option value='player_vs_ai'>Player vs Ai</option>
-          <option value="playerai_vs_ai">Player Ai vs Ai</option>
+          <option value='player_vs_kim'>Player vs Kim</option>
+          <option value="playerai_vs_kim">Player Ai vs Kim</option>
           <option value="playerai_vs_playerai">Player Ai vs Player Ai</option>
         </select>
         <select v-model="difficulty" >
@@ -159,7 +159,7 @@ export default {
       joinLobbyPosition: null,
       receivedJSONObject: null,
       game:'connect4',
-      mode:'player_vs_ai',
+      mode:'player_vs_kim',
       difficulty:'hard',
       mouseX:null,
       mouseY:null,
