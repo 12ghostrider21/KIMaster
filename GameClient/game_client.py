@@ -99,13 +99,13 @@ class GameClient(WebSocketConnectionManager):
                     if num <= 0:
                         await self.send_response(RCODE.P_INVALIDUNDO, p_pos)
                         continue
-                    state, player, iteration = self.pit.undo(num)
-                    if state is None or player is None or iteration is None:
+                    state, player, it = self.pit.undo(num)
+                    if state is None or player is None or it is None:
                         await self.send_response(RCODE.P_NOUNDO, p_pos)
                         continue
                     self.stop_arena()
                     await self.send_response(RCODE.P_VALIDUNDO, p_pos)
-                    self.start_arena(state, player, iteration)
+                    self.start_arena(state, player, it)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "new_game":
                     if self.is_arena_running():
@@ -136,25 +136,27 @@ class GameClient(WebSocketConnectionManager):
                     if num < 0:
                         await self.send_response(RCODE.P_INVALIDTIMELINE, p_pos)
                         continue
-                    state, player, iteration = self.pit.timeline(p_pos, True, num)
+                    state, player, it = self.pit.timeline(p_pos, True, num)
                     await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, False)
-                    await self.send_response(RCODE.P_TIMELINE, p_pos, {"current_player": player, "iteration": iteration})
+                    await self.send_response(RCODE.P_TIMELINE, p_pos, {"current_player": player, "it": it})
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "step":
                     if self.is_arena_running():
                         await self.send_response(RCODE.P_STILLRUNNING, p_pos)
                         continue
-                    state, player, iteration = self.pit.timeline(p_pos, True, None)
+                    state, player, it = self.pit.timeline(p_pos, True, None)
                     await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, True)
-                    await self.send_response(RCODE.P_STEP, p_pos, {"current_player": player, "iteration": iteration})
+                    data = {"current_player": player, "it": it, "last_it": len(self.pit.arena.history) -1}
+                    await self.send_response(RCODE.P_STEP, p_pos, data)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case "unstep":
                     if self.is_arena_running():
                         await self.send_response(RCODE.P_STILLRUNNING, p_pos)
                         continue
-                    state, player, iteration = self.pit.timeline(p_pos, False, None)
+                    state, player, it = self.pit.timeline(p_pos, False, None)
                     await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, True)
-                    await self.send_response(RCODE.P_UNSTEP, p_pos, {"current_player": player, "iteration": iteration})
+                    data = {"current_player": player, "it": it, "last_it": len(self.pit.arena.history) -1}
+                    await self.send_response(RCODE.P_UNSTEP, p_pos, data)
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 case _:
                     await self.send_response(code=RCODE.COMMANDNOTFOUND, to=p_pos, data={"command_key": command_key})

@@ -77,6 +77,7 @@ class Arena:
                 it += 1
 
         if self.running:
+            self.history.append([board, cur_player, it])
             await self.game_client.broadcast_board(board, cur_player, self.game_name, False)
             await self.game_client.send_response(RCODE.P_GAMEOVER, None,
                                                  {"result": round(
