@@ -38,7 +38,7 @@ class Arena:
                 draw result returned from the game that is neither 1, -1, nor 0.
         """
         players = [self.player2, None, self.player1]
-        curPlayer = 1
+        cur_player = 1
         board = self.game.getInitBoard()
         it = 0
 
@@ -46,15 +46,15 @@ class Arena:
             if hasattr(player, "startGame"):
                 player.startGame()
 
-        while self.game.getGameEnded(board, curPlayer) == 0:
+        while self.game.getGameEnded(board, cur_player) == 0:
             it += 1
             if verbose:
                 assert self.display
-                print("Turn ", str(it), "Player ", str(curPlayer))
+                print("Turn ", str(it), "Player ", str(cur_player))
                 self.display(board)
-            action = players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer))
+            action = players[cur_player + 1](self.game.getCanonicalForm(board, cur_player))
 
-            valids = self.game.getValidMoves(self.game.getCanonicalForm(board, curPlayer), 1)
+            valids = self.game.getValidMoves(self.game.getCanonicalForm(board, cur_player), 1)
 
             if valids[action] == 0:
                 log.error(f'Action {action} is not valid!')
@@ -62,13 +62,12 @@ class Arena:
                 assert valids[action] > 0
 
             # Notifying the opponent for the move
-            opponent = players[-curPlayer + 1]
+            opponent = players[-cur_player + 1]
             if hasattr(opponent, "notify"):
                 opponent.notify(board, action)
 
-            converted_action = self.game.translate(board, curPlayer, action)  # ai generated "move" is just an index
-            board, curPlayer = self.game.getNextState(board, curPlayer, converted_action)
-
+            converted_action = self.game.translate(board, cur_player, action)  # ai generated "move" is just an index
+            board, cur_player = self.game.getNextState(board, cur_player, converted_action)
 
         for player in players[0], players[2]:
             if hasattr(player, "endGame"):
@@ -78,7 +77,7 @@ class Arena:
             assert self.display
             print("Game over: Turn ", str(it), "Result ", str(self.game.getGameEnded(board, 1)))
             self.display(board)
-        return curPlayer * self.game.getGameEnded(board, curPlayer)
+        return cur_player * self.game.getGameEnded(board, cur_player)
 
     def playGames(self, num, verbose=False):
         """
@@ -86,33 +85,33 @@ class Arena:
         num/2 games.
 
         Returns:
-            oneWon: games won by player1
-            twoWon: games won by player2
+            one_won: games won by player1
+            two_won: games won by player2
             draws:  games won by nobody
         """
 
         num = int(num / 2)
-        oneWon = 0
-        twoWon = 0
+        one_won = 0
+        two_won = 0
         draws = 0
         for _ in tqdm(range(num), desc="Arena.playGames (1)"):
-            gameResult = self.playGame(verbose=verbose)
-            if gameResult == 1:
-                oneWon += 1
-            elif gameResult == -1:
-                twoWon += 1
+            game_result = self.playGame(verbose=verbose)
+            if game_result == 1:
+                one_won += 1
+            elif game_result == -1:
+                two_won += 1
             else:
                 draws += 1
 
         self.player1, self.player2 = self.player2, self.player1
 
         for _ in tqdm(range(num), desc="Arena.playGames (2)"):
-            gameResult = self.playGame(verbose=verbose)
-            if gameResult == -1:
-                oneWon += 1
-            elif gameResult == 1:
-                twoWon += 1
+            game_result = self.playGame(verbose=verbose)
+            if game_result == -1:
+                one_won += 1
+            elif game_result == 1:
+                two_won += 1
             else:
                 draws += 1
 
-        return oneWon, twoWon, draws
+        return one_won, two_won, draws

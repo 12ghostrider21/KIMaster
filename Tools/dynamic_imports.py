@@ -138,7 +138,7 @@ class Importer:
         return result
 
     @staticmethod
-    def __import_class_from_file(file_path, class_name=None):
+    def import_class_from_file(file_path, class_name=None):
         module_name: str = splitext(basename(file_path))[0]
         # try to resolve automatically
         class_name = module_name if class_name is None else class_name
@@ -160,9 +160,9 @@ class Importer:
         result = {}
         for entry in self.__path.values():
             if entry.x == 2 or len(entry.torch.missing()) == 0:
-                result[entry.game_name] = Importer.__import_class_from_file(entry.torch.game_py)
+                result[entry.game_name] = Importer.import_class_from_file(entry.torch.game_py)
             else:
-                result[entry.game_name] = Importer.__import_class_from_file(entry.keras.game_py)
+                result[entry.game_name] = Importer.import_class_from_file(entry.keras.game_py)
         return result
 
     def __import_funcs(self):
@@ -173,13 +173,13 @@ class Importer:
             if len(entry.torch.missing()) == 0:
                 old_std = sys.stdout
                 sys.stdout = io.StringIO()  # redirect stdout to nothing
-                nn = Importer.__import_class_from_file(entry.torch.nnet_py, "NNetWrapper")(game)
+                nn = Importer.import_class_from_file(entry.torch.nnet_py, "NNetWrapper")(game)
                 nn.load_checkpoint(entry.torch.model_path, entry.torch.model_file)
                 sys.stdout = old_std  # restore old stdout
             elif len(entry.keras.missing()) == 0:
                 old_std = sys.stdout
                 sys.stdout = io.StringIO()  # redirect stdout to nothing
-                nn = Importer.__import_class_from_file(entry.keras.nnet_py, "NNetWrapper")(game)
+                nn = Importer.import_class_from_file(entry.keras.nnet_py, "NNetWrapper")(game)
                 nn.load_checkpoint(entry.keras.model_path, entry.keras.model_file)
                 sys.stdout = old_std  # restore old stdout
 
