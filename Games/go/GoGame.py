@@ -157,7 +157,8 @@ class GoGame(IGame):
                 output += row_str + '\n' + horizontal_border
 
             # Add column indices below the board
-            col_indices = '\t  ' + '   '.join([f'{col}' for col in range(self.size)]) + '\n'
+            col_indices = '\t  ' + '   '.join([f'{col}' for col in range(10)])
+            col_indices += '   ' + '  '.join([f'{col}' for col in range(10, self.size)]) + '\n'
             output += col_indices
 
             return output

@@ -27,7 +27,9 @@ class TicTacToeGame(IGame):
 
     def getActionSize(self):
         # return number of actions
-        return self.n * self.n + 1
+        return self.n * self.n + 1  # the +1 is wrong actually, but the trained model coming with alpha zero framework
+        # is based on it and everything is working so do not mind that.
+        # => TTT does not have the option to pass a move
 
     def getNextState(self, board, player, action):
         # if player takes action on board, return next (board,player)
@@ -46,7 +48,7 @@ class TicTacToeGame(IGame):
         b = Board(self.n)
         b.pieces = np.copy(board)
         legalMoves = b.get_legal_moves()
-        if len(legalMoves) == 0:
+        if len(legalMoves) == 0:  # same as with getActionSize => TTT has actually no possibility to pass a move
             valids[-1] = 1
             return np.array(valids)
         for x, y in legalMoves:

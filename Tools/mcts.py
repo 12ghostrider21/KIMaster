@@ -137,6 +137,7 @@ class MCTS():
 
                 else:
                     u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS)
+                    u += 1
                     if a in self.sanctioned_acts:
                         u *= COEFF
 
