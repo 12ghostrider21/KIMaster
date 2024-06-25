@@ -38,6 +38,9 @@
 213;The list of blunders has been retrieved successfully.;Liste der Fehler erfolgreich abgerufen.;
 214;The timeline of events in the game has been retrieved successfully.;Zeitachse der Ereignisse im Spiel erfolgreich abgerufen.;
 215;The list of games has been retrieved successfully.;Liste der Spiele erfolgreich abgerufen.;
+216;The player has no valid move left.;Der Spieler hat keinen gültigen Zug mehr übrig.;
+217;Time step forward was successful.;Zeitschritt vorwärts erfolgreich angezeigt.;
+218;Time step backwards was successful.;Zeitschritt rückwärts erfolgreich angezeigt.;
 ;;;
 250;No game client available. Please try again.;Kein Spiel-Client verfügbar. Bitte erneut versuchen.;
 251;Player does not have permission to perform the action.;Spieler hat keine Berechtigungfür diese Aktion.;
@@ -55,6 +58,9 @@
 263;The evaluation attempted is invalid.;Die versuchte Bewertung ist ungültig.;
 264;No games are available.;Keine Spiele verfügbar.;
 265;Specified game is not available.;Angegebenes Spiel ist nicht verfügbar.;
+266;;;
+267;Create a game first.;Erstellen Sie zuerst ein Spiel.;
+268;Selected evaluation index is too high, out of range.;Gewählter Bewertungsindex ist zu hoch und damit außerhalb der Grenzen.;
 ;;;
 300;List all active containers.;Liste aller aktiven Container.;
 301;Toggle debug mode of game client.;Debug-Modus des Spiel-Clients umschalten.;
