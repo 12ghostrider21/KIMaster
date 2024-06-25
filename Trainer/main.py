@@ -71,6 +71,8 @@ class Trainer:
         for game in os.listdir(directory):
             e = Entry(key=game)
             a = os.path.join(directory, game)
+            if not os.path.isdir(a):
+                continue
             for folder in os.listdir(a):
                 b = os.path.join(a, folder)
                 if folder.lower().endswith("game.py"):
