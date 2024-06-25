@@ -35,7 +35,9 @@ class FastAPIServer(AbstractConnectionManager):
         lobby: Lobby = self.manager.get_lobby(websocket)
         if lobby:
             lobby.force_leave(websocket)
-        self.active_connections.remove(websocket)
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+
 
     # Main endpoint for WebSocket connections
     async def websocket_endpoint(self, client: WebSocket):
