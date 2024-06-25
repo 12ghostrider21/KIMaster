@@ -10,6 +10,7 @@ services:
       - SERVER_PORT=8000
       - NETWORK=swtp-net
       - WORKER=1
+      - PODMAN_HOST=unix:///run/podman/podman.sock
     ports:
       - "8000:8000"
     networks:
@@ -44,6 +45,15 @@ services:
       - swtp-server
     ports:
       - "8085:8080"
+
+  swtp-test:
+    build: ./Test
+    image: swtp-test
+    container_name: swtp-test
+    networks:
+      - swtp-net
+    depends_on:
+      - swtp-server
 
 networks:
   swtp-net:
