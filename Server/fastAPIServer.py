@@ -116,7 +116,7 @@ class FastAPIServer(AbstractConnectionManager):
                     if pos != "sp":
                         return await self.send_response(client=client, code=RCODE.L_RUNNINGNOJOIN)
                 if not self.manager.join_lobby(lobby_key, client, pos):
-                    return await self.send_response(client=client, code=RCODE.L_JOINFAILURE, data={"key": lobby_key})
+                    return await self.send_response(client=client, code=RCODE.L_CLIENTALREADYINLOBBY, data={"key": lobby_key})
                 await self.broadcast_response(client_list=lobby.get(None), code=RCODE.L_JOINED,
                                               data={"pos": self.manager.get_pos_of_client(client)})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
