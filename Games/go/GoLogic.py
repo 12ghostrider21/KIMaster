@@ -73,7 +73,11 @@ class Board:
         self.current_hash = np.uint64(0)
         self.previous_hashes = set()
 
+        global PASS_MOVE
+        PASS_MOVE = self.size * self.size
+
         # add [][] indexer syntax to the Board
+
 
     def __getitem__(self, index):
         return self.pieces[index]

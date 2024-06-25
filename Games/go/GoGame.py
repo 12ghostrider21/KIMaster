@@ -40,13 +40,13 @@ class GoGame(IGame):
     # modified
     def getValidMoves(self, board: np.array, player: int):
         # return a fixed size binary vector
-        valids = [0 for i in range(self.getActionSize())]
+        valids = [0 for _ in range(self.getActionSize())]
         b = Board(self.size, np.copy(board))
         legalMoves = b.get_legal_moves(player)
         # display(board)
         # print("legal moves{}".format(legalMoves))
+        valids[-1] = 1
         if len(legalMoves) == 0:
-            valids[-1] = 1
             return np.array(valids)
         for x, y in legalMoves:
             valids[self.size * x + y] = 1
