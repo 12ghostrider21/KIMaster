@@ -7,18 +7,17 @@ class Board:
         assert rows > 1
         self.rows = rows
         self.pieces = pieces
-        if pieces is None:
+        if self.pieces is None:
             n = 1
-            self.pieces = np.zeros(rows)
+            self.pieces = np.zeros(rows, dtype=int)
             for i in range(rows):
                 self.pieces[i] = n
                 n += 2
 
-    def get_valid_actions(self):
+    def get_legal_moves(self,):
         """Returns all legal moves"""
         moves = []
         for row in range(self.rows):
-            #pieces = int(self.pieces[row])
             pieces = self.pieces[row]
             if pieces == 0:
                 continue
@@ -27,7 +26,7 @@ class Board:
         return moves
 
     def has_valid_actions(self):
-        valid_moves = self.get_valid_actions()
+        valid_moves = self.get_legal_moves()
         if len(valid_moves) == 0:
             return False
         return True
@@ -36,11 +35,11 @@ class Board:
         """Checks whether the game is over"""
         return not self.has_valid_actions()
 
-    def execute_action(self, action, player):
+    def execute_action(self, action):
         """
         Performs the given move on the board
         :param action: tuple (row, pieces_to_remove)
-        :param player: player that is executing the move
         """
-        assert action in self.get_valid_actions()
+        if action not in self.get_legal_moves():
+            raise ValueError(f'Invalid action: {action}')
         self.pieces[action[0]] -= action[1]

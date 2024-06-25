@@ -33,10 +33,9 @@ class Board():
     def __getitem__(self, index): 
         return self.pieces[index]
 
-    def get_legal_moves(self, color):
+    def get_legal_moves(self):
         """Returns all the legal moves for the given color.
         (1 for white, -1 for black)
-        @param color not used and came from previous version.        
         """
         moves = set()  # stores the legal moves.
 
@@ -100,6 +99,7 @@ class Board():
         (x,y) = move
 
         # Add the piece to the empty square.
-        assert self[x][y] == 0
+        if self[x][y] != 0:
+            raise ValueError(f"Illegal Move: {move}")
         self[x][y] = color
 

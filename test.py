@@ -62,7 +62,8 @@ while game.getGameEnded(board, cur_player) == 0:  # 0 if game is not finished
     action = func(game.getCanonicalForm(board, cur_player), it)
     print(action, len(valids), valids)
 
-    board, cur_player = game.getNextState(board, cur_player, action)
+    converted_action = game.translate(board, cur_player, action)
+    board, cur_player = game.getNextState(board, cur_player, converted_action)
     print(board)
     it += 1
 print(cur_player, board, it)

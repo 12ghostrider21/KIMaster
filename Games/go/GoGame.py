@@ -7,39 +7,41 @@ class GoGame(IGame):
     Go Game class implementing the alpha-zero-general Game interface.
     """
 
-    def __init__(self, size=None, np_pieces=None):
-        self._base_board = Board(size, np_pieces)
+    def __init__(self, size: int = None, pieces: np.array = None):
+        self._base_board = Board(size, pieces)
+        self.size = self._base_board.size
+        self.pieces = self._base_board.pieces
 
     def getInitBoard(self):
-        return self._base_board.np_pieces
+        return self._base_board.pieces
 
     def getBoardSize(self):
-        return (self._base_board.size, self._base_board.size)
+        return (self.size, self.size)
 
     def getActionSize(self):
-        return self._base_board.size * self._base_board.size + 1
+        return self.size * self.size + 1
 
-    def getNextState(self, board, player, action):
+    def getNextState(self, board: np.array, player: int, action):
         # if player takes action on board, return next (board,player)
         # action must be a valid move
         # print("getting next state from perspect of player {} with action {}".format(player,action))
 
-        b = board.copy()
-        if action == self.n * self.n:
-            return (b, -player)
+        if action == self.size * self.size:
+            return (board, -player)
 
-        move = (int(action / self.n), action % self.n)
+        b = Board(self.size, np.copy(board))
+        move = (int(action / self.size), action % self.size)
         # display(b)
         # print(player,move)
-        b.execute_move(move,player)
+        b.execute_move(move, player)
         # display(b)
-        return (b, -player)
+        return (b.pieces, -player)
 
     # modified
-    def getValidMoves(self, board, player):
+    def getValidMoves(self, board: np.array, player: int):
         # return a fixed size binary vector
         valids = [0 for i in range(self.getActionSize())]
-        b = board.copy()
+        b = Board(self.size, np.copy(board))
         legalMoves = b.get_legal_moves(player)
         # display(board)
         # print("legal moves{}".format(legalMoves))
@@ -47,22 +49,24 @@ class GoGame(IGame):
             valids[-1] = 1
             return np.array(valids)
         for x, y in legalMoves:
-            valids[self.n * x + y] = 1
+            valids[self.size * x + y] = 1
         # display(b)
         # print(legalMoves)
         return np.array(valids)
 
     # modified
-    def getGameEnded(self, board, player,returnScore=False):
+    def getGameEnded(self, board: np.array, player: int, returnScore: bool = False):
         # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
         # player = 1
 
+        b = Board(self.size, np.copy(board))
         winner = 0
-        (score_black, score_white) = self.getScore(board)
-        by_score = 0.5 * (board.size * board.size + board.komi)
 
-        if len(board.history) > 1:
-            if (board.history[-1] is None and board.history[-2] is None\
+        (score_black, score_white) = self.getScore(b)
+        by_score = 0.5 * (b.size * b.size + b.komi)
+
+        if len(b.history) > 1:
+            if (b.history[-1] is None and b.history[-2] is None
                     and player == -1):
                 if score_black > score_white:
                     winner = -1
@@ -79,14 +83,22 @@ class GoGame(IGame):
                 else:
                     # Tie
                     winner = 1e-4
+        if len(b.get_legal_moves(player)) == 0:
+            if score_black > score_white:
+                winner = -1
+            elif score_white > score_black:
+                winner = 1
+            else:
+                # Tie
+                winner = 1e-4
         if returnScore:
             return winner,(score_black, score_white)
         return winner
 
-    def getScore(self, board):
-        score_white = np.sum(board.np_pieces == -1)
-        score_black = np.sum(board.np_pieces == 1)
-        empties = zip(*np.where(board.np_pieces == 0))
+    def getScore(self, board: Board):
+        score_white = np.sum(board.pieces == -1)
+        score_black = np.sum(board.pieces == 1)
+        empties = zip(*np.where(board.pieces == 0))
         for empty in empties:
             # Check that all surrounding points are of one color
             if board.is_eyeish(empty, 1):
@@ -98,23 +110,17 @@ class GoGame(IGame):
         score_black -= board.passes_black
         return (score_black, score_white)
 
-    def getCanonicalForm(self, board, player):
+    def getCanonicalForm(self, board: np.array, player: int):
         # return state if player==1, else return -state if player==-1
-        canonicalBoard=board.copy()
-
-        canonicalBoard.np_pieces= board.np_pieces * player
-
-        # print('getting canon:')
-        # print(b_pieces)
-        return canonicalBoard
+        return board * player
 
     # modified
-    def getSymmetries(self, board, pi):
+    def getSymmetries(self, board: np.array, pi: np.array):
         # mirror, rotational
         assert(len(pi) == self.size**2 + 1)  # 1 for pass
         pi_board = np.reshape(pi[:-1], (self.size, self.size))
         l = []
-        b_pieces = board.np_pieces
+        b_pieces = np.copy(board)
         for i in range(1, 5):
             for j in [True, False]:
                 newB = np.rot90(b_pieces, i)
@@ -125,9 +131,8 @@ class GoGame(IGame):
                 l += [(newB, list(newPi.ravel()) + [pi[-1]])]
         return l
 
-    def stringRepresentation(self, board):
-        # 8x8 numpy array (canonical board)
-        return np.array(board.np_pieces).tostring()
+    def translate(self, board: np.array, player: int, index: int):
+        return index
 
     def stringRepresentation(self, board):
         return board.tostring()
@@ -136,12 +141,12 @@ class GoGame(IGame):
         if valid_moves:
             return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
         else:
-            horizontal_border = '\t+' + '-' * (4 * board.size - 1) + '+\n'
+            horizontal_border = '\t+' + '-' * (4 * self.size - 1) + '+\n'
             output = horizontal_border
 
-            for row in range(board.size):
+            for row in range(self.size):
                 row_str = f'{row}\t|'
-                for col in range(board.size):
+                for col in range(self.size):
                     piece = board[row][col]
                     if piece == 0:
                         row_str += '   |'
@@ -153,22 +158,22 @@ class GoGame(IGame):
 
             # Add column indices below the board
             col_indices = '\t  ' + '   '.join([f'{col}' for col in range(10)])
-            col_indices += '   ' + '  '.join([f'{col}' for col in range(10, board.size)]) + '\n'
+            col_indices += '   ' + '  '.join([f'{col}' for col in range(10, self.size)]) + '\n'
             output += col_indices
 
             return output
 
     def draw(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         import pygame
-        row_count = board.size
-        col_count = board.size
+        row_count = self.size
+        col_count = self.size
         SQUARESIZE = 90
         WIDTH = row_count * SQUARESIZE
         HEIGHT = col_count * SQUARESIZE
         MARGIN = SQUARESIZE // 2
 
         color_background = (251, 196, 103)  # light brown/cream
-        color_grid = (0, 0, 0) # black
+        color_grid = (0, 0, 0)  # black
         color_ply_one = (0, 0, 0)  # black
         color_ply_minus_one = (255, 255, 255)  # white
         color_valid = (144, 238, 144)  # Light green for valid moves

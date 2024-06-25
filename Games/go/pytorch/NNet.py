@@ -54,7 +54,6 @@ class NNetWrapper(NeuralNet):
             v_losses = AverageMeter()
             end = time.time()
 
-            bar = Bar('Training Net', max=int(len(examples)/args.batch_size))
             batch_idx = 0
 
             while batch_idx < int(len(examples)/args.batch_size):
@@ -82,8 +81,8 @@ class NNetWrapper(NeuralNet):
                 total_loss = l_pi + l_v
 
                 # record loss
-                pi_losses.update(l_pi.data[0], boards.size(0))
-                v_losses.update(l_v.data[0], boards.size(0))
+                pi_losses.update(l_pi.item(), boards.size(0))
+                v_losses.update(l_v.item(), boards.size(0))
 
                 # compute gradient and do SGD step
                 optimizer.zero_grad()
@@ -96,25 +95,10 @@ class NNetWrapper(NeuralNet):
 
                 batch_idx += 1
 
-                # plot progress
-                bar.suffix  = '({batch}/{size}) Data: {data:.3f}s | Batch: {bt:.3f}s | Total: {total:} | ETA: {eta:} | Loss_pi: {lpi:.4f} | Loss_v: {lv:.3f}'.format(
-                            batch=batch_idx,
-                            size=int(len(examples)/args.batch_size),
-                            data=data_time.avg,
-                            bt=batch_time.avg,
-                            total=bar.elapsed_td,
-                            eta=bar.eta_td,
-                            lpi=pi_losses.avg,
-                            lv=v_losses.avg,
-                            )
-                bar.next()
-
             trainLog['P_LOSS'].append(pi_losses.avg)
             trainLog['V_LOSS'].append(v_losses.avg)
-            bar.finish()
 
         return pd.DataFrame(data=trainLog)
-
 
     def predict(self, board):
         """

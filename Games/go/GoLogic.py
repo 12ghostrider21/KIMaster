@@ -10,7 +10,8 @@ BLACK = +1
 EMPTY = 0
 PASS_MOVE = None
 
-DEFAULT_SIZE = 19  # Standardgröße des Go-Bretts
+DEFAULT_SIZE = 19  # standard size go board
+
 
 class Board:
     """
@@ -21,15 +22,15 @@ class Board:
     # amount of time, hence this shared lookup table {boardsize: {position: [neighbors]}}
     __NEIGHBORS_CACHE = {}
 
-    def __init__(self, size=None, np_pieces=None):
+    def __init__(self, size: int = None, pieces: np.array = None):
         """Set up initial board configuration."""
         self.size = size or DEFAULT_SIZE
 
-        if np_pieces is None:
-            self.np_pieces = np.zeros([self.size, self.size])
+        if pieces is None:
+            self.pieces = np.zeros([self.size, self.size], dtype=int)
         else:
-            self.np_pieces = np_pieces
-            assert self.np_pieces.shape == (self.size, self.size)
+            self.pieces = pieces
+            assert self.pieces.shape == (self.size, self.size)
 
         self.ko = None
         self.komi = 1 if self.size <= 7 else 7.5
@@ -71,8 +72,9 @@ class Board:
             BLACK: rng.randint(np.iinfo(np.uint64).max, size=(self.size, self.size), dtype='uint64')}
         self.current_hash = np.uint64(0)
         self.previous_hashes = set()
-    
+
         # add [][] indexer syntax to the Board
+
     def __getitem__(self, index):
         return self.pieces[index]
 
@@ -271,7 +273,7 @@ class Board:
 
         state_copy = self.copy()
         state_copy.enforce_superko = False
-        state_copy.execute_move(action,color)
+        state_copy.execute_move(action, color)
 
         if state_copy.current_hash in self.previous_hashes:
             return True
@@ -377,7 +379,7 @@ class Board:
         for (prey_x, prey_y) in potential_prey:
             # attempt to capture the group at prey_x, prey_y in a ladder
             tmp = self.copy()
-            tmp.execute_move(action,color)
+            tmp.execute_move(action, color)
 
             # we only want to check a limited set of possible escape moves:
             # - extensions from the remaining liberty of the prey group.
@@ -469,7 +471,7 @@ class Board:
 
     def place_handicaps(self, actions):
         if len(self.history) > 0:
-            raise IllegalMove("Cannot place handicap on a started game")
+            raise ValueError("Cannot place handicap on a started game")
         self.handicaps.extend(actions)
         for action in actions:
             self.execute_move(action, BLACK)
@@ -480,7 +482,7 @@ class Board:
         for y in range(self.size):
             for x in range(self.size):
                 if self.is_legal((x, y), color):
-                    moves.add((x,y))
+                    moves.add((x, y))
         return list(moves)
 
     def has_legal_moves(self, color):
@@ -496,7 +498,7 @@ class Board:
         """Perform the given move on the board; flips pieces as necessary.
         color gives the color pf the piece to play (-1=white,1=black)
         """
-        if self.is_legal(action,color):
+        if self.is_legal(action, color):
             # reset ko
             self.ko = None
             # increment age of stones by 1
@@ -539,8 +541,4 @@ class Board:
                     self.passes_white += 1
             self.history.append(action)
         else:
-            raise IllegalMove(str(action)+','+str(color))
-
-
-class IllegalMove(Exception):
-    pass
+            raise ValueError(str(action) + ',' + str(color))

@@ -54,7 +54,7 @@ class Arena:
                                                      data={"result": winner})
                 continue
             to = "p1" if cur_player == 1 else "p2"
-            action = None
+            ai = False
             while self.running:
                 await asyncio.sleep(0.0001)  # is needed because of optimiser!
                 action = p()    # action can be (None) no move set, (int, tuple) on play action, (bool) ai_move request
@@ -66,16 +66,19 @@ class Arena:
                                                           "cur_player": cur_player,
                                                           "it": it,
                                                           "key": self.game_client.key})
+                    ai = True
                     continue
-                if action >= len(valids):
+                if ai:
+                    action = self.game.translate(board, cur_player, action)  # ai generated move is just an index
+                try:
+                    board, cur_player = self.game.getNextState(board, cur_player, action)
+                    break
+                except ValueError:
+                    if ai:
+                        raise ValueError("Fatal Error: Check AI move generator")
                     await self.game_client.send_response(code=RCODE.P_INVALIDMOVE, to=to)
                     continue
-                if valids[action]:
-                    print(f"Valid ACTION of: {to}", action)
-                    break
-                await self.game_client.send_response(code=RCODE.P_INVALIDMOVE, to=to)
             if self.running:
-                board, cur_player = self.game.getNextState(board, cur_player, action)
                 it += 1
 
         if self.running:

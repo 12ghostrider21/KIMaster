@@ -70,14 +70,15 @@ class IGame(ABC):
         pass
 
     @abstractmethod
-    def getNextState(self, board: np.array, player: int, action: int) -> tuple[np.array, int]:
+    def getNextState(self, board: np.array, player: int, action: any) -> tuple[np.array, int]:
         """
         Generate the next game state after applying the specified action for the current player.
 
         Parameters:
             board (numpy.array): The current game board represented as a numpy array.
             player (int): The current player (1 for one player, -1 for the other player).
-            action (int): The action taken by the current player on the board.
+            action (any): The action taken by the current player on the board. Can be an int,
+                        a tuple or anything else that represents an action for the chosen game.
 
         Returns:
             nextBoard (numpy.array): The game board after applying the specified action.
@@ -183,6 +184,25 @@ class IGame(ABC):
         model's ability to generalize across different board configurations.
         """
         pass
+
+    @abstractmethod
+    def translate(self, board: np.array, player: int, index: int) -> any:
+        """
+        Converts an index into an action.
+        Comes into effect for games that do not just have a to_position (just an int as move).
+        The output depends on the game getting implemented, most likely it's a pair tuple (from_position, to_position),
+        but it can also be a triplet tuple and so on - depending on the game.
+        Alpha-zero AI generates just an index that needs to get converted back into the original move by comparison
+        with the valid_moves method from the logic.
+
+        Parameters:
+            index (int): The index of the move to translate.
+            board (np.array): The current game board represented as a numpy array.
+            player (int): The current player (1 for one player, -1 for the other player).
+
+        Returns:
+            action (any): The action fitting to the index.
+        """
 
     @abstractmethod
     def stringRepresentation(self, board: np.array) -> str:

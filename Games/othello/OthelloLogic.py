@@ -16,20 +16,22 @@ class Board():
     # list of all 8 directions on the board, as (x,y) offsets
     __directions = [(1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1)]
 
-    def __init__(self, n):
-        "Set up initial board configuration."
+    def __init__(self, n, pieces=None):
+        """Set up initial board configuration."""
 
         self.n = n
-        # Create the empty board array.
-        self.pieces = [None] * self.n
-        for i in range(self.n):
-            self.pieces[i] = [0] * self.n
+        self.pieces = pieces
+        if self.pieces is None:
+            # Create the empty board array.
+            self.pieces = [None] * self.n
+            for i in range(self.n):
+                self.pieces[i] = [0] * self.n
 
-        # Set up the initial 4 pieces.
-        self.pieces[int(self.n / 2) - 1][int(self.n / 2)] = 1
-        self.pieces[int(self.n / 2)][int(self.n / 2) - 1] = 1
-        self.pieces[int(self.n / 2) - 1][int(self.n / 2) - 1] = -1
-        self.pieces[int(self.n / 2)][int(self.n / 2)] = -1
+            # Set up the initial 4 pieces.
+            self.pieces[int(self.n / 2) - 1][int(self.n / 2)] = 1
+            self.pieces[int(self.n / 2)][int(self.n / 2) - 1] = 1
+            self.pieces[int(self.n / 2) - 1][int(self.n / 2) - 1] = -1
+            self.pieces[int(self.n / 2)][int(self.n / 2)] = -1
 
     # add [][] indexer syntax to the Board
     def __getitem__(self, index):
@@ -107,9 +109,12 @@ class Board():
 
         # Add the piece to the empty square.
         # print(move)
+        if move not in self.get_legal_moves(color):
+            raise ValueError(f"Invalid move: {move}")
         flips = [flip for direction in self.__directions
                  for flip in self._get_flips(move, direction, color)]
-        assert len(list(flips)) > 0
+        if len(list(flips)) == 0:
+            raise ValueError(f"No flips")
         for x, y in flips:
             #print(self[x][y],color)
             self[x][y] = color

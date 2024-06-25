@@ -26,11 +26,12 @@ class Connect4Game(IGame):
         return b.np_pieces, -player
 
     def getValidMoves(self, board, player):
-        "Any zero value in top row in a valid move"
-        return self._base_board.with_np_pieces(np_pieces=board).get_valid_moves()
+        """Any zero value in top row in a valid move"""
+        b = self._base_board.with_np_pieces(np_pieces=np.copy(board))
+        return np.array([i in b.get_legal_moves() for i in range(b.width)])
 
     def getGameEnded(self, board, player):
-        b = self._base_board.with_np_pieces(np_pieces=board)
+        b = self._base_board.with_np_pieces(np_pieces=np.copy(board))
         winstate = b.get_win_state()
         if winstate.is_ended:
             if winstate.winner is None:
@@ -47,12 +48,15 @@ class Connect4Game(IGame):
             return 0
 
     def getCanonicalForm(self, board, player) -> np.array:
-        # Flip player from 1 to -1
+        """Flip player from 1 to -1"""
         return board * player
 
     def getSymmetries(self, board, pi):
         """Board is left/right board symmetric"""
         return [(board, pi), (board[:, ::-1], pi[::-1])]
+
+    def translate(self, board: np.array, player: int, index: int):
+        return index
 
     def stringRepresentation(self, board):
         return board.tostring()

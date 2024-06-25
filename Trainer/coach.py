@@ -63,9 +63,9 @@ class Coach():
             for b, p in sym:
                 trainExamples.append([b, self.curPlayer, p, None])
 
-            action = np.random.choice(len(pi), p=pi)
+            a = np.random.choice(len(pi), p=pi)
+            action = self.game.translate(canonicalBoard, 1, a)
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
-
             r = self.game.getGameEnded(board, self.curPlayer)
 
             if r != 0:
@@ -79,10 +79,8 @@ class Coach():
         It then pits the new neural network against the old one and accepts it
         only if it wins >= updateThreshold fraction of games.
         """
-        current_it = 0
-        if self.args.load_model:
-            current_it = self.args.current_iteration
-        for i in range(current_it, (current_it + self.args.numIters)):
+
+        for i in range(self.args.current_iteration, (self.args.current_iteration + self.args.numIters)):
             # bookkeeping
             log.info(f'Starting Iter #{i} ...')
             # examples of the iteration

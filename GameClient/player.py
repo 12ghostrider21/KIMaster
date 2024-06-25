@@ -8,7 +8,7 @@ class Player:
         self.move = None
         if temp is None:
             return temp
-        return int(temp)
+        return temp
 
     def playAI(self):
         if not self.send:
@@ -19,4 +19,4 @@ class Player:
         if temp is None:
             return temp
         self.send = False
-        return int(temp)
+        return temp

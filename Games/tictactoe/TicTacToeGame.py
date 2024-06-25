@@ -88,8 +88,10 @@ class TicTacToeGame(IGame):
                 x += [(newB, list(newPi.ravel()) + [pi[-1]])]
         return x
 
+    def translate(self, board: np.array, player: int, index: int):
+        return index
+
     def stringRepresentation(self, board):
-        # 8x8 numpy array (canonical board)
         return board.tostring()
 
     def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):

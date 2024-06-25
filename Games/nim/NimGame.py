@@ -18,23 +18,22 @@ class NimGame(IGame):
     def getActionSize(self):
         """return number of all possible actions"""
         b = Board(self.rows)
-        return len(b.get_valid_actions())
+        return len(b.get_legal_moves())
 
     def getNextState(self, board, player, action):
         """if player takes action on board, return next (board,player)
           action must be a valid move"""
         b = Board(self.rows, np.copy(board))
-        b.execute_action(action, player)
+        b.execute_action(action)
         if b.is_game_over():
             self.winner = player
         return b.pieces, -player
 
     def getValidMoves(self, board, player):
         """returns a binary np.array (1 = still valid action, 0 = invalid"""
-        
         """@
         b = Board(self.rows, np.copy(board))
-        valid_moves = b.get_valid_actions()
+        valid_moves = b.get_legal_moves()
         valid_vector = np.zeros(self.getActionSize(), dtype=int)
         for move in valid_moves:
             idx = move[0] * self.rows + move[1] - 1  # Convert move to index
@@ -42,22 +41,15 @@ class NimGame(IGame):
         return valid_vector
         """
         b = Board(self.rows)  # fresh game, all possible valid moves
-        valids_new = b.get_valid_actions()
+        valids_new = b.get_legal_moves()
 
         b.pieces = np.copy(board)  # running game
-        valids_running = b.get_valid_actions()
+        valids_running = b.get_legal_moves()
 
-        return np.isin(valids_new, valids_running)
+        return np.array([tuple(item) in valids_running for item in valids_new])
 
     def getGameEnded(self, board, player):
         """returns 0 if not ended, 1 if player 1 won, -1 if player 1 lost"""
-        
-        """@
-        b = Board(self.rows, np.copy(board))
-        if not b.is_game_over():
-            return 0
-        return 1 if self.winner == 1 else -1
-        """
         b = Board(self.rows, np.copy(board))
         if not b.is_game_over():
             return 0
@@ -79,21 +71,20 @@ class NimGame(IGame):
         return symmetries
         """
 
-        b = self.getInitBoard()
-        b.pieces = np.copy(board)
+        b = Board(self.rows, np.copy(board))
 
         # reshaping the valid actions based on their row indices to swap rows accordingly
-        valids = b.get_valid_actions()
+        valids = b.get_legal_moves()
         reshaped_pi = np.empty(self.rows, dtype=object)
         for i in range(self.rows):
-            reshaped_pi[i] = np.array([])
-        for i in range(valids):
+            reshaped_pi[i] = []
+        for i in range(len(valids)):
             action = valids[i]
             probability = pi[i]
-            reshaped_pi[action[0]].append(probability)
+            np.append(reshaped_pi[action[0]], probability)
 
-        sym_board = self.permute(b.pieces)
-        sym_pi = self.permute(reshaped_pi)
+        sym_board = self.permute(b.pieces.tolist())
+        sym_pi = self.permute(reshaped_pi.tolist())
         symmetries = list(zip(sym_board, sym_pi))
         return symmetries
 
@@ -112,15 +103,18 @@ class NimGame(IGame):
                 permutations.append([m] + p)
         return permutations
 
+    def translate(self, board: np.array, player: int, index: int):
+        b = Board(self.rows)
+        valids = b.get_legal_moves()
+        return valids[index]
+
     def stringRepresentation(self, board):
         return board.tostring()
 
     def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         if valid_moves:
-            #return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
-            b = self.getInitBoard()
-            b.pieces = np.copy(board)
-            return b.get_valid_actions()
+            b = Board(self.rows, np.copy(board))
+            return str(b.get_legal_moves())
         else:
             s = "\n"
             i = 0

@@ -66,7 +66,9 @@ class Arena:
             if hasattr(opponent, "notify"):
                 opponent.notify(board, action)
 
-            board, curPlayer = self.game.getNextState(board, curPlayer, action)
+            converted_action = self.game.translate(board, curPlayer, action)  # ai generated "move" is just an index
+            board, curPlayer = self.game.getNextState(board, curPlayer, converted_action)
+
 
         for player in players[0], players[2]:
             if hasattr(player, "endGame"):

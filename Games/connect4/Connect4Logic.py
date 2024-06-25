@@ -14,7 +14,7 @@ class Board:
     """
 
     def __init__(self, height=None, width=None, win_length=None, np_pieces=None):
-        "Set up initial board configuration."
+        """Set up initial board configuration."""
         self.height = height or DEFAULT_HEIGHT
         self.width = width or DEFAULT_WIDTH
         self.win_length = win_length or DEFAULT_WIN_LENGTH
@@ -26,16 +26,16 @@ class Board:
             assert self.np_pieces.shape == (self.height, self.width)
 
     def add_stone(self, column, player):
-        "Create copy of board containing new stone."
+        """Create copy of board containing new stone."""
         available_idx, = np.where(self.np_pieces[:, column] == 0)
         if len(available_idx) == 0:
             raise ValueError("Can't play column %s on board %s" % (column, self))
 
         self.np_pieces[available_idx[-1]][column] = player
 
-    def get_valid_moves(self):
-        "Any zero value in top row in a valid move"
-        return self.np_pieces[0] == 0
+    def get_legal_moves(self):
+        """Any zero value in top row in a valid move"""
+        return np.flatnonzero(self.np_pieces[0] == 0)
 
     def get_win_state(self):
         for player in [-1, 1]:
@@ -47,7 +47,7 @@ class Board:
                 return WinState(True, -player)
 
         # draw has very little value.
-        if not self.get_valid_moves().any():
+        if len(self.get_legal_moves()) == 0:
             return WinState(True, None)
 
         # Game is not ended yet.

@@ -2,17 +2,17 @@ from enum import Enum
 
 
 class RCODE(Enum):
-    # General
+    # General success
     LANGUAGECHANGED = 0
     INVALIDLANGUAGE = 1  # Language does not exist
 
+    # General error
     INTERNALERROR = 50  # Internal Error (Critical)
     INVALIDJSON = 51  # Received msg is not a json
     COMMANDNOTFOUND = 52  # Command not found
     INVALIDGAME = 53  # Game entered does not exist
     INVALIDDIFFICULTY = 54  # Difficulty entered does not exist
     INVALIDMODE = 55  # Game mode entered does not exist
-
 
     # Lobby success
     L_CREATED = 100  # "The lobby has been successfully created."
