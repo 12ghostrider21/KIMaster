@@ -6,6 +6,7 @@ import numpy as np
 #@ from multiprocessing import Pool, Manager
 
 EPS = 1e-8
+COEFF = 0.01
 
 log = logging.getLogger(__name__)
 
@@ -26,6 +27,9 @@ class MCTS():
 
         self.Es = {}  # stores game.getGameEnded ended for board s
         self.Vs = {}  # stores game.getValidMoves for board s
+        self.act = 0
+        self.act_counter = 0
+        self.sanctioned_acts = []
 
         """@
         self.Qsa = Manager().dict()  # stores Q values for s,a (as defined in the paper)
@@ -90,7 +94,6 @@ class MCTS():
         """
 
         s = self.game.stringRepresentation(canonicalBoard)
-
         if s not in self.Es:
             self.Es[s] = self.game.getGameEnded(canonicalBoard, 1)
         if self.Es[s] != 0:
@@ -128,17 +131,30 @@ class MCTS():
                 if (s, a) in self.Qsa:
                     u = self.Qsa[(s, a)] + self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s]) / (
                             1 + self.Nsa[(s, a)])
+                    u += 1
+                    if a in self.sanctioned_acts:
+                        u *= COEFF
+
                 else:
-                    u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS)  # Q = 0 ?
+                    u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS)
+                    if a in self.sanctioned_acts:
+                        u *= COEFF
 
                 if u > cur_best:
                     cur_best = u
                     best_act = a
-
         a = best_act
         action = self.game.translate(canonicalBoard, 1, a)
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, action)
         next_s = self.game.getCanonicalForm(next_s, next_player)
+
+        if best_act == self.act:
+            self.act_counter += 1
+        else:
+            self.act = best_act
+            self.act_counter = 0
+        if self.act_counter == 40 and not self.game.getGameEnded(next_s, 1):
+            self.sanctioned_acts.append(best_act)
 
         v = self.search(next_s)
 
