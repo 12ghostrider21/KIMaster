@@ -83,7 +83,7 @@ class GoGame(IGame):
                 else:
                     # Tie
                     winner = 1e-4
-        if len(b.get_legal_moves(player)) == 0:
+        if np.count_nonzero(b.pieces == 0) == 0:  # checking whether every field is occupied = game over
             if score_black > score_white:
                 winner = -1
             elif score_white > score_black:
@@ -151,14 +151,13 @@ class GoGame(IGame):
                     if piece == 0:
                         row_str += '   |'
                     elif piece == 1:
-                        row_str += ' o |'  # Assuming 'o' for black stone
+                        row_str += ' O |'  # Assuming 'o' for black stone
                     elif piece == -1:
-                        row_str += ' x |'  # Assuming 'x' for white stone
+                        row_str += ' X |'  # Assuming 'x' for white stone
                 output += row_str + '\n' + horizontal_border
 
             # Add column indices below the board
-            col_indices = '\t  ' + '   '.join([f'{col}' for col in range(10)])
-            col_indices += '   ' + '  '.join([f'{col}' for col in range(10, self.size)]) + '\n'
+            col_indices = '\t  ' + '   '.join([f'{col}' for col in range(self.size)]) + '\n'
             output += col_indices
 
             return output

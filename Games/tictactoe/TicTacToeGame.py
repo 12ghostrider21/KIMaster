@@ -99,19 +99,19 @@ class TicTacToeGame(IGame):
             return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
         else:
             output = "\n"
-            for row in range(3):
-                for col in range(3):
+            for row in range(self.n):
+                for col in range(self.n):
                     if board[row][col] == 0:
                         output += '   '
                     elif board[row][col] == 1:
                         output += ' X '
                     else:
                         output += ' O '
-                    if col < 2:
+                    if col < self.n - 1:
                         output += '|'
                 output += '\n'
-                if row < 2:
-                    output += '-----------\n'
+                if row < self.n - 1:
+                    output += '-' * (4 * self.n - 1) + '\n'
 
             return output
 
