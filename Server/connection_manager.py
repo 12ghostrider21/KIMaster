@@ -69,7 +69,7 @@ class AbstractConnectionManager(ABC):
         if client is None:
             return
         cmd = {
-            "response_code:": code.value,
+            "response_code": code.value,
             "response_msg": self.msg_builder.get(code.value, self.language.name.lower())
         }
         if data:
