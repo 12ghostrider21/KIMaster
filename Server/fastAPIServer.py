@@ -32,12 +32,9 @@ class FastAPIServer(AbstractConnectionManager):
 
     # Method to disconnect a WebSocket client
     async def disconnect(self, websocket: WebSocket):
-        lobby: Lobby = self.manager.get_lobby(websocket)
-        if lobby:
-            lobby.force_leave(websocket)
+        self.manager.leave_lobby(websocket)
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
-
 
     # Main endpoint for WebSocket connections
     async def websocket_endpoint(self, client: WebSocket):
@@ -116,7 +113,8 @@ class FastAPIServer(AbstractConnectionManager):
                     if pos != "sp":
                         return await self.send_response(client=client, code=RCODE.L_RUNNINGNOJOIN)
                 if not self.manager.join_lobby(lobby_key, client, pos):
-                    return await self.send_response(client=client, code=RCODE.L_CLIENTALREADYINLOBBY, data={"key": lobby_key})
+                    return await self.send_response(client=client, code=RCODE.L_CLIENTALREADYINLOBBY,
+                                                    data={"key": lobby_key})
                 await self.broadcast_response(client_list=lobby.get(None), code=RCODE.L_JOINED,
                                               data={"pos": self.manager.get_pos_of_client(client)})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -126,7 +124,7 @@ class FastAPIServer(AbstractConnectionManager):
                     return await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
                 pos = self.manager.get_pos_of_client(client)
                 client_list = lobby.get(None)
-                if not self.manager.leave_lobby(client, False):
+                if not self.manager.leave_lobby(client):
                     if lobby.game_running and lobby.in_lobby(client):
                         return await self.send_response(client=client, code=RCODE.L_NOLEAVEACTIVPLAYER)
                 await self.broadcast_response(client_list=client_list, code=RCODE.L_LEFT,
@@ -209,12 +207,12 @@ class FastAPIServer(AbstractConnectionManager):
         if command_key in ["create", "new_game"]:  # prevent a game to start without enough player
             missing = []
             mode_checks = {
-                0: [("P1", True, " not connected!"), ("P2", True, " not connected!")],          # player_vs_player
-                1: [("P1", True, " not connected!"), ("P2", False, " needs to be empty!")],     # player_vs_KIM
-                2: [("P1", False, " needs to be empty!"), ("P2", True, " not connected!")],     # KIM_vs_player
-                3: [("P1", True, " not connected!"), ("P2", True, " not connected!")],          # playerai_vs_playerai
-                4: [("P1", True, " not connected!"), ("P2", False, " needs to be empty!")],     # playerai_vs_KIM
-                5: [("P1", False, " needs to be empty!"), ("P2", True, " not connected!")]      # KIM_vs_playerai
+                0: [("P1", True, " not connected!"), ("P2", True, " not connected!")],  # player_vs_player
+                1: [("P1", True, " not connected!"), ("P2", False, " needs to be empty!")],  # player_vs_KIM
+                2: [("P1", False, " needs to be empty!"), ("P2", True, " not connected!")],  # KIM_vs_player
+                3: [("P1", True, " not connected!"), ("P2", True, " not connected!")],  # playerai_vs_playerai
+                4: [("P1", True, " not connected!"), ("P2", False, " needs to be empty!")],  # playerai_vs_KIM
+                5: [("P1", False, " needs to be empty!"), ("P2", True, " not connected!")]  # KIM_vs_playerai
             }
 
             for player, should_be_connected, message in mode_checks.get(lobby.mode.value, []):
