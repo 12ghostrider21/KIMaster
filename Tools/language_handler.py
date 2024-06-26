@@ -1,4 +1,11 @@
 import csv
+from enum import auto, Enum
+
+
+class LANGUAGE(Enum):
+    EN = auto()
+    DE = auto()
+    FR = auto()
 
 
 class LanguageHandler:

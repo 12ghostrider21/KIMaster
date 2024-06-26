@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from fastapi import WebSocket
-from Tools.language_handler import LanguageHandler
-from Tools.languages import LANGUAGE
+from Tools.language_handler import LanguageHandler, LANGUAGE
 from Tools.rcode import RCODE
 
 

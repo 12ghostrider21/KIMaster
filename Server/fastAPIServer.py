@@ -9,9 +9,8 @@ from Server.lobby_manager import LobbyManager
 from Tools.Game_Config.difficulty import EDifficulty
 from Tools.Game_Config.mode import EGameMode
 from Tools.dynamic_imports import Importer
-from Tools.language_handler import LanguageHandler
+from Tools.language_handler import LanguageHandler, LANGUAGE
 from Tools.rcode import RCODE
-from Tools.languages import LANGUAGE
 
 
 class FastAPIServer(AbstractConnectionManager):
