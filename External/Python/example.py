@@ -1,6 +1,8 @@
 import asyncio
 from dataclasses import dataclass, field
+
 from external_interface import Interface
+
 
 @dataclass
 class Entry:
@@ -50,8 +52,8 @@ class Example(Interface):
         loop = asyncio.get_running_loop()
 
         while await self.connected():
-            command = self.get_commands()   # updates every time
-            for k,v in command.items():
+            command = self.get_commands()  # updates every time
+            for k, v in command.items():
                 print(f"[{k}] : {v}")
             # Use a thread to handle the blocking input call
             user_input = await loop.run_in_executor(None, input, "Enter command: ")
