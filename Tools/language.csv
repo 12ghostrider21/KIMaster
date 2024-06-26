@@ -1,7 +1,7 @@
 ﻿key+A1:B63;en;de;fr;sp
 0;Language changed successfully.;Sprache erfolgreich geändert.;Langue changée avec succès.;Idioma cambiado con éxito.
 1;Selected language not found.;Ausgewählte Sprache nicht gefunden.;Langue sélectionnée introuvable.;Idioma seleccionado no encontrado.
-50;Internal server error.;Interner Serverfehler.;Erreur interne du serveur.;Error interno del servidor.
+50;Critical internal error.;Kritischer interner Fehler.;Erreur interne critique.;Error interno crítico.
 51;Invalid JSON format.;Ungültiges JSON-Format.;Format JSON invalide.;Formato JSON inválido.
 52;Specified command not found.;Angegebener Befehl nicht gefunden.;Commande spécifiée introuvable.;Comando especificado no encontrado.
 53;Specified game does not exist.;Angegebenes Spiel existiert nicht.;Jeu spécifié n'existe pas.;El juego especificado no existe.
