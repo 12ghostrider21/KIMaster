@@ -5,8 +5,6 @@ import numpy as np
 from GameClient.arena import Arena
 from GameClient.player import Player
 from Tools.Game_Config.game_config import GameConfig
-from Tools.rcode import RCODE
-from Tools.response import Response
 
 
 class Pit:
@@ -35,13 +33,13 @@ class Pit:
     def init_arena(self, game_config: GameConfig):
         play1, play2 = None, None
         match game_config.mode.value:
-            case 0 | 3:
+            case 0 | 3:     # player_vs_player | playerai_vs_playerai
                 play1 = self.player1.play
                 play2 = self.player2.play
-            case 1 | 4:
+            case 1 | 4:     # player_vs_kim | playerai_vs_kim
                 play1 = self.player1.play
                 play2 = self.player2.playAI
-            case 2 | 5:
+            case 2 | 5:     # kim_vs_player | kim_vs_playerai
                 play1 = self.player1.playAI
                 play2 = self.player2.play
         print("new game loaded:", game_config.game_name)

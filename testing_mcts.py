@@ -18,7 +18,7 @@ if len(functions) == 0:
     raise FileNotFoundError("path of Importer instance is not found")
 
 mcts = importer.get_ai_func() .get("connect4").get(diff)
-func = lambda x, n: np.argmax(mcts.getActionProb(x, temp=(0.5 if n <= 6 else 0.)))
+func = lambda x, n: np.argmax(mcts.get_action_prob(x, temp=(0.5 if n <= 6 else 0.)))
 
 print("Staring calculation ...")
 start_time = time.perf_counter()

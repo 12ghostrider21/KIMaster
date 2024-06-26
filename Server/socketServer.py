@@ -45,13 +45,13 @@ class SocketServer(AbstractConnectionManager):
         return png_bytes
 
     async def ai_Action(self, game: IGame, board: np.array, it: int, mcts, cur_player, game_client: WebSocket):
-        func = lambda x, n: np.argmax(mcts.getActionProb(x, temp=(0.5 if n <= 6 else 0.)))
+        func = lambda x, n: np.argmax(mcts.get_action_prob(x, temp=(0.5 if n <= 6 else 0.)))
         action = func(game.getCanonicalForm(board, cur_player), it)
         await self.send_cmd(game_client, "play", "make_move",
                             {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
 
     async def blunder(self, game: IGame, board: np.array, it: int, mcts, cur_player: int, action: any):
-        func = lambda x: mcts.getActionProb(x, temp=1)
+        func = lambda x: mcts.get_action_prob(x, temp=1)
         # probability vector
         action_probs = np.array(func(game.getCanonicalForm(board, cur_player)))
 
