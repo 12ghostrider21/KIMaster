@@ -1,6 +1,6 @@
 ﻿key;en;de;fr
 0;Language changed successfully.;Sprache erfolgreich geändert.;
-;;;
+1;Selected language not found.;Angewählte Sprache nicht gefunden.;
 50;Internal server error.;Interner Fehler aufgetreten.;
 51;Invalid JSON format.;Ungültiges JSON-Format.;
 52;Command not found.;Befehl nicht gefunden.;

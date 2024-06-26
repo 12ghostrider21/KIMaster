@@ -34,6 +34,7 @@ class FastAPIServer(AbstractConnectionManager):
         self.manager.leave_lobby(websocket)
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
+        self.msg_builder.remove_client(websocket)  # remove all not connected clients from private language selections
 
     # Main endpoint for WebSocket connections
     async def websocket_endpoint(self, client: WebSocket):
@@ -235,11 +236,12 @@ class FastAPIServer(AbstractConnectionManager):
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "language":
                 lang: str = read_object.get("lang")
-                for e in LANGUAGE:
-                    if e.name.lower() == lang.lower():
-                        self.language = e
-                        await self.send_response(client, RCODE.LANGUAGECHANGED, {"lang": self.language.name})
-                        return
+                if lang is not None:
+                    for e in LANGUAGE:
+                        if e.name.lower() == lang.lower():
+                            self.msg_builder.update_language(client, e)
+                            await self.send_response(client, RCODE.LANGUAGECHANGED, {"lang": e.name})
+                            return
                 await self.send_response(client, RCODE.INVALIDLANGUAGE, {"lang": lang})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case _:

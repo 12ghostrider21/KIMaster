@@ -23,7 +23,6 @@ class AbstractConnectionManager(ABC):
         """
         self.active_connections: list[WebSocket] = []
         self.msg_builder: LanguageHandler = msg_builder
-        self.language: LANGUAGE = LANGUAGE.EN
 
     @abstractmethod
     async def connect(self, websocket: WebSocket):
@@ -69,7 +68,7 @@ class AbstractConnectionManager(ABC):
             return
         cmd = {
             "response_code": code.value,
-            "response_msg": self.msg_builder.get(code.value, self.language.name.lower())
+            "response_msg": self.msg_builder.get(code.value, client)
         }
         if data:
             cmd.update(data)
