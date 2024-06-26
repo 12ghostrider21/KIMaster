@@ -64,19 +64,6 @@ class Lobby:
                 return True
         return False
 
-    def force_leave(self, client: WebSocket) -> bool:
-        if client == self.p1:
-            self.p1 = None
-            return True
-        if client == self.p2:
-            self.p2 = None
-            return True
-        try:
-            self.spectator_list.remove(client)
-            return True
-        except ValueError:
-            return False
-
     # Remove a client from the lobby
     def leave(self, client: WebSocket) -> bool:
         if client == self.p1:
