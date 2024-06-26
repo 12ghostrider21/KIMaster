@@ -111,7 +111,7 @@ class NimGame(IGame):
     def stringRepresentation(self, board):
         return board.tostring()
 
-    def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
+    def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         if valid_moves:
             b = Board(self.rows, np.copy(board))
             return str(b.get_legal_moves())

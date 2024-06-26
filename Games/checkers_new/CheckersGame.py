@@ -1,5 +1,5 @@
 from Tools.i_game import IGame, np
-from Games.checkers.CheckersLogic import Board
+from Games.checkers_new.CheckersLogic import Board
 
 
 class CheckersGame(IGame):
@@ -8,8 +8,8 @@ class CheckersGame(IGame):
     """
 
     def __init__(self, n=None):
-        self.n = n or Board.DEFAULT_SIZE
-        self.board = Board(self.n)
+        self.board = Board(n)
+        self.n = n or self.board.n
         pass
 
     def getInitBoard(self):
@@ -27,8 +27,8 @@ class CheckersGame(IGame):
     def getNextState(self, board, player, action):
         """if player takes action on board, return next (board,player)
           action must be a valid move"""
-        b = Board(self.n, pieces=np.copy(board))
-        b.execute_move(action, player)
+        b = Board(self.n, np.copy(board))
+        b.execute_action(action, player)
 
         if b.last_long_capture:
             next_actions = b.get_moves_for_square(*b.last_long_capture, captures_only=True)
@@ -45,14 +45,14 @@ class CheckersGame(IGame):
         
         for move in legal_moves:
             x, y, nx, ny = move
-            idx = (x * self.n + y) * (self.n - 1) * 4 + (nx - x + 1) * 2 + (ny - y + 1)
+            idx = self.calcValidMoveIndex(x, y, nx, ny)
             valid_moves[idx] = 1
         
         return valid_moves
 
     def getGameEnded(self, board, player):
         """returns 0 if not ended, 1 if player 1 won, -1 if player 1 lost"""
-        b = Board(self.n, pieces=np.copy(board))
+        b = Board(self.n, np.copy(board))
         if b.has_legal_moves(player):
             return 0
         if b.has_legal_moves(-player):
@@ -65,7 +65,7 @@ class CheckersGame(IGame):
 
     def getSymmetries(self, board, pi):
         # mirror, rotational
-        pi_board = np.reshape(pi, (self.n, self.n, (self.n - 1) * 4))
+        pi_board = np.reshape(pi, (self.n, self.n))
         l = []
 
         for i in range(1, 5):
@@ -76,13 +76,24 @@ class CheckersGame(IGame):
                     newB = np.fliplr(newB)
                     newPi = np.fliplr(newPi)
                 l.append((newB, list(newPi.ravel())))
-        
+
         return l
+        #return [(board, pi)]
+
+    def translate(self, board: np.array, player: int, index: int) -> any:  # @Justine: falls Dir eine effizientere
+        b = Board(self.n, np.copy(board))  # Berechnung einfällt, kannst Du die Methode gern umschreiben :-)
+        moves = b.get_legal_moves(player)
+        move_indices = [self.calcValidMoveIndex(m[0], m[1], m[2], m[3]) for m in moves]
+        i = move_indices.index(index)
+        return moves[i]
+
+    def calcValidMoveIndex(self, x: int, y: int, nx: int, ny: int):
+        return ((x * self.n + y) * (self.n - 1) * 4 + (nx - x + 1) * 2 + (ny - y + 1)) // 2
 
     def stringRepresentation(self, board):
         return board.tostring()
 
-    def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
+    def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         if valid_moves:
             return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
         else:

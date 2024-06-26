@@ -164,7 +164,7 @@ class CheckersGame(IGame):
     def stringRepresentation(self, board):
         return board.stringRepr
 
-    def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
+    def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         horizontal_border = '  +' + '-' * (4 * self.n - 1) + '+\n'
         output = horizontal_border
 

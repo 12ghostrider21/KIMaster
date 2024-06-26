@@ -19,6 +19,7 @@ EMPTY = 0
 
 DEFAULT_SIZE = 8
 
+
 class Board():
     """
     Checkers Board.
@@ -28,7 +29,7 @@ class Board():
     __directions_black = [(1, -1), (1, 1)]
 
     def __init__(self, n=None, pieces=None, last_long_capture=None):
-        "Set up initial board configuration."
+        """Set up initial board configuration."""
         self.n = n or DEFAULT_SIZE
         self.last_long_capture = last_long_capture or None
 
@@ -52,7 +53,7 @@ class Board():
     # add [][] indexer syntax to the Board
     def __getitem__(self, index):
         return self.pieces[index]
-    
+
     def get_action_size(self):
         square_from = (self.n * self.n) // 2
         move_vector = (self.n - 1) * 4
@@ -60,7 +61,7 @@ class Board():
 
     def is_within_bounds(self, x, y):
         return 0 <= x < self.n and 0 <= y < self.n
-    
+
     def get_moves_for_square(self, x, y, captures_only=False):
         piece = self.pieces[x][y]
         assert piece != EMPTY, f"Square ({x}, {y}) is empty."
@@ -74,9 +75,12 @@ class Board():
             nx, ny = x + dx, y + dy
             if self.is_within_bounds(nx, ny) and self.pieces[nx][ny] == EMPTY and not captures_only:
                 moves.add((x, y, nx, ny))
-            elif self.is_within_bounds(nx + dx, ny + dy) and self.pieces[nx][ny] * piece < 0 and self.pieces[nx + dx][ny + dy] == EMPTY:
-                moves.clear()
-                captures_only = True
+            elif self.is_within_bounds(nx + dx, ny + dy) and self.pieces[nx][ny] * piece < 0 and self.pieces[nx + dx][
+                ny + dy] == EMPTY:
+                if not captures_only:   # statt den zwei Zeilen darunter? => ansonsten wenn in beide Richtungen jmd
+                    moves.clear()       # schlagen können, nur eine Richtung erfasst als Zug, oder?
+                    captures_only = True
+
                 moves.add((x, y, nx + dx, ny + dy))
 
         return moves
@@ -93,27 +97,29 @@ class Board():
                 for y in range(self.n):
                     if self.pieces[x][y] * color > 0:
                         new_moves = self.get_moves_for_square(x, y, captures_only)
-                        if not captures_only and any(self.pieces[ny][nx] == EMPTY for _, _, nx, ny in new_moves):
-                            captures_only = True
+                        # if not captures_only and (abs(nx-x) == 2 and abs(ny-y) == 2 for x, y, nx, ny in new_moves): ??
+                        if not captures_only and any(self.pieces[ny][nx] == EMPTY for _, _, nx, ny in new_moves): # Bedingung würde für
+                            captures_only = True  # normalen Zug doch auch gelten, oder? ..nicht nur für Schlag-Move
                             legal_moves.clear()
                             legal_moves.update(new_moves)
                         elif captures_only:
                             legal_moves.update(new_moves)
 
         return list(legal_moves)
-    
+
     def has_legal_moves(self, color):
         return bool(self.get_legal_moves(color))
-    
+
     def execute_action(self, action, color):
         """
         Performs the given move on the board
         :param action: tuple (from_row, from_column, to_row, to_column)
-        :param player: player that is executing the move
+        :param color: player that is executing the move
         """
 
         # Moving own man/king
-        assert action in self.get_valid_moves(color)
+        if action not in self.get_legal_moves(color):
+            raise ValueError(f"Invalid move: {action}")
         x, y, nx, ny = action
         if color == BLACK_MAN and nx == self.n - 1:
             self.pieces[nx][ny] = BLACK_KING

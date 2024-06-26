@@ -72,6 +72,13 @@ class Arena:
                     action = self.game.translate(board, cur_player, action)  # ai generated move is just an index
                 try:
                     board, cur_player = self.game.getNextState(board, cur_player, action)
+                    if not ai:
+                        await self.game_client.send_cmd(command="blunder", command_key=self.game_name, p_pos=to,
+                                                        data={"board": board.tolist(),
+                                                              "cur_player": cur_player,
+                                                              "it": it,
+                                                              "move": action,
+                                                              "key": self.game_client.key})
                     break
                 except ValueError:
                     if ai:

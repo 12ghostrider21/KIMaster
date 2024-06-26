@@ -12,7 +12,7 @@ from Tools.neural_net import NeuralNet
 import torch
 import torch.optim as optim
 
-from Games.checkers.pytorch.CheckersNNet import CheckersNNet as cnnet
+from Games.checkers_new.pytorch.CheckersNNet import CheckersNNet as cnnet
 
 args = dotdict({
     'lr': 0.001,
@@ -99,7 +99,7 @@ class NNetWrapper(NeuralNet):
     def load_checkpoint(self, folder='checkpoint', filename='checkpoint.pth.tar'):
         filepath = os.path.join(folder, filename)
         if not os.path.exists(filepath):
-            raise ("No model in path {}".format(filepath))
+            raise ValueError("No model in path {}".format(filepath))
         map_location = None if args.cuda else 'cpu'
         checkpoint = torch.load(filepath, map_location=map_location)
         self.nnet.load_state_dict(checkpoint['state_dict'])

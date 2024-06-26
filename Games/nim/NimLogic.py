@@ -14,7 +14,7 @@ class Board:
                 self.pieces[i] = n
                 n += 2
 
-    def get_legal_moves(self,):
+    def get_legal_moves(self):
         """Returns all legal moves"""
         moves = []
         for row in range(self.rows):

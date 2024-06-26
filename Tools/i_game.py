@@ -96,7 +96,7 @@ class IGame(ABC):
     @abstractmethod
     def getValidMoves(self, board: np.array, player: int) -> np.array:
         """
-        Determine the valid moves for the current player on the given board.
+        Determine the valid moves for the current player on the given board in binary form.
 
         Parameters:
             board (numpy.array): The current game board represented as a numpy array.
@@ -222,7 +222,7 @@ class IGame(ABC):
         pass
 
     @abstractmethod
-    def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int) -> str:
+    def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int) -> str:
         """
         Displays a terminal representation of the game board for debugging purposes.
 

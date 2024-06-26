@@ -34,7 +34,7 @@ class TicTacToeGame(IGame):
     def getNextState(self, board, player, action):
         # if player takes action on board, return next (board,player)
         # action must be a valid move
-        if action == self.n * self.n:
+        if action == self.n * self.n:  # same as with getActionSize => TTT has actually no possibility to pass a move
             return board, -player
         b = Board(self.n)
         b.pieces = np.copy(board)
@@ -67,7 +67,7 @@ class TicTacToeGame(IGame):
             return -1
         if b.has_legal_moves():
             return 0
-        # draw has a very little value 
+        # draw has a very little value
         return 1e-4
 
     def getCanonicalForm(self, board, player):
@@ -76,9 +76,9 @@ class TicTacToeGame(IGame):
 
     def getSymmetries(self, board, pi):
         # mirror, rotational
-        assert (len(pi) == self.n ** 2 + 1)  # 1 for pass
-        pi_board = np.reshape(pi[:-1], (self.n, self.n))
-        x = []
+        assert (len(pi) == self.n ** 2 + 1)
+        pi_board = np.reshape(pi[:-1], (self.n, self.n))   # same as with getActionSize => TTT has actually
+        x = []                                                     # no possibility to pass a move
 
         for i in range(1, 5):
             for j in [True, False]:
@@ -87,7 +87,7 @@ class TicTacToeGame(IGame):
                 if j:
                     newB = np.fliplr(newB)
                     newPi = np.fliplr(newPi)
-                x += [(newB, list(newPi.ravel()) + [pi[-1]])]
+                x += [(newB, list(newPi.ravel()) + [pi[-1]])]  # same here with pass move
         return x
 
     def translate(self, board: np.array, player: int, index: int):
@@ -96,7 +96,7 @@ class TicTacToeGame(IGame):
     def stringRepresentation(self, board):
         return board.tostring()
 
-    def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
+    def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         if valid_moves:
             return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
         else:

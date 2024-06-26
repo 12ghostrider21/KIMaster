@@ -26,7 +26,7 @@ class Connect4Game(IGame):
         return b.np_pieces, -player
 
     def getValidMoves(self, board, player):
-        """Any zero value in top row in a valid move"""
+        """Any zero value in top row is a valid move"""
         b = self._base_board.with_np_pieces(np_pieces=np.copy(board))
         return np.array([i in b.get_legal_moves() for i in range(b.width)])
 
@@ -61,7 +61,7 @@ class Connect4Game(IGame):
     def stringRepresentation(self, board):
         return board.tostring()
 
-    def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
+    def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         if valid_moves:
             return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
         else:

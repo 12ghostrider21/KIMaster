@@ -131,7 +131,7 @@ class MCTS():
                 if (s, a) in self.Qsa:
                     u = self.Qsa[(s, a)] + self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s]) / (
                             1 + self.Nsa[(s, a)])
-                    u += 1
+                    u += 1  # making everything positive (negative u is possible here)
                     if a in self.sanctioned_acts:
                         u *= COEFF
 
@@ -145,7 +145,7 @@ class MCTS():
                     cur_best = u
                     best_act = a
         a = best_act
-        action = self.game.translate(canonicalBoard, 1, a)
+        action = self.game.translate(canonicalBoard, 1, a)  # translating index in valids to actual move
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, action)
         next_s = self.game.getCanonicalForm(next_s, next_player)
 
@@ -155,6 +155,7 @@ class MCTS():
             self.act = best_act
             self.act_counter = 0
         if self.act_counter == 40 and not self.game.getGameEnded(next_s, 1):
+            # prevent being stuck in a loop -> recursion error
             self.sanctioned_acts.append(best_act)
 
         v = self.search(next_s)

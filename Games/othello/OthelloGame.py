@@ -27,28 +27,28 @@ class OthelloGame(IGame):
 
     def getActionSize(self):
         # return number of actions
-        return self.n*self.n + 1
+        return self.n * self.n + 1
 
     def getNextState(self, board, player, action):
         # if player takes action on board, return next (board,player)
         # action must be a valid move
-        if action == self.n*self.n:
+        if action == self.n * self.n:
             return (board, -player)
         b = Board(self.n, np.copy(board))
-        move = (int(action/self.n), action%self.n)
+        move = (int(action / self.n), action % self.n)
         b.execute_move(move, player)
         return (b.pieces, -player)
 
     def getValidMoves(self, board, player):
         # return a fixed size binary vector
-        valids = [0]*self.getActionSize()
+        valids = [0] * self.getActionSize()
         b = Board(self.n, np.copy(board))
-        legalMoves =  b.get_legal_moves(player)
-        if len(legalMoves)==0:
-            valids[-1]=1
+        legalMoves = b.get_legal_moves(player)
+        if len(legalMoves) == 0:
+            valids[-1] = 1
             return np.array(valids)
         for x, y in legalMoves:
-            valids[self.n*x+y]=1
+            valids[self.n * x + y] = 1
         return np.array(valids)
 
     def getGameEnded(self, board, player):
@@ -65,11 +65,11 @@ class OthelloGame(IGame):
 
     def getCanonicalForm(self, board, player):
         # return state if player==1, else return -state if player==-1
-        return player*board
+        return player * board
 
     def getSymmetries(self, board, pi):
         # mirror, rotational
-        assert(len(pi) == self.n**2+1)  # 1 for pass
+        assert (len(pi) == self.n ** 2 + 1)  # 1 for pass
         pi_board = np.reshape(pi[:-1], (self.n, self.n))
         l = []
 
@@ -97,7 +97,7 @@ class OthelloGame(IGame):
         b = Board(self.n, np.copy(board))
         return b.countDiff(player)
 
-    def draw_terminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
+    def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         if valid_moves:
             return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
         else:

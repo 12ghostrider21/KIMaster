@@ -123,8 +123,9 @@ class Trainer:
         highest_checkpoint_file, highest_iteration = self.find_highest_checkpoint_file(path)
         if not highest_checkpoint_file or not (os.path.exists(path + "best.h5")
                                                or os.path.exists(path + "temp.h5")
-                                               or os.path.exists(path + "best.pth.tar")):
-            print('\033[91mNo checkpoint file or .h5 file found!\033[0m')
+                                               or os.path.exists(path + "best.pth.tar")
+                                               or os.path.exists(path + "temp.pth.tar")):
+            print('\033[91mNo checkpoint file or .h5 /.pth.tar file found!\033[0m')
             ld_model = False
             it = 0
         else:
@@ -193,10 +194,17 @@ class Trainer:
 
         if args.load_model:
             log.info('Loading checkpoint "%s%s"...', args.load_folder_file[0], args.load_folder_file[1])
-            path = "./temp/"
-            file = "best.h5"
+            path = self.saves + game_entry.key
+            file = ""
+            if "keras" in game_entry.nn:
+                file = "best.h5"
+            if "pytorch" in game_entry.nn:
+                file = "best.pth.tar"
             if not os.path.exists(os.path.join(path, file)):
-                file = "temp.h5"
+                if "keras" in game_entry.nn:
+                    file = "temp.h5"
+                if "pytorch" in game_entry.nn:
+                    file = "temp.pth.tar"
             nnet.load_checkpoint(path, file)
         else:
             log.warning('Not loading a checkpoint!')
