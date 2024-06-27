@@ -8,6 +8,7 @@ class LANGUAGE(Enum):
     EN = auto()  # English language
     DE = auto()  # German language
     FR = auto()  # French language
+    SP = auto()  # Spanish language
 
 
 # Define a class called LanguageHandler to manage language data from a CSV file

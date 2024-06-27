@@ -4,8 +4,8 @@ from enum import Enum
 # Define an enumeration for response codes (RCODE) used to indicate various statuses and errors
 class RCODE(Enum):
     # General success codes
-    LANGUAGECHANGED = 0  # Language has been successfully changed
-    INVALIDLANGUAGE = 1  # The specified language does not exist
+    LANGUAGECHANGED = 0  # Language changed successfully.
+    INVALIDLANGUAGE = 1  # Selected language not found.
 
     # General error codes
     INTERNALERROR = 50  # Critical internal error

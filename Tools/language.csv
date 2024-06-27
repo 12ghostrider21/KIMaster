@@ -1,66 +1,72 @@
-﻿key;en;de;fr
-0;Language changed successfully.;Sprache erfolgreich geändert.;
-1;Selected language not found.;Angewählte Sprache nicht gefunden.;
-50;Internal server error.;Interner Fehler aufgetreten.;
-51;Invalid JSON format.;Ungültiges JSON-Format.;
-52;Command not found.;Befehl nicht gefunden.;
-53;Invalid language specified.;Ungültige Sprache angegeben.;
-;;;
-100;The lobby has been created successfully.;Lobby erfolgreich erstellt.;
-101;Player has joined the lobby successfully.;Spieler ist der Lobby erfolgreich beigetreten.;
-102;Player has left the lobby successfully.;Spieler hat die Lobby erfolgreich verlassen.;
-103;Player has swapped positions within the lobby successfully.;Spielerposition in der Lobby erfolgreich getauscht.;
-104;Current position in the lobby retrieved successfully.;Aktuelle Position in der Lobby erfolgreich abgerufen.;
-105;Lobby status retrieved successfully.;Status der Lobby erfolgreich abgerufen.;
-;;;
-150;Client already in a lobby and cannot join multiple lobbies simultaneously.;Client ist bereits in einer Lobby und kann nicht mehreren Lobbys gleichzeitig beitreten.;
-151;The specified lobby does not exist.;Angegebene Lobby existiert nicht.;
-152;Failed to join the lobby.;Beitritt zur Lobby fehlgeschlagen.;
-153;The specified client does not exist.;Angegebene Client existiert nicht.;
-154;Position within the lobby is unknown.;Position in der Lobby unbekannt.;
-155;Position within the lobby is already occupied.;Position in der Lobby bereits besetzt.;
-156;Lobby key is invalid or missing.;Der Lobby-Schlüssel fehlt oder ist ungültig.;
-157;Not enough players in lobby to start a game.;Nicht genügend Spieler in der Lobby, um ein Spiel zu starten.;
-;;;
-200;The Arena has been initialized successfully.;Arena erfolgreich initialisiert.;
-201;The game evaluation has been performed successfully.;Spielevaluation erfolgreich durchgeführt.;
-202;Game ended successfully.;Spiel erfolgreich beendet.;
-203;The game evaluation has concluded successfully.;Bewertungsprozess erfolgreich abgeschlossen.;
-204;;;
-205;The game board has been retrieved or updated successfully.;Spielbrett erfolgreich abgerufen oder aktualisiert.;
-206;The game representation has been retrieved successfully.;Spielrepräsentation erfolgreich abgerufen.;
-207;Valid move executed.;Gültiger Zug durchgeführt.;
-208;List of possible moves retrieved successfully.;Liste möglicher Züge erfolgreich abgerufen.;
-209;Valid undo action performed.;Gültige Rückgängig-Aktion durchgeführt.;
-210;A player has surrendered successfully.;Spieler hat erfolgreich aufgegeben.;
-211;;;
-212;A blunder [serious mistake] has been identified in the play.;Schwerer Fehler im Spiel identifiziert.;
-213;The list of blunders has been retrieved successfully.;Liste der Fehler erfolgreich abgerufen.;
-214;The timeline of events in the game has been retrieved successfully.;Zeitachse der Ereignisse im Spiel erfolgreich abgerufen.;
-215;The list of games has been retrieved successfully.;Liste der Spiele erfolgreich abgerufen.;
-216;The player has no valid move left.;Der Spieler hat keinen gültigen Zug mehr übrig.;
-217;Time step forward was successful.;Zeitschritt vorwärts erfolgreich angezeigt.;
-218;Time step backwards was successful.;Zeitschritt rückwärts erfolgreich angezeigt.;
-;;;
-250;No game client available. Please try again.;Kein Spiel-Client verfügbar. Bitte erneut versuchen.;
-251;Player does not have permission to perform the action.;Spieler hat keine Berechtigungfür diese Aktion.;
-252;Game has not been initialized.;Spiel wurde nicht initialisiert.;
-253;Invalid arguments provided.;Ungültige Agrumente.;
-254;Game is still running, requested action cannot be performed.;Spiel läuft noch, angeforderte Aktion kann nicht durchgeführt werden.;
-255;No move has been made.;Kein Zug gemacht.;
-256;Invalid move made.;Ausgeführter Zug ist ungültig.;
-257;Invalid position specified.;Angegebene Position ist ungültig.;
-258;No undo action available.;Keine Rückgängig-Aktion verfügbar.;
-259;Invalid undo action attempted.;Ungültige Rückgängig-Aktion.;
-260;No timeline available.;Keine Zeitachse verfügbar.;
-261;Speicified timeline is invalid.;Die angegebene Zeitachse ist ungültig.;
-262;No evaluation available.;Keine Bewertung verfügbar.;
-263;The evaluation attempted is invalid.;Die versuchte Bewertung ist ungültig.;
-264;No games are available.;Keine Spiele verfügbar.;
-265;Specified game is not available.;Angegebenes Spiel ist nicht verfügbar.;
-266;;;
-267;Create a game first.;Erstellen Sie zuerst ein Spiel.;
-268;Selected evaluation index is too high, out of range.;Gewählter Bewertungsindex ist zu hoch und damit außerhalb der Grenzen.;
-;;;
-300;List all active containers.;Liste aller aktiven Container.;
-301;Toggle debug mode of game client.;Debug-Modus des Spiel-Clients umschalten.;
+﻿key+A1:B63;en;de;fr;sp
+0;Language changed successfully.;Sprache erfolgreich geändert.;Langue changée avec succès.;Idioma cambiado con éxito.
+1;Selected language not found.;Ausgewählte Sprache nicht gefunden.;Langue sélectionnée introuvable.;Idioma seleccionado no encontrado.
+50;Critical internal error.;Kritischer interner Fehler.;Erreur interne critique.;Error interno crítico.
+51;Invalid JSON format.;Ungültiges JSON-Format.;Format JSON invalide.;Formato JSON inválido.
+52;Specified command not found.;Angegebener Befehl nicht gefunden.;Commande spécifiée introuvable.;Comando especificado no encontrado.
+53;Specified game does not exist.;Angegebenes Spiel existiert nicht.;Jeu spécifié n'existe pas.;El juego especificado no existe.
+54;Specified difficulty level does not exist.;Angegebener Schwierigkeitsgrad existiert nicht.;Niveau de difficulté spécifié n'existe pas.;El nivel de dificultad especificado no existe.
+55;Specified game mode does not exist.;Angegebener Spielmodus existiert nicht.;Mode de jeu spécifié n'existe pas.;El modo de juego especificado no existe.
+;;;;
+100;Lobby has been created successfully.;Lobby erfolgreich erstellt.;Le lobby a été créé avec succès.;El lobby se ha creado con éxito.
+101;Player has joined the lobby successfully.;Spieler ist der Lobby erfolgreich beigetreten.;Le joueur a rejoint le lobby avec succès.;El jugador se ha unido al lobby con éxito.
+102;Player has left the lobby successfully.;Spieler hat die Lobby erfolgreich verlassen.;Le joueur a quitté le lobby avec succès.;El jugador ha salido del lobby con éxito.
+103;Player has swapped positions within the lobby successfully.;Spieler hat Positionen in der Lobby erfolgreich getauscht.;Le joueur a échangé des positions dans le lobby avec succès.;El jugador ha intercambiado posiciones dentro del lobby con éxito.
+104;Current position in the lobby retrieved successfully.;Aktuelle Position in der Lobby erfolgreich abgerufen.;Position actuelle dans le lobby récupérée avec succès.;Posición actual en el lobby recuperada con éxito.
+105;Lobby status retrieved successfully.;Lobbystatus erfolgreich abgerufen.;Statut du lobby récupéré avec succès.;Estado del lobby recuperado con éxito.
+106;List of games retrieved successfully.;Liste der Spiele erfolgreich abgerufen.;Liste des jeux récupérée avec succès.;Lista de juegos recuperada con éxito.
+;;;;
+150;Client already in a lobby and cannot join multiple lobbies simultaneously.;Client ist bereits in einer Lobby und kann nicht mehreren Lobbys gleichzeitig beitreten.;Le client est déjà dans un lobby et ne peut pas rejoindre plusieurs lobbies simultanément.;El cliente ya está en un lobby y no puede unirse a varios lobbies simultáneamente.
+151;Specified lobby does not exist.;Angegebene Lobby existiert nicht.;Le lobby spécifié n'existe pas.;El lobby especificado no existe.
+152;Joining lobby failed.;Beitritt zur Lobby fehlgeschlagen.;Échec de la jonction au lobby.;Error al unirse al lobby.
+153;Specified client does not exist.;Angegebener Client existiert nicht.;Le client spécifié n'existe pas.;El cliente especificado no existe.
+154;Position within the lobby is unknown.;Position in der Lobby ist unbekannt.;Position dans le lobby inconnue.;Posición dentro del lobby desconocida.
+155;Position within the lobby is already occupied.;Position in der Lobby ist bereits besetzt.;Position dans le lobby déjà occupée.;Posición dentro del lobby ya ocupada.
+156;Lobby key is invalid or missing.;Lobby-Schlüssel ist ungültig oder fehlt.;Clé du lobby invalide ou manquante.;Clave del lobby inválida o ausente.
+157;Not enough players in lobby to start a game.;Nicht genügend Spieler in der Lobby, um ein Spiel zu starten.;Pas assez de joueurs dans le lobby pour démarrer un jeu.;No hay suficientes jugadores en el lobby para comenzar un juego.
+158;Active player cannot leave an active game.;Aktiver Spieler kann ein aktives Spiel nicht verlassen.;Le joueur actif ne peut pas quitter un jeu actif.;El jugador activo no puede abandonar un juego activo.
+159;Active player cannot swap positions within an active game.;Aktiver Spieler kann innerhalb eines aktiven Spiels seine Position nicht wechseln.;Le joueur actif ne peut pas échanger dans un jeu actif.;El jugador activo no puede intercambiar posiciones dentro de un juego activo.
+160;Game in lobby is already running, joining only as spectator.;Spiel in der Lobby läuft bereits, nur als Zuschauer beitreten.;Le jeu dans le lobby est déjà en cours, rejoindre seulement en tant que spectateur.;El juego en el lobby ya está en marcha, unirse solo como espectador.
+;;;;
+200;Arena has been initialized successfully.;Arena erfolgreich initialisiert.;L'arène a été initialisée avec succès.;La arena se ha inicializado con éxito.
+201;Game evaluation has been performed successfully.;Spielevaluation erfolgreich durchgeführt.;L'évaluation du jeu a été effectuée avec succès.;La evaluación del juego se ha realizado con éxito.
+202;Game ended successfully.;Spiel erfolgreich beendet.;Jeu terminé avec succès.;El juego terminó con éxito.
+203;Game evaluation has concluded successfully.;Spielevaluation erfolgreich abgeschlossen.;L'évaluation du jeu a été conclue avec succès.;La evaluación del juego ha concluido con éxito.
+204;;;;
+205;Game board has been retrieved or updated successfully.;Spielbrett erfolgreich abgerufen oder aktualisiert.;Le plateau de jeu a été récupéré ou mis à jour avec succès.;El tablero de juego se ha recuperado o actualizado con éxito.
+206;Game representation has been retrieved successfully.;Spielrepräsentation erfolgreich abgerufen.;La représentation du jeu a été récupérée avec succès.;La representación del juego se ha recuperado con éxito.
+207;Valid move executed successfully.;Gültiger Zug erfolgreich ausgeführt.;Coup valide exécuté avec succès.;Jugada válida ejecutada con éxito.
+208;List of possible moves retrieved successfully.;Liste der möglichen Züge erfolgreich abgerufen.;Liste des coups possibles récupérée avec succès.;Lista de movimientos posibles recuperada con éxito.
+209;Valid undo action performed successfully.;Gültige Rückgängig-Aktion erfolgreichdurchgeführt.;Action d'annulation valide effectuée avec succès.;Acción de deshacer válida realizada con éxito.
+210;A player has surrendered successfully.;Ein Spieler hat erfolgreich aufgegeben.;Un joueur a abandonné avec succès.;Un jugador se ha rendido con éxito.
+211;A blunder [serious mistake] has been identified in the play.;Ein schwerer Fehler im Spiel identifiziert.;Une gaffe [erreur grave] a été identifiée dans le jeu.;Se ha identificado un error [grave] en el juego.
+212;List of blunders has been retrieved successfully.;Liste der Fehler erfolgreich abgerufen.;Liste des gaffes récupérée avec succès.;Lista de errores recuperada con éxito.
+213;;;;
+214;Timeline of events in the game has been retrieved successfully.;Zeitachse der Ereignisse im Spiel erfolgreich abgerufen.;Chronologie des événements dans le jeu récupérée avec succès.;Línea de tiempo de los eventos en el juego recuperada con éxito.
+215;The player has no valid move left.;Der Spieler hat keinen gültigen Zug mehr.;Le joueur n'a plus de coup valide.;El jugador no tiene movimientos válidos restantes.
+216;Time step forward was successful.;Zeitschritt vorwärts erfolgreich angezeigt.;Avancée temporelle réussie.;Paso de tiempo hacia adelante exitoso.
+217;Time step backwards was successful.;Zeitschritt rückwärts erfolgreich angezeigt.;Recul temporel réussi.;Paso de tiempo hacia atrás exitoso.
+218;Current active player retrieved successfully.;Aktueller aktiver Spieler erfolgreich abgerufen.;Joueur actif actuel récupéré avec succès.;Jugador activo actual recuperado con éxito.
+;;;;
+250;No game client available. Please try again.;Kein Spiel-Client verfügbar. Bitte versuchen Sie es erneut.;Pas de client de jeu disponible. Veuillez réessayer.;No hay cliente de juego disponible. Por favor, inténtelo de nuevo.
+251;Player does not have permission to perform the action.;Spieler hat keine Berechtigung für diese Aktion.;Le joueur n'a pas la permission d'effectuer l'action.;El jugador no tiene permiso para realizar la acción.
+252;Game has not been initialized.;Spiel wurde nicht initialisiert.;Le jeu n'a pas été initialisé.;El juego no ha sido inicializado.
+253;Invalid arguments provided.;Ungültige Agrumente angegeben.;Arguments invalides fournis.;Argumentos inválidos proporcionados.
+254;Game is still running, requested action cannot be performed.;Spiel läuft noch, angeforderte Aktion kann nicht durchgeführt werden.;Le jeu est toujours en cours, l'action demandée ne peut pas être effectuée.;El juego aún está en curso, no se puede realizar la acción solicitada.
+255;No move has been made.;Kein Zug gemacht.;Aucun coup n'a été fait.;No se ha realizado ningún movimiento.
+256;Invalid move made.;Ausgeführter Zug ist ungültig.;Coup invalide effectué.;Movimiento inválido realizado.
+257;Invalid position specified.;Ungültige Position angegeben.;Position invalide spécifiée.;Posición inválida especificada.
+258;No undo action available.;Keine Rückgängig-Aktion verfügbar.;Aucune action d'annulation disponible.;No hay acción de deshacer disponible.
+259;Invalid undo action attempted.;Ungültige Rückgängig-Aktion unternommen.;Tentative d'annulation invalide.;Intento de deshacer inválido.
+260;No timeline available.;Keine Zeitachse verfügbar.;Aucune chronologie disponible.;No hay línea de tiempo disponible.
+261;Specified timeline is invalid.;Angegebene Zeitachse ist ungültig.;Chronologie spécifiée invalide.;Línea de tiempo especificada es inválida.
+262;No evaluation available.;Keine Bewertung verfügbar.;Aucune évaluation disponible.;No hay evaluación disponible.
+263;The evaluation attempted is invalid.;Die versuchte Bewertungsversuch ist ungültig.;L'évaluation tentée est invalide.;La evaluación intentada es inválida.
+264;;;;
+265;Specified game is not available.;Angegebenes Spiel ist nicht verfügbar.;Jeu spécifié non disponible.;El juego especificado no está disponible.
+266;Create a game first.;Erstellen Sie zuerst ein Spiel.;Créez d'abord un jeu.;Cree un juego primero.
+267;Selected evaluation index is too high, out of range.;Ausgewählter Bewertungsindex ist zu hoch, außerhalb des Bereichs.;Index d'évaluation sélectionné trop élevé, hors de portée.;Índice de evaluación seleccionado demasiado alto, fuera de rango.
+268;Player tried to make a move out of turn.;Spieler hat versucht, einen Zug außerhalb der Reihe zu machen.;Le joueur a essayé de faire un coup hors de son tour.;El jugador intentó hacer un movimiento fuera de turno.
+;;;;
+300;List all active containers.;Liste aller aktiven Container.;Lister tous les conteneurs actifs.;Listar todos los contenedores activos.
+301;Toggle debug mode of game client.;Debug-Modus des Spiel-Clients umschalten.;Basculez le mode debug du client de jeu.;Alternar el modo de depuración del cliente de juego.
