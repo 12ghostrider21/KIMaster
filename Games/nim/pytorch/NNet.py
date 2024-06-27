@@ -51,8 +51,7 @@ class NNetWrapper(NeuralNet):
             for _ in t:
                 sample_ids = np.random.randint(len(examples), size=args.batch_size)
                 boards, pis, vs = list(zip(*[examples[i] for i in sample_ids]))
-                #boards = torch.FloatTensor(np.array(boards).astype(np.float64))
-                boards = boards.view(1, self.board_rows)
+                boards = torch.FloatTensor(np.array(boards).astype(np.float64))
                 target_pis = torch.FloatTensor(np.array(pis))
                 target_vs = torch.FloatTensor(np.array(vs).astype(np.float64))
 
@@ -67,6 +66,7 @@ class NNetWrapper(NeuralNet):
 
                 # compute output
                 out_pi, out_v = self.nnet(boards)
+                print("Target v shape:", out_pi.shape)
                 l_pi = self.loss_pi(target_pis, out_pi)
                 l_v = self.loss_v(target_vs, out_v)
                 total_loss = l_pi + l_v
