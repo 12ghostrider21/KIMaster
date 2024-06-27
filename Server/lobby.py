@@ -124,7 +124,7 @@ class Lobby:
             "P1": self.p1 is not None,
             "P2": self.p2 is not None,
             "Spectators": len(self.spectator_list),
-            "Game-client": self.game_client is not None,
-            "Game-running": self.game_running,
+            "GameClient": self.game_client is not None,
+            "GameRunning": self.game_running,
             "key": self.key
         }
