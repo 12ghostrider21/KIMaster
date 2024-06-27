@@ -186,6 +186,8 @@ async def test_swap_player_when_occupied(web_socket_uri: str, create_lobby_msg: 
     join_lobby_msg["key"] = res_create["key"]
     join_lobby_msg["pos"] = "p2"
     await send(join_lobby_msg, conn_p2)
+    # p2 sends a broadcast that it joined (101), p1 must remove it from his queue to read the following responses
+    await conn_p1.recv()
     
     # swap from player 1 to player 2
     res_swap = await send(swap_msg, conn_p1)
@@ -356,8 +358,8 @@ async def test_lobby_status(web_socket_uri: str, create_lobby_msg: dict, lobby_s
 
     # test status after creation
     assert res_status_create["response_code"] == 105
-    assert res_status_create["P1"] == 'True'
-    assert res_status_create["P2"] == 'False'
+    assert res_status_create["P1"] == True
+    assert res_status_create["P2"] == False
     assert res_status_create["Spectators"] == 0
     assert res_status_create["key"] == create_res["key"]
     
@@ -369,8 +371,8 @@ async def test_lobby_status(web_socket_uri: str, create_lobby_msg: dict, lobby_s
     await send(join_lobby_as_sp_msg, conn_sp1)
     res_status_sp1 = await send(lobby_status_msg, conn_sp1)
     assert res_status_sp1["response_code"] == 105
-    assert res_status_sp1["P1"] == 'True'
-    assert res_status_sp1["P2"] == 'False'
+    assert res_status_sp1["P1"] == True
+    assert res_status_sp1["P2"] == False
     assert res_status_sp1["Spectators"] == 1
     assert res_status_sp1["key"] == create_res["key"]
 
@@ -378,14 +380,14 @@ async def test_lobby_status(web_socket_uri: str, create_lobby_msg: dict, lobby_s
     await send(join_lobby_as_p2_msg, conn_p2)
     res_status_p2 = await send(lobby_status_msg, conn_p2)
     assert res_status_p2["response_code"] == 105
-    assert res_status_p2["P1"] == 'True'
-    assert res_status_p2["P2"] == 'True'
+    assert res_status_p2["P1"] == True
+    assert res_status_p2["P2"] == True
     assert res_status_p2["Spectators"] == 1
     assert res_status_p2["key"] == create_res["key"]
 
     # test status after Spectator 2 joined
     await send(join_lobby_as_sp_msg, conn_sp2)
-    res_status_sp2 = await send(lobby_status_msg, conn_p1)
+    res_status_sp2 = await send(lobby_status_msg, conn_sp2)
     assert res_status_sp2["response_code"] == 105
     assert res_status_sp2["P1"]
     assert res_status_sp2["P2"]
