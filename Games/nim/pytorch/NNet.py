@@ -27,7 +27,7 @@ args = dotdict({
 class NNetWrapper(NeuralNet):
     def __init__(self, game):
         self.nnet = nnnet(game, args)
-        self.board_size = game.getBoardSize()
+        self.board_rows = game.getBoardSize()
         self.action_size = game.getActionSize()
 
         if args.cuda:
@@ -51,13 +51,19 @@ class NNetWrapper(NeuralNet):
             for _ in t:
                 sample_ids = np.random.randint(len(examples), size=args.batch_size)
                 boards, pis, vs = list(zip(*[examples[i] for i in sample_ids]))
-                boards = torch.FloatTensor(np.array(boards).astype(np.float64))
+                #boards = torch.FloatTensor(np.array(boards).astype(np.float64))
+                boards = boards.view(1, self.board_rows)
                 target_pis = torch.FloatTensor(np.array(pis))
                 target_vs = torch.FloatTensor(np.array(vs).astype(np.float64))
 
                 # predict
                 if args.cuda:
                     boards, target_pis, target_vs = boards.contiguous().cuda(), target_pis.contiguous().cuda(), target_vs.contiguous().cuda()
+
+                # Check dimensions
+                print("Board shape:", boards.shape)
+                print("Target pi shape:", target_pis.shape)
+                print("Target v shape:", target_vs.shape)
 
                 # compute output
                 out_pi, out_v = self.nnet(boards)
@@ -85,7 +91,7 @@ class NNetWrapper(NeuralNet):
         # preparing input
         board = torch.FloatTensor(board.astype(np.float64))
         if args.cuda: board = board.contiguous().cuda()
-        board = board.view(1, self.board_size)
+        board = board.view(1, self.board_rows)
         self.nnet.eval()
         with torch.no_grad():
             pi, v = self.nnet(board)
