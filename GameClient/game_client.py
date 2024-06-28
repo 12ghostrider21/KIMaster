@@ -58,6 +58,7 @@ class GameClient(WebSocketConnectionManager):
                         self.stop_arena()  # Stop the arena
                         winner = -1 if p_pos == "p1" else 1  # Determine the winner based on who surrendered
                         await self.send_response(RCODE.P_SURRENDER, None, {"result": winner})
+                    await self.update()
 
                 # Handling 'valid_moves' command
                 case "valid_moves":
@@ -174,7 +175,6 @@ class GameClient(WebSocketConnectionManager):
                     await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, True)
                     data = {"current_player": player, "it": it, "last_it": len(self.pit.arena.history) - 1}
                     await self.send_response(RCODE.P_UNSTEP, p_pos, data)
-
                 # Handling unknown commands
                 case _:
                     await self.send_response(code=RCODE.COMMANDNOTFOUND, to=p_pos, data={"command_key": command_key})

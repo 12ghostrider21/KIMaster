@@ -31,9 +31,17 @@ class FastAPIServer(AbstractConnectionManager):
 
     # Method to disconnect a WebSocket client
     async def disconnect(self, websocket: WebSocket):
-        self.manager.leave_lobby(websocket)
         if websocket in self.active_connections:
+            lobby: Lobby = self.manager.get_lobby(websocket)
+            if lobby is not None:
+                if lobby.game_running:  # surrender on connection lost
+                    await self.send_cmd(game_client=lobby.game_client,
+                                        command="play",
+                                        command_key="surrender",
+                                        data={"p_pos": self.manager.get_pos_of_client(websocket), "key": lobby.key})
+                    lobby.game_running = False  # override running mode for unresolved surrender
             self.active_connections.remove(websocket)
+        self.manager.leave_lobby(websocket)
         self.msg_builder.remove_client(websocket)  # remove all not connected clients from private language selections
 
     # Main endpoint for WebSocket connections
@@ -214,17 +222,15 @@ class FastAPIServer(AbstractConnectionManager):
                 4: [("P1", True, " not connected!"), ("P2", False, " needs to be empty!")],  # playerai_vs_KIM
                 5: [("P1", False, " needs to be empty!"), ("P2", True, " not connected!")]  # KIM_vs_playerai
             }
-
             for player, should_be_connected, message in mode_checks.get(lobby.mode.value, []):
                 if should_be_connected and getattr(lobby, player.lower()) is None:
                     missing.append([player, message])
                 elif not should_be_connected and getattr(lobby, player.lower()) is not None:
                     missing.append([player, message])
-
             if missing:
-                data = {i[0]: i[1] for i in missing}
-                return await self.send_response(client=client, code=RCODE.L_LOBBYNOTREADY, data=data)
-
+                return await self.send_response(client=client,
+                                                code=RCODE.L_LOBBYNOTREADY,
+                                                data={i[0]: i[1] for i in missing})
         await self.send_cmd(lobby.game_client, "play", command_key, data)
 
     # *****************************************************************************************************************

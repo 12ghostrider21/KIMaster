@@ -4,6 +4,7 @@ from GameClient.arena import Arena
 from GameClient.player import Player
 from Tools.Game_Config.game_config import GameConfig
 
+
 # The Pit class manages the game interactions and states
 class Pit:
     def __init__(self, game_client):
