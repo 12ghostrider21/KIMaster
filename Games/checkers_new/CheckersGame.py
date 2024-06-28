@@ -1,5 +1,6 @@
 from Tools.i_game import IGame, np
 from Games.checkers_new.CheckersLogic import Board
+import math
 
 
 class CheckersGame(IGame):
@@ -22,7 +23,7 @@ class CheckersGame(IGame):
 
     def getActionSize(self):
         """return number of all possible actions"""
-        return self.board.get_action_size()
+        return self.board.get_action_size()[0] + self.board.get_action_size()[1]
 
     def getNextState(self, board, player, action):
         """if player takes action on board, return next (board,player)
@@ -43,10 +44,11 @@ class CheckersGame(IGame):
         legal_moves = b.get_legal_moves(player)
         valid_moves = np.zeros(self.getActionSize(), dtype=int)
         
-        for move in legal_moves:
-            x, y, nx, ny = move
-            idx = self.calcValidMoveIndex(x, y, nx, ny)
-            valid_moves[idx] = 1
+        for moves in legal_moves:
+            for move in moves:
+                x, y, nx, ny = move
+                idx = self.calcValidMoveIndex(b, x, y, nx, ny)
+                valid_moves[idx] = 1
         
         return valid_moves
 
@@ -65,30 +67,43 @@ class CheckersGame(IGame):
 
     def getSymmetries(self, board, pi):
         # mirror, rotational
-        pi_board = np.reshape(pi, (self.n, self.n))
+        length = math.sqrt(len(pi))
+        assert length.is_integer()
+        length = int(length)
+        pi_board = np.reshape(pi, (length, length))
         l = []
 
-        for i in range(1, 5):
-            for flip in [False, True]:
-                newB = np.rot90(board, i)
-                newPi = np.rot90(pi_board, i)
-                if flip:
-                    newB = np.fliplr(newB)
-                    newPi = np.fliplr(newPi)
-                l.append((newB, list(newPi.ravel())))
+        for i in [2, 4]:
+            for fliplr in [False, True]:
+                for flipud in [False, True]:
+                    newB = np.rot90(board, i)
+                    newPi = np.rot90(pi_board, i)
+                    if fliplr and flipud:
+                        continue
+                    if fliplr:
+                        newB = np.fliplr(newB)
+                        newPi = np.fliplr(newPi)
+                    if flipud:
+                        newB = np.flipud(newB)
+                        newPi = np.flipud(newPi)
+                    l.append((newB, list(newPi.ravel())))
 
         return l
-        #return [(board, pi)]
 
-    def translate(self, board: np.array, player: int, index: int) -> any:  # @Justine: falls Dir eine effizientere
-        b = Board(self.n, np.copy(board))  # Berechnung einfällt, kannst Du die Methode gern umschreiben :-)
-        moves = b.get_legal_moves(player)
-        move_indices = [self.calcValidMoveIndex(m[0], m[1], m[2], m[3]) for m in moves]
+    def translate(self, board: np.array, player: int, index: int) -> any:
+        b = Board(self.n, np.copy(board))
+        legal_moves = b.get_legal_moves(player)
+        moves = [m for moves in legal_moves for m in moves]
+        move_indices = [self.calcValidMoveIndex(b, m[0], m[1], m[2], m[3]) for m in moves]
         i = move_indices.index(index)
         return moves[i]
 
-    def calcValidMoveIndex(self, x: int, y: int, nx: int, ny: int):
-        return ((x * self.n + y) * (self.n - 1) * 4 + (nx - x + 1) * 2 + (ny - y + 1)) // 2
+    def calcValidMoveIndex(self, board: Board, x: int, y: int, nx: int, ny: int):
+        index = (((x * self.n + y) * (self.n - 1) * 4 + (nx - x + 1) * 2 + (ny - y + 1)) // 2) - 1
+        padding = board.get_action_size()[1]
+        if index > (self.getActionSize() - padding) // 2:
+            index += padding
+        return index
 
     def stringRepresentation(self, board):
         return board.tostring()

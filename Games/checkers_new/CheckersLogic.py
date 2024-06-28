@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 '''
 Board class for the game of Checkers (Russian variant).
@@ -57,7 +58,11 @@ class Board():
     def get_action_size(self):
         square_from = (self.n * self.n) // 2
         move_vector = (self.n - 1) * 4
-        return square_from * move_vector
+        size = square_from * move_vector
+        sqrt_rounded = round(math.sqrt(size))
+        square = sqrt_rounded * sqrt_rounded
+        padding = square - size
+        return size, padding
 
     def is_within_bounds(self, x, y):
         return 0 <= x < self.n and 0 <= y < self.n
@@ -65,7 +70,7 @@ class Board():
     def get_moves_for_square(self, x, y, captures_only=False):
         piece = self.pieces[x][y]
         assert piece != EMPTY, f"Square ({x}, {y}) is empty."
-        moves = set()
+        moves = []
 
         directions = self.__directions_white if piece == WHITE_MAN else self.__directions_black
         if abs(piece) == 3:  # King can move in all directions
@@ -74,23 +79,23 @@ class Board():
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
             if self.is_within_bounds(nx, ny) and self.pieces[nx][ny] == EMPTY and not captures_only:
-                moves.add((x, y, nx, ny))
+                moves.append((x, y, nx, ny))
             elif self.is_within_bounds(nx + dx, ny + dy) and self.pieces[nx][ny] * piece < 0 and self.pieces[nx + dx][
                 ny + dy] == EMPTY:
                 if not captures_only:   # statt den zwei Zeilen darunter? => ansonsten wenn in beide Richtungen jmd
                     moves.clear()       # schlagen können, nur eine Richtung erfasst als Zug, oder?
                     captures_only = True
 
-                moves.add((x, y, nx + dx, ny + dy))
+                moves.append((x, y, nx + dx, ny + dy))
 
         return moves
 
     def get_legal_moves(self, color):
-        legal_moves = set()
+        legal_moves = []
 
         if self.last_long_capture:
             start_x, start_y = self.last_long_capture
-            legal_moves.update(self.get_moves_for_square(start_x, start_y, True))
+            legal_moves.append(self.get_moves_for_square(start_x, start_y, True))
         else:
             captures_only = False
             for x in range(self.n):
@@ -101,11 +106,11 @@ class Board():
                         if not captures_only and any(self.pieces[ny][nx] == EMPTY for _, _, nx, ny in new_moves): # Bedingung würde für
                             captures_only = True  # normalen Zug doch auch gelten, oder? ..nicht nur für Schlag-Move
                             legal_moves.clear()
-                            legal_moves.update(new_moves)
+                            legal_moves.append(new_moves)
                         elif captures_only:
-                            legal_moves.update(new_moves)
+                            legal_moves.append(new_moves)
 
-        return list(legal_moves)
+        return legal_moves
 
     def has_legal_moves(self, color):
         return bool(self.get_legal_moves(color))
