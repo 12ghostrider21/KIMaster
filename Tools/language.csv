@@ -47,6 +47,7 @@
 216;Time step forward was successful.;Zeitschritt vorwärts erfolgreich angezeigt.;Avancée temporelle réussie.;Paso de tiempo hacia adelante exitoso.
 217;Time step backwards was successful.;Zeitschritt rückwärts erfolgreich angezeigt.;Recul temporel réussi.;Paso de tiempo hacia atrás exitoso.
 218;Current active player retrieved successfully.;Aktueller aktiver Spieler erfolgreich abgerufen.;Joueur actif actuel récupéré avec succès.;Jugador activo actual recuperado con éxito.
+219;Kim is taking their turn and thinking.;Kim ist am Zug und denkt nach.;Kim est en train de jouer et réfléchit.;Kim está tomando su turno y pensando.
 ;;;;
 250;No game client available. Please try again.;Kein Spiel-Client verfügbar. Bitte versuchen Sie es erneut.;Pas de client de jeu disponible. Veuillez réessayer.;No hay cliente de juego disponible. Por favor, inténtelo de nuevo.
 251;Player does not have permission to perform the action.;Spieler hat keine Berechtigung für diese Aktion.;Le joueur n'a pas la permission d'effectuer l'action.;El jugador no tiene permiso para realizar la acción.

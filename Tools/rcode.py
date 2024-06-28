@@ -55,6 +55,7 @@ class RCODE(Enum):
     P_STEP = 216  # Step forward in the timeline
     P_UNSTEP = 217  # Step backward in the timeline
     P_PLAYER = 218  # Sends the current active player
+    P_KIM = 219  # Send message if KIM is at turn
 
     # Play error codes
     P_NOGAMECLIENT = 250  # No game client available; try again

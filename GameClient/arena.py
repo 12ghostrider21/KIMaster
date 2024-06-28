@@ -3,6 +3,7 @@ from typing import Callable
 
 import numpy as np
 
+from GameClient.player import Player
 from Tools.i_game import IGame
 from Tools.rcode import RCODE
 
@@ -15,7 +16,7 @@ class Arena:
         self.time_line_index_p2: int = 0
 
         # configuration storage of current active battle
-        self.history: list = []  # [board, cur_player, iteration]
+        self.history: list[tuple[np.array, int, int]] = []  # [board, cur_player, iteration]
         self.game: IGame | None = None
         self.game_name: str = ""
         self.player1 = None
@@ -39,12 +40,17 @@ class Arena:
 
         while self.running and self.game.getGameEnded(board, cur_player) == 0:
             await asyncio.sleep(0.0001)  # is needed because of optimiser!
-            self.history.append([board, cur_player, it])
+            self.history.append((board, cur_player, it))
             self.cur_player = cur_player
-            await self.game_client.send_response(code=RCODE.P_PLAYER, to=None, data={"cur_player": cur_player})
+            p = players[cur_player + 1]
+
+            # Broadcast current board and active player
+            if p.__func__ == Player.playAI:  # send Different message if KIM is at turn
+                await self.game_client.send_response(code=RCODE.P_KIM, to=None, data={"cur_player": "KIM"})
+            else:
+                await self.game_client.send_response(code=RCODE.P_PLAYER, to=None, data={"cur_player": cur_player})
             await self.game_client.broadcast_board(board, cur_player, self.game_name, False)
 
-            p = players[cur_player + 1]
             canonical_board = self.game.getCanonicalForm(board, cur_player)
             valids = self.game.getValidMoves(canonical_board, 1)
             if not any(valids[:-1]):  # check if a valid move is possible
@@ -89,7 +95,7 @@ class Arena:
                 it += 1
 
         if self.running:
-            self.history.append([board, cur_player, it])
+            self.history.append((board, cur_player, it))
             await self.game_client.broadcast_board(board, cur_player, self.game_name, False)
             await self.game_client.send_response(RCODE.P_GAMEOVER, None,
                                                  {"result": round(
