@@ -62,16 +62,15 @@ class NimGame(IGame):
     def getSymmetries(self, board, pi):
         """rows are interchangeable"""
 
-        """@
         symmetries = []
         for perm in self.permute(list(range(self.rows))):
             new_board = board[perm]
-            new_pi = pi.reshape(self.rows, -1)[perm].flatten()
+            new_pi = np.reshape(pi, (self.rows, -1))[perm].flatten()
             symmetries.append((new_board, new_pi))
         return symmetries
-        """
+        
 
-        b = Board(self.rows, np.copy(board))
+        """b = Board(self.rows, np.copy(board))
 
         # reshaping the valid actions based on their row indices to swap rows accordingly
         valids = b.get_legal_moves()
@@ -86,7 +85,8 @@ class NimGame(IGame):
         sym_board = self.permute(b.pieces.tolist())
         sym_pi = self.permute(reshaped_pi.tolist())
         symmetries = list(zip(sym_board, sym_pi))
-        return symmetries
+        return symmetries"""
+
 
     def permute(self, array):
         """used to swap all rows in all possible permutations/ symmetries"""

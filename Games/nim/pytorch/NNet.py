@@ -59,14 +59,8 @@ class NNetWrapper(NeuralNet):
                 if args.cuda:
                     boards, target_pis, target_vs = boards.contiguous().cuda(), target_pis.contiguous().cuda(), target_vs.contiguous().cuda()
 
-                # Check dimensions
-                print("Board shape:", boards.shape)
-                print("Target pi shape:", target_pis.shape)
-                print("Target v shape:", target_vs.shape)
-
                 # compute output
                 out_pi, out_v = self.nnet(boards)
-                print("Target v shape:", out_pi.shape)
                 l_pi = self.loss_pi(target_pis, out_pi)
                 l_v = self.loss_v(target_vs, out_v)
                 total_loss = l_pi + l_v
