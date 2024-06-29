@@ -52,6 +52,8 @@ class Coach():
         board = self.game.getInitBoard()
         self.curPlayer = 1
         episodeStep = 0
+        #print(self.game.drawTerminal(board, False, self.curPlayer))
+        #print(self.game.getValidMoves(board, self.curPlayer))
         while True:
             episodeStep += 1
             canonicalBoard = self.game.getCanonicalForm(board, self.curPlayer)
@@ -63,7 +65,9 @@ class Coach():
 
             a = np.random.choice(len(pi), p=pi)
             action = self.game.translate(canonicalBoard, 1, a)
+            #print("actionCoach", action)
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
+            #print(self.game.drawTerminal(board, False, self.curPlayer))
             r = self.game.getGameEnded(board, self.curPlayer)
 
             if r != 0:

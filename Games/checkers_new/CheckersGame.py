@@ -8,10 +8,15 @@ class CheckersGame(IGame):
     Checkers Game class implementing the alpha-zero-general Game interface.
     """
 
-    def __init__(self, n=None):
+    def __init__(self, n: int = None):
         self.board = Board(n)
         self.n = n or self.board.n
-        pass
+        self.turn = 1  # reason: CheckersLogic get_legal_moves
+        self.board_history = []
+        self.board_history.append(self.board.pieces)
+        self.turn_history = []
+        self.turn_history.append(self.turn)
+        self.redundant = 0
 
     def getInitBoard(self):
         """return initial board (numpy array)"""
@@ -19,59 +24,75 @@ class CheckersGame(IGame):
         return b.pieces
 
     def getBoardSize(self):
-        return (self.n, self.n)
+        return self.n, self.n
 
     def getActionSize(self):
         """return number of all possible actions"""
         return self.board.get_action_size()[0] + self.board.get_action_size()[1]
 
-    def getNextState(self, board, player, action):
+    def getNextState(self, board: np.array, player: int, action: tuple[int, int, int, int]):
         """if player takes action on board, return next (board,player)
           action must be a valid move"""
+        self.calcTurn(board)
         b = Board(self.n, np.copy(board))
-        b.execute_action(action, player)
+        pre_amount_pieces = np.count_nonzero(b.pieces)
+        b.execute_action(action, player, self.turn)
+        post_amount_pieces = np.count_nonzero(b.pieces)
+        if pre_amount_pieces == post_amount_pieces:
+            self.redundant += 1
+        else:
+            self.redundant = 0
+
+        print("self.redundant", self.redundant)
 
         if b.last_long_capture:
-            next_actions = b.get_moves_for_square(*b.last_long_capture, captures_only=True)
+            next_actions = b.get_moves_for_square(*b.last_long_capture, self.turn, captures_only=True)
             if next_actions:
-                return (b.pieces, player)  # Player continues with the same board state
+                self.board_history.append(b.pieces * self.turn)
+                self.turn_history.append(self.turn)
+                return b.pieces, player  # Player continues with the same board state
+        self.turn = -self.turn
+        self.board_history.append(b.pieces * self.turn)
+        self.turn_history.append(self.turn)
+        return b.pieces, -player
 
-        return (b.pieces, -player)
-
-    def getValidMoves(self, board, player):
+    def getValidMoves(self, board: np.array, player: int):
         """returns a binary np.array (1 = still valid action, 0 = invalid)"""
+        self.calcTurn(board)
         b = Board(self.n, pieces=np.copy(board))
-        legal_moves = b.get_legal_moves(player)
+        legal_moves = b.get_legal_moves(player, self.turn)
         valid_moves = np.zeros(self.getActionSize(), dtype=int)
-        
+
         for moves in legal_moves:
             for move in moves:
-                x, y, nx, ny = move
-                idx = self.calcValidMoveIndex(b, x, y, nx, ny)
-                valid_moves[idx] = 1
-        
+                index = self.calcValidMoveIndex(b, move)
+                valid_moves[index] = 1
+
         return valid_moves
 
-    def getGameEnded(self, board, player):
+    def getGameEnded(self, board: np.array, player: int):
         """returns 0 if not ended, 1 if player 1 won, -1 if player 1 lost"""
+        if self.redundant == 50:
+            return 1e-4  # draw
+        self.calcTurn(board)
         b = Board(self.n, np.copy(board))
-        if b.has_legal_moves(player):
+        if b.has_legal_moves(player, self.turn):
             return 0
-        if b.has_legal_moves(-player):
+        if b.has_legal_moves(-player, self.turn):
             return -1
         return 1
 
-    def getCanonicalForm(self, board, player):
+    def getCanonicalForm(self, board: np.array, player: int):
         """Board independent of the current player."""
         return player * board
 
-    def getSymmetries(self, board, pi):
+    def getSymmetries(self, board: np.array, pi: list):
         # mirror, rotational
         length = math.sqrt(len(pi))
-        assert length.is_integer()
+        assert length.is_integer()  # otherwise padding would be wrong
         length = int(length)
         pi_board = np.reshape(pi, (length, length))
-        l = []
+        lst = []
 
         for i in [2, 4]:
             for fliplr in [False, True]:
@@ -86,24 +107,55 @@ class CheckersGame(IGame):
                     if flipud:
                         newB = np.flipud(newB)
                         newPi = np.flipud(newPi)
-                    l.append((newB, list(newPi.ravel())))
+                    lst.append((newB, list(newPi.ravel())))
 
-        return l
+        return lst
 
     def translate(self, board: np.array, player: int, index: int) -> any:
+        """
+        print("len(board_history)_pre", len(self.board_history))
+        # print("board_history_pre", self.board_history)
+        print("self.turn_history_pre", self.turn_history)
+        print("self.turn_pre", self.turn)
+        """
+        self.calcTurn(board)
+        """
+        print("len(board_history)_post", len(self.board_history))
+        # print("board_history_pre", self.board_history)
+        print("self.turn_history_post", self.turn_history)
+        print("self.turn_post", self.turn)
+        """
         b = Board(self.n, np.copy(board))
-        legal_moves = b.get_legal_moves(player)
+        legal_moves = b.get_legal_moves(player, self.turn)
         moves = [m for moves in legal_moves for m in moves]
-        move_indices = [self.calcValidMoveIndex(b, m[0], m[1], m[2], m[3]) for m in moves]
+        move_indices = [self.calcValidMoveIndex(b, m) for m in moves]
+        # print("move_indices", move_indices)
         i = move_indices.index(index)
         return moves[i]
 
-    def calcValidMoveIndex(self, board: Board, x: int, y: int, nx: int, ny: int):
-        index = (((x * self.n + y) * (self.n - 1) * 4 + (nx - x + 1) * 2 + (ny - y + 1)) // 2) - 1
+    def calcValidMoveIndex(self, board: Board, move: tuple[int, int, int, int]):
+        row, col, nrow, ncol = move
+        index = ((((row * self.n + col) * (self.n - 1) * 4 + (nrow - row + 1) * 2 + (ncol - col + 1) * 2) // 2) +
+                 (self.n - 3))
         padding = board.get_action_size()[1]
-        if index > (self.getActionSize() - padding) // 2:
+        if index > ((self.getActionSize() - padding) // 2):
             index += padding
-        return index
+        return index - 1  # because array starts with index 0
+
+    def calcTurn(self, board: np.array):
+        """
+        Calculating turn based on occurrence of board in self.board_history.
+        A simple switch of turns in getNextState without having calcTurn is not enough because of function "undo".
+        """
+        index = -1
+        for i, b in enumerate(self.board_history):
+            if np.array_equal(b, board):
+                index = i
+        # print("indexCalc", index)
+        if index != -1:
+            self.board_history = self.board_history[:(index + 1)]
+            self.turn_history = self.turn_history[:(index + 1)]
+            self.turn = self.turn_history[-1]
 
     def stringRepresentation(self, board):
         return board.tostring()
@@ -122,11 +174,11 @@ class CheckersGame(IGame):
                     if piece == 0:
                         row_str += '   |'
                     elif piece == 1:
-                        row_str += ' o |'  # o for Man
+                        row_str += ' O |'  # O for Non_King
                     elif piece == 3:
                         row_str += ' @ |'  # @ for King
                     elif piece == -1:
-                        row_str += ' x |'  # x for opponent's Man
+                        row_str += ' X |'  # X for opponent's Non_King
                     elif piece == -3:
                         row_str += ' K |'  # K for opponent's King
                 output += row_str + '\n' + horizontal_border
@@ -165,7 +217,7 @@ class CheckersGame(IGame):
 
                 # Draw grid
                 pygame.draw.rect(surface, square_color,
-                                 (col * SQUARESIZE, row * SQUARESIZE, SQUARESIZE, SQUARESIZE))  #, 1
+                                 (col * SQUARESIZE, row * SQUARESIZE, SQUARESIZE, SQUARESIZE))  # 1
 
                 piece = board[row][col]
                 center = (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE + SQUARESIZE // 2)

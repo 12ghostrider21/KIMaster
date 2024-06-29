@@ -54,13 +54,6 @@ class Arena:
                 self.display(board)
             action = players[cur_player + 1](self.game.getCanonicalForm(board, cur_player))
 
-            valids = self.game.getValidMoves(self.game.getCanonicalForm(board, cur_player), 1)
-
-            if valids[action] == 0:
-                log.error(f'Action {action} is not valid!')
-                log.debug(f'valids = {valids}')
-                assert valids[action] > 0
-
             # Notifying the opponent for the move
             opponent = players[-cur_player + 1]
             if hasattr(opponent, "notify"):

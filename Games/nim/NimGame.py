@@ -44,9 +44,9 @@ class NimGame(IGame):
         valids_new = b.get_legal_moves()
 
         b.pieces = np.copy(board)  # running game
-        valids_running = b.get_legal_moves()
+        valids_input = b.get_legal_moves()
 
-        return np.array([tuple(item) in valids_running for item in valids_new])
+        return np.array([tuple(item) in valids_input for item in valids_new])
 
     def getGameEnded(self, board, player):
         """returns 0 if not ended, 1 if player 1 won, -1 if player 1 lost"""
@@ -62,31 +62,30 @@ class NimGame(IGame):
     def getSymmetries(self, board, pi):
         """rows are interchangeable"""
 
+        """@
         symmetries = []
         for perm in self.permute(list(range(self.rows))):
             new_board = board[perm]
             new_pi = np.reshape(pi, (self.rows, -1))[perm].flatten()
             symmetries.append((new_board, new_pi))
         return symmetries
-        
+        """
+        fresh_board = Board(self.rows)
 
-        """b = Board(self.rows, np.copy(board))
-
-        # reshaping the valid actions based on their row indices to swap rows accordingly
-        valids = b.get_legal_moves()
         reshaped_pi = np.empty(self.rows, dtype=object)
-        for i in range(self.rows):
-            reshaped_pi[i] = []
-        for i in range(len(valids)):
-            action = valids[i]
-            probability = pi[i]
-            np.append(reshaped_pi[action[0]], probability)
 
-        sym_board = self.permute(b.pieces.tolist())
+        start_index = 0
+        for i, num_elements in enumerate(fresh_board.pieces):
+            reshaped_pi[i] = list(pi[start_index:(start_index + num_elements)])
+            start_index += num_elements
+
+        sym_board = self.permute(board.tolist())
         sym_pi = self.permute(reshaped_pi.tolist())
-        symmetries = list(zip(sym_board, sym_pi))
-        return symmetries"""
-
+        sym_pi_flat = []
+        for i in range(len(sym_pi)):
+            sym_pi_flat.append([prob for sublist in sym_pi[i] for prob in sublist])
+        symmetries = list(zip(sym_board, sym_pi_flat))
+        return symmetries
 
     def permute(self, array):
         """used to swap all rows in all possible permutations/ symmetries"""
