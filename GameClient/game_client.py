@@ -133,7 +133,13 @@ class GameClient(WebSocketConnectionManager):
 
                 # Handling 'blunder' command (currently not implemented)
                 case "blunder":
-                    pass
+                    if self.is_arena_running():
+                        await self.send_response(RCODE.P_STILLRUNNING, p_pos)
+                        continue
+                    print(read_object)
+                    if len(self.pit.arena.blunder) == 0:
+                        await self.send_response(RCODE.P_NOBLUNDER, p_pos)
+                        continue
 
                 # Handling 'timeline' command
                 case "timeline":

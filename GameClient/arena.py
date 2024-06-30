@@ -1,7 +1,6 @@
 import asyncio
-from typing import Callable
-
 import numpy as np
+from typing import Callable
 
 from GameClient.player import Player
 from Tools.i_game import IGame
@@ -17,18 +16,20 @@ class Arena:
 
         # configuration storage of current active battle
         self.history: list[tuple[np.array, int, int]] = []  # [board, cur_player, iteration]
+        self.blunder: list = []  # saves blunder values for each index
+        self.cur_player: int = 1  # default start value
+        self.game_name: str = ""  # needed in some response messages
         self.game: IGame | None = None
-        self.game_name: str = ""
         self.player1 = None
         self.player2 = None
-        self.cur_player: int = 1    # default start value
 
     def set_arena(self, game: IGame, game_name: str, play1: Callable, play2: Callable):
         self.game = game
         self.game_name = game_name
         self.player1 = play1
         self.player2 = play2
-        self.history.clear()    # reset history on new game configuration
+        self.history.clear()  # reset history on new game configuration
+        self.blunder.clear()  # reset blunder on new game configuration
 
     async def play(self, board: np.array = None, cur_player: int = 1, it: int = 0, evaluation: bool = False):
         self.running = True
@@ -68,7 +69,7 @@ class Arena:
             ai = False
             while self.running:
                 await asyncio.sleep(0.0001)  # is needed because of optimiser!
-                action = p()    # action can be (None) no move set, (int, tuple) on play action, (bool) ai_move request
+                action = p()  # action can be (None) no move set, (int, tuple) on play action, (bool) ai_move request
                 if action is None:
                     continue
                 if isinstance(action, bool):  # do a request to server with ai move
@@ -103,9 +104,9 @@ class Arena:
             self.history.append((board, cur_player, it))
             await self.game_client.broadcast_board(board, cur_player, self.game_name, False)
             await self.game_client.send_response(RCODE.P_GAMEOVER, None,
-                                                 {"result": round(
-                                                     cur_player * self.game.getGameEnded(board, cur_player)),
-                                                     "turn": it})
+                                                 {"result":
+                                                  round(cur_player * self.game.getGameEnded(board, cur_player)),
+                                                  "turn": it})
         self.time_line_index_p1 = len(self.history)  # update index to history length
         self.time_line_index_p2 = len(self.history)  # update index to history length
         self.running = False

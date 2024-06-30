@@ -50,7 +50,7 @@ class SocketServer(AbstractConnectionManager):
         await self.send_cmd(game_client, "play", "make_move",
                             {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
 
-    async def blunder(self, game: IGame, board: np.array, it: int, mcts, cur_player: int, action: any):
+    async def blunder(self, game: IGame, board: np.array, it: int, mcts, cur_player: int, action: any, game_client: WebSocket):
         func = lambda x: mcts.get_action_prob(x, temp=1)
         # probability vector
         action_probs = np.array(func(game.getCanonicalForm(board, cur_player)))
@@ -63,10 +63,12 @@ class SocketServer(AbstractConnectionManager):
         is_blunder = action not in good_actions
         if is_blunder:
             blunder = (action, it, cur_player)
-            pass
-            # code to submit blunder somewhere and storing it there:
-            # sending it back to the gameClient? Storing it in GameClient? Storing it in arena?
-            # storing it in socketServer as dict {gameClient: blunderList}? (most likely not..)
+            print(blunder)
+            return
+            await self.send_cmd(game_client=game_client,
+                                command="play",
+                                command_key="blunder",
+                                data={"blunder": blunder})
 
     async def websocket_endpoint(self, websocket: WebSocket):
         await self.connect(websocket)
@@ -109,8 +111,15 @@ class SocketServer(AbstractConnectionManager):
                         mcts = ai_funcs.get(lobby.game).get(lobby.difficulty)
                         await asyncio.create_task(self.ai_Action(game, board, it, mcts, cur_player, lobby.game_client))
                     case "blunder":
-                        # actually quite the same code as case "ai_move" just with call of self.blunder in the end
-                        pass
+                        game = game_instances[command_key]
+                        default = game.getInitBoard()
+                        array = read_object["board"]
+                        board = np.array(array, dtype=default.dtype).reshape(default.shape)
+                        it = int(read_object["it"])
+                        mcts = ai_funcs.get(lobby.game).get(lobby.difficulty)
+                        cur_player = int(read_object.get("cur_player"))
+                        action = read_object["move"]
+                        await asyncio.create_task(self.blunder(game, board, it, mcts, cur_player, action, lobby.game_client))
                     case "draw":
                         array: np.array = np.array(read_object.get("board"))
                         cur_player: int = read_object.get("cur_player")

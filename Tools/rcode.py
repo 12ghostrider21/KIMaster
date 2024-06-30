@@ -76,6 +76,7 @@ class RCODE(Enum):
     P_NOGAMEINIT = 266  # Create a game first
     P_EVALNUMOVER = 267  # The selected number is too high
     P_NOTYOURTURN = 268  # Player tried to make a move out of turn
+    P_NOBLUNDER = 269  # Nothing in history to define blunder
 
     # Debug codes
     D_CONTAINER = 300  # List all active containers
