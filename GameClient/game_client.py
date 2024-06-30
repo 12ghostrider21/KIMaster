@@ -62,19 +62,12 @@ class GameClient(WebSocketConnectionManager):
 
                 # Handling 'valid_moves' command
                 case "valid_moves":
-                    pos = read_object.get("pos")
-                    if pos:
-                        try:
-                            pos = int(pos)  # Validate position input
-                        except ValueError:
-                            await self.send_response(RCODE.P_INVALIDPOS, p_pos, {"pos": pos})
-                            continue
-                        if pos < 0:
-                            await self.send_response(RCODE.P_INVALIDPOS, p_pos)
-                            continue
+                    if not self.is_arena_running():
+                        await self.send_response(RCODE.P_NOTRUNNING, p_pos)
+                        continue
                     hist: tuple = self.pit.get_last_hist_entry()  # Get the last history entry from the Pit
                     await self.send_board(hist[0], hist[1], self.pit.arena.game_name, True)
-                    await self.send_response(RCODE.P_MOVES, pos,
+                    await self.send_response(RCODE.P_MOVES, p_pos,
                                              {"moves": self.pit.arena.game.getValidMoves(hist[0], hist[1]).tolist()})
 
                 # Handling 'make_move' command
