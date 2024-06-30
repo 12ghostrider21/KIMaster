@@ -99,3 +99,23 @@ class Pit:
             state, player, iteration = self.arena.history[self.arena.time_line_index_p2]
 
         return state, player, iteration
+
+    def set_blunder(self, blunder: list):
+        for b in blunder:
+            self.arena.blunder.append(b)
+
+    def get_blunder_payload(self) -> dict:
+        data = {}
+        for bh in self.arena.blunder_history:
+            array, player, index, move = bh
+            data[index] = (array.tolist(), player, move)
+        return data
+
+    def get_blunder(self) -> dict:
+        data = {"blunder": []}
+        for b in self.arena.blunder:
+            x = {"action": b[0],
+                 "it": b[1],
+                 "player": b[2]}
+            data["blunder"].append(x)
+        return data

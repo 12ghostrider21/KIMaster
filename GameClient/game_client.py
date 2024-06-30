@@ -133,13 +133,32 @@ class GameClient(WebSocketConnectionManager):
 
                 # Handling 'blunder' command (currently not implemented)
                 case "blunder":
+                    # if arena is running -> break
                     if self.is_arena_running():
                         await self.send_response(RCODE.P_STILLRUNNING, p_pos)
                         continue
-                    print(read_object)
-                    if len(self.pit.arena.blunder) == 0:
+                    # if no action was played
+                    if len(self.pit.arena.blunder_history) == 0:
                         await self.send_response(RCODE.P_NOBLUNDER, p_pos)
                         continue
+                    # check if blunder gets updated from server
+                    blunder = read_object.get("blunder")
+                    if blunder is not None:
+                        self.pit.set_blunder(blunder)
+                        self.pit.arena.blender_calculation = False  # blunder received deactivate function
+                    # only one create request of blunder possible
+                    if self.pit.arena.blender_calculation:
+                        await self.send_response(code=RCODE.P_BLUNDER, to=p_pos)
+                        continue
+                    # request blunder create on first request
+                    if len(self.pit.arena.blunder) == 0:
+                        self.pit.arena.blender_calculation = True
+                        await self.send_response(code=RCODE.P_CREATEBLUNDER, to=p_pos)
+                        await self.send_cmd(command="blunder", command_key=self.pit.arena.game_name,
+                                            p_pos=p_pos, data=self.pit.get_blunder_payload())
+                        continue
+                    # successfully requested blunder
+                    await self.send_response(code=RCODE.P_BLUNDERLIST, to=p_pos, data=self.pit.get_blunder())
 
                 # Handling 'timeline' command
                 case "timeline":

@@ -16,7 +16,9 @@ class Arena:
 
         # configuration storage of current active battle
         self.history: list[tuple[np.array, int, int]] = []  # [board, cur_player, iteration]
+        self.blunder_history: list[tuple[np.array, int, int, any]] = []  # [board, cur_player, move, iteration]
         self.blunder: list = []  # saves blunder values for each index
+        self.blender_calculation: bool = False  # is true if a calculation request was send
         self.cur_player: int = 1  # default start value
         self.game_name: str = ""  # needed in some response messages
         self.game: IGame | None = None
@@ -65,8 +67,8 @@ class Arena:
             #                                         data={"result": winner})
             #    continue
 
-            to = "p1" if cur_player == 1 else "p2"
-            ai = False
+            to: str = "p1" if cur_player == 1 else "p2"
+            ai: bool = False
             while self.running:
                 await asyncio.sleep(0.0001)  # is needed because of optimiser!
                 action = p()  # action can be (None) no move set, (int, tuple) on play action, (bool) ai_move request
@@ -85,12 +87,7 @@ class Arena:
                 try:
                     board, cur_player = self.game.getNextState(board, cur_player, action)
                     if not ai:
-                        await self.game_client.send_cmd(command="blunder", command_key=self.game_name, p_pos=to,
-                                                        data={"board": board.tolist(),
-                                                              "cur_player": cur_player,
-                                                              "it": it,
-                                                              "move": action,
-                                                              "key": self.game_client.key})
+                        self.blunder_history.append((board, cur_player, it, action))
                     break
                 except ValueError:
                     if ai:

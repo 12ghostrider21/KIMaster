@@ -50,25 +50,24 @@ class SocketServer(AbstractConnectionManager):
         await self.send_cmd(game_client, "play", "make_move",
                             {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
 
-    async def blunder(self, game: IGame, board: np.array, it: int, mcts, cur_player: int, action: any, game_client: WebSocket):
+    async def blunder(self, game: IGame, mcts, actions: any, game_client: WebSocket, p_pos: str):
         func = lambda x: mcts.get_action_prob(x, temp=1)
-        # probability vector
-        action_probs = np.array(func(game.getCanonicalForm(board, cur_player)))
+        blunder_list = []
+        for index, board, player, action in actions:
 
-        # using mean as reference whether a move is good or not so
-        mean = 1.0 / np.count_nonzero(action_probs)
-        good_actions_indices = np.where(action_probs >= mean)[0]
-        good_actions = [game.translate(board, cur_player, a) for a in good_actions_indices]
+            # probability vector
+            action_probs = np.array(func(game.getCanonicalForm(board, player)))
 
-        is_blunder = action not in good_actions
-        if is_blunder:
-            blunder = (action, it, cur_player)
-            print(blunder)
-            return
-            await self.send_cmd(game_client=game_client,
-                                command="play",
-                                command_key="blunder",
-                                data={"blunder": blunder})
+            # using mean as reference whether a move is good or not so
+            mean = 1.0 / np.count_nonzero(action_probs)
+            good_actions_indices = np.where(action_probs >= mean)[0]
+            good_actions = [game.translate(board, player, a) for a in good_actions_indices]
+            if action not in good_actions:  # is blunder
+                blunder_list.append((action, index, player))
+        await self.send_cmd(game_client=game_client,
+                            command="blunder",
+                            command_key="blunder",
+                            data={"blunder": blunder_list, "p_pos": p_pos})
 
     async def websocket_endpoint(self, websocket: WebSocket):
         await self.connect(websocket)
@@ -97,7 +96,7 @@ class SocketServer(AbstractConnectionManager):
                 command: str = read_object.get("command")
                 command_key: str = read_object.get("command_key")
                 match command:
-                    case "update":
+                    case "update":  # update lobby_states
                         game_running: bool = bool(read_object.get("game_running"))
                         lobby.game_running = game_running
 
@@ -113,13 +112,13 @@ class SocketServer(AbstractConnectionManager):
                     case "blunder":
                         game = game_instances[command_key]
                         default = game.getInitBoard()
-                        array = read_object["board"]
-                        board = np.array(array, dtype=default.dtype).reshape(default.shape)
-                        it = int(read_object["it"])
                         mcts = ai_funcs.get(lobby.game).get(lobby.difficulty)
-                        cur_player = int(read_object.get("cur_player"))
-                        action = read_object["move"]
-                        await asyncio.create_task(self.blunder(game, board, it, mcts, cur_player, action, lobby.game_client))
+                        actions = []  # reconstruct blunder_history from payload
+                        for k, v in read_object.items():
+                            if k not in ["command", "command_key", "to", "key"]:
+                                payload = (k, np.array(v[0], dtype=default.dtype).reshape(default.shape), v[1], v[2])
+                                actions.append(payload)
+                        await asyncio.create_task(self.blunder(game, mcts, actions, lobby.game_client, p_pos))
                     case "draw":
                         array: np.array = np.array(read_object.get("board"))
                         cur_player: int = read_object.get("cur_player")

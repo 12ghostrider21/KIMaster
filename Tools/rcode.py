@@ -48,7 +48,6 @@ class RCODE(Enum):
     P_MOVES = 208  # List of possible moves has been successfully retrieved
     P_VALIDUNDO = 209  # A valid undo action has been performed
     P_SURRENDER = 210  # A player has surrendered successfully
-    P_BLUNDER = 211  # A blunder (serious mistake) has been identified in the play
     P_BLUNDERLIST = 212  # List of blunders has been successfully retrieved
     P_TIMELINE = 214  # Timeline of events in the game has been successfully retrieved
     P_NOVALIDMOVES = 215  # Player does not have any valid moves left
@@ -56,6 +55,7 @@ class RCODE(Enum):
     P_UNSTEP = 217  # Step backward in the timeline
     P_PLAYER = 218  # Sends the current active player
     P_KIM = 219  # Send message if KIM is at turn
+    P_CREATEBLUNDER = 220  # Creating blunder for last game... taking some time.
 
     # Play error codes
     P_NOGAMECLIENT = 250  # No game client available; try again
@@ -77,6 +77,7 @@ class RCODE(Enum):
     P_EVALNUMOVER = 267  # The selected number is too high
     P_NOTYOURTURN = 268  # Player tried to make a move out of turn
     P_NOBLUNDER = 269  # Nothing in history to define blunder
+    P_BLUNDER = 270  # Server is working on blunder, please wait!
 
     # Debug codes
     D_CONTAINER = 300  # List all active containers
