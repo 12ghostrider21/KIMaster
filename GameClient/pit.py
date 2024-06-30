@@ -36,7 +36,7 @@ class Pit:
             if pos == "p1":
                 self.player1.move = move
             # Set the move for player 2
-            if pos == "p2":
+            elif pos == "p2":
                 self.player2.move = move
             return True  # It is the player's turn
         return False  # Not the player's turn

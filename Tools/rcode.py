@@ -8,7 +8,6 @@ class RCODE(Enum):
     INVALIDLANGUAGE = 1  # Selected language not found.
 
     # General error codes
-    INTERNALERROR = 50  # Critical internal error
     INVALIDJSON = 51  # The received message is not a valid JSON
     COMMANDNOTFOUND = 52  # The specified command does not exist
     INVALIDGAME = 53  # The specified game does not exist
@@ -31,7 +30,6 @@ class RCODE(Enum):
     L_CLIENTNOTINLOBBY = 153  # The specified client is not in the lobby
     L_POSUNKNOWN = 154  # The position within the lobby is unknown
     L_POSOCCUPIED = 155  # The position within the lobby is already occupied
-    L_LOBBYKEYINVALID = 156  # Invalid or missing lobby key
     L_LOBBYNOTREADY = 157  # Lobby does not have enough players to start
     L_NOLEAVEACTIVPLAYER = 158  # Client cannot leave an active game as a player
     L_NOSWAP = 159  # Client cannot swap positions in an active game as a player
@@ -39,11 +37,9 @@ class RCODE(Enum):
 
     # Play success codes
     P_ARENAINIT = 200  # Arena has been successfully initialized
-    P_EVAL = 201  # Play evaluation has been successfully performed
+    #P_EVAL = 201  # Play evaluation has been successfully performed
     P_GAMEOVER = 202  # Game has ended successfully
-    P_EVALOVER = 203  # Evaluation process has concluded successfully
-    P_BOARD = 205  # Game board has been successfully retrieved or updated
-    P_REPRESENTATION = 206  # Game representation has been successfully retrieved
+    #P_EVALOVER = 203  # Evaluation process has concluded successfully
     P_VALIDMOVE = 207  # A valid move has been made
     P_MOVES = 208  # List of possible moves has been successfully retrieved
     P_VALIDUNDO = 209  # A valid undo action has been performed
@@ -70,11 +66,11 @@ class RCODE(Enum):
     P_INVALIDUNDO = 259  # The undo action attempted is invalid
     P_NOTIMELINE = 260  # No timeline available
     P_INVALIDTIMELINE = 261  # The specified timeline is invalid
-    P_NOEVALUATION = 262  # No evaluation available
-    P_INVALIDEVALUATION = 263  # The evaluation attempted is invalid
-    P_GAMENOTAVAILABLE = 265  # The specified game is not available
+    #P_NOEVALUATION = 262  # No evaluation available
+    #P_INVALIDEVALUATION = 263  # The evaluation attempted is invalid
+    #P_GAMENOTAVAILABLE = 265  # The specified game is not available
     P_NOGAMEINIT = 266  # Create a game first
-    P_EVALNUMOVER = 267  # The selected number is too high
+    #P_EVALNUMOVER = 267  # The selected number is too high
     P_NOTYOURTURN = 268  # Player tried to make a move out of turn
     P_NOBLUNDER = 269  # Nothing in history to define blunder
     P_BLUNDER = 270  # Server is working on blunder, please wait!
