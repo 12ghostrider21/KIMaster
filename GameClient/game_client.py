@@ -103,7 +103,7 @@ class GameClient(WebSocketConnectionManager):
                         await self.send_response(RCODE.P_INVALIDUNDO, p_pos, {"num": num})
                         continue
                     if num <= 0:
-                        await self.send_response(RCODE.P_INVALIDUNDO, p_pos)
+                        await self.send_response(RCODE.P_INVALIDUNDO, p_pos, {"num": num})
                         continue
                     state, player, it = self.pit.undo(num)  # Perform the undo operation
                     if state is None or player is None or it is None:
@@ -123,6 +123,8 @@ class GameClient(WebSocketConnectionManager):
                         continue
                     self.pit.arena.history.clear()  # Clear the game history
                     self.start_arena()
+                    await self.send_response(code=RCODE.P_ARENAINIT, to=p_pos)
+                    await self.update()  # Update the state
 
                 # Handling 'blunder' command (currently not implemented)
                 case "blunder":

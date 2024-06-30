@@ -3,7 +3,7 @@ from enum import Enum
 
 # Define an enumeration for response codes (RCODE) used to indicate various statuses and errors
 class RCODE(Enum):
-    # General success codes
+    # Language change codes
     LANGUAGECHANGED = 0  # Language changed successfully.
     INVALIDLANGUAGE = 1  # Selected language not found.
 
@@ -61,7 +61,6 @@ class RCODE(Enum):
     P_STILLRUNNING = 254  # Game is still running; requested action cannot be performed
     P_NOMOVE = 255  # No move has been made
     P_INVALIDMOVE = 256  # The move made is invalid
-    P_INVALIDPOS = 257  # The specified position is invalid
     P_NOUNDO = 258  # No undo action available
     P_INVALIDUNDO = 259  # The undo action attempted is invalid
     P_NOTIMELINE = 260  # No timeline available

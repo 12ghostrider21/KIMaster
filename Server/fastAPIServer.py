@@ -20,7 +20,7 @@ class FastAPIServer(AbstractConnectionManager):
         self.importer: Importer = importer
         self.__command_mask: list[str] = ["command", "command_key", "pos", "key", "mode", "game", "difficulty", "num",
                                           "move", "lang"]
-        self.__play_mask: list[str] = ["create", "valid_moves", "make_move", "undo_move", "surrender", "quit",
+        self.__play_mask: list[str] = ["create", "valid_moves", "make_move", "undo_move", "surrender",
                                        "new_game", "blunder", "timeline", "step", "unstep", "evaluate", "stop_evaluate",
                                        "games"]
 
@@ -150,7 +150,7 @@ class FastAPIServer(AbstractConnectionManager):
                     return await self.send_response(client=client, code=RCODE.L_POSUNKNOWN, data={"pos": pos})
                 if not self.manager.swap_to(pos, client):
                     return await self.send_response(client=client, code=RCODE.L_POSOCCUPIED, data={"pos": pos})
-                await self.send_response(client=client, code=RCODE.L_SWAPPED, data={"pos": pos})
+                await self.broadcast_response(client_list=lobby.get(None), code=RCODE.L_SWAPPED, data={"pos": pos})
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "pos":
                 pos: str = self.manager.get_pos_of_client(client)
@@ -208,7 +208,7 @@ class FastAPIServer(AbstractConnectionManager):
                                                 data={"difficulty": data.get("difficulty"),
                                                       "available": [m.name for m in EDifficulty]})
             if lobby.mode is None:
-                return await self.send_response(client=client, code=RCODE.INVALIDDIFFICULTY,
+                return await self.send_response(client=client, code=RCODE.INVALIDMODE,
                                                 data={"mode": data.get("mode"),
                                                       "available": [m.name for m in EGameMode]})
 
