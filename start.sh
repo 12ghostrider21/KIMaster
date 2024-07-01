@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Build the Docker images
+docker-compose kill swtp-server swtp-frontend swtp-frontend-debug
 docker-compose build
-
-# Start the swtp-server and swtp-frontend services in detached mode
-docker-compose up -d swtp-server swtp-frontend
+docker-compose up -d swtp-server swtp-frontend swtp-frontend-debug
