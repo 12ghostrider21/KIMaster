@@ -1,0 +1,33 @@
+<template>
+  <section id="hauptteil" class="d-flex align-items-center justify-content-center">
+    <div class="content-container">
+      <div class="welcome-container">
+        <base-card>
+          <template #header>
+            <h1>{{ $t('message.welcome') }}</h1>
+          </template>
+          <p class="subtitle">{{ $t('message.subtitle') }}</p>
+        </base-card>
+      </div>
+      <base-card>
+      <div class="game-selection-container">
+        <router-link v-for="game in Object.values(games)" :key="game" :to="{ name: 'lobby', params: { game }}">
+          <base-button>{{ $t(`message.${game}`) }}</base-button>
+        </router-link>
+      </div>
+      <div class="LobbySection">
+        <input type="text" v-model="lobbyKeyToJoin" :placeholder="$t('message.enter_lobby_key')" />
+        <div class="message-box" v-if="this.notif === ENUMS.notifStatus.LOBBYJOINFAIL">
+          {{ $t('message.lobby_join_failed') }}
+        </div>
+        <base-button @click.prevent="joinLobbyStart">{{ $t('message.join_lobby') }}</base-button>
+      </div>
+      </base-card>
+    </div>
+    
+  </section>
+  <footer-bar></footer-bar>
+</template>
+
+<script src="./src/components/UI/StartPage.js"></script>
+<style src="./src/components/UI/StartPage.css"></style>
