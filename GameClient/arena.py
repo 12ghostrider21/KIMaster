@@ -32,6 +32,8 @@ class Arena:
         self.player2 = play2
         self.history.clear()  # reset history on new game configuration
         self.blunder.clear()  # reset blunder on new game configuration
+        self.blunder_history.clear()  # reset
+        self.blender_calculation = False  # reset to default
 
     async def play(self, board: np.array = None, cur_player: int = 1, it: int = 0, evaluation: bool = False):
         self.running = True
