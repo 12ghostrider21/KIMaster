@@ -58,7 +58,7 @@ services:
     depends_on:
       - swtp-server
     ports:
-      - "8086:8080"
+      - "8087:8080"
 
   swtp-test:
     build: ./Test
