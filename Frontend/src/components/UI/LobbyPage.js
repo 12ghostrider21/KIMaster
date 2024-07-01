@@ -88,7 +88,7 @@ export default {
     },
     playCreate() {
       this.showStatus();
-      if (this.gameReady==='True') {
+      if (true) {
         const data = {
           command: 'play',
           command_key: 'create',

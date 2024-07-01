@@ -16,7 +16,7 @@ def create_lobby_msg() -> dict:
 
 @fixture
 def web_socket_uri() -> str:
-    return "ws://swtp-server:8000/ws"
+    return "ws://swtp-server:8010/ws"
 
 @fixture
 def max_response_time() -> float:

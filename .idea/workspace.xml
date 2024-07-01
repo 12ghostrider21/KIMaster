@@ -5,30 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b2c9453d-40a6-4456-a73e-71f4668a975e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.dockerignore" beforeDir="false" afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Plattform-fuer-Vergleich-von-Spiele-KIs.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/controlP5.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/core.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/lib.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/.dockerignore" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/.dockerignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/KIM_Pages/LobbyPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/KIM_Pages/LobbyPage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/KIM_Pages/PlayPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/KIM_Pages/PlayPage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/KIM_Pages/WaitPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/KIM_Pages/WaitPage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/UI/BaseDialog.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/UI/BaseDialog.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/UI/PlayPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/UI/PlayPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/layout/LanguageSwitcher.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/layout/LanguageSwitcher.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/layout/NavBar.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/layout/NavBar.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/i18n.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/i18n.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,14 +28,14 @@
     <option name="showMembers" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "frontend-skeleton",
-    "last_opened_file_path": "C:/Users/thorb/OneDrive - Technische Hochschule Mittelhessen/Dokumente/THM/04 Semester/SWTP/Connection"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;frontend-skeleton&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/thorb/OneDrive - Technische Hochschule Mittelhessen/Dokumente/THM/04 Semester/SWTP/Connection&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

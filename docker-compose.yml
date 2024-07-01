@@ -7,12 +7,12 @@ services:
     container_name: swtp-server
     environment:
       - SERVER_HOST=swtp-server
-      - SERVER_PORT=8000
+      - SERVER_PORT=8010
       - NETWORK=swtp-net
       - WORKER=1
       - PODMAN_HOST=unix:///run/podman/podman.sock
     ports:
-      - "8000:8000"
+      - "8010:8010"
     networks:
       - swtp-net
     volumes:
@@ -39,6 +39,20 @@ services:
     image: frontend-img
     restart: always
     container_name: swtp-frontend
+    networks:
+      - swtp-net
+    depends_on:
+      - swtp-server
+    ports:
+      - "8086:8080"
+  
+  swtp-frontend-debug:
+    build:
+      context: ./
+      dockerfile: ./FrontendDebug/Dockerfile
+    image: frontend-debug-img
+    restart: always
+    container_name: swtp-frontend-debug
     networks:
       - swtp-net
     depends_on:

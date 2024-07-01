@@ -129,8 +129,8 @@ export default createStore({
             const currentUrl = window.location.href;
 
             let socket;
-            if (currentUrl.startsWith('http://') && currentUrl.includes(':8085')) {
-                let modifiedUrl = currentUrl.replace('http://', 'ws://').replace(':8085', ':8010/ws');
+            if (currentUrl.startsWith('http://') && currentUrl.includes(':8086')) {
+                let modifiedUrl = currentUrl.replace('http://', 'ws://').replace(':8086', ':8010/ws');
                 if (modifiedUrl.endsWith('/')) {
                     modifiedUrl = modifiedUrl.slice(0, -1);
                 }

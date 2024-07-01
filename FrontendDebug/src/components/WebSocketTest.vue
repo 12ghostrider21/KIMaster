@@ -195,14 +195,14 @@ export default {
 
 if (currentUrl.startsWith('http://') && currentUrl.includes(':8086')) {
 
-let modifiedUrl = currentUrl.replace('http://', 'ws://').replace(':8086', ':8000/ws');
+let modifiedUrl = currentUrl.replace('http://', 'ws://').replace(':8086', ':8010/ws');
 if (modifiedUrl.endsWith('/')) {
       modifiedUrl = modifiedUrl.slice(0, -1);
     }
 
 
 this.socket = new WebSocket(modifiedUrl);} //TODO change to proper adress, for now it's hacked together
-else {this.socket = new WebSocket('ws://localhost:8000/ws');} //Static URL if adress not in the correct format
+else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if adress not in the correct format
 
 
       this.socket.onopen = () => {

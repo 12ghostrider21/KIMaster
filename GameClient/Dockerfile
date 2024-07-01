@@ -3,7 +3,7 @@ FROM python:3.11.9-slim
 # Specify default env here.
 ENV LOBBY_KEY=MISSING_LOBBY_KEY
 ENV SERVER_HOST=swtp-server
-ENV SERVER_PORT=8000
+ENV SERVER_PORT=8010
 
 # Set the PYTHONPATH environment variable
 ENV PYTHONPATH=/app

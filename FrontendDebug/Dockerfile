@@ -2,13 +2,13 @@ FROM node:lts-alpine
 
 WORKDIR /app
 
-COPY ./Frontend/package.json ./Frontend/package-lock.json ./
+COPY ./FrontendDebug/package.json ./
 
 RUN npm install
 
-WORKDIR /app/Frontend
+WORKDIR /app/FrontendDebug
 
-COPY ./Frontend .
+COPY ./FrontendDebug .
 
 RUN npm run build
 

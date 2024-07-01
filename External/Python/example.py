@@ -67,5 +67,5 @@ class Example(Interface):
 
 
 if __name__ == "__main__":
-    e = Example(host="localhost", port=8000)
+    e = Example(host="localhost", port=8010)
     e.start(e.main())

@@ -86,7 +86,7 @@ class DockerAPI:
                     # Set environment variables for the container
                     'LOBBY_KEY': token,
                     'HOST_OF_API': getenv('HOST_OF_API', 'swtp-server'),
-                    'SOCKET_SERVER_PORT': getenv('SOCKET_SERVER_PORT', '8000')
+                    'SERVER_PORT': getenv('SERVER_PORT', '8010')
                 }
             )
             if self._debug:
