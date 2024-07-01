@@ -80,11 +80,12 @@ class NNetWrapper(NeuralNet):
         board: np array with board
         """
         # timing
-        start = time.time()
+        # start = time.time()
 
         # preparing input
         board = torch.FloatTensor(board.astype(np.float64))
-        if args.cuda: board = board.contiguous().cuda()
+        if args.cuda:
+            board = board.contiguous().cuda()
         board = board.view(1, self.board_x, self.board_y)
         self.nnet.eval()
         with torch.no_grad():

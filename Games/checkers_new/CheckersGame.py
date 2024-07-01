@@ -14,6 +14,8 @@ class CheckersGame(IGame):
         self.turn = 1  # reason: CheckersLogic get_legal_moves
         self.board_history = []
         self.board_history.append(self.board.pieces)
+        # self.board_turn_history = {}
+        # self.board_history.update({self.stringRepresentation(self.board.pieces): self.turn})
         self.turn_history = []
         self.turn_history.append(self.turn)
         self.redundant = 0
@@ -43,16 +45,14 @@ class CheckersGame(IGame):
         else:
             self.redundant = 0
 
-        print("self.redundant", self.redundant)
-
         if b.last_long_capture:
             next_actions = b.get_moves_for_square(*b.last_long_capture, self.turn, captures_only=True)
             if next_actions:
-                self.board_history.append(b.pieces * self.turn)
+                self.board_history.append(self.getCanonicalForm(b.pieces, player))
                 self.turn_history.append(self.turn)
                 return b.pieces, player  # Player continues with the same board state
         self.turn = -self.turn
-        self.board_history.append(b.pieces * self.turn)
+        self.board_history.append(self.getCanonicalForm(b.pieces, -player))
         self.turn_history.append(self.turn)
         return b.pieces, -player
 
@@ -72,13 +72,14 @@ class CheckersGame(IGame):
 
     def getGameEnded(self, board: np.array, player: int):
         """returns 0 if not ended, 1 if player 1 won, -1 if player 1 lost"""
-        if self.redundant == 50:
+        if self.redundant >= 50:
+            self.redundant = 0
             return 1e-4  # draw
         self.calcTurn(board)
         b = Board(self.n, np.copy(board))
         if b.has_legal_moves(player, self.turn):
             return 0
-        if b.has_legal_moves(-player, self.turn):
+        if b.has_legal_moves(-player, -self.turn):
             return -1
         return 1
 
@@ -112,24 +113,24 @@ class CheckersGame(IGame):
         return lst
 
     def translate(self, board: np.array, player: int, index: int) -> any:
-        """
+
         print("len(board_history)_pre", len(self.board_history))
-        # print("board_history_pre", self.board_history)
+        print("board_history_pre", self.board_history[-3:])
         print("self.turn_history_pre", self.turn_history)
         print("self.turn_pre", self.turn)
-        """
+
         self.calcTurn(board)
-        """
+
         print("len(board_history)_post", len(self.board_history))
-        # print("board_history_pre", self.board_history)
+        print("board_history_pre", self.board_history[-4:-1])
         print("self.turn_history_post", self.turn_history)
         print("self.turn_post", self.turn)
-        """
+
         b = Board(self.n, np.copy(board))
         legal_moves = b.get_legal_moves(player, self.turn)
         moves = [m for moves in legal_moves for m in moves]
         move_indices = [self.calcValidMoveIndex(b, m) for m in moves]
-        # print("move_indices", move_indices)
+        print("move_indices", move_indices)
         i = move_indices.index(index)
         return moves[i]
 
@@ -147,11 +148,12 @@ class CheckersGame(IGame):
         Calculating turn based on occurrence of board in self.board_history.
         A simple switch of turns in getNextState without having calcTurn is not enough because of function "undo".
         """
+        print("boardCalcTurn", board)
         index = -1
         for i, b in enumerate(self.board_history):
             if np.array_equal(b, board):
                 index = i
-        # print("indexCalc", index)
+        print("indexCalc", index)
         if index != -1:
             self.board_history = self.board_history[:(index + 1)]
             self.turn_history = self.turn_history[:(index + 1)]

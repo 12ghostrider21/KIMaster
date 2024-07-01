@@ -30,7 +30,7 @@ class MCTS:
         self.Ps = {}  # Initial policy returned by the neural network
 
         # Game state storage
-        self.Es = {}  # Game end status for states
+        # self.Es = {}  # Game end status for states
         self.Vs = {}  # Valid moves for states
 
         # Action tracking
@@ -49,7 +49,7 @@ class MCTS:
         # Perform MCTS simulations
         for i in range(self.args.numMCTSSims):
 
-            #print("reached")
+            # print("reached")
 
             self.search(canonical_board)
 
@@ -82,18 +82,17 @@ class MCTS:
         s = self.game.stringRepresentation(canonical_board)
 
         # Check if the game has ended for this state
-        if s not in self.Es:
-            self.Es[s] = self.game.getGameEnded(canonical_board, 1)
-        if self.Es[s] != 0:
+        status = self.game.getGameEnded(canonical_board, 1)
+        if status != 0:
             #print("reachedEnd")
-            return -self.Es[s]
+            return -status
 
         # If this state has not been visited before, it is a leaf node
         if s not in self.Ps:
             self.Ps[s], v = self.nnet.predict(canonical_board)
             valids = self.game.getValidMoves(canonical_board, 1)
-            #print(valids)
-            #print([i for i, j in enumerate(valids) if j == 1])
+            # print(valids)
+            # print("valids_indices", [i for i, j in enumerate(valids) if j == 1])
             self.Ps[s] = self.Ps[s] * valids  # Mask invalid moves
             sum_ps_s = np.sum(self.Ps[s])
             if sum_ps_s > 0:
@@ -132,14 +131,14 @@ class MCTS:
 
         a = best_act
 
-        #print("pre_s", canonical_board)
-        """
-        print("action", a)
-        """
+        # print("pre_s", canonical_board)
+
+        # print("actionMCTS", a)
+
         action = self.game.translate(canonical_board, 1, a)  # Translate index to actual move
         next_s, next_player = self.game.getNextState(canonical_board, 1, action)
         next_s = self.game.getCanonicalForm(next_s, next_player)
-        #print("next_s", next_s)
+        # print("next_s", next_s)
         if best_act == self.act:
             self.act_counter += 1
         else:

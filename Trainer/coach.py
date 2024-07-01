@@ -18,7 +18,7 @@ console_handler.setLevel(logging.INFO)
 log.addHandler(console_handler)
 
 
-class Coach():
+class Coach:
     """
     This class executes the self-play + learning. It uses the functions defined
     in Game and NeuralNet. args are specified in main.py.
@@ -52,7 +52,7 @@ class Coach():
         board = self.game.getInitBoard()
         self.curPlayer = 1
         episodeStep = 0
-        #print(self.game.drawTerminal(board, False, self.curPlayer))
+        # print(self.game.drawTerminal(board, False, self.curPlayer))
         #print(self.game.getValidMoves(board, self.curPlayer))
         while True:
             episodeStep += 1
@@ -65,9 +65,9 @@ class Coach():
 
             a = np.random.choice(len(pi), p=pi)
             action = self.game.translate(canonicalBoard, 1, a)
-            #print("actionCoach", action)
+            # print("actionCoach", action)
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
-            #print(self.game.drawTerminal(board, False, self.curPlayer))
+            # print(self.game.drawTerminal(board, False, self.curPlayer))
             r = self.game.getGameEnded(board, self.curPlayer)
 
             if r != 0:

@@ -125,11 +125,12 @@ class Board:
                             legal_moves.append(new_moves)
                         else:
                             legal_moves.append(new_moves)
-
         return legal_moves
 
     def has_legal_moves(self, color: int, turn: int):
-        return bool(self.get_legal_moves(color, turn))
+        legal_moves = self.get_legal_moves(color, turn)
+        flatted_l_moves = [move for moves_per_piece in legal_moves for move in moves_per_piece]
+        return bool(flatted_l_moves)
 
     def execute_action(self, action: tuple[int, int, int, int], color: int, turn: int):
         """
