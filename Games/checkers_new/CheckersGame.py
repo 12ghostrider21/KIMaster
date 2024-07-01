@@ -72,7 +72,7 @@ class CheckersGame(IGame):
 
     def getGameEnded(self, board: np.array, player: int):
         """returns 0 if not ended, 1 if player 1 won, -1 if player 1 lost"""
-        if self.redundant >= 50:
+        if self.redundant >= 30:
             self.redundant = 0
             return 1e-4  # draw
         self.calcTurn(board)
@@ -113,24 +113,24 @@ class CheckersGame(IGame):
         return lst
 
     def translate(self, board: np.array, player: int, index: int) -> any:
-
+        """
         print("len(board_history)_pre", len(self.board_history))
         print("board_history_pre", self.board_history[-3:])
         print("self.turn_history_pre", self.turn_history)
         print("self.turn_pre", self.turn)
-
+        """
         self.calcTurn(board)
-
+        """
         print("len(board_history)_post", len(self.board_history))
         print("board_history_pre", self.board_history[-4:-1])
         print("self.turn_history_post", self.turn_history)
         print("self.turn_post", self.turn)
-
+        """
         b = Board(self.n, np.copy(board))
         legal_moves = b.get_legal_moves(player, self.turn)
         moves = [m for moves in legal_moves for m in moves]
         move_indices = [self.calcValidMoveIndex(b, m) for m in moves]
-        print("move_indices", move_indices)
+        # print("move_indices", move_indices)
         i = move_indices.index(index)
         return moves[i]
 
@@ -148,12 +148,12 @@ class CheckersGame(IGame):
         Calculating turn based on occurrence of board in self.board_history.
         A simple switch of turns in getNextState without having calcTurn is not enough because of function "undo".
         """
-        print("boardCalcTurn", board)
+        # print("boardCalcTurn", board)
         index = -1
         for i, b in enumerate(self.board_history):
             if np.array_equal(b, board):
                 index = i
-        print("indexCalc", index)
+        # print("indexCalc", index)
         if index != -1:
             self.board_history = self.board_history[:(index + 1)]
             self.turn_history = self.turn_history[:(index + 1)]
