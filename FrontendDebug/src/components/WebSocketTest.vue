@@ -38,6 +38,7 @@
           <option value='connect4'>Vier Gewinnt</option>
           <option value="tictactoe">Tic Tac Toe</option>
           <option value="othello">Othello</option>
+          <option value="nim">Nim</option>
         </select>
         <select v-model="mode">
           <option value="player_vs_player">Player vs Player</option>

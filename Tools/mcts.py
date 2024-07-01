@@ -38,12 +38,13 @@ class MCTS:
         self.act_counter = 0
         self.sanctioned_acts = []  # List of sanctioned actions to avoid infinite loops
 
-    def get_action_prob(self, canonical_board, temp=1):
+    def get_action_prob(self, board, cur_player, temp=1):
         """
         Get the action probabilities for the given board state using MCTS.
 
-        :param canonical_board: The current state of the board in its canonical form.
+        :param board: The current state of the board in its canonical form.
         :param temp: Temperature parameter for exploration. Lower values make the policy more deterministic.
+        :param cur_player: The player who is in turn.
         :return: A list of action probabilities.
         """
         # Perform MCTS simulations
@@ -51,10 +52,10 @@ class MCTS:
 
             # print("reached")
 
-            self.search(canonical_board)
+            self.search(board, cur_player)
 
         # Get the string representation of the board
-        s = self.game.stringRepresentation(canonical_board)
+        s = self.game.stringRepresentation(board)
         # Get the visit counts for each action
         counts = [self.Nsa[(s, a)] if (s, a) in self.Nsa else 0 for a in range(self.game.getActionSize())]
 
@@ -72,25 +73,26 @@ class MCTS:
         probs = [x / counts_sum for x in counts]
         return probs
 
-    def search(self, canonical_board):
+    def search(self, board, cur_player):
         """
         Perform a single MCTS search from the given board state.
 
-        :param canonical_board: The current state of the board in its canonical form.
+        :param board: The current state of the board in its canonical form.
+        :param cur_player: The current player.
         :return: The negative value of the board state from the current player's perspective.
         """
-        s = self.game.stringRepresentation(canonical_board)
+        s = self.game.stringRepresentation(board)
 
         # Check if the game has ended for this state
-        status = self.game.getGameEnded(canonical_board, 1)
+        status = self.game.getGameEnded(board, cur_player)
         if status != 0:
             #print("reachedEnd")
             return -status
 
         # If this state has not been visited before, it is a leaf node
         if s not in self.Ps:
-            self.Ps[s], v = self.nnet.predict(canonical_board)
-            valids = self.game.getValidMoves(canonical_board, 1)
+            self.Ps[s], v = self.nnet.predict(self.game.getCanonicalForm(board, cur_player))
+            valids = self.game.getValidMoves(board, cur_player)
             # print(valids)
             # print("valids_indices", [i for i, j in enumerate(valids) if j == 1])
             self.Ps[s] = self.Ps[s] * valids  # Mask invalid moves
@@ -135,9 +137,11 @@ class MCTS:
 
         # print("actionMCTS", a)
 
-        action = self.game.translate(canonical_board, 1, a)  # Translate index to actual move
-        next_s, next_player = self.game.getNextState(canonical_board, 1, action)
-        next_s = self.game.getCanonicalForm(next_s, next_player)
+        # print("reachedTranslateMCTS")
+
+        action = self.game.translate(board, cur_player, a)  # Translate index to actual move
+        next_s, next_player = self.game.getNextState(board, cur_player, action)
+
         # print("next_s", next_s)
         if best_act == self.act:
             self.act_counter += 1
@@ -145,10 +149,10 @@ class MCTS:
             self.act = best_act
             self.act_counter = 0
 
-        if self.act_counter == 40 and not self.game.getGameEnded(next_s, 1):
+        if self.act_counter == 40 and not self.game.getGameEnded(next_s, next_player):
             self.sanctioned_acts.append(best_act)
 
-        v = self.search(next_s)
+        v = self.search(next_s, next_player)
 
         if (s, a) in self.Qsa:
             self.Qsa[(s, a)] = (self.Nsa[(s, a)] * self.Qsa[(s, a)] + v) / (self.Nsa[(s, a)] + 1)

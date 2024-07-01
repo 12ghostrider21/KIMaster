@@ -45,18 +45,18 @@ class SocketServer(AbstractConnectionManager):
         return png_bytes
 
     async def ai_Action(self, game: IGame, board: np.array, it: int, mcts, cur_player, game_client: WebSocket):
-        func = lambda x, n: np.argmax(mcts.get_action_prob(x, temp=(0.5 if n <= 6 else 0.)))
-        action = func(game.getCanonicalForm(board, cur_player), it)
+        func = lambda x, y, n: np.argmax(mcts.get_action_prob(x, y, temp=(0.5 if n <= 6 else 0.)))
+        action = func(board, cur_player, it)
         await self.send_cmd(game_client, "play", "make_move",
                             {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
 
     async def blunder(self, game: IGame, mcts, actions: any, game_client: WebSocket, p_pos: str):
-        func = lambda x: mcts.get_action_prob(x, temp=1)
+        func = lambda x, y: mcts.get_action_prob(x, y, temp=1)
         blunder_list = []
         for index, board, player, action in actions:
 
             # probability vector
-            action_probs = np.array(func(game.getCanonicalForm(board, player)))
+            action_probs = np.array(func(board, player))
 
             # using mean as reference whether a move is good or not so
             mean = 1.0 / np.count_nonzero(action_probs)

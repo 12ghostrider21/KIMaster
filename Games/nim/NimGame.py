@@ -49,11 +49,14 @@ class NimGame(IGame):
         return np.array([tuple(item) in valids_input for item in valids_new])
 
     def getGameEnded(self, board, player):
-        """returns 0 if not ended, 1 if player 1 won, -1 if player 1 lost"""
+        """returns 0 if not ended, 1 if player won, -1 if player lost"""
         b = Board(self.rows, np.copy(board))
         if not b.is_game_over():
             return 0
-        return self.winner
+        if self.winner == player:
+            return 1
+        if self.winner == -player:
+            return -1
 
     def getCanonicalForm(self, board, player):
         """Does not matter with NimGame"""

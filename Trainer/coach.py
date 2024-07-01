@@ -52,22 +52,23 @@ class Coach:
         board = self.game.getInitBoard()
         self.curPlayer = 1
         episodeStep = 0
-        # print(self.game.drawTerminal(board, False, self.curPlayer))
+        #print(self.game.drawTerminal(board, False, self.curPlayer))
         #print(self.game.getValidMoves(board, self.curPlayer))
         while True:
             episodeStep += 1
-            canonicalBoard = self.game.getCanonicalForm(board, self.curPlayer)
             temp = int(episodeStep < self.args.tempThreshold)
-            pi = self.mcts.get_action_prob(canonicalBoard, temp=temp)
-            sym = self.game.getSymmetries(canonicalBoard, pi)
+            pi = self.mcts.get_action_prob(board, self.curPlayer, temp=temp)
+            sym = self.game.getSymmetries(board, pi)
             for b, p in sym:
                 trainExamples.append([b, self.curPlayer, p, None])
 
             a = np.random.choice(len(pi), p=pi)
-            action = self.game.translate(canonicalBoard, 1, a)
+            # print("reachedTranslateCoach")
+            action = self.game.translate(board, 1, a)
             # print("actionCoach", action)
+            #print("curPlayerTrain", self.curPlayer)
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
-            # print(self.game.drawTerminal(board, False, self.curPlayer))
+            #print(self.game.drawTerminal(board, False, self.curPlayer))
             r = self.game.getGameEnded(board, self.curPlayer)
 
             if r != 0:
@@ -118,8 +119,8 @@ class Coach:
             nmcts = MCTS(self.game, self.nnet, self.args)
 
             log.info('PITTING AGAINST PREVIOUS VERSION')
-            arena = Arena(lambda x: np.argmax(pmcts.get_action_prob(x, temp=0)),
-                          lambda x: np.argmax(nmcts.get_action_prob(x, temp=0)), self.game)
+            arena = Arena(lambda x, y: np.argmax(pmcts.get_action_prob(x, y, temp=0)),
+                          lambda x, y: np.argmax(nmcts.get_action_prob(x, y, temp=0)), self.game)
             pwins, nwins, draws = arena.playGames(self.args.arenaCompare)
 
             log.info('NEW/PREV WINS : %d / %d ; DRAWS : %d' % (nwins, pwins, draws))

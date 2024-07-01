@@ -97,6 +97,8 @@ class Importer:
         # Initialize return values
         result: dict[str, Entry] = {}
         for game_name in os.listdir(directory):
+            if not os.path.isdir(os.path.join(directory, game_name)):
+                continue
             entry = Entry(game_name=game_name)
 
             for root, dir_names, filenames in os.walk(os.path.join(directory, game_name)):

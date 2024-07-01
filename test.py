@@ -57,9 +57,9 @@ while game.getGameEnded(board, cur_player) == 0:  # 0 if game is not finished
     j_board = json.dumps(payload)
     payload = json.loads(j_board)
     board = np.array(payload["board"], dtype=payload["dtype"]).reshape(payload["shape"])
-    func = lambda x, n: np.argmax(mcts.get_action_prob(x, temp=(0.5 if n <= 6 else 0.)))
+    func = lambda x, y, n: np.argmax(mcts.get_action_prob(x, y, temp=(0.5 if n <= 6 else 0.)))
     print(board.shape, func)
-    action = func(game.getCanonicalForm(board, cur_player), it)
+    action = func(board, cur_player, it)
     print(action, len(valids), valids)
 
     converted_action = game.translate(board, cur_player, action)

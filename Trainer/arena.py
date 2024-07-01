@@ -40,29 +40,30 @@ class Arena:
         players = [self.player2, None, self.player1]
         cur_player = 1
         board = self.game.getInitBoard()
-        canonical_board = self.game.getCanonicalForm(board, cur_player)
+        #print(self.game.drawTerminal(board, False, cur_player))
         it = 0
 
         for player in players[0], players[2]:
             if hasattr(player, "startGame"):
                 player.startGame()
 
-        while self.game.getGameEnded(canonical_board, 1) == 0:
+        while self.game.getGameEnded(board, cur_player) == 0:
             it += 1
             if verbose:
                 assert self.display
                 print("Turn ", str(it), "Player ", str(cur_player))
                 self.display(board)
-            action = players[cur_player + 1](canonical_board)
+            action = players[cur_player + 1](board, cur_player)
 
             # Notifying the opponent for the move
             opponent = players[-cur_player + 1]
             if hasattr(opponent, "notify"):
-                opponent.notify(canonical_board, action)
+                opponent.notify(board, action)
+            #print("cur_playerArena", cur_player)
 
-            converted_action = self.game.translate(canonical_board, 1, action)  # ai generated "move" is just an index
-            board, cur_player = self.game.getNextState(canonical_board, 1, converted_action)
-            canonical_board = self.game.getCanonicalForm(board, cur_player)
+            converted_action = self.game.translate(board, cur_player, action)  # ai generated "move" is just an index
+            board, cur_player = self.game.getNextState(board, cur_player, converted_action)
+            #print(self.game.drawTerminal(board, False, cur_player))
 
         for player in players[0], players[2]:
             if hasattr(player, "endGame"):
@@ -70,9 +71,11 @@ class Arena:
 
         if verbose:
             assert self.display
-            print("Game over: Turn ", str(it), "Result ", str(self.game.getGameEnded(canonical_board, 1)))
+            print("Game over: Turn ", str(it), "Result ", str(self.game.getGameEnded(board, 1)))
             self.display(board)
-        return cur_player * self.game.getGameEnded(canonical_board, 1)
+
+        #print("Arena_who_won", cur_player * self.game.getGameEnded(board, cur_player))
+        return cur_player * self.game.getGameEnded(board, cur_player)
 
     def playGames(self, num, verbose=False):
         """

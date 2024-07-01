@@ -6,8 +6,12 @@ __pycache__/
 **/*.pyc
 **/__pycache__
 **/*.pyo
+
+# macOS stuff
 .DS_Store
 **/.DS_Store
+/.idea
+/.idea/workspace.xml
 
 # C extensions
 *.so
