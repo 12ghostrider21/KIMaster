@@ -18,10 +18,14 @@ class Pit:
 
     # Start the battle in the arena
     def start_battle(self, board: np.array, cur_player: int, it: int):
-        # Create and start an asynchronous task to play the game in the arena
-        asyncio.create_task(self.arena.play(board=board, cur_player=cur_player, it=it))
+        self.arena.history.clear()  # reset history on new game configuration
+        self.arena.blunder.clear()  # reset blunder on new game configuration
+        self.arena.blunder_history.clear()  # reset
+        self.arena.blender_calculation = False  # reset to default
         # Set the arena's running status to True
         self.arena.running = True
+        # Create and start an asynchronous task to play the game in the arena
+        asyncio.create_task(self.arena.play(board=board, cur_player=cur_player, it=it))
 
     # Stop the battle in the arena
     def stop_battle(self) -> None:
