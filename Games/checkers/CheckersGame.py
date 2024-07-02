@@ -26,7 +26,7 @@ class CheckersGame(IGame):
         """return number of all possible actions"""
         return self.board.get_action_size()[0] + self.board.get_action_size()[1]
 
-    def getNextState(self, board: np.array, player: int, action: tuple[int, int, int, int]):
+    def getNextState(self, board: np.array, player: int, action: tuple[int, int, int, int] | tuple[int, int]):
         """if player takes action on board, return next (board,player)
           action must be a valid move"""
         b = Board(self.n, np.copy(board))

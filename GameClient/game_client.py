@@ -62,6 +62,8 @@ class GameClient(WebSocketConnectionManager):
 
                 # Handling 'valid_moves' command
                 case "valid_moves":
+                    #print("valid_gc")
+                    #print("from_pos", read_object.get("fromPos"))
                     if not self.is_arena_running():
                         await self.send_response(RCODE.P_NOTRUNNING, p_pos)
                         continue
@@ -79,7 +81,10 @@ class GameClient(WebSocketConnectionManager):
                     if move is None:
                         await self.send_response(RCODE.P_NOMOVE, p_pos)
                         continue
-                    move = self.parse_input(move)  # Parse the move input
+                    if type(move) is list:
+                        move = (move[0], move[1])
+                    if type(move) is str:
+                        move = self.parse_input(move)  # Parse the move input
                     if move is None:
                         await self.send_response(RCODE.P_INVALIDMOVE, p_pos)
                         continue

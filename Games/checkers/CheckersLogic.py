@@ -130,12 +130,17 @@ class Board:
         moves = self.flat_legal_moves(color)
         return bool(moves)
 
-    def execute_action(self, action: tuple[int, int, int, int], color: int):
+    def one_d_to_two_d(self, action: tuple[int, int]) -> tuple[int, int, int, int]:
+        return action[0] // self.n, action[0] % self.n, action[1] // self.n, action[1] % self.n
+
+    def execute_action(self, action: tuple[int, int, int, int] | tuple[int, int], color: int):
         """
         Performs the given move on the board
         :param action: tuple (from_row, from_column, to_row, to_column)
         :param color: player that is executing the move
         """
+        if type(action) is tuple and len(action) == 2:
+            action = self.one_d_to_two_d(action)
         if action not in self.flat_legal_moves(color):
             raise ValueError(f"Invalid move: {action}")
 
