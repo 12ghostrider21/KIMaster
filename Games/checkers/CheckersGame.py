@@ -137,8 +137,13 @@ class CheckersGame(IGame):
             b = Board(self.n, pieces=np.copy(board))
             if (self.stringRepresentation(b.pieces), cur_player) in self.ll_capture_hist:
                 b.last_long_capture = self.ll_capture_hist[(self.stringRepresentation(b.pieces), cur_player)]
-            moves = b.flat_legal_moves(cur_player)
-            return str([((row * self.n + col), (nrow * self.n + ncol)) for row, col, nrow, ncol in moves])
+            legal_moves = b.flat_legal_moves(cur_player)
+            if args and len(args) > 0:  # returns valid moves only for the demanded position
+                from_pos = args[0]
+                one_dim_moves = [((row * self.n + col), (nrow * self.n + ncol)) for row, col, nrow, ncol in legal_moves]
+                return str([(f_pos, t_pos) for (f_pos, t_pos) in one_dim_moves if from_pos == f_pos])
+            else:  # returns all valid moves
+                return str([((row * self.n + col), (nrow * self.n + ncol)) for row, col, nrow, ncol in legal_moves])
 
         else:
             horizontal_border = '  +' + '-' * (4 * self.n - 1) + '+\n'
@@ -192,7 +197,7 @@ class CheckersGame(IGame):
 
         valid_squares = []
 
-        if valid_moves:
+        if valid_moves and args and len(args) > 0:
             from_pos = args[0]
 
             legal_moves = b.flat_legal_moves(cur_player)
@@ -236,7 +241,7 @@ class CheckersGame(IGame):
                     king_image = pygame.transform.scale(king_image, (SQUARESIZE, SQUARESIZE))
                     surface.blit(king_image, (col * SQUARESIZE, row * SQUARESIZE))
 
-                if valid_moves:
+                if valid_moves and args and len(args) > 0:
                     for a, b, from_pos in valid_squares:
                         if (row, col) == (a, b):
                             piece = board[from_pos // self.n][from_pos % self.n]

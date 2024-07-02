@@ -47,7 +47,7 @@ class GameClient(WebSocketConnectionManager):
                         continue
                     self.pit.init_arena(game_config)  # Initialize arena with game configuration
                     self.start_arena()  # Start the arena
-                    await self.send_response(code=RCODE.P_ARENAINIT, to=p_pos, data=game_config.to_dict())
+                    await self.send_response(code=RCODE.P_ARENAINIT, to=None, data=game_config.to_dict())
                     await self.update()  # Update the state
 
                 # Handling 'surrender' command
@@ -123,7 +123,7 @@ class GameClient(WebSocketConnectionManager):
                         continue
                     self.pit.arena.history.clear()  # Clear the game history
                     self.start_arena()
-                    await self.send_response(code=RCODE.P_ARENAINIT, to=p_pos)
+                    await self.send_response(code=RCODE.P_ARENAINIT, to=None)
                     await self.update()  # Update the state
 
                 # Handling 'blunder' command (currently not implemented)
