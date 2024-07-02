@@ -5,7 +5,6 @@ export default {
   props: ["game"],
   data() {
     return {
-      positionSelect: "p1",
       mode: "player_vs_kim",
       difficulty: "easy",
       selectedGame: this.game,
@@ -14,6 +13,14 @@ export default {
   computed: {
     ...mapGetters(["lobbyKey", "position","gameReady"]),
     enums() {return ENUMS},
+    positionSelect: {
+      get() {
+        return this.position;
+      },
+      set(value) {
+        this.updatePosition(value);
+      }
+    },
   },
   mounted() {
     if(this.lobbyKey === null){
@@ -21,7 +28,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["initWebSocket", "sendWebSocketMessage","setGame"]),
+    ...mapActions(["initWebSocket", "sendWebSocketMessage","setGame",'callPos',"updatePosition"]),
     sendMessage(data) {
       //if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       console.log(data);
@@ -33,6 +40,14 @@ export default {
     transformGameName(game) {
       return game.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     },
+    lobbyPos(){
+      const data = {
+      command: 'lobby',
+      command_key: 'pos',
+    };
+    this.sendMessage(data);
+    },
+
     createLobby() {
       const data = {
         command: "lobby",
@@ -111,8 +126,9 @@ export default {
     },
   },
   watch: {
-    position(newVal) {
-      this.positionSelect = newVal;
+    callPos(){
+      this.lobbyPos();
     },
+   
   },
 };

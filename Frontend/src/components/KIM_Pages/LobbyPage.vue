@@ -42,7 +42,7 @@
       <div class="button-group">
         <p v-if="lobbyKey === null">{{ $t('message.lobby_key_generating') }}</p>
         <p v-else>Lobby Key: {{ lobbyKey }}</p>
-        <p>{{ $t('message.your_position', { position }) }}</p>
+        <p>{{ $t('message.your_position', { position:positionSelect }) }}</p>
       </div>
 
       <base-button @click="playCreate">Start Game!</base-button>

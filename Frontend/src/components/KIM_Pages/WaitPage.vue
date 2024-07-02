@@ -1,19 +1,15 @@
 <template>
     <div class="about">
       <h1>Waiting until Lobby is created...</h1>
-      
-    </div>
-    <div>
-    <select v-model="positionSelect" @change="swapPositionInLobby">
+      <select v-model="positionSelect" @change="swapPositionInLobby">
             <option value="p1">Player 1</option>
             <option value="p2">Player 2</option>
             <option value="sp">Spectator</option>
     </select>
-    <select v-model="game">
-            <option value="othello">Othello</option>
-            <option value="connect4">Connect 4</option>
-            <option value="Something else">Something else</option>
-    </select>
+      
+    </div>
+    <div>
+    
     </div>
   </template>
   
@@ -23,13 +19,20 @@ import * as ENUMS from '../enums';
 export default {
   data() {
     return {
-      positionSelect:"p1",
-      game: ENUMS.games.OTHELLO,
       difficulty:'hard',
     };
   },
   computed: {
-    ...mapGetters([ 'gameActive','position']),
+    ...mapGetters([ 'gameActive','position','game','callPos']),
+
+    positionSelect: {
+      get() {
+        return this.position;
+      },
+      set(value) {
+        this.updatePosition(value);
+      }
+    }
   },
 
   mounted() {
@@ -37,11 +40,18 @@ export default {
 methods: {
 
     
-  ...mapActions(['initWebSocket', 'sendWebSocketMessage',]),
+  ...mapActions(['initWebSocket', 'sendWebSocketMessage','updatePosition']),
   sendMessage(data) {
       console.log(data);
       this.sendWebSocketMessage(JSON.stringify(data));
   
+  },
+  lobbyPos(){
+    const data = {
+    command: 'lobby',
+    command_key: 'pos',
+  };
+  this.sendMessage(data);
   },
 swapPositionInLobby() {
   const data = {
@@ -53,6 +63,7 @@ swapPositionInLobby() {
 },
 
 goToGame() {
+  console.log("GAME:" + this.game);
  
 
   this.$router.push({
@@ -66,6 +77,9 @@ goToGame() {
       if (newVal) {
         this.goToGame();
       }
+    },
+    callPos(newVal){
+      this.lobbyPos();
     },
   },
 };

@@ -177,3 +177,4 @@ cython_debug/
 #Frontend/node_modules (for NPM RUN DEV)
 Frontend/node_modules/*
 FrontendDebug/node_modules/*
+Frontend/package-lock.json
