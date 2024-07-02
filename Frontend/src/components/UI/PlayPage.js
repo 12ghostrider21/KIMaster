@@ -60,6 +60,11 @@ export default {
         this.boardHeight = 8;
         this.twoTurnGame = true;
         break;
+      case "checkers":
+        this.boardWidth = 8;
+        this.boardHeight = 8;
+        this.twoTurnGame = true;
+        break;
       case "connect4":
         this.boardWidth = 7;
         this.boardHeight = 7;
@@ -75,7 +80,7 @@ export default {
         this.boardHeight = 6;
         this.twoTurnGame = false;
         break;
-        case "nim":
+      case "nim":
           this.boardWidth = 1;
           this.boardHeight = 4;
           this.twoTurnGame = false;

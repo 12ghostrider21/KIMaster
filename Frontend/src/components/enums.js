@@ -12,10 +12,10 @@ export const popUpStatus = Object.freeze({
   });
 
 export const games= Object.freeze({
-    CHESS:'chess',
     CONNECT4:'connect4',
     TICTACTOE:'tic_tac_toe',
     OTHELLO:'othello',
     NIM:'nim',
+    DAME:'checkers',
 
 })
