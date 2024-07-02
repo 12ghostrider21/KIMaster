@@ -18,11 +18,14 @@
         <select v-model="mode" >
           <option value="player_vs_player">{{ $t('message.player_vs_player') }}</option>
           <option value="player_vs_kim">{{ $t('message.player_vs_ai') }}</option>
-          <option value="playerai_vs_ai">{{ $t('message.playerai_vs_ai') }}</option>
+          <option value="kim_vs_player">Kim vs Player</option>
+          <option value="playerai_vs_kim">{{ $t('message.playerai_vs_ai') }}</option>
+          <option value="kim_vs_playerai">Kim vs Player Ai</option>
           <option value="playerai_vs_playerai">{{ $t('message.playerai_vs_playerai') }}</option>
+          
         </select>
 
-        <select v-model="difficulty" v-if="mode==='player_vs_ai'|| mode==='playerarai_vs_ai'">
+        <select v-model="difficulty" v-if="mode==='player_vs_kim'||mode==='playerai_vs_kim'||mode==='kim_vs_player'|| mode==='kim_vs_playerai'">
           <option value="easy">{{ $t('message.easy') }}</option>
           <option value="medium">{{ $t('message.medium') }}</option>
           <option value="hard">{{ $t('message.hard') }}</option>

@@ -6,7 +6,7 @@ export default {
   data() {
     return {
       positionSelect: "p1",
-      mode: "player_vs_ai",
+      mode: "player_vs_kim",
       difficulty: "easy",
       selectedGame: this.game,
     };

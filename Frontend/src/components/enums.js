@@ -16,5 +16,6 @@ export const games= Object.freeze({
     CONNECT4:'connect4',
     TICTACTOE:'tic_tac_toe',
     OTHELLO:'othello',
+    NIM:'nim',
 
 })

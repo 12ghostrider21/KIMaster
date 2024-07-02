@@ -173,3 +173,7 @@ cython_debug/
 
 # Trainer/checkpoints (trained models)
 /Trainer/checkpoints
+
+#Frontend/node_modules (for NPM RUN DEV)
+Frontend/node_modules/*
+FrontendDebug/node_modules/*
