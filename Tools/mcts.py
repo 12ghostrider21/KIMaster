@@ -49,9 +49,6 @@ class MCTS:
         """
         # Perform MCTS simulations
         for i in range(self.args.numMCTSSims):
-
-            # print("reached")
-
             self.search(board, cur_player)
 
         # Get the string representation of the board
@@ -86,15 +83,13 @@ class MCTS:
         # Check if the game has ended for this state
         status = self.game.getGameEnded(board, cur_player)
         if status != 0:
-            #print("reachedEnd")
             return -status
+
+        valids = self.game.getValidMoves(board, cur_player)
 
         # If this state has not been visited before, it is a leaf node
         if s not in self.Ps:
             self.Ps[s], v = self.nnet.predict(self.game.getCanonicalForm(board, cur_player))
-            valids = self.game.getValidMoves(board, cur_player)
-            # print(valids)
-            # print("valids_indices", [i for i, j in enumerate(valids) if j == 1])
             self.Ps[s] = self.Ps[s] * valids  # Mask invalid moves
             sum_ps_s = np.sum(self.Ps[s])
             if sum_ps_s > 0:
@@ -104,11 +99,9 @@ class MCTS:
                 self.Ps[s] = self.Ps[s] + valids
                 self.Ps[s] /= np.sum(self.Ps[s])
 
-            self.Vs[s] = valids
             self.Ns[s] = 0
             return -v
 
-        valids = self.Vs[s]
         cur_best = -float('inf')
         best_act = -1
 
@@ -132,17 +125,9 @@ class MCTS:
                     best_act = a
 
         a = best_act
-
-        # print("pre_s", canonical_board)
-
-        # print("actionMCTS", a)
-
-        # print("reachedTranslateMCTS")
-
         action = self.game.translate(board, cur_player, a)  # Translate index to actual move
         next_s, next_player = self.game.getNextState(board, cur_player, action)
 
-        # print("next_s", next_s)
         if best_act == self.act:
             self.act_counter += 1
         else:

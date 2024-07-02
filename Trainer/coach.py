@@ -52,8 +52,6 @@ class Coach:
         board = self.game.getInitBoard()
         self.curPlayer = 1
         episodeStep = 0
-        #print(self.game.drawTerminal(board, False, self.curPlayer))
-        #print(self.game.getValidMoves(board, self.curPlayer))
         while True:
             episodeStep += 1
             temp = int(episodeStep < self.args.tempThreshold)
@@ -63,12 +61,8 @@ class Coach:
                 trainExamples.append([b, self.curPlayer, p, None])
 
             a = np.random.choice(len(pi), p=pi)
-            # print("reachedTranslateCoach")
-            action = self.game.translate(board, 1, a)
-            # print("actionCoach", action)
-            #print("curPlayerTrain", self.curPlayer)
+            action = self.game.translate(board, self.curPlayer, a)
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
-            #print(self.game.drawTerminal(board, False, self.curPlayer))
             r = self.game.getGameEnded(board, self.curPlayer)
 
             if r != 0:

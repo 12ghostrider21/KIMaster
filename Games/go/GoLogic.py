@@ -507,7 +507,7 @@ class Board:
             self.ko = None
             # increment age of stones by 1
             self.stone_ages[self.stone_ages >= 0] += 1
-            if action is not PASS_MOVE:
+            if action != PASS_MOVE:
                 (x, y) = action
                 self.pieces[x][y] = color
                 self._update_hash(action, color)

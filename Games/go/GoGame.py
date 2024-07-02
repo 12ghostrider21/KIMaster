@@ -4,7 +4,7 @@ from Games.go.GoLogic import Board
 
 class GoGame(IGame):
     """
-    Go Game class implementing the alpha-zero-general Game interface.
+    Go Game class implementing the alpha-zero-general game interface.
     """
 
     def __init__(self, size: int = None, pieces: np.array = None):
@@ -22,14 +22,14 @@ class GoGame(IGame):
         return self.size * self.size + 1
 
     def getNextState(self, board: np.array, player: int, action):
-        # if player takes action on board, return next (board,player)
-        # action must be a valid move
-        # print("getting next state from perspect of player {} with action {}".format(player,action))
+        """if player takes action on board, return next (board,player)
+           action must be a valid move"""
+        b = Board(self.size, np.copy(board))
 
         if action == self.size * self.size:
+            b.execute_move(action, player)
             return (board, -player)
 
-        b = Board(self.size, np.copy(board))
         move = (int(action / self.size), action % self.size)
         # display(b)
         # print(player,move)
@@ -39,7 +39,8 @@ class GoGame(IGame):
 
     # modified
     def getValidMoves(self, board: np.array, player: int):
-        # return a fixed size binary vector
+        """return a fixed size binary vector"""
+
         valids = [0 for _ in range(self.getActionSize())]
         b = Board(self.size, np.copy(board))
         legalMoves = b.get_legal_moves(player)
@@ -56,8 +57,7 @@ class GoGame(IGame):
 
     # modified
     def getGameEnded(self, board: np.array, player: int, returnScore: bool = False):
-        # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
-        # player = 1
+        """return 0 if not ended, 1 if player won, -1 if player lost"""
 
         b = Board(self.size, np.copy(board))
         winner = 0
@@ -66,28 +66,45 @@ class GoGame(IGame):
         by_score = 0.5 * (b.size * b.size + b.komi)
 
         if len(b.history) > 1:
-            if (b.history[-1] is None and b.history[-2] is None
-                    and player == -1):
+            if b.history[-1] is None and b.history[-2] is None:  # if player1 and player2 pass move both = game ended
                 if score_black > score_white:
-                    winner = -1
+                    if player == -1:
+                        winner = -1
+                    else:
+                        winner = 1
                 elif score_white > score_black:
-                    winner = 1
+                    if player == -1:
+                        winner = 1
+                    else:
+                        winner = -1
                 else:
                     # Tie
                     winner = 1e-4
             elif score_black > by_score or score_white > by_score:
                 if score_black > score_white:
-                    winner = -1
+                    if player == -1:
+                        winner = -1
+                    else:
+                        winner = 1
                 elif score_white > score_black:
-                    winner = 1
+                    if player == -1:
+                        winner = 1
+                    else:
+                        winner = -1
                 else:
                     # Tie
                     winner = 1e-4
-        if np.count_nonzero(b.pieces == 0) == 0:  # checking whether every field is occupied = game over
+        if np.count_nonzero(b.pieces == 0) == 0:  # checking if every field is occupied = game over
             if score_black > score_white:
-                winner = -1
+                if player == -1:
+                    winner = -1
+                else:
+                    winner = 1
             elif score_white > score_black:
-                winner = 1
+                if player == -1:
+                    winner = 1
+                else:
+                    winner = -1
             else:
                 # Tie
                 winner = 1e-4
@@ -111,15 +128,15 @@ class GoGame(IGame):
         return (score_black, score_white)
 
     def getCanonicalForm(self, board: np.array, player: int):
-        # return state if player==1, else return -state if player==-1
+        """return state if player==1, else return -state if player==-1"""
         return board * player
 
     # modified
     def getSymmetries(self, board: np.array, pi: np.array):
         # mirror, rotational
-        assert(len(pi) == self.size**2 + 1)  # 1 for pass
+        assert (len(pi) == self.size**2 + 1)  # 1 for pass
         pi_board = np.reshape(pi[:-1], (self.size, self.size))
-        l = []
+        lst = []
         b_pieces = np.copy(board)
         for i in range(1, 5):
             for j in [True, False]:
@@ -128,8 +145,8 @@ class GoGame(IGame):
                 if j:
                     newB = np.fliplr(newB)
                     newPi = np.fliplr(newPi)
-                l += [(newB, list(newPi.ravel()) + [pi[-1]])]
-        return l
+                lst += [(newB, list(newPi.ravel()) + [pi[-1]])]
+        return lst
 
     def translate(self, board: np.array, player: int, index: int):
         return index
@@ -151,9 +168,9 @@ class GoGame(IGame):
                     if piece == 0:
                         row_str += '   |'
                     elif piece == 1:
-                        row_str += ' O |'  # Assuming 'o' for black stone
+                        row_str += ' O |'  # Assuming 'O' for black stone
                     elif piece == -1:
-                        row_str += ' X |'  # Assuming 'x' for white stone
+                        row_str += ' X |'  # Assuming 'X' for white stone
                 output += row_str + '\n' + horizontal_border
 
             # Add column indices below the board

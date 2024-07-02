@@ -17,23 +17,22 @@ class TicTacToeGame(IGame):
         self.n = n
 
     def getInitBoard(self):
-        # return initial board (numpy board)
+        """return initial board (numpy board)"""
         b = Board(self.n)
         return np.array(b.pieces)
 
     def getBoardSize(self):
-        # (a,b) tuple
         return self.n, self.n
 
     def getActionSize(self):
-        # return number of actions
+        """return number of actions"""
         return self.n * self.n + 1  # the +1 is wrong actually, but the trained model coming with alpha zero framework
         # is based on it and everything is working so do not mind that.
         # => TTT does not have the option to pass a move
 
     def getNextState(self, board, player, action):
-        # if player takes action on board, return next (board,player)
-        # action must be a valid move
+        """if player takes action on board, return next (board,player)
+           action must be a valid move"""
         if action == self.n * self.n:  # same as with getActionSize => TTT has actually no possibility to pass a move
             return board, -player
         b = Board(self.n)
@@ -43,7 +42,7 @@ class TicTacToeGame(IGame):
         return b.pieces, -player
 
     def getValidMoves(self, board, player):
-        # return a fixed size binary vector
+        """return a fixed size binary vector"""
         valids = [0] * self.getActionSize()
         b = Board(self.n)
         b.pieces = np.copy(board)
@@ -56,8 +55,7 @@ class TicTacToeGame(IGame):
         return np.array(valids)
 
     def getGameEnded(self, board, player):
-        # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
-        # player = 1
+        """return 0 if not ended, 1 if player won, -1 if player lost"""
         b = Board(self.n)
         b.pieces = np.copy(board)
 
@@ -71,7 +69,7 @@ class TicTacToeGame(IGame):
         return 1e-4
 
     def getCanonicalForm(self, board, player):
-        # return state if player==1, else return -state if player==-1
+        """return state if player==1, else return -state if player==-1"""
         return player * board
 
     def getSymmetries(self, board, pi):

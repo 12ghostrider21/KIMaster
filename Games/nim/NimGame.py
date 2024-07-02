@@ -31,15 +31,6 @@ class NimGame(IGame):
 
     def getValidMoves(self, board, player):
         """returns a binary np.array (1 = still valid action, 0 = invalid"""
-        """@
-        b = Board(self.rows, np.copy(board))
-        valid_moves = b.get_legal_moves()
-        valid_vector = np.zeros(self.getActionSize(), dtype=int)
-        for move in valid_moves:
-            idx = move[0] * self.rows + move[1] - 1  # Convert move to index
-            valid_vector[idx] = 1
-        return valid_vector
-        """
         b = Board(self.rows)  # fresh game, all possible valid moves
         valids_new = b.get_legal_moves()
 
@@ -64,15 +55,6 @@ class NimGame(IGame):
 
     def getSymmetries(self, board, pi):
         """rows are interchangeable"""
-
-        """@
-        symmetries = []
-        for perm in self.permute(list(range(self.rows))):
-            new_board = board[perm]
-            new_pi = np.reshape(pi, (self.rows, -1))[perm].flatten()
-            symmetries.append((new_board, new_pi))
-        return symmetries
-        """
         fresh_board = Board(self.rows)
 
         reshaped_pi = np.empty(self.rows, dtype=object)
@@ -88,6 +70,7 @@ class NimGame(IGame):
         for i in range(len(sym_pi)):
             sym_pi_flat.append([prob for sublist in sym_pi[i] for prob in sublist])
         symmetries = list(zip(sym_board, sym_pi_flat))
+
         return symmetries
 
     def permute(self, array):

@@ -17,21 +17,21 @@ class OthelloGame(IGame):
         self.n = n
 
     def getInitBoard(self):
-        # return initial board (numpy board)
+        """return initial board (numpy board)"""
         b = Board(self.n)
         return np.array(b.pieces)
 
     def getBoardSize(self):
-        # (a,b) tuple
         return (self.n, self.n)
 
     def getActionSize(self):
-        # return number of actions
+        """return number of possible actions
+           + 1 means pass move"""
         return self.n * self.n + 1
 
     def getNextState(self, board, player, action):
-        # if player takes action on board, return next (board,player)
-        # action must be a valid move
+        """if player takes action on board, return next (board,player)
+           action must be a valid move"""
         if action == self.n * self.n:
             return (board, -player)
         b = Board(self.n, np.copy(board))
@@ -40,7 +40,7 @@ class OthelloGame(IGame):
         return (b.pieces, -player)
 
     def getValidMoves(self, board, player):
-        # return a fixed size binary vector
+        """return a fixed size binary vector"""
         valids = [0] * self.getActionSize()
         b = Board(self.n, np.copy(board))
         legalMoves = b.get_legal_moves(player)
@@ -52,8 +52,7 @@ class OthelloGame(IGame):
         return np.array(valids)
 
     def getGameEnded(self, board, player):
-        # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
-        # player = 1
+        """return 0 if not ended, 1 if player won, -1 if player lost"""
         b = Board(self.n, np.copy(board))
         if b.has_legal_moves(player):
             return 0
@@ -64,7 +63,7 @@ class OthelloGame(IGame):
         return -1
 
     def getCanonicalForm(self, board, player):
-        # return state if player==1, else return -state if player==-1
+        """return state if player==1, else return -state if player==-1"""
         return player * board
 
     def getSymmetries(self, board, pi):

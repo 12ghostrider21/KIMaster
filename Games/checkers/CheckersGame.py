@@ -1,212 +1,207 @@
-from __future__ import print_function
-import sys, os, datetime
-
-sys.path.append('..')
 from Tools.i_game import IGame, np
-from Games.checkers.CheckersLogic import Board, Move
-
-"""
-Game class implementation for the game of Checkers (Russian variant).
-"""
+from Games.checkers_new.CheckersLogic import Board
+import math
 
 
 class CheckersGame(IGame):
-    # input stack plain names
-    __plain_names = ['own men', 'own kings', 'opponent''s men', 'opponent''s kings',
-                     'long capture',
-                     'no-progress count', 'king''s move count', 'repetition count']
+    """
+    Checkers Game class implementing the alpha-zero-general Game interface.
+    """
 
-    def __init__(self, height=None, width=None, win_length=None, np_pieces=None):
-        # few methods of Board and Move support size=8 only
-        self.n = 8
+    def __init__(self, n: int = None):
+        self.board = Board(n)
+        self.n = n or self.board.n
+        self.redundant = 0
+        self.ll_capture_hist = {}
 
     def getInitBoard(self):
-        # return initial board (numpy board)
-        b = Board()
-        return b
-        #return np.array(b.pieces)
+        """return initial board (numpy array)"""
+        b = Board(self.n)
+        return b.pieces
 
     def getBoardSize(self):
-        # (a,b) tuple
-        return (self.n, self.n)
+        return self.n, self.n
 
     def getActionSize(self):
-        # return number of actions
-        return Board.get_action_size()
+        """return number of all possible actions"""
+        return self.board.get_action_size()[0] + self.board.get_action_size()[1]
 
-    def getNextState(self, board, player, action):
-        # if player takes action on board, return next (board,player)
-        # action must be a valid move
-        b = Board(board)
-        try:
-            move = Move.parse_action(action)
-        except:
-            print(b.display())
-            raise
+    def getNextState(self, board: np.array, player: int, action: tuple[int, int, int, int]):
+        """if player takes action on board, return next (board,player)
+          action must be a valid move"""
+        b = Board(self.n, np.copy(board))
 
-        #if player == -1:
-        #    move = move.clone().rotate()
+        if np.array_equal(b.pieces, self.getInitBoard()):
+            self.ll_capture_hist.clear()
+        if (self.stringRepresentation(b.pieces), player) in self.ll_capture_hist:
+            b.last_long_capture = self.ll_capture_hist[(self.stringRepresentation(b.pieces), player)]
 
-        addedHalfMoves = b.execute_move(move, player)
-        is_long_capture = addedHalfMoves == 0
-        if is_long_capture:
-            # the same player continues long capture
-            return (b, player)
-        # other player takes move 
-        return (b, -player)
+        pre_amount_pieces = np.count_nonzero(b.pieces)
+        b.execute_action(action, player)
+        post_amount_pieces = np.count_nonzero(b.pieces)
+        if pre_amount_pieces == post_amount_pieces:
+            self.redundant += 1
+        else:
+            self.redundant = 0
 
-    def getValidMoves(self, board, player):
-        # return a fixed size binary vector
-        valids = [0] * self.getActionSize()
-        b = Board(board)
-        legalMoves = b.get_legal_moves(player)
-        board.legal_moves = b.legal_moves
-        #display(board)
-        #print("legalMoves = ", legalMoves)
-        if len(legalMoves) == 0:
-            valids[-1] = 1
-            return np.array(valids)
-        moveIds = []
-        for move in legalMoves:
-            valids[move.move_id] = 1
-            #if move.num_captures() > 3:
-            #    print("move.num_captures: ", move.num_captures())
-            assert move.move_id not in moveIds, "duplicated move_id detected: " + str(move) + "; " + str(legalMoves)
-            moveIds.append(move.move_id)
-        return np.array(valids)
+        if b.last_long_capture:
+            next_actions = b.get_moves_for_square(*b.last_long_capture, player, captures_only=True)
+            if next_actions:
+                self.ll_capture_hist.update({(self.stringRepresentation(b.pieces), player): b.last_long_capture})
+                return b.pieces, player  # Player continues with the same board state
+        return b.pieces, -player
 
-    def getGameEnded(self, board, player):
-        """ return 0 if not ended, 1 if the given player won, -1 if the given player lost, 0.0001 if the draw detected """
-        b = board
-        # draw has a very little value
-        draw = 1e-4
+    def getValidMoves(self, board: np.array, player: int):
+        """returns a binary np.array (1 = still valid action, 0 = invalid)"""
+        b = Board(self.n, pieces=np.copy(board))
 
-        assert board.halfMoves < 1000, board.display() + " 1000 half-moves exceeded"
+        if (self.stringRepresentation(b.pieces), player) in self.ll_capture_hist:
+            b.last_long_capture = self.ll_capture_hist[(self.stringRepresentation(b.pieces), player)]
+        legal_moves = b.get_legal_moves(player)
+        valid_moves = np.zeros(self.getActionSize(), dtype=int)
 
-        result = b.get_game_result(player)
-        if result != 0:
-            return result
-        #if b.is_win(-player):
-        #    return -1
-        # repetition rule
-        if b.get_repetition_count() >= 3:
-            #print("draw by repetitions: ", b.get_repetition_count())
-            #b.display()
-            #print("executed_moves: ", b.executed_moves)
-            return draw
-        # no-progress rules
-        kingsOnBothSides = b.whiteKingCount > 0 and b.blackKingCount > 0
-        if kingsOnBothSides:
-            if b.count_pieces() <= 3:
-                if b.noProgressCount / 2 >= 5:
-                    #print("draw by no-progress: ", b.count_pieces(), " pieces :: ", b.noProgressCount/2, " move(s)")
-                    return draw
-            elif b.count_pieces() <= 5:
-                if b.noProgressCount / 2 >= 30:
-                    #print("draw by no-progress: ", b.count_pieces(), " pieces :: ", b.noProgressCount/2, " move(s)")
-                    return draw
-            elif b.count_pieces() <= 7:
-                if b.noProgressCount / 2 >= 60:
-                    #print("draw by no-progress: ", b.count_pieces(), " pieces :: ", b.noProgressCount/2, " move(s)")
-                    return draw
-        # 3 kings vs 1 king for 15 moves
-        # TODO
-        # kings only move for 15 moves
-        if b.kingMoveCount / 2 >= 15:
-            #print("draw by 15 king-moves: ", b.kingMoveCount, ", pieces:", b.count_pieces(), ", no-progress:", b.noProgressCount, " half-move(s)")
-            return draw
+        for moves_per_piece in legal_moves:
+            for move in moves_per_piece:
+                index = self.calcValidMoveIndex(b, move)
+                valid_moves[index] = 1
 
-        # TODO
+        return valid_moves
 
-        # continue the game
-        return 0
+    def getGameEnded(self, board: np.array, player: int):
+        """returns 0 if not ended, 1 if player won, -1 if player lost"""
+        if self.redundant >= 30:
+            self.redundant = 0
+            return 1e-4  # draw
+        b = Board(self.n, np.copy(board))
+        if b.has_legal_moves(player) and b.has_legal_moves(-player):
+            return 0
+        if b.has_legal_moves(player):
+            return 1
+        if b.has_legal_moves(-player):
+            return -1
+        return 1e-4
 
-    def getCanonicalForm(self, board, player) -> np.array:
-        # return state if player==1, else return -state if player==-1
-        #print("getCanonicalForm(), player: ", player)
-        b = Board(board)
-        b.pieces *= player
+    def getCanonicalForm(self, board: np.array, player: int):
+        """Board independent of the current player."""
+        return player * board
 
-        if player == -1:
-            #print("rotate90 x 2")
-            b.pieces = np.rot90(b.pieces, 2)
-            b.rotation = (board.rotation + 180) % 360
-            if board.last_long_capture:
-                b.last_long_capture = board.last_long_capture.clone().rotate()
-            b.update_string_repr()
-
-        #b.display()
-
-        return b
-
-    def getSymmetries(self, board, pi):
+    def getSymmetries(self, board: np.array, pi: list):
         # mirror, rotational
-        assert (len(pi) == self.getActionSize())
-        #pi_board = np.reshape(pi[:-1], (self.n, self.n))
-        #l = []
+        length = math.sqrt(len(pi))
+        assert length.is_integer()  # otherwise padding would be wrong
+        length = int(length)
+        pi_board = np.reshape(pi, (length, length))
+        lst = []
 
-        #for i in range(1, 5):
-        #    for j in [True, False]:
-        #        newB = np.rot90(board, i)
-        #        newPi = np.rot90(pi_board, i)
-        #        if j:
-        #            newB = np.fliplr(newB)
-        #            newPi = np.fliplr(newPi)
-        #        l += [(newB, list(newPi.ravel()) + [pi[-1]])]
+        for i in [2, 4]:
+            for fliplr in [False, True]:
+                for flipud in [False, True]:
+                    newB = np.rot90(board, i)
+                    newPi = np.rot90(pi_board, i)
+                    if fliplr and flipud:
+                        continue
+                    if fliplr:
+                        newB = np.fliplr(newB)
+                        newPi = np.fliplr(newPi)
+                    if flipud:
+                        newB = np.flipud(newB)
+                        newPi = np.flipud(newPi)
+                    lst.append((newB, list(newPi.ravel())))
 
-        # we apply no sym transformation
-        image_stack = self.getImageStack(board)
+        return lst
 
-        pi = np.copy(pi)
-        l = [(image_stack, pi)]
-        return l
+    def translate(self, board: np.array, player: int, index: int) -> any:
+        """translates index calculated by nnet model to actual move"""
+        b = Board(self.n, np.copy(board))
+        if (self.stringRepresentation(b.pieces), player) in self.ll_capture_hist:
+            b.last_long_capture = self.ll_capture_hist[(self.stringRepresentation(b.pieces), player)]
+        moves = b.flat_legal_moves(player)
+        move_indices = [self.calcValidMoveIndex(b, m) for m in moves]
+        i = move_indices.index(index)
+        return moves[i]
+
+    def calcValidMoveIndex(self, board: Board, move: tuple[int, int, int, int]):
+        row, col, nrow, ncol = move
+        index = ((((row * self.n + col) * (self.n - 1) * 4 + (nrow - row + 1) * 2 + (ncol - col + 1) * 2) // 2) +
+                 (self.n - 3))
+        padding = board.get_action_size()[1]
+        if index > ((self.getActionSize() - padding) // 2):
+            index += padding
+        return index - 1  # because array starts with index 0
 
     def stringRepresentation(self, board):
-        return board.stringRepr
+        return board.tostring()
 
     def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
-        horizontal_border = '  +' + '-' * (4 * self.n - 1) + '+\n'
-        output = horizontal_border
+        if valid_moves:
+            b = Board(self.n, pieces=np.copy(board))
+            if (self.stringRepresentation(b.pieces), cur_player) in self.ll_capture_hist:
+                b.last_long_capture = self.ll_capture_hist[(self.stringRepresentation(b.pieces), cur_player)]
+            moves = b.flat_legal_moves(cur_player)
+            return str([((row * self.n + col), (nrow * self.n + ncol)) for row, col, nrow, ncol in moves])
 
-        for row in range(self.n):
-            row_str = f'{row} |'
-            for col in range(self.n):
-                piece = board[row][col]
-                if piece == 0:
-                    row_str += '   |'
-                elif piece == 1:
-                    row_str += ' o |'  # o for Man
-                elif piece == 3:
-                    row_str += ' @ |'  # @ for King
-                elif piece == -1:
-                    row_str += ' x |'  # x for opponent's Man
-                elif piece == -3:
-                    row_str += ' K |'  # K for opponent's King
-            output += row_str + '\n' + horizontal_border
+        else:
+            horizontal_border = '  +' + '-' * (4 * self.n - 1) + '+\n'
+            output = horizontal_border
 
-        # Add column indices below the board
-        col_indices = '    ' + '   '.join([f'{col}' for col in range(self.n)]) + '\n'
-        output += col_indices
+            for row in range(self.n):
+                row_str = f'{row} |'
+                for col in range(self.n):
+                    piece = board[row][col]
+                    if piece == 0:
+                        row_str += '   |'
+                    elif piece == 1:
+                        row_str += ' O |'  # O for Non_King
+                    elif piece == 3:
+                        row_str += ' @ |'  # @ for King
+                    elif piece == -1:
+                        row_str += ' X |'  # X for opponent's Non_King
+                    elif piece == -3:
+                        row_str += ' K |'  # K for opponent's King
+                output += row_str + '\n' + horizontal_border
 
-        return output
+            # Add column indices below the board
+            col_indices = '    ' + '   '.join([f'{col}' for col in range(self.n)]) + '\n'
+            output += col_indices
+
+            return output
 
     def draw(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         import pygame
+
+        b = Board(self.n, pieces=np.copy(board))
+        if (self.stringRepresentation(b.pieces), cur_player) in self.ll_capture_hist:
+            b.last_long_capture = self.ll_capture_hist[(self.stringRepresentation(b.pieces), cur_player)]
+
         king_white_img = pygame.image.load('king_white.png')
         king_black_img = pygame.image.load('king_black.png')
+        king_valid = pygame.image.load('king_valid.png')
 
         SQUARESIZE = 100
         WIDTH = self.n * SQUARESIZE
         HEIGHT = self.n * SQUARESIZE
 
         color_light_square = (252, 252, 244)  # Cream
-        color_dark_square = (139, 81, 19)  # Brown
+        color_dark_square = (211, 178, 104)  # Sand
         color_piece_white = (255, 255, 255)  # White
-        color_piece_black = (31, 21, 11)  # Dark Brown
+        color_piece_black = (0, 0, 0)  # Black
         color_valid = (144, 238, 144)  # Light green for valid moves
 
         pygame.init()
         surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+
+        valid_squares = []
+
+        if valid_moves:
+            from_pos = args[0]
+
+            legal_moves = b.flat_legal_moves(cur_player)
+            one_dim_moves = [((row * self.n + col), (nrow * self.n + ncol)) for row, col, nrow, ncol in legal_moves]
+            indices = [(i, f_pos) for i, (f_pos, t_pos) in enumerate(one_dim_moves) if from_pos == f_pos]
+            for i, from_pos in indices:
+                to_pos = one_dim_moves[i][1]
+                row, col = to_pos // self.n, to_pos % self.n
+                valid_squares.append((row, col, from_pos))
 
         # Draw the board
         for row in range(self.n):
@@ -218,14 +213,14 @@ class CheckersGame(IGame):
 
                 # Draw grid
                 pygame.draw.rect(surface, square_color,
-                                 (col * SQUARESIZE, row * SQUARESIZE, SQUARESIZE, SQUARESIZE))  #, 1
+                                 (col * SQUARESIZE, row * SQUARESIZE, SQUARESIZE, SQUARESIZE))  # 1
 
                 piece = board[row][col]
                 center = (col * SQUARESIZE + SQUARESIZE // 2, row * SQUARESIZE + SQUARESIZE // 2)
                 radius = SQUARESIZE // 3
 
                 if piece == -1:
-                    pygame.draw.circle(surface, color_piece_black, center, radius)
+                    self.drawToken(surface, color_piece_black, color_piece_white, center, radius)
                 elif piece == -3:
                     king_image = king_black_img
                     if cur_player == -1:
@@ -233,7 +228,7 @@ class CheckersGame(IGame):
                     king_image = pygame.transform.scale(king_image, (SQUARESIZE, SQUARESIZE))
                     surface.blit(king_image, (col * SQUARESIZE, row * SQUARESIZE))
                 elif piece == 1:
-                    pygame.draw.circle(surface, color_piece_white, center, radius)
+                    self.drawToken(surface, color_piece_white, color_piece_black, center, radius)
                 elif piece == 3:
                     king_image = king_white_img
                     if cur_player == -1:
@@ -241,80 +236,30 @@ class CheckersGame(IGame):
                     king_image = pygame.transform.scale(king_image, (SQUARESIZE, SQUARESIZE))
                     surface.blit(king_image, (col * SQUARESIZE, row * SQUARESIZE))
 
-                # Highlight valid moves if necessary
                 if valid_moves:
-                    valids = self.getValidMoves(board, cur_player)
-                    if valids[(row * len(board[row])) + col]:
-                        pygame.draw.circle(surface, color_valid, center, radius)
+                    for a, b, from_pos in valid_squares:
+                        if (row, col) == (a, b):
+                            piece = board[from_pos // self.n][from_pos % self.n]
+                            if abs(piece) == 1:
+                                pygame.draw.circle(surface, color_valid, center, radius * 0.6)
+                            if abs(piece) == 3:
+                                king_image = king_valid
+                                if cur_player == -1:
+                                    king_image = pygame.transform.rotate(king_image, 180)
+                                king_image = pygame.transform.scale(king_image,
+                                                                    (SQUARESIZE * 0.6, SQUARESIZE * 0.6))
+
+                                surface.blit(king_image, (col * SQUARESIZE + SQUARESIZE // 5,
+                                                          row * SQUARESIZE + SQUARESIZE // 5))
 
         if cur_player == -1:
             surface = pygame.transform.rotate(surface, 180)  # Rotate board for player -1
 
         return surface
 
-    def getImageStackSize(self):
-        """ Returns size of image stack that is used as input to NNet
-            4 main images for pieces
-            1 image for long_capture piece
-            
-            1 image for no-progress
-            1 image for king-move-count 
-            1 image for repetition-count            
-            [x] half-moves plane is not used
-            
-        """
-        return 8
-
-    def getImageStack(self, board):
-        """ Returns input stack for the given board
-            [index of image] [description]
-            [0] white men        bit map
-            [1] white kings      bit map
-            [2] black men        bit map
-            [3] black kings      bit map
-            [4] long_capture     bit map (one pixel on the given square)
-            
-            [5] no-progress              count
-            [6] king's move count        count
-            [7] repetition count         count
-            [not used] [x] half moves    count
-        """
-        index = [None, 0, None, 1, 3, None, 2]  # indices of main plains
-        # PLAYER = 4 # index of PLAYER's plain
-        LONG_CAPTURE = 4  # index of LONG_CAPTURE's plain
-        active_player = 1  # white always move
-        # create image stack that will be an input to NNet 
-        n = self.n
-        main_planes = np.zeros(shape=(5, n, n), dtype=np.float32)
-        # main images
-        for y in range(n):
-            for x in range(n):
-                piece = board.pieces[x][y]
-                if piece != 0:
-                    main_planes[index[piece]][x][y] = 1
-                # main_planes[PLAYER][x][y] = active_player
-
-        # player/piece(s) making the move
-        if board.last_long_capture:
-            last = board.last_long_capture
-            main_planes[LONG_CAPTURE][last.x1][last.y1] = 1
-
-        # auxiliary images
-        normNoProgressCount = board.noProgressCount / 128.0 if board.count_pieces() <= 7 else 0
-        normKingMoveCount = board.kingMoveCount / 32.0
-        normRepetitionCount = board.get_repetition_count() / 4.0
-
-        no_progress = np.full((8, 8), normNoProgressCount, dtype=np.float32)
-        king_move_count = np.full((8, 8), normKingMoveCount, dtype=np.float32)
-        repetition_count = np.full((8, 8), normRepetitionCount, dtype=np.float32)
-        auxiliary_planes = [no_progress, king_move_count, repetition_count]
-
-        image_stack = np.asarray(auxiliary_planes, dtype=np.float32)
-        image_stack = np.vstack((main_planes, auxiliary_planes))
-        assert image_stack.shape == (self.getImageStackSize(), n, n)
-
-        # debug image stack
-        #if board.last_long_capture or board.kingMoveCount>0:
-        #    self.print_image_stack(image_stack)
-
-        return image_stack
+    def drawToken(self, surface, color1, color2, center, radius):
+        import pygame
+        pygame.draw.circle(surface, color2, center, radius * 1.05)
+        pygame.draw.circle(surface, color1, center, radius)
+        pygame.draw.circle(surface, color2, center, radius * 0.80)
+        pygame.draw.circle(surface, color1, center, radius * 0.72)

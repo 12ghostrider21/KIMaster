@@ -39,6 +39,7 @@
           <option value="tictactoe">Tic Tac Toe</option>
           <option value="othello">Othello</option>
           <option value="nim">Nim</option>
+          <option value="checkers">Dame</option>
         </select>
         <select v-model="mode">
           <option value="player_vs_player">Player vs Player</option>
