@@ -6,6 +6,7 @@ import numpy as np
 import pygame
 from fastapi import WebSocket, WebSocketDisconnect
 
+from GameClient import player
 from Tools.dynamic_imports import Importer
 from Tools.i_game import IGame
 from Tools.language_handler import LanguageHandler
@@ -128,14 +129,21 @@ class SocketServer(AbstractConnectionManager):
                         game = game_instances[game_name]
                         default = game.getInitBoard()
                         board = np.array(array, dtype=default.dtype).reshape(default.shape)
-                        img_surface = game.draw(board, valid, cur_player, from_pos)
-                        img = self.surface_to_png(img_surface)
+                        img_surface1 = game.draw(board, valid, 1, from_pos)
+                        img_surface2 = game.draw(board, valid, -1, from_pos)
+                        img1 = self.surface_to_png(img_surface1)
+                        img2 = self.surface_to_png(img_surface2)
                         if p_pos is None:
                             # broadcast
-                            for c in lobby.get(p_pos):
-                                await self.send_bytes(c, img)
+                            clients = lobby.get(p_pos)
+                            spec = clients[:-2]
+                            for c in spec:
+                                await self.send_bytes(c, img1)  # spectators
+                            await self.send_bytes(clients[-2], img1)  # p1
+                            await self.send_bytes(clients[-1], img2)  # p2
                         else:
                             # to p_pos
+                            img = img1 if p_pos == "p1" else img2
                             await self.send_bytes(lobby.get(p_pos), img)
 
         except RuntimeError:
