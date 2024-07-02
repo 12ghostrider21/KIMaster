@@ -173,9 +173,9 @@ class CheckersGame(IGame):
         if (self.stringRepresentation(b.pieces), cur_player) in self.ll_capture_hist:
             b.last_long_capture = self.ll_capture_hist[(self.stringRepresentation(b.pieces), cur_player)]
 
-        king_white_img = pygame.image.load('king_white.png')
-        king_black_img = pygame.image.load('king_black.png')
-        king_valid = pygame.image.load('king_valid.png')
+        king_white_img = pygame.image.load('../Games/checkers/king_white.png')
+        king_black_img = pygame.image.load('../Games/checkers/king_black.png')
+        king_valid = pygame.image.load('../Games/checkers/king_valid.png')
 
         SQUARESIZE = 100
         WIDTH = self.n * SQUARESIZE
