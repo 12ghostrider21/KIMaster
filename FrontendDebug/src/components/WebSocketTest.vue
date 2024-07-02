@@ -98,6 +98,7 @@
       @mousemove="highlightCellOnHover"
       style="display: block; margin: auto; position: relative;"
     />
+    <button v-if="game==='nim'" @click="sendNimMove" position:absolute>NIM MOVE {{ nimTest }}</button>
     <div
       v-if="hoveredCell"
       class="highlight-cell"
@@ -144,7 +145,9 @@
     </form>
     <h2>JSON Output</h2>
     <pre>{{ userSentJSON }}</pre>
-    <button @click="sendUserSentJSON">Send</button>
+    <button @click="sendUserSentJSON">Send </button>
+
+    
   </div>
   </div>
   </div>
@@ -186,6 +189,9 @@ export default {
       commandInUserJSON:null,
       commandKeyInUserJSON:null,
       hoveredCell: null,
+
+      nimRows: [1, 3, 5, 7],
+      nimTest:[-1,0],
     };
   },
   methods: {
@@ -253,6 +259,15 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
       this.sendMessage(data);
     },
 
+    sendNimMove(){
+    const data = { 
+      command: 'play',
+      command_key: 'make_move',
+      move: this.nimTest,
+    };
+      this.sendMessage(data);
+      this.nimTest=[-1,0];
+      },
 
     joinLobby() {
       const data = {
@@ -410,6 +425,11 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
       }
       this.sendMessage(data);
     },
+    nimMove(mouseY){
+      console.log(mouseY);
+      if (this.nimTest[0]==-1) this.nimTest[0]=mouseY;
+      if (this.nimTest[0]==mouseY) this.nimTest[1]+=1;
+    },
 
     trackMousePosition(event) {
     this.mouseX = event.clientX;
@@ -431,7 +451,14 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
     else {this.toPos=this.mouseX+(this.boardHeight*this.mouseY-this.boardHeight -1);
 
 
-    if (!this.validMoveInsteadOfMakeMove)this.playMakeMove();
+    if (!this.validMoveInsteadOfMakeMove){
+    switch (this.game) {
+           case "nim":
+           this.nimMove(this.mouseY-1);
+           break;
+           default: 
+           this.playMakeMove();
+           break;}}
     else {
       this.fromPos=this.toPos; //TODO: Achtung nur für Debug, muss geändert werden für merhzügige Spiele!
       this.playValidMoves();}}

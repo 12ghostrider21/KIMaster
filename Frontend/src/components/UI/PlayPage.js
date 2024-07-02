@@ -15,6 +15,7 @@ export default {
       "images",
       "currentImageIndex",
       "turn",
+     
     ]),
     enums() {
       return ENUMS;
@@ -48,7 +49,8 @@ export default {
       validMoveInsteadOfMakeMove: null,
       twoTurnGame: null,
       hoveredCell: null,
-      isRulesVisible: false
+      isRulesVisible: false,
+      nimRows: [1, 3, 5, 7],
     };
   },
   mounted() {
@@ -73,6 +75,11 @@ export default {
         this.boardHeight = 6;
         this.twoTurnGame = false;
         break;
+        case "nim":
+          this.boardWidth = 1;
+          this.boardHeight = 4;
+          this.twoTurnGame = false;
+          break;
     }
   },
   methods: {
@@ -184,12 +191,13 @@ export default {
       } else {
         this.toPos =
           this.mouseX + (this.boardHeight * this.mouseY - this.boardHeight - 1);
-
-        if (!this.validMoveInsteadOfMakeMove) this.playMakeMove();
-        else {
-          this.fromPos = this.toPos; // TODO: Achtung nur für Debug, muss geändert werden für mehrzügige Spiele!
-          this.playValidMoves();
-        }
+          switch (this.game) {
+           case "nim":
+           break;
+           default: 
+           this.playMakeMove();
+           break;}
+       
       }
     },
     surrenderGame() {
