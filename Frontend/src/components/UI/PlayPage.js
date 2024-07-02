@@ -50,7 +50,7 @@ export default {
       twoTurnGame: null,
       hoveredCell: null,
       isRulesVisible: false,
-      nimRows: [1, 3, 5, 7],
+      nimTest:[-1,0],
     };
   },
   mounted() {
@@ -92,6 +92,21 @@ export default {
       "changeFirstImage",
       "changeLastImage"
     ]),
+    nimMove(pos){
+      if (this.nimTest[0]==-1) this.nimTest[0]=pos;
+      if (this.nimTest[0]==pos) this.nimTest[1]+=1;
+     
+      
+    },
+    sendNimMove(){
+      const data = { 
+        command: 'play',
+        command_key: 'make_move',
+        move: this.nimTest,
+      };
+        this.sendMessage(data);
+        this.nimTest=[-1,0];
+        },
     sendMessage(data) {
       console.log(data);
       this.sendWebSocketMessage(JSON.stringify(data));
@@ -193,6 +208,7 @@ export default {
           this.mouseX + (this.boardHeight * this.mouseY - this.boardHeight - 1);
           switch (this.game) {
            case "nim":
+           this.nimMove(this.mouseY-1)
            break;
            default: 
            this.playMakeMove();

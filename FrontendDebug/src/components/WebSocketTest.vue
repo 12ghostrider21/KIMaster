@@ -189,8 +189,6 @@ export default {
       commandInUserJSON:null,
       commandKeyInUserJSON:null,
       hoveredCell: null,
-
-      nimRows: [1, 3, 5, 7],
       nimTest:[-1,0],
     };
   },

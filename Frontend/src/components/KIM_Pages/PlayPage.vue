@@ -5,10 +5,13 @@
       <base-button @click="surrenderGame()">{{ $t('message.surrender') }}</base-button>
       <base-button @click="quitGame()">{{ $t('message.quit_game') }}</base-button>
       <base-button @click="showRules">{{ $t('message.show_rules') }}</base-button>
+      <base-button v-if="game==='nim'" @click="sendNimMove" >NIM MOVE {{ nimTest }}</base-button>
     </div>
     
     <!-- Game Board -->
+     
     <div class="grid-section">
+      
       <img
         width="300"
         height="300"
@@ -21,6 +24,7 @@
         @mousemove="highlightCellOnHover"
         @contextmenu.prevent="playValidMoves()"
       />
+     
       <div
         v-if="hoveredCell && currentImageIndex === images.length - 1"
         class="highlight-cell"
