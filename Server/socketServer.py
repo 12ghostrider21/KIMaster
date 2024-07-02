@@ -6,7 +6,6 @@ import numpy as np
 import pygame
 from fastapi import WebSocket, WebSocketDisconnect
 
-from GameClient import player
 from Tools.dynamic_imports import Importer
 from Tools.i_game import IGame
 from Tools.language_handler import LanguageHandler
@@ -122,7 +121,6 @@ class SocketServer(AbstractConnectionManager):
                         await asyncio.create_task(self.blunder(game, mcts, actions, lobby.game_client, p_pos))
                     case "draw":
                         array: np.array = np.array(read_object.get("board"))
-                        cur_player: int = read_object.get("cur_player")
                         valid: bool = bool(read_object.get("valid"))
                         from_pos = read_object.get("from_pos")
                         game_name = command_key
