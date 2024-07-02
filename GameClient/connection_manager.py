@@ -35,9 +35,9 @@ class WebSocketConnectionManager(ABC):
             cmd.update(data)
         await self.__send_json(json.dumps(cmd))
 
-    async def send_board(self, board: np.array, cur_player: int, game_name: str, valid: bool):
+    async def send_board(self, board: np.array, cur_player: int, game_name: str, valid: bool, from_pos: int | None):
         cmd = {"command": "draw", "command_key": game_name, "to": "p1" if cur_player == 1 else "p2", "key": self.key,
-               "board": board.tolist(), "cur_player": cur_player, "valid": valid}
+               "board": board.tolist(), "cur_player": cur_player, "valid": valid, "from_pos": from_pos}
         await self.__send_json(json.dumps(cmd))
 
     async def broadcast_board(self, board: np.array, cur_player: int, game_name: str, valid: bool):

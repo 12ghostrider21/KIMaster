@@ -26,7 +26,7 @@ class CheckersGame(IGame):
         """return number of all possible actions"""
         return self.board.get_action_size()[0] + self.board.get_action_size()[1]
 
-    def getNextState(self, board: np.array, player: int, action: tuple[int, int, int, int] | tuple[int, int]):
+    def getNextState(self, board: np.array, player: int, action: tuple[int, int]):
         """if player takes action on board, return next (board,player)
           action must be a valid move"""
         b = Board(self.n, np.copy(board))
@@ -118,7 +118,13 @@ class CheckersGame(IGame):
         moves = b.flat_legal_moves(player)
         move_indices = [self.calcValidMoveIndex(b, m) for m in moves]
         i = move_indices.index(index)
-        return moves[i]
+        move = moves[i]
+        one_d_move = self.two_d_to_one_d(move)
+        return one_d_move
+
+    def two_d_to_one_d(self, move: tuple[int, int, int, int]) -> tuple[int, int]:
+        row, col, nrow, ncol = move
+        return row * self.n + col, nrow * self.n + ncol
 
     def calcValidMoveIndex(self, board: Board, move: tuple[int, int, int, int]):
         row, col, nrow, ncol = move
@@ -140,10 +146,10 @@ class CheckersGame(IGame):
             legal_moves = b.flat_legal_moves(cur_player)
             if args and len(args) > 0:  # returns valid moves only for the demanded position
                 from_pos = args[0]
-                one_dim_moves = [((row * self.n + col), (nrow * self.n + ncol)) for row, col, nrow, ncol in legal_moves]
+                one_dim_moves = [self.two_d_to_one_d(move) for move in legal_moves]
                 return str([(f_pos, t_pos) for (f_pos, t_pos) in one_dim_moves if from_pos == f_pos])
             else:  # returns all valid moves
-                return str([((row * self.n + col), (nrow * self.n + ncol)) for row, col, nrow, ncol in legal_moves])
+                return str([self.two_d_to_one_d(move) for move in legal_moves])
 
         else:
             horizontal_border = '  +' + '-' * (4 * self.n - 1) + '+\n'
@@ -201,7 +207,7 @@ class CheckersGame(IGame):
             from_pos = args[0]
 
             legal_moves = b.flat_legal_moves(cur_player)
-            one_dim_moves = [((row * self.n + col), (nrow * self.n + ncol)) for row, col, nrow, ncol in legal_moves]
+            one_dim_moves = [self.two_d_to_one_d(move) for move in legal_moves]
             indices = [(i, f_pos) for i, (f_pos, t_pos) in enumerate(one_dim_moves) if from_pos == f_pos]
             for i, from_pos in indices:
                 to_pos = one_dim_moves[i][1]

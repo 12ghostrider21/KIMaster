@@ -62,15 +62,15 @@ class GameClient(WebSocketConnectionManager):
 
                 # Handling 'valid_moves' command
                 case "valid_moves":
-                    #print("valid_gc")
-                    #print("from_pos", read_object.get("fromPos"))
                     if not self.is_arena_running():
                         await self.send_response(RCODE.P_NOTRUNNING, p_pos)
                         continue
                     hist: tuple = self.pit.get_last_hist_entry()  # Get the last history entry from the Pit
-                    await self.send_board(hist[0], hist[1], self.pit.arena.game_name, True)
-                    await self.send_response(RCODE.P_MOVES, p_pos,
-                                             {"moves": self.pit.arena.game.getValidMoves(hist[0], hist[1]).tolist()})
+                    from_pos = read_object.get("fromPos")
+                    await self.send_board(hist[0], hist[1], self.pit.arena.game_name, True, from_pos)
+                    moves = [str(self.pit.arena.game.translate(hist[0], hist[1], i))
+                             for i, m in enumerate(self.pit.arena.game.getValidMoves(hist[0], hist[1])) if m == 1]
+                    await self.send_response(RCODE.P_MOVES, p_pos,{"moves": moves})
 
                 # Handling 'make_move' command
                 case "make_move":
@@ -145,14 +145,14 @@ class GameClient(WebSocketConnectionManager):
                     blunder = read_object.get("blunder")
                     if blunder is not None:
                         self.pit.set_blunder(blunder)
-                        self.pit.arena.blender_calculation = False  # blunder received deactivate function
+                        self.pit.arena.blunder_calculation = False  # blunder received deactivate function
                     # only one create request of blunder possible
-                    if self.pit.arena.blender_calculation:
+                    if self.pit.arena.blunder_calculation:
                         await self.send_response(code=RCODE.P_BLUNDER, to=p_pos)
                         continue
                     # request blunder create on first request
                     if len(self.pit.arena.blunder) == 0:
-                        self.pit.arena.blender_calculation = True
+                        self.pit.arena.blunder_calculation = True
                         await self.send_response(code=RCODE.P_CREATEBLUNDER, to=p_pos)
                         await self.send_cmd(command="blunder", command_key=self.pit.arena.game_name,
                                             p_pos=p_pos, data=self.pit.get_blunder_payload())
@@ -178,7 +178,7 @@ class GameClient(WebSocketConnectionManager):
                         await self.send_response(RCODE.P_INVALIDTIMELINE, p_pos)
                         continue
                     state, player, it = self.pit.timeline(p_pos, True, num)
-                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, False)
+                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, False, None)
                     await self.send_response(RCODE.P_TIMELINE, p_pos, {"current_player": player, "it": it})
 
                 # Handling 'step' command
@@ -187,7 +187,7 @@ class GameClient(WebSocketConnectionManager):
                         await self.send_response(RCODE.P_STILLRUNNING, p_pos)
                         continue
                     state, player, it = self.pit.timeline(p_pos, True, None)
-                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, True)
+                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, True, None)
                     data = {"current_player": player, "it": it, "last_it": len(self.pit.arena.history) - 1}
                     await self.send_response(RCODE.P_STEP, p_pos, data)
 
@@ -197,7 +197,7 @@ class GameClient(WebSocketConnectionManager):
                         await self.send_response(RCODE.P_STILLRUNNING, p_pos)
                         continue
                     state, player, it = self.pit.timeline(p_pos, False, None)
-                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, True)
+                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, True, None)
                     data = {"current_player": player, "it": it, "last_it": len(self.pit.arena.history) - 1}
                     await self.send_response(RCODE.P_UNSTEP, p_pos, data)
                 # Handling unknown commands

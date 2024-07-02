@@ -123,11 +123,12 @@ class SocketServer(AbstractConnectionManager):
                         array: np.array = np.array(read_object.get("board"))
                         cur_player: int = read_object.get("cur_player")
                         valid: bool = bool(read_object.get("valid"))
+                        from_pos = read_object.get("from_pos")
                         game_name = command_key
                         game = game_instances[game_name]
                         default = game.getInitBoard()
                         board = np.array(array, dtype=default.dtype).reshape(default.shape)
-                        img_surface = game.draw(board, valid, cur_player=cur_player)
+                        img_surface = game.draw(board, valid, cur_player, from_pos)
                         img = self.surface_to_png(img_surface)
                         if p_pos is None:
                             # broadcast

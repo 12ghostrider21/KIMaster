@@ -19,7 +19,7 @@ class FastAPIServer(AbstractConnectionManager):
         self.manager: LobbyManager = manager
         self.importer: Importer = importer
         self.__command_mask: list[str] = ["command", "command_key", "pos", "key", "mode", "game", "difficulty", "num",
-                                          "move", "lang"]
+                                          "move", "lang", "fromPos"]
         self.__play_mask: list[str] = ["create", "valid_moves", "make_move", "undo_move", "surrender",
                                        "new_game", "blunder", "timeline", "step", "unstep", "evaluate", "stop_evaluate",
                                        "games"]
