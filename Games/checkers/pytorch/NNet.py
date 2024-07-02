@@ -12,7 +12,7 @@ from Tools.neural_net import NeuralNet
 import torch
 import torch.optim as optim
 
-from Games.checkers_new.pytorch.CheckersNNet import CheckersNNet as cnnet
+from Games.checkers.pytorch.CheckersNNet import CheckersNNet as cnnet
 
 args = dotdict({
     'lr': 0.001,

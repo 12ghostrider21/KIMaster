@@ -1,5 +1,5 @@
 from Tools.i_game import IGame, np
-from Games.checkers_new.CheckersLogic import Board
+from Games.checkers.CheckersLogic import Board
 import math
 
 
