@@ -22,13 +22,15 @@ export default createStore({
         playerWon:0,
         isValidMoveImage:false,
         callPos:false,
+        invalidMoveObserver:false,
     },
     mutations: {
 
         setCallPos(state) {
-            console.log("2 +" + state.callPos)
             state.callPos=!state.callPos;
-            console.log("3 +" + state.callPos)
+        },
+        setInvalidMoveMade(state,invalidMoveObserver) {
+            state.invalidMoveObserver= !state.invalidMoveObserver;
         },
 
         setCurrentImageIndex(state, currentImageIndex) {
@@ -216,6 +218,8 @@ export default createStore({
                                 commit('setTurn',receivedJSONObject.turn);
                                 commit('setPopup',ENUMS.popUpStatus.GAMEOVER);
                                 break;
+                            case 207:
+                                break;
                             case 208:
                                 commit('setIsValidMoveImage', true);
                                 break;
@@ -230,6 +234,9 @@ export default createStore({
                                 commit('setGameActive', false);
                                 commit('setPlayerWon', receivedJSONObject.result)
                                 commit('setPopup',ENUMS.popUpStatus.GAMEOVER);
+                                break;
+                            case 256:
+                                commit('setInvalidMoveMade',true);
                                 break;
                         }
                     }
@@ -279,6 +286,7 @@ export default createStore({
         notif:(state) => state.notif,
         currentImageIndex:(state) => state.currentImageIndex,
         isValidMoveImage:(state) => state.isValidMoveImage,
-        callPos:(state) => state.callPos,
+        callPos:(state) => state.callPos, 
+        invalidMoveObserver:(state) => state.invalidMoveObserver,
     },
 });

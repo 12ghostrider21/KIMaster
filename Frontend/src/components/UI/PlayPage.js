@@ -15,6 +15,7 @@ export default {
       "images",
       "currentImageIndex",
       "turn",
+      "invalidMoveObserver",
      
     ]),
     enums() {
@@ -51,6 +52,7 @@ export default {
       hoveredCell: null,
       isRulesVisible: false,
       nimTest:[-1,0],
+      savedPos:null,
     };
   },
   mounted() {
@@ -102,6 +104,14 @@ export default {
       if (this.nimTest[0]==pos) this.nimTest[1]+=1;
      
       
+    },
+    invalidMoveHandling() { 
+      if (this.savedPos!=null) { 
+      this.playValidMoves(this.savedPos);
+      this.fromPos=this.savedPos;
+      this.turnSelect=false;}
+      this.savedPos=null;
+
     },
     sendNimMove(){
       const data = { 
@@ -160,6 +170,7 @@ export default {
       };
       this.sendMessage(data);
     },
+
     playMakeMove() {
       if (this.currentImageIndex === this.images.length - 1) {
         let data;
@@ -205,8 +216,10 @@ export default {
           this.toPos =
             this.mouseX +
             (this.boardHeight * this.mouseY - this.boardHeight - 1);
+          this.savedPos=this.toPos;
           this.turnSelect = true;
-          this.playMakeMove();
+          if(this.toPos!=this.fromPos){
+          this.playMakeMove();}
         }
       } else {
         this.toPos =
@@ -261,5 +274,9 @@ export default {
     lastImage() {
       this.changeLastImage();
     }
-  }
+  },
+  watch: {
+    invalidMoveObserver(){
+      if(twoTurnGame)this.invalidMoveHandling();
+    },},
 };
