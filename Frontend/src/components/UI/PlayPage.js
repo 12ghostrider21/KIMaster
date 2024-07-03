@@ -16,6 +16,7 @@ export default {
       "currentImageIndex",
       "turn",
       "invalidMoveObserver",
+      "skipMove",
      
     ]),
     enums() {
@@ -224,13 +225,18 @@ export default {
           this.playMakeMove();}
         }
       } else {
-        this.toPos =
-          this.mouseX + (this.boardHeight * this.mouseY - this.boardHeight - 1);
+        
           switch (this.game) {
-           case "nim":
+           case ENUMS.games.NIM:
            this.nimMove(this.mouseY-1)
            break;
-           default: 
+           case ENUMS.games.CONNECT4:
+           this.toPos= this.mouseX-1;
+           this.playMakeMove();
+           
+           break;
+           default:
+            this.toPos =this.mouseX + (this.boardHeight * this.mouseY - this.boardHeight - 1); 
            this.playMakeMove();
            break;}
        
@@ -280,5 +286,16 @@ export default {
   watch: {
     invalidMoveObserver(){
       if(this.twoTurnGame)this.invalidMoveHandling();
-    },},
-};
+    },
+    skipMove(newval){
+      if(newval){
+      const data = {
+        command: "play",
+        command_key: "make_move",
+        move: 36,
+      };
+    
+    this.sendMessage(data);}
+  },
+  },
+}

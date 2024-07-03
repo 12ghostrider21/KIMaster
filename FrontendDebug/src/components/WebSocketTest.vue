@@ -99,6 +99,7 @@
       style="display: block; margin: auto; position: relative;"
     />
     <button v-if="game==='nim'" @click="sendNimMove" position:absolute>NIM MOVE {{ nimTest }}</button>
+    <button v-if="othelloSkipButton" @click="playSkipMove" position:absolute>Skip</button>
     <div
       v-if="hoveredCell"
       class="highlight-cell"
@@ -190,6 +191,8 @@ export default {
       commandKeyInUserJSON:null,
       hoveredCell: null,
       nimTest:[-1,0],
+
+      othelloSkipButton:false,
     };
   },
   methods: {
@@ -224,10 +227,14 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
       };
 
       this.socket.onmessage = (event) => {
-   
-        try { this.receivedJSONObject=JSON.parse(event.data);
-        if (this.receivedJSONObject.key!= null) {this.lobbyKey=this.receivedJSONObject.key;}
+        console.log(event.data);
+        try { 
+          this.receivedJSONObject=JSON.parse(event.data);
+        
+        if (this.receivedJSONObject.key!= null) {this.lobbyKey=this.receivedJSONObject.key;};
+        if (this.receivedJSONObject.moves!=null && this.game==="othello"){if (this.receivedJSONObject.moves.includes("36")) {this.othelloSkipButton=true}else {this.othelloSkipButton=false ;}};
       } catch (e) {
+        console.log(e);
         const blob = new Blob([event.data], { type: 'image/png' }); 
         const url = URL.createObjectURL(blob);
         this.imageSrc = url;
@@ -256,7 +263,7 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
       };
       this.sendMessage(data);
     },
-
+    
     sendNimMove(){
     const data = { 
       command: 'play',
@@ -325,7 +332,7 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
     playValidMoves(){  const data = {
       command: 'play',
       command_key: 'valid_moves',
-    };
+          };
       this.sendMessage(data);
       },
 
@@ -333,9 +340,19 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
       command: 'play',
       command_key: 'valid_moves',
       fromPos:fromPos,
-    };
-      this.sendMessage(data);
+    }; this.sendMessage(data);
+    
       },
+
+    playSkipMove(){
+      let data;
+      data = {
+        command: 'play',
+        command_key: 'make_move',
+        move: 36,
+    };
+    this.sendMessage(data);
+    },
 
 
     playMakeMove(){
@@ -429,6 +446,13 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
       if (this.nimTest[0]==mouseY) this.nimTest[1]+=1;
     },
 
+    othelloMove() {
+      this.playValidMoves(0);
+      this.playMakeMove();
+  
+
+    },
+
     trackMousePosition(event) {
     this.mouseX = event.clientX;
     this.mouseY = event.clientY;
@@ -454,6 +478,12 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
            case "nim":
            this.nimMove(this.mouseY-1);
            break;
+           case "othello":
+           this.othelloMove();
+           break;
+           case "connect4":
+           this.toPos= this.mouseX-1;
+           this.playMakeMove();
            default: 
            this.playMakeMove();
            break;}}

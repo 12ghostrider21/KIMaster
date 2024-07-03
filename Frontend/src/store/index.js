@@ -24,6 +24,7 @@ export default createStore({
         isValidMoveImage:false,
         callPos:false,
         invalidMoveObserver:false,
+        skipMove:false,
     },
     mutations: {
 
@@ -34,6 +35,9 @@ export default createStore({
         },
         setCallPos(state) {
             state.callPos=!state.callPos;
+        },
+        setSkipMove(state,skipMove) {
+            state.skipMove=skipMove;
         },
         setInvalidMoveMade(state,invalidMoveObserver) {
             state.invalidMoveObserver= !state.invalidMoveObserver;
@@ -52,7 +56,7 @@ export default createStore({
         addImages(state, image) {
             state.images.push(image);
         },
-
+        
         newImages(state) {
             state.images= [];
         },
@@ -239,6 +243,12 @@ export default createStore({
                                 break;
                             case 208:
                                 commit('setIsValidMoveImage', true);
+                                 if (true){
+                                    if (receivedJSONObject.moves.includes("36")){
+                                        commit('setSkipMove',true);
+                                        commit('setNotif',ENUMS.notifStatus.SKIPMOVE)}
+                                    else commit('setSkipMove',false); //For Special case no avaiable Move on Othello Board to skip a turn
+                                    };
                                 break;
                             case 209:
                                 commit('setCurrentImageIndex', state.currentImageIndex - 3); // Set to the second to last image index
@@ -306,5 +316,6 @@ export default createStore({
         callPos:(state) => state.callPos, 
         invalidMoveObserver:(state) => state.invalidMoveObserver,
         positionsInLobby:(state) => state.positionsInLobby,
+        skipMove:(state) => state.skipMove,
     },
 });
