@@ -53,6 +53,8 @@ export default {
       isRulesVisible: false,
       nimTest:[-1,0],
       savedPos:null,
+
+
     };
   },
   mounted() {
@@ -277,6 +279,6 @@ export default {
   },
   watch: {
     invalidMoveObserver(){
-      if(twoTurnGame)this.invalidMoveHandling();
+      if(this.twoTurnGame)this.invalidMoveHandling();
     },},
 };

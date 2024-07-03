@@ -8,10 +8,12 @@ export default {
       mode: "player_vs_kim",
       difficulty: "easy",
       selectedGame: this.game,
+      test:[false,true],
+      
     };
   },
   computed: {
-    ...mapGetters(["lobbyKey", "position","gameReady"]),
+    ...mapGetters(["lobbyKey", "position","gameActive","positionsInLobby","callPos"]),
     enums() {return ENUMS},
     positionSelect: {
       get() {
@@ -19,7 +21,7 @@ export default {
       },
       set(value) {
         this.updatePosition(value);
-      }
+      },
     },
   },
   mounted() {
@@ -28,7 +30,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["initWebSocket", "sendWebSocketMessage","setGame",'callPos',"updatePosition"]),
+    ...mapActions(["initWebSocket", "sendWebSocketMessage","setGame","updatePosition"]),
     sendMessage(data) {
       //if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       console.log(data);
@@ -86,7 +88,7 @@ export default {
       this.sendMessage(data);
     },
 
-    showLobbyList() {
+    lobbyStatus() {
       const data = {
         command: "lobby",
         command_key: "status",
@@ -113,21 +115,19 @@ export default {
         };
         this.setGame(this.game);
         this.sendMessage(data);
-
+        if(this.gameActive) 
         this.$router.push({
           name: 'play',
           params: { game: this.game }
         }); }
-      else {
-        setTimeout(() => {
-          this.playCreate();
-        }, 1000);
-      }
+     
     },
   },
   watch: {
     callPos(){
       this.lobbyPos();
+      this.lobbyStatus();
+      console.log(this.positionsInLobby);
     },
    
   },

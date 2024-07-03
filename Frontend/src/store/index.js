@@ -8,6 +8,7 @@ export default createStore({
         lobbyKey: null,
         game: null,
         position: "p1",
+        positionsInLobby:[false,false,0], //Occupied Positions, 0=p1 1=p2, 2= number of Spectators
         imagesrc: null,
         images:[],
         inLobby: false,
@@ -19,13 +20,18 @@ export default createStore({
         currentImageIndex:-1,
         turn:0, //Turn of the Game
         playerTurn:1, //Which Player is currently active 1 for Player 1
-        playerWon:0,
+        playerWon:0, //WhichPlayer Won
         isValidMoveImage:false,
         callPos:false,
         invalidMoveObserver:false,
     },
     mutations: {
 
+        setPositionsInLobby(state,{ p1, p2, sp }) {
+            state.positionsInLobby[0]=p1;
+            state.positionsInLobby[1]=p2;
+            state.positionsInLobby[2]=sp;
+        },
         setCallPos(state) {
             state.callPos=!state.callPos;
         },
@@ -171,6 +177,7 @@ export default createStore({
                                 commit('setLobbyKey', receivedJSONObject.key);
                                 commit('setPosition', "p1");
                                 commit('setInLobby', true);
+                                commit('setCallPos');
                                 break;
                             case 101: //JoinedLobby
                                 commit('setInLobby', true);
@@ -187,8 +194,13 @@ export default createStore({
                             case 104:   
                                 commit('setPosition', receivedJSONObject.pos);
                                 break;
-                            case 105: //Game Client connected
+                            case 105: //LobbyStatus
                                 commit('setGameReady', receivedJSONObject.GameClient);
+                                commit('setPositionsInLobby', {
+                                    p1: receivedJSONObject.P1,
+                                    p2: receivedJSONObject.P2,
+                                    sp: receivedJSONObject.Spectators
+                                });
                                 break;
                             case 150: 
                             case 151:
@@ -199,10 +211,15 @@ export default createStore({
                                 commit('setLobbyKey', null);
                                 commit('setInLobby', false);
                                 commit('setGameReady',false);
+                                break;
                             case 154:
                             case 155: commit('setNotif', ENUMS.notifStatus.POSOCCUPIED);
                                       commit('setCallPos');
                                 break;
+                            case 157: //Game not started, wrong amount of player
+                                commit('setNotif', ENUMS.notifStatus.NOTENOUGHPLAYERS);
+                                break;
+                            
                             case 200: //Game has started
                                 commit('setGame', receivedJSONObject.game);
                                 commit('setCurrentImageIndex',-1);
@@ -288,5 +305,6 @@ export default createStore({
         isValidMoveImage:(state) => state.isValidMoveImage,
         callPos:(state) => state.callPos, 
         invalidMoveObserver:(state) => state.invalidMoveObserver,
+        positionsInLobby:(state) => state.positionsInLobby,
     },
 });
