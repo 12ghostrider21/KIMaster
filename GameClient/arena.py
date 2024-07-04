@@ -56,22 +56,8 @@ class Arena:
                 await self.game_client.send_response(code=RCODE.P_PLAYER, to=None, data={"cur_player": cur_player})
             await self.game_client.broadcast_board(board, cur_player, self.game_name, False)
 
-            # @Alex: glaub folgende Zeilen sind unnötig, da wenn keine validen Züge mehr, die getGameEnded der
-            # jeweiligen Spiele eh triggert bzw. bei Spielen wo man aussetzen muss wie Othello, wenn es keine valid Züge
-            # mehr gibt, würde es zu Fehlern führen
-
-            # canonical_board = self.game.getCanonicalForm(board, cur_player)
-            # valids = self.game.getValidMoves(canonical_board, 1)
-            # if not any(valids[:-1]):  # check if a valid move is possible
-            #    self.running = False
-            #    winner = -1 if cur_player == "p1" else 1  # winner is the opposite player of the one who surrenders
-            #    await self.game_client.send_response(code=RCODE.P_NOVALIDMOVES, to=None,
-            #                                         data={"result": winner})
-            #    continue
-
             to: str = "p1" if cur_player == 1 else "p2"
             ai: bool = False
-            valids = self.game.getValidMoves(board, cur_player)
             while self.running:
                 await asyncio.sleep(0.0001)  # is needed because of optimiser!
                 action = p()  # action can be (None) no move set, (int, tuple) on play action, (bool) ai_move request
