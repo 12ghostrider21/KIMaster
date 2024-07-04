@@ -55,4 +55,16 @@ const router = createRouter({
   ]
 });
 
+let isFirstNavigation = true;
+
+router.beforeEach((to, from, next) => {
+  if (isFirstNavigation && to.path !== '/') {
+    isFirstNavigation = false;
+    next('/');
+  } else {
+    isFirstNavigation = false;
+    next();
+  }
+});
+
 export default router;

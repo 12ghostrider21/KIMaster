@@ -11,10 +11,17 @@
       </div>
       <base-card>
       <div class="game-selection-container">
-        <router-link v-for="game in Object.values(games)" :key="game" :to="{ name: 'lobby', params: { game }}">
-          <base-button>{{ $t(`message.${game}`) }}</base-button>
-        </router-link>
-      </div>
+          <template v-if="gameActive">
+            <base-button v-for="game in Object.values(games)" :key="game" @click="triggerPopUp">
+              {{ $t(`message.${game}`) }}
+            </base-button>
+          </template>
+          <template v-else>
+            <router-link v-for="game in Object.values(games)" :key="game" :to="{ name: 'lobby', params: { game }}">
+              <base-button>{{ $t(`message.${game}`) }}</base-button>
+            </router-link>
+          </template>
+        </div>
       <div class="LobbySection">
         <input type="text" v-model="lobbyKeyToJoin" :placeholder="$t('message.enter_lobby_key')" />
         <div class="message-box" v-if="this.notif === ENUMS.notifStatus.LOBBYJOINFAIL">
@@ -24,6 +31,23 @@
       </div>
       </base-card>
     </div>
+
+    <teleport to="body">
+      <base-dialog
+        v-if="popUpTrigger"
+        :title="'Test'"
+        @close="closePopUp"
+      >
+        <template #default>
+         <p>You need to first surrender before you can start a new Game or Lobby</p>
+        </template>
+        <template #actions>
+          <base-button @click="surrenderGame">{{ $t('message.surrender') }}</base-button>
+          <base-button @click="returnToGame">  Return to Game </base-button>
+          <base-button @click="closePopUp">{{ $t('message.okay') }}</base-button>
+        </template>
+      </base-dialog>
+    </teleport>
     
   </section>
   <footer-bar></footer-bar>

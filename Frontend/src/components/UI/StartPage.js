@@ -10,13 +10,14 @@ export default {
     return {
       games: ENUMS.games,
       lobbyKeyToJoin: null,
+      popUpTrigger: false,
     };
   },
   computed: {
     ENUMS() {
       return ENUMS
     },
-    ...mapGetters(['inLobby', 'popup', 'notif']),
+    ...mapGetters(['inLobby', 'popup', 'notif','gameActive','game']),
   },
   methods: {
     ...mapActions(['sendWebSocketMessage','setNotif']),
@@ -36,6 +37,30 @@ export default {
       };
       this.sendMessage(data);
       this.joinLobbyWait();
+    },
+
+    surrenderGame(){
+      
+      const data = {
+        command: 'play',
+        command_key: 'surrender',
+      };
+      this.sendMessage(data);
+      this.closePopUp()
+    },
+
+    returnToGame(){
+      this.closePopUp()
+      this.$router.push({ name: 'play', params: { game: this.game }});
+    },
+
+    triggerPopUp(){
+      this.popUpTrigger=true;
+    },
+
+    closePopUp(){
+      console.log("Test");
+      this.popUpTrigger=false;
     },
 
     joinLobbyWait() {
