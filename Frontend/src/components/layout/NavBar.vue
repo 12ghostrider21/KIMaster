@@ -24,6 +24,12 @@
           <li class="nav-item" v-if="isPlayPage">
             <a class="nav-link" href="#" @click.prevent="showRules">{{ $t('message.show_rules') }}</a>
           </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="#">{{ $t('message.leaderboard') }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">{{ $t('message.achievements') }}</a>
+          </li> -->
         </ul>
         <language-switcher></language-switcher>
       </div>
@@ -45,6 +51,7 @@
 </template>
 
 <script>
+import { useRoute } from "vue-router";
 // import ChessRules from '@/components/gameRules/ChessRules.vue';
 import Connect4Rules from '@/components/gameRules/Connect4Rules.vue';
 import NimRules from '@/components/gameRules/NimRules.vue';
