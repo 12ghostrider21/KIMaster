@@ -9,10 +9,7 @@ def empty_lobby_msg() -> dict:
 
 @fixture
 def create_lobby_msg() -> dict:
-    return {
-        "command": "lobby",
-        "command_key": "create" 
-    }
+    return {"command": "lobby","command_key": "create"}
 
 @fixture
 def web_socket_uri() -> str:

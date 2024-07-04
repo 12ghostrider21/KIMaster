@@ -1,7 +1,7 @@
 import docker 
 from os import environ, getenv
-from docker.errors import ContainerError, ImageNotFound, APIError, NotFound, DockerException
-import podman
+from docker.errors import ContainerError, ImageNotFound, APIError, NotFound
+# import podman
 
 
 class DockerAPI:
@@ -19,11 +19,11 @@ class DockerAPI:
         """
         Initialize the DockerAPI class, setting up the Docker client.
         """
-        try:
+        # try:
             # Initialize the Docker client from environment variables
-            self.engine = docker.from_env()
-        except DockerException:
-            self.engine = podman.from_env()
+        self.engine = docker.from_env()
+        # except DockerException:
+            # self.engine = podman.from_env()
             # Handle exception if Docker is not started
             # print(f"[DOCKER_API]: Engine not found! Maybe is Docker not started?")
             # exit(1)
