@@ -259,6 +259,7 @@ export default createStore({
                             case 210: //Surrender
                                 commit('setGameOver', true);
                                 commit('setGameActive', false);
+                                commit('setTurn', receivedJSONObject.turn);
                                 commit('setPlayerWon', receivedJSONObject.result)
                                 commit('setPopup',ENUMS.popUpStatus.GAMEOVER);
                                 break;
