@@ -15,7 +15,7 @@ services:
     networks:
       - swtp-net
     volumes:
-      - //var/run/docker.sock:/var/run/docker.sock
+      - /run/user/1008/docker.sock:/var/run/docker.sock
     deploy:
       resources:
         limits:
