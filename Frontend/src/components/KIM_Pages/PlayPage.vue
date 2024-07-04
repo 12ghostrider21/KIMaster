@@ -72,7 +72,7 @@
     <!-- Rules Dialog -->
     <teleport to="body">
       <base-dialog
-        :title="$t('message.rules')"
+        :title="$t('rules.game_title')"
         v-if="isRulesVisible"
         @close="closeRules"
       >
@@ -90,6 +90,7 @@ import PlayPageLogic from '../UI/PlayPage.js';
 // import ChessRules from '@/components/gameRules/ChessRules.vue';
 import Connect4Rules from '@/components/gameRules/Connect4Rules.vue';
 import TicTacToeRules from '@/components/gameRules/TicTacToeRules.vue';
+import { computed } from 'vue';
 // import OthelloRules from '@/components/gameRules/OthelloRules.vue';
 
 export default {
@@ -106,6 +107,29 @@ export default {
     closeRules() {
       this.isRulesVisible = false;
     }
+  },
+  computed: {
+    currentRuleComponent(){
+      switch(this.game){
+        case 'chess':
+          return 'ChessRules';
+        case 'connect4':
+          return 'Connect4Rules';
+        case 'tic_tac_toe':
+          return 'TicTacToeRules';
+        case 'othello':
+          return 'OthelloRules';
+        default:
+          return null;
+      }
+    },
+    mounted() {
+      this.$root.$on('show-rules', this.showRules);
+    },
+    beforeDestroy(){
+      this.$root.$off('show-rules', this.showRules);
+    }
+
   }
 };
 </script>

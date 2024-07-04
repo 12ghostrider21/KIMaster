@@ -18,15 +18,18 @@
           <li class="nav-item"> 
             <router-link class="nav-link" v-if="!isStartingPage" to="/">{{ $t('message.home') }}</router-link>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">{{ $t('message.instruction') }}</a>
+          <li class="nav-item" v-if="isStartingPage">
+            <router-link class="nav-link" to="/instruction">{{ $t('message.instruction') }}</router-link>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" v-if="isPlayPage">
+            <a class="nav-link" href="#" @click.prevent="$emit('show-rules')">{{ $t('message.show_rules') }}</a>
+          </li>
+          <!-- <li class="nav-item">
             <a class="nav-link" href="#">{{ $t('message.leaderboard') }}</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">{{ $t('message.achievements') }}</a>
-          </li>
+          </li> -->
         </ul>
         <language-switcher></language-switcher>
       </div>
@@ -49,6 +52,9 @@ export default {
   computed: {
     isStartingPage() {
       return this.$route.name === 'home';
+    },
+    isPlayPage(){
+      return this.$route.name === 'play';
     }
   },
   methods: {
@@ -63,7 +69,9 @@ export default {
     this.$nextTick(() => {
       document.querySelector('.form-select').blur();
     });
-  }
+  },
+ 
+
 },
 };
 </script>
