@@ -17,6 +17,7 @@ const messages = {
       tic_tac_toe: "Tic Tac Toe",
       othello: "Othello",
       nim:'Nim',
+      checkers: 'Checkers',
       lobby_welcome: "Welcome to the",
       leave_lobby: "Leave Lobby",
       start_game: "Start Game",
@@ -28,8 +29,8 @@ const messages = {
       spectator: "Spectator",
       change_game_lobby: "Change to different Game Lobby:",
       player_vs_player: "Player vs Player",
-      player_vs_ai: "Player vs AI",
-      playerai_vs_ai: "Player AI vs AI",
+      player_vs_ai: "Player vs KIM",
+      playerai_vs_ai: "Player AI vs KIM",
       playerai_vs_playerai: "Player AI vs Player AI",
       easy: "Easy",
       medium: "Medium",
@@ -102,6 +103,30 @@ const messages = {
           point1: "A player wins by getting three marks in a row (horizontally, vertically, or diagonally).",
           point2: "The game ends in a draw if all spaces are filled and no player has three marks in a row.",
         },
+      },
+      nim: {
+        game_title: 'Nim Rules',
+        description: "Nim is a strategy game where players take turns removing stones from distinct heaps. The player who removes the last stone wins.",
+
+        setup: {
+          title: "Setup",
+          point1: "There are several rows of stones",
+          point2: "Two player take turns"
+        },
+
+        gameplay: {
+          title: "Gameplay",
+          pont1: "Players take turns removing stones from a single row.",
+          point2: "A player must take at least one stone on their turn.",
+          point3: "A player may take multiple stones from the same row.",
+          point4: "Players cannot take stones from more than one row in a single turn."
+        },
+
+        endgame: {
+          title: "Endgame",
+          point1: "The player who takes the last stone wins."
+        }
+
       }
     },
   },
@@ -122,6 +147,7 @@ const messages = {
       tic_tac_toe: "Tic Tac Toe",
       othello: "Othello",
       nim: 'Nim',
+      checkers: 'Dame',
       lobby_welcome: "Willkommen zur {game}",
       leave_lobby: "Lobby verlassen",
       start_game: "Spiel starten!",
@@ -133,8 +159,8 @@ const messages = {
       spectator: "Zuschauer",
       change_game_lobby: "Zu anderem Spiel-Lobby wechseln:",
       player_vs_player: "Spieler gegen Spieler",
-      player_vs_ai: "Spieler gegen KI",
-      playerai_vs_ai: "Spieler-KI gegen KI",
+      player_vs_ai: "Spieler gegen KIM",
+      playerai_vs_ai: "Spieler-KI gegen KIM",
       playerai_vs_playerai: "Spieler-KI gegen Spieler-KI",
       easy: "Einfach",
       medium: "Mittel",
@@ -205,6 +231,29 @@ const messages = {
           point2: "Das Spiel endet unentschieden, wenn alle Felder belegt sind und kein Spieler drei Zeichen in einer Reihe hat.",
         },
       },
+
+      nim: {
+        title: "Nim Regeln",
+        description: "Nim ist ein Strategiespiel, bei dem die Spieler abwechselnd Steine aus verschiedenen Reihen nehmen. Der Spieler, der den letzten Stein nimmt, gewinnt.",
+        setup: {
+          title: "Spielvorbereitung",
+          point1: "Es gibt mehrere Reihen von Steinen.",
+          point2: "Zwei Spieler sind an der Reihe.",
+        },
+
+        gameplay: {
+          title: "Spielablauf",
+          point1: "Die Spieler nehmen abwechselnd Steine aus einer einzigen Reihe.",
+          point2: "Ein Spieler muss mindestens einen Stein in seinem Zug nehmen.",
+          point3: "Ein Spieler kann mehrere Steine aus derselben Reihe nehmen.",
+          point4: "Die Spieler können nicht Steine aus mehr als einer Reihe in einem Zug nehmen.",
+        },
+
+        endgame: {
+          title: "Spielende",
+          point1: "Der Spieler, der den letzten Stein nimmt, gewinnt (oder verliert, je nach vereinbarter Regel).",
+        },
+      },
     },
   },
 
@@ -224,6 +273,7 @@ const messages = {
       tic_tac_toe: "Morpion",
       othello: "Othello",
       nim: 'Nim',
+      checkers: 'Dame',
       leave_lobby: "Quitter la salle",
       start_game: "Commencer le jeu!",
       lobby_key_generating: "Clé de salle: Génération en cours",
@@ -234,8 +284,8 @@ const messages = {
       spectator: "Spectateur",
       change_game_lobby: "Changer de salle de jeu:",
       player_vs_player: "Joueur contre Joueur",
-      player_vs_ai: "Joueur contre IA",
-      playerai_vs_ai: "IA Joueur contre IA",
+      player_vs_ai: "Joueur contre KIM",
+      playerai_vs_ai: "IA Joueur contre KIM",
       playerai_vs_playerai: "IA Joueur contre IA Joueur",
       easy: "Facile",
       medium: "Moyen",
@@ -306,9 +356,31 @@ const messages = {
           title: 'Fin du jeu',
           point1: "Un joueur gagne s'il a trois signes dans une rangée (horizontale, verticale ou diagonale).",
           point2: "Le jeu se termine par un match nul lorsque toutes les cases sont occupées et qu'aucun joueur n'a trois signes dans une rangée."
-        }
+        },
+        
+      },
 
-      }
+      nim: {
+        title: "Règles de Nim",
+        description: "Nim est un jeu de stratégie où les joueurs prennent tour à tour des pierres dans des tas distincts. Le joueur qui enlève la dernière pierre gagne ou perd, selon la règle convenue.",
+        setup: {
+          title: "Préparation",
+          point1: "Il y a plusieurs rangées de pierres.",
+          point2: "Deux joueurs jouent à tour de rôle.",
+        },
+        gameplay: {
+          title: "Déroulement du jeu",
+          point1: "Les joueurs prennent à tour de rôle des pierres d'une seule rangée.",
+          point2: "Un joueur doit prendre au moins une pierre à son tour.",
+          point3: "Un joueur peut prendre plusieurs pierres de la même rangée.",
+          point4: "Les joueurs ne peuvent pas prendre des pierres de plus d'une rangée en un seul tour.",
+        },
+        endgame: {
+          title: "Fin de la partie",
+          point1: "Le joueur qui prend la dernière pierre gagne (ou perd, selon la règle convenue).",
+        },
+      },
+
     }
   },
 
@@ -328,6 +400,7 @@ const messages = {
       tic_tac_toe: "Tres en raya",
       othello: "Othello",
       nim: 'Nim',
+      checkers: 'Damas',
       leave_lobby: "Salir del vestíbulo",
       start_game: "¡Empezar el juego!",
       lobby_key_generating: "Clave del vestíbulo: Generando",
@@ -338,8 +411,8 @@ const messages = {
       spectator: "Espectador",
       change_game_lobby: "Cambiar a otro vestíbulo de juego:",
       player_vs_player: "Jugador contra Jugador",
-      player_vs_ai: "Jugador contra IA",
-      playerai_vs_ai: "IA Jugador contra IA",
+      player_vs_ai: "Jugador contra KIM",
+      playerai_vs_ai: "IA Jugador contra KIM",
       playerai_vs_playerai: "IA Jugador contra IA Jugador",
       easy: "Fácil",
       medium: "Medio",
@@ -411,8 +484,28 @@ const messages = {
           point1: 'Un jugador gana si tiene tres personajes seguidos (horizontal, vertical o diagonalmente).',
           point2: 'El juego termina en empate cuando todos los campos están ocupados y ningún jugador tiene tres personajes seguidos.'
         }
+      },
 
-      }
+      nim: {
+        title: "Reglas de Nim",
+        description: "Nim es un juego de estrategia donde los jugadores se turnan para quitar piedras de montones distintos. El jugador que quita la última piedra gana o pierde, dependiendo de la regla acordada.",
+        setup: {
+          title: "Preparación",
+          point1: "Hay varias filas de piedras.",
+          point2: "Dos jugadores se turnan.",
+        },
+        gameplay: {
+          title: "Desarrollo del juego",
+          point1: "Los jugadores se turnan para quitar piedras de una sola fila.",
+          point2: "Un jugador debe tomar al menos una piedra en su turno.",
+          point3: "Un jugador puede tomar varias piedras de la misma fila.",
+          point4: "Los jugadores no pueden tomar piedras de más de una fila en un solo turno.",
+        },
+        endgame: {
+          title: "Fin del juego",
+          point1: "El jugador que toma la última piedra gana (o pierde, dependiendo de la regla acordada).",
+        },
+      },
     }
   },
 };

@@ -58,8 +58,8 @@
         @close="closePopup"
       >
         <template #default>
-          <p v-if="playerWon === 1">{{ $t('message.player1_won') }}</p>
-          <p v-else>{{ $t('message.player2_won') }}</p>
+          <p v-if="playerWon === 1">{{ $t('message.player_1_won') }}</p>
+          <p v-else>{{ $t('message.player_2_won') }}</p>
           <p>{{ $t('message.game_over_after') }} {{ turn }} {{ $t('message.turns') }}</p>
         </template>
         <template #actions>
@@ -90,14 +90,15 @@ import PlayPageLogic from '../UI/PlayPage.js';
 // import ChessRules from '@/components/gameRules/ChessRules.vue';
 import Connect4Rules from '@/components/gameRules/Connect4Rules.vue';
 import TicTacToeRules from '@/components/gameRules/TicTacToeRules.vue';
-import { computed } from 'vue';
 // import OthelloRules from '@/components/gameRules/OthelloRules.vue';
+import NimRules from '@/components/gameRules/NimRules.vue';
 
 export default {
   mixins: [PlayPageLogic],
   components: {
     Connect4Rules,
     TicTacToeRules,
+    NimRules,
    
   },
   methods: {
@@ -108,29 +109,6 @@ export default {
       this.isRulesVisible = false;
     }
   },
-  computed: {
-    currentRuleComponent(){
-      switch(this.game){
-        case 'chess':
-          return 'ChessRules';
-        case 'connect4':
-          return 'Connect4Rules';
-        case 'tic_tac_toe':
-          return 'TicTacToeRules';
-        case 'othello':
-          return 'OthelloRules';
-        default:
-          return null;
-      }
-    },
-    mounted() {
-      this.$root.$on('show-rules', this.showRules);
-    },
-    beforeDestroy(){
-      this.$root.$off('show-rules', this.showRules);
-    }
-
-  }
 };
 </script>
 

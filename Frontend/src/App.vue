@@ -1,9 +1,9 @@
 <template>
   <header>
-    <nav-bar @show-rules="showRules"></nav-bar>
+    <nav-bar></nav-bar>
   </header>
   <main>
-    <RouterView @show-rules="showRules"/>
+    <RouterView/>
     <dragable-image v-if="gameActive && !isPlayPage"></dragable-image>
   </main>
   <footer>

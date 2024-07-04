@@ -32,6 +32,8 @@ export default {
           return 'TicTacToeRules';
         case 'othello':
           return 'OthelloRules';
+          case 'nim':
+            return'NimRules'
         default:
           return null;
       }
