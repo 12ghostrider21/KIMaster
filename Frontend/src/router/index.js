@@ -19,52 +19,37 @@ const router = createRouter({
       component: Home
     },
     {
-      path: '/lobby/:game',
+      path: '/',
       name: 'lobby',
       component: Lobby,
-      props: true // pass route.params as props to Lobby component
     },
     {
-      path: '/game/:game',
+      path: '/',
       name: 'play',
       component: Play,
-      props: true,
     },
     {
-      path: '/impressum',
+      path: '/',
       name: 'impressum',
       component: Impressum
     },
     {
-      path: '/about',
+      path: '/',
       name: 'about',
       component: About
     },
     {
-      path: '/Lobby',
+      path: '/',
       name: 'wait',
       component: Wait
     },
     {
-      path: '/instructions',
+      path: '/',
       name: 'instruction',
       component: Instructions
     }
-      
-    
   ]
 });
 
-let isFirstNavigation = true;
-
-router.beforeEach((to, from, next) => {
-  if (isFirstNavigation && to.path !== '/') {
-    isFirstNavigation = false;
-    next('/');
-  } else {
-    isFirstNavigation = false;
-    next();
-  }
-});
 
 export default router;

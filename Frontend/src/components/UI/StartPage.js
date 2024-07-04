@@ -20,7 +20,7 @@ export default {
     ...mapGetters(['inLobby', 'popup', 'notif','gameActive','game']),
   },
   methods: {
-    ...mapActions(['sendWebSocketMessage','setNotif']),
+    ...mapActions(['sendWebSocketMessage','setNotif','setGame']),
     sendMessage(data) {
       console.log(data);
       this.sendWebSocketMessage(JSON.stringify(data));

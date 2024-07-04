@@ -14,7 +14,6 @@
           <option value="p2">{{ $t('message.player2') }}</option>
           <option value="sp">{{ $t('message.spectator') }}</option>
         </select>
-
         <select v-model="mode" >
           <option value="player_vs_player">{{ $t('message.player_vs_player') }}</option>
           <option value="player_vs_kim">{{ $t('message.player_vs_ai') }}</option>
@@ -32,7 +31,7 @@
         </select>
       </div>
       <div>
-        <select v-model="selectedGame" @change="navigateToGame()">
+        <select v-model="game" @change="setGame()">
           <option value="" disabled>{{ $t('message.change_game_lobby') }}</option>
           <option v-for="(value, key) in enums.games" :key="key" :value="value">
             {{ $t(`message.${value}`) }}

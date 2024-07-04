@@ -4,6 +4,7 @@ import * as ENUMS from '../components/enums.js';
 export default createStore({
     state: {
         socket: null,
+        socketConnected:false,
         messages: [],
         lobbyKey: null,
         game: null,
@@ -59,6 +60,11 @@ export default createStore({
         
         newImages(state) {
             state.images= [];
+        },
+
+        setSocketConnected(state, socketConnected)
+        {state.socketConnected=socketConnected
+
         },
         setLobbyKey(state, lobbyKey) {
             state.lobbyKey = lobbyKey;
@@ -146,7 +152,6 @@ export default createStore({
 
         setGame({ commit }, game) {
             commit('setGame', game);
-            console.log("Game Set!")
         },
 
         initWebSocket({ commit,state }) {
@@ -165,6 +170,7 @@ export default createStore({
 
             socket.onopen = () => {
                 console.log('WebSocket is open now.');
+                commit("setSocketConnected",true);
             };
             socket.onclose = () => {
                 console.log('WebSocket is closed now.');
@@ -318,5 +324,6 @@ export default createStore({
         invalidMoveObserver:(state) => state.invalidMoveObserver,
         positionsInLobby:(state) => state.positionsInLobby,
         skipMove:(state) => state.skipMove,
+        socketConnected:(state) => state.socketConnected,
     },
 });

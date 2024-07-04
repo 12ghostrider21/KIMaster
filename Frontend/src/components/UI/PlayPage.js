@@ -2,11 +2,11 @@ import { mapActions, mapGetters } from "vuex";
 import * as ENUMS from '../enums';
 
 export default {
-  props: ["game"],
   computed: {
     ...mapGetters([
       "imageSrc",
       "position",
+      "game",
       "playerWon",
       "gameOver",
       "gameActive",

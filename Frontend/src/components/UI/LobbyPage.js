@@ -2,18 +2,18 @@ import { mapActions, mapGetters } from "vuex";
 import * as ENUMS from '../enums';
 export default {
 
-  props: ["game"],
+ 
   data() {
     return {
       mode: "player_vs_kim",
       difficulty: "easy",
-      selectedGame: this.game,
+      selectedGame: '',
       test:[false,true],
       
     };
   },
   computed: {
-    ...mapGetters(["lobbyKey", "position","gameActive","positionsInLobby","callPos"]),
+    ...mapGetters(["lobbyKey", "position","gameActive","positionsInLobby","callPos",'game','socketConnected']),
     enums() {return ENUMS},
     positionSelect: {
       get() {
@@ -124,6 +124,9 @@ export default {
     },
   },
   watch: {
+    game(){
+      this.selectedGame=game;
+    },
     callPos(){
       this.lobbyPos();
       this.lobbyStatus();
@@ -137,6 +140,11 @@ export default {
           });
         }
       },
+      socketConnected(newVal){if
+        (newVal) {
+          this.createLobby();
+        }
+      }
    
   },
 };

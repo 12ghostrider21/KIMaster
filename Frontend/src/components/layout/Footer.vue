@@ -2,9 +2,9 @@
     <footer>
     <a href="https://www.thm.de"> THM</a>
 
-    <RouterLink to="/about">Copyright</RouterLink>
+    <RouterLink :to="{name:'about'}">Copyright</RouterLink>
 
-    <RouterLink to="/impressum">Impressum</RouterLink>
+    <RouterLink :to="{name:'impressum'}">Impressum</RouterLink>
   </footer>
 </template>
 

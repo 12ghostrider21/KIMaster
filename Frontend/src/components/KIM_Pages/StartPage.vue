@@ -17,8 +17,8 @@
             </base-button>
           </template>
           <template v-else>
-            <router-link v-for="game in Object.values(games)" :key="game" :to="{ name: 'lobby', params: { game }}">
-              <base-button>{{ $t(`message.${game}`) }}</base-button>
+            <router-link v-for="game in Object.values(games)" :key="game" :to="{ name: 'lobby' }">
+              <base-button @click="setGame(game)">{{ $t(`message.${game}`) }}</base-button>
             </router-link>
           </template>
         </div>
