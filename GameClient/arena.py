@@ -71,6 +71,7 @@ class Arena:
 
             to: str = "p1" if cur_player == 1 else "p2"
             ai: bool = False
+            valids = self.game.getValidMoves(board, cur_player)
             while self.running:
                 await asyncio.sleep(0.0001)  # is needed because of optimiser!
                 action = p()  # action can be (None) no move set, (int, tuple) on play action, (bool) ai_move request
@@ -88,6 +89,7 @@ class Arena:
                     action = self.game.translate(board, cur_player, action)  # ai generated move is just an index
                 try:
                     board, cur_player = self.game.getNextState(board, cur_player, action)
+                    await self.game_client.send_response(code=RCODE.P_VALIDMOVE, to=to)
                     if not ai:
                         self.blunder_history.append((board, cur_player, it, action))
                     break

@@ -88,9 +88,7 @@ class GameClient(WebSocketConnectionManager):
                     if move is None:
                         await self.send_response(RCODE.P_INVALIDMOVE, p_pos)
                         continue
-                    if self.pit.set_move(move, p_pos):
-                        await self.send_response(RCODE.P_VALIDMOVE, p_pos)
-                    else:
+                    if not self.pit.set_move(move, p_pos):
                         await self.send_response(RCODE.P_NOTYOURTURN, p_pos)
 
                 # Handling 'undo_move' command
