@@ -129,6 +129,14 @@ export default {
       this.lobbyStatus();
       console.log(this.positionsInLobby);
     },
+   gameActive(newVal) {
+        if (newVal) {
+          this.$router.push({
+            name: 'play',
+            params: { game: this.game }
+          });
+        }
+      },
    
   },
 };

@@ -74,7 +74,6 @@ export default {
 .blackbox {
   width: 250px; /*TODO Change to Dynamic size */
   height: 250px; 
-  height: auto;
   background-color: black;
   position: relative;
   overflow: hidden;
