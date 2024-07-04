@@ -6,7 +6,8 @@
             <option value="p2">Player 2</option>
             <option value="sp">Spectator</option>
     </select>
-      
+    <p>  {{ $t('message.your_position', { position:position }) }}</p>
+    <p> {{ $t('message.lobby_position', { p1: positionsInLobby[0], p2: positionsInLobby[1], spectators: positionsInLobby[2] }) }}</p>
     </div>
     <div>
     
@@ -17,13 +18,15 @@
 import { mapActions, mapGetters } from 'vuex';
 import * as ENUMS from '../enums';
 export default {
+
+  mounted() {},
   data() {
     return {
       difficulty:'hard',
     };
   },
   computed: {
-    ...mapGetters([ 'gameActive','position','game','callPos']),
+    ...mapGetters([ 'gameActive','position','game','callPos',"positionsInLobby"]),
 
     positionSelect: {
       get() {
@@ -36,6 +39,8 @@ export default {
   },
 
   mounted() {
+    this.lobbyPos();
+    this.lobbyStatus();
   },
 methods: {
 
@@ -53,6 +58,13 @@ methods: {
   };
   this.sendMessage(data);
   },
+  lobbyStatus(){ 
+      const data = {
+        command: "lobby",
+        command_key: "status",
+      };
+      this.sendMessage(data);
+    },
 swapPositionInLobby() {
   const data = {
     command: 'lobby',

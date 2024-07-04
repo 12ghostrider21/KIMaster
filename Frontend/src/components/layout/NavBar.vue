@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary nav-bar">
     <div class="container-fluid">
-      <router-link class="navbar-brand" to="/">{{ $t('KI Master') }}</router-link>
+      <router-link class="navbar-brand" :to="{name:'home'}">{{ $t('KI Master') }}</router-link>
       <button
         class="navbar-toggler"
         type="button"
@@ -19,7 +19,7 @@
             <router-link class="nav-link" v-if="!isStartingPage" to="/">{{ $t('message.home') }}</router-link>
           </li>
           <li class="nav-item" v-if="isStartingPage">
-            <router-link class="nav-link" to="/instruction">{{ $t('message.instruction') }}</router-link>
+            <router-link class="nav-link":to="{name:'instruction'}">{{ $t('message.instruction') }}</router-link>
           </li>
           <li class="nav-item" v-if="isPlayPage">
             <a class="nav-link" href="#" @click.prevent="$emit('show-rules')">{{ $t('message.show_rules') }}</a>
