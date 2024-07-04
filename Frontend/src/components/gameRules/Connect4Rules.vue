@@ -1,51 +1,31 @@
 <template>
   <div>
-    <h2>Vier Gewinnt Regeln</h2>
-    <p>
-      Vier Gewinnt ist ein Zwei-Personen-Spiel, bei dem die Spieler abwechselnd
-      einen Stein ihrer Farbe in eine der sieben Spalten des Gitters fallen
-      lassen. Das Ziel ist es, als Erster vier Steine in einer Reihe zu haben,
-      sei es horizontal, vertikal oder diagonal.
-    </p>
+    <h2>{{ $t('rules.connect4.game_title') }}</h2>
+    <p>{{ $t('rules.connect4.description') }}</p>
 
-    <h3>Spielvorbereitung</h3>
+    <h3>{{ $t('rules.connect4.setup.title') }}</h3>
     <ul>
-      <li>Das Spielbrett besteht aus 7 Spalten und 6 Reihen.</li>
-      <li>
-        Jeder Spieler wählt eine Farbe und erhält eine unbegrenzte Anzahl an
-        Steinen in dieser Farbe.
-      </li>
+      <li>{{ $t('rules.connect4.setup.point1') }}</li>
+      <li>{{ $t('rules.connect4.setup.point2') }}</li>
     </ul>
 
-    <h3>Spielablauf</h3>
+    <h3>{{ $t('rules.connect4.gameplay.title') }}</h3>
     <ul>
-      <li>
-        Die Spieler lassen abwechselnd einen Stein in eine der Spalten fallen.
-      </li>
-      <li>Der Stein fällt in die tiefste verfügbare Position in der Spalte.</li>
-      <li>
-        Das Spiel geht weiter, bis ein Spieler vier seiner Steine in einer Reihe
-        hat oder das Spielfeld voll ist.
-      </li>
+      <li>{{ $t('rules.connect4.gameplay.point1') }}</li>
+      <li>{{ $t('rules.connect4.gameplay.point2') }}</li>
+      <li>{{ $t('rules.connect4.gameplay.point3') }}</li>
     </ul>
 
-    <h3>Spielende</h3>
+    <h3>{{ $t('rules.connect4.endgame.title') }}</h3>
     <ul>
-      <li>
-        Ein Spieler gewinnt, wenn er vier Steine in einer Reihe hat (horizontal,
-        vertikal oder diagonal).
-      </li>
-      <li>
-        Das Spiel endet unentschieden, wenn das Spielfeld voll ist und kein
-        Spieler vier Steine in einer Reihe hat.
-      </li>
+      <li>{{ $t('rules.connect4.endgame.point1') }}</li>
+      <li>{{ $t('rules.connect4.endgame.point2') }}</li>
     </ul>
   </div>
 </template>
 
 <script>
 export default {
-    name : 'Connect4Rules'
-    
-}
+  name: 'Connect4Rules'
+};
 </script>

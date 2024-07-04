@@ -1,6 +1,6 @@
   <template>
-    <div @click="$emit('close')">
-      <dialog open>
+    <div class="dialog-overlay" @click="$emit('close')">
+      <dialog open @click.stop>
         <header>
           <slot name="header">
             <h2>{{ title }}</h2>
@@ -30,28 +30,31 @@
   };
   </script>
 
-  <style scoped>div {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.75);
-    z-index: 10;
-  }
+  <style scoped> 
+  .dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
   dialog {
-    position: fixed;
-    top: 20vh;
-    left: 10%;
-    width: 80%;
-    z-index: 100;
-    border-radius: 12px;
-    border: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
+    position: relative;
+  width: 80%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  padding: 0;
+  margin: 0;
   }
 
   header {

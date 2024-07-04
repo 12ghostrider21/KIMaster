@@ -1,13 +1,13 @@
 <template>
   <header>
-    <nav-bar></nav-bar>
+    <nav-bar @show-rules="showRules"></nav-bar>
   </header>
   <main>
-    <RouterView/>
+    <RouterView @show-rules="showRules"/>
     <dragable-image v-if="gameActive && !isPlayPage"></dragable-image>
   </main>
   <footer>
-    <footer-bar></footer-bar> 
+    <footer-bar></footer-bar>
   </footer>
 </template>
 
@@ -19,7 +19,12 @@ export default {
     ...mapGetters(["gameActive"]),
     isPlayPage() {
       return this.$route.name === "play";
-    },
+    }
+  },
+  methods: {
+    showRules() {
+      this.$root.$emit('show-rules');
+    }
   },
   created() {
     this.$store.dispatch("initWebSocket");
@@ -30,4 +35,5 @@ export default {
   },
 };
 </script>
+
 <style scoped></style>

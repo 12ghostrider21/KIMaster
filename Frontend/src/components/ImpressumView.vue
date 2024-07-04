@@ -3,7 +3,6 @@
 </script>
 
 <template>
-  <nav-bar></nav-bar>
   <div class="about">
     <h1>This is an Impressum</h1>
   </div>
