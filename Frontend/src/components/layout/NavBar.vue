@@ -22,62 +22,100 @@
             <router-link class="nav-link":to="{name:'instruction'}">{{ $t('message.instruction') }}</router-link>
           </li>
           <li class="nav-item" v-if="isPlayPage">
-            <a class="nav-link" href="#" @click.prevent="$emit('show-rules')">{{ $t('message.show_rules') }}</a>
+            <a class="nav-link" href="#" @click.prevent="showRules">{{ $t('message.show_rules') }}</a>
           </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="#">{{ $t('message.leaderboard') }}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">{{ $t('message.achievements') }}</a>
-          </li> -->
         </ul>
         <language-switcher></language-switcher>
       </div>
     </div>
+
+    <teleport to="body">
+      <base-dialog
+        :title="$t('rules.game_title')"
+        v-if="isRulesVisible"
+        @close="closeRules"
+      >
+        <component :is="currentRuleComponent" />
+        <template #actions>
+          <base-button @click="closeRules">{{ $t('message.okay') }}</base-button>
+        </template>
+      </base-dialog>
+    </teleport>
   </nav>
 </template>
 
 <script>
-
-import { useRoute } from "vue-router";
+// import ChessRules from '@/components/gameRules/ChessRules.vue';
+import Connect4Rules from '@/components/gameRules/Connect4Rules.vue';
+import NimRules from '@/components/gameRules/NimRules.vue';
+import OthelloRules from '@/components/gameRules/OthelloRules.vue';
+import TicTacToeRules from '@/components/gameRules/TicTacToeRules.vue';
+import PlayPageLogic from '../UI/PlayPage.js';
+import BaseDialog from '@/components/UI/BaseDialog.vue'; // Importiere die base-dialog Komponente
 import LanguageSwitcher from './LanguageSwitcher.vue';
 
 export default {
-  components: { LanguageSwitcher },
+  components: {
+    Connect4Rules,
+    NimRules,
+    OthelloRules,
+    TicTacToeRules,
+    LanguageSwitcher,
+    BaseDialog, // Registriere die base-dialog Komponente
+  },
+  mixins: [PlayPageLogic],
   data() {
     return {
       currentLanguage: this.$i18n.locale,
+      isRulesVisible: false,
+      currentRuleComponent: null,
     };
   },
   computed: {
     isStartingPage() {
       return this.$route.name === 'home';
     },
-    isPlayPage(){
+    isPlayPage() {
       return this.$route.name === 'play';
     }
   },
   methods: {
-  changeLanguage() {
-    if (this.$i18n.locale === 'en') {
-      this.$i18n.locale = 'de';
-      this.currentLanguage = 'de';
-    } else {
-      this.$i18n.locale = 'en';
-      this.currentLanguage = 'en';
-    }
-    this.$nextTick(() => {
-      document.querySelector('.form-select').blur();
-    });
-  },
- 
+    changeLanguage() {
+      if (this.$i18n.locale === 'en') {
+        this.$i18n.locale = 'de';
+        this.currentLanguage = 'de';
+      } else {
+        this.$i18n.locale = 'en';
+        this.currentLanguage = 'en';
+      }
+      this.$nextTick(() => {
+        document.querySelector('.form-select').blur();
+      });
+    },
+    showRules() {
+      // Setze die Regel-Komponente abhängig vom aktuellen Spiel
+      if (this.$route.params.game === 'connect4') {
+        this.currentRuleComponent = 'Connect4Rules';
+      } else if (this.$route.params.game === 'tictactoe') {
+        this.currentRuleComponent = 'TicTacToeRules';
+      } else if (this.$route.params.game === 'nim') {
+        this.currentRuleComponent = 'NimRules';
+      } else if (this.$route.params.game === 'othello') {
+        this.currentRuleComponent = 'OthelloRules';
+      } else {
+        this.currentRuleComponent = null;
+      }
 
-},
+      this.isRulesVisible = true;
+    },
+    closeRules() {
+      this.isRulesVisible = false;
+    },
+  },
 };
 </script>
 
 <style scoped>
-
 .container-fluid {
   padding-left: 15px;
   padding-right: 15px;
@@ -91,13 +129,11 @@ export default {
   color: #333;
 }
 
-
 .nav-item {
   margin-left: 10px;
 }
 
 .nav-link:hover {
-  color: #007bff;
   color: #007bff;
 }
 
