@@ -24,6 +24,7 @@ const messages = {
       lobby_key_generating: "Lobby Key: Being Generated",
       lobby_key: "Lobby Key: {key}",
       your_position: "Your Position {position}",
+      lobby_position: "Lobby Positions: P1= {p1} P2= {p2} Spectator {spectators}",
       player1: "Player 1",
       player2: "Player 2",
       spectator: "Spectator",
@@ -104,6 +105,7 @@ const messages = {
           point2: "The game ends in a draw if all spaces are filled and no player has three marks in a row.",
         },
       },
+
       nim: {
         game_title: 'Nim Rules',
         description: "Nim is a strategy game where players take turns removing stones from distinct heaps. The player who removes the last stone wins.",
@@ -126,8 +128,30 @@ const messages = {
           title: "Endgame",
           point1: "The player who takes the last stone wins."
         }
+      },
 
-      }
+      othello: {
+        title: "Othello Rules",
+        description: "Othello is played by two players on an 8×8 board with round disks that are black on one side and white on the other. Each player is provided with several disks.",
+        setup: {
+          title: "Setup",
+          point1: "The game is played on an 8×8 board.",
+          point2: "Each player is given a number of disks with a black and a white side.",
+          point3: "At the start of the game, four disks are placed in a predetermined position in the center of the board.",
+        },
+        gameplay: {
+          title: "Gameplay",
+          point1: "Player 'Black' always moves first.",
+          point2: "A player must place a disk on an empty square adjacent to an opponent's disk, with at least one opponent's disk between the placed disk and another disk of the player's color.",
+          point3: "After placing a disk, all opponent's disks in a straight line between the new disk and another disk of the player's color are flipped.",
+          point4: "Players alternate turns. If a player cannot make a move that flips an opponent's disk, they must pass.",
+        },
+        endgame: {
+          title: "Endgame",
+          point1: "The game ends when the board is full or neither player can make a valid move.",
+          point2: "The player with the most disks of their color on the board at the end wins.",
+        },
+      },
     },
   },
 
@@ -154,6 +178,7 @@ const messages = {
       lobby_key_generating: "Lobby-Schlüssel: Wird generiert",
       lobby_key: "Lobby-Schlüssel: {key}",
       your_position: "Ihre Position {position}",
+      lobby_position: "Lobby Positionen: P1= {p1} P2= {p2} Zuschauer {spectators}",
       player1: "Spieler 1",
       player2: "Spieler 2",
       spectator: "Zuschauer",
@@ -254,6 +279,29 @@ const messages = {
           point1: "Der Spieler, der den letzten Stein nimmt, gewinnt (oder verliert, je nach vereinbarter Regel).",
         },
       },
+
+      othello: {
+        title: "Othello Regeln",
+        description: "Othello wird von zwei Spielern auf einem 8×8-Brett mit runden Steinen gespielt, die eine schwarze und eine weiße Seite haben. Jeder Spieler erhält mehrere Steine.",
+        setup: {
+          title: "Aufbau",
+          point1: "Das Spiel wird auf einem 8×8-Brett gespielt.",
+          point2: "Jeder Spieler erhält mehrere Steine mit einer schwarzen und einer weißen Seite.",
+          point3: "Zu Beginn des Spiels werden vier Steine in einer vorgegebenen Position in der Mitte des Brettes platziert.",
+        },
+        gameplay: {
+          title: "Spielablauf",
+          point1: "Spieler 'Schwarz' macht immer den ersten Zug.",
+          point2: "Ein Spieler muss einen Stein auf ein leeres Feld legen, das an ein Feld mit gegnerischen Steinen angrenzt, wobei mindestens ein gegnerischer Stein zwischen dem neuen und einem anderen Stein derselben Farbe liegen muss.",
+          point3: "Nach dem Platzieren eines Steins werden alle gegnerischen Steine in einer geraden Linie zwischen dem neuen Stein und einem anderen Stein derselben Farbe umgedreht.",
+          point4: "Die Spieler wechseln sich ab. Wenn ein Spieler keinen gültigen Zug machen kann, muss er passen.",
+        },
+        endgame: {
+          title: "Spielende",
+          point1: "Das Spiel endet, wenn das Brett voll ist oder beide Spieler keinen gültigen Zug mehr machen können.",
+          point2: "Der Spieler mit den meisten Steinen seiner Farbe auf dem Brett am Ende gewinnt.",
+        },
+      },
     },
   },
 
@@ -279,6 +327,7 @@ const messages = {
       lobby_key_generating: "Clé de salle: Génération en cours",
       lobby_key: "Clé de salle: {key}",
       your_position: "Votre position {position}",
+      lobby_position: "Positions du lobby: P1= {p1} P2= {p2} Spectateurs {spectators}",
       player1: "Joueur 1",
       player2: "Joueur 2",
       spectator: "Spectateur",
@@ -381,6 +430,32 @@ const messages = {
         },
       },
 
+      othello: {
+        title: "Règles de Othello",
+        description: "Othello se joue à deux joueurs sur un plateau de 8×8 avec des disques ronds qui sont noirs d'un côté et blancs de l'autre. Chaque joueur dispose de plusieurs disques.",
+
+        setup: {
+          title: "Mise en place",
+          point1: "Le jeu se joue sur un plateau de 8×8.",
+          point2: "Chaque joueur reçoit un certain nombre de disques avec un côté noir et un côté blanc.",
+          point3: "Au début du jeu, quatre disques sont placés dans une position prédéterminée au centre du plateau.",
+        },
+
+        gameplay: {
+          title: "Déroulement du jeu",
+          point1: "Le joueur noir commence toujours.",
+          point2: "Un joueur doit placer un disque sur une case vide adjacente à un disque de l'adversaire, avec au moins un disque de l'adversaire entre le disque placé et un autre disque de la couleur du joueur.",
+          point3: "Après avoir placé un disque, tous les disques de l'adversaire en ligne droite entre le nouveau disque et un autre disque de la couleur du joueur sont retournés.",
+          point4: "Les joueurs jouent à tour de rôle. Si un joueur ne peut pas faire de mouvement retournant un disque de l'adversaire, il doit passer son tour.",
+        },
+
+        endgame: {
+          title: "Fin de partie",
+          point1: "Le jeu se termine lorsque le plateau est plein ou qu'aucun joueur ne peut faire de mouvement valide.",
+          point2: "Le joueur ayant le plus de disques de sa couleur sur le plateau à la fin gagne.",
+        },
+      },
+
     }
   },
 
@@ -406,6 +481,7 @@ const messages = {
       lobby_key_generating: "Clave del vestíbulo: Generando",
       lobby_key: "Clave del vestíbulo: {key}",
       your_position: "Tu posición {position}",
+      lobby_position: "Posiciones de lobby: P1= {p1} P2= {p2} Espectadores {spectators}",
       player1: "Jugador 1",
       player2: "Jugador 2",
       spectator: "Espectador",
@@ -504,6 +580,29 @@ const messages = {
         endgame: {
           title: "Fin del juego",
           point1: "El jugador que toma la última piedra gana (o pierde, dependiendo de la regla acordada).",
+        },
+      },
+
+      othello: {
+        title: "Reglas de Othello",
+        description: "Othello se juega entre dos jugadores en un tablero de 8×8 con discos redondos que son negros por un lado y blancos por el otro. Cada jugador recibe varios discos.",
+        setup: {
+          title: "Preparación",
+          point1: "El juego se juega en un tablero de 8×8.",
+          point2: "Cada jugador recibe un número de discos con un lado negro y un lado blanco.",
+          point3: "Al comienzo del juego, cuatro discos se colocan en una posición predeterminada en el centro del tablero.",
+        },
+        gameplay: {
+          title: "Desarrollo del juego",
+          point1: "El jugador negro siempre mueve primero.",
+          point2: "Un jugador debe colocar un disco en una casilla vacía adyacente a un disco del oponente, con al menos un disco del oponente entre el disco colocado y otro disco del color del jugador.",
+          point3: "Después de colocar un disco, todos los discos del oponente en línea recta entre el nuevo disco y otro disco del color del jugador son volteados.",
+          point4: "Los jugadores alternan turnos. Si un jugador no puede hacer un movimiento que voltee un disco del oponente, debe pasar.",
+        },
+        endgame: {
+          title: "Fin del juego",
+          point1: "El juego termina cuando el tablero está lleno o ninguno de los jugadores puede hacer un movimiento válido.",
+          point2: "El jugador con más discos de su color en el tablero al final gana.",
         },
       },
     }

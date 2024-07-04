@@ -6,6 +6,8 @@ from typing import Coroutine
 import websockets
 from websockets.exceptions import InvalidStatusCode, ConnectionClosedOK
 
+__all__ = ["Interface"]
+
 
 class Interface(ABC):
     def __init__(self, host: str, port: int):

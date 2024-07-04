@@ -40,7 +40,7 @@ export default {
     }*/
     },
     transformGameName(game) {
-      return game.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      return this.$t(`message.${game}`);
     },
     lobbyPos(){
       const data = {

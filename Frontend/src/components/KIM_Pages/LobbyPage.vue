@@ -43,7 +43,7 @@
         <p v-if="lobbyKey === null">{{ $t('message.lobby_key_generating') }}</p>
         <p v-else>Lobby Key: {{ lobbyKey }}</p>
         <p>{{ $t('message.your_position', { position:position }) }}</p>
-        <p>Lobby Positionen: P1= {{positionsInLobby[0]}} P2= {{positionsInLobby[1]}} Spectators {{ positionsInLobby[2] }}</p>
+        <p>{{ $t('message.lobby_position', { p1: positionsInLobby[0], p2: positionsInLobby[1], spectators: positionsInLobby[2] }) }}</p>
       </div>
 
       <base-button @click="playCreate">Start Game!</base-button>
