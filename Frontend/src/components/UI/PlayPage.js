@@ -77,7 +77,7 @@ export default {
         this.boardHeight = 7;
         this.twoTurnGame = false;
         break;
-      case "tic_tac_toe":
+      case "tictactoe":
         this.boardWidth = 3;
         this.boardHeight = 3;
         this.twoTurnGame = false;
