@@ -243,7 +243,7 @@ export default createStore({
                                 break;
                             case 208:
                                 commit('setIsValidMoveImage', true);
-                                 if (true){
+                                 if (state.game=ENUMS.games.OTHELLO){
                                     if (receivedJSONObject.moves.includes("36")){
                                         commit('setSkipMove',true);
                                         commit('setNotif',ENUMS.notifStatus.SKIPMOVE)}

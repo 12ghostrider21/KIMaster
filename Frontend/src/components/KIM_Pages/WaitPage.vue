@@ -80,6 +80,7 @@ goToGame() {
     },
     callPos(newVal){
       this.lobbyPos();
+      this.lobbyStatus();
     },
   },
 };

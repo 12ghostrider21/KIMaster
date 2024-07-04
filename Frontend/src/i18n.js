@@ -14,7 +14,7 @@ const messages = {
       lobby_join_failed: "Lobby Join Failed!",
       chess: "Chess",
       connect4: "Connect 4",
-      tic_tac_toe: "Tic Tac Toe",
+      tictactoe: "Tic Tac Toe",
       othello: "Othello",
       nim:'Nim',
       checkers: 'Checkers',
@@ -81,7 +81,7 @@ const messages = {
         },
       },
 
-      tic_tac_toe: {
+      tictactoe: {
         game_title: "Tic Tac Toe Rules",
         description:
           "Tic Tac Toe is a two-player game where players take turns marking a space in a 3x3 grid. The objective is to be the first to get three of your marks in a row, either horizontally, vertically, or diagonally.",
@@ -144,7 +144,7 @@ const messages = {
       lobby_join_failed: "Lobbybeitritt fehlgeschlagen!",
       chess: "Schach",
       connect4: "Vier Gewinnt",
-      tic_tac_toe: "Tic Tac Toe",
+      tictactoe: "Tic Tac Toe",
       othello: "Othello",
       nim: 'Nim',
       checkers: 'Dame',
@@ -207,7 +207,7 @@ const messages = {
         },
 
       },
-      tic_tac_toe: {
+      tictactoe: {
         game_title: "Tic Tac Toe Regeln",
         description:
           "Tic Tac Toe ist ein Zwei-Personen-Spiel, bei dem die Spieler abwechselnd ein Feld in einem 3x3 Raster markieren. Das Ziel ist es, als Erster drei seiner Zeichen in einer Reihe zu haben, sei es horizontal, vertikal oder diagonal.",
@@ -270,7 +270,7 @@ const messages = {
       lobby_join_failed: "Échec de la connexion à la salle!",
       chess: "Échecs",
       connect4: "Puissance 4",
-      tic_tac_toe: "Morpion",
+      tictactoe: "Morpion",
       othello: "Othello",
       nim: 'Nim',
       checkers: 'Dame',
@@ -336,7 +336,7 @@ const messages = {
 
       },
 
-      tic_tac_toe: {
+      tictactoe: {
         game_title: 'Règles du Tic Tac Toe',
         description: "Tic Tac Toe est un jeu à deux personnes dans lequel les joueurs marquent à tour de rôle une case dans une grille 3x3. Le but est d'être le premier à aligner trois de ses signes, que ce soit horizontalement, verticalement ou en diagonale.",
 
@@ -397,7 +397,7 @@ const messages = {
       lobby_join_failed: "¡Falló la unión al vestíbulo!",
       chess: "Ajedrez",
       connect4: "Conecta 4",
-      tic_tac_toe: "Tres en raya",
+      tictactoe: "Tres en raya",
       othello: "Othello",
       nim: 'Nim',
       checkers: 'Damas',
@@ -463,7 +463,7 @@ const messages = {
 
       },
 
-      tic_tac_toe: {
+      tictactoe: {
         game_title: 'Reglas del tres en raya',
         description: 'El tres en raya es un juego para dos jugadores en el que se turnan para marcar un cuadrado en una cuadrícula de 3x3. El objetivo es ser el primero en tener tres de tus personajes seguidos, ya sea en horizontal, vertical o diagonal.',
 
