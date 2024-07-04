@@ -31,7 +31,7 @@
         </select>
       </div>
       <div>
-        <select v-model="game" @change="setGame()">
+        <select v-model="selectedGame" @change="setGame(selectedGame)">
           <option value="" disabled>{{ $t('message.change_game_lobby') }}</option>
           <option v-for="(value, key) in enums.games" :key="key" :value="value">
             {{ $t(`message.${value}`) }}

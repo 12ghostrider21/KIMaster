@@ -26,7 +26,8 @@ export default {
   },
   mounted() {
     if(this.lobbyKey === null){
-    this.createLobby();}
+    this.createLobby();
+    this.selectedGame=this.game;}
   },
 
   methods: {
