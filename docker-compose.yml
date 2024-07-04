@@ -10,7 +10,6 @@ services:
       - SERVER_PORT=8010
       - NETWORK=swtp-net
       - WORKER=1
-      - PODMAN_HOST=unix:///run/podman/podman.sock
     ports:
       - "8010:8010"
     networks:
