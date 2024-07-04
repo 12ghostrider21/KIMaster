@@ -4,9 +4,9 @@ from enum import Enum
 # Define an enumeration to represent different difficulty levels
 class EDifficulty(Enum):
     # Each difficulty level is associated with a numeric value
-    easy = 75
-    medium = 175
-    hard = 275
+    easy = 35
+    medium = 75
+    hard = 150
 
     @staticmethod
     def get(difficulty: str):
