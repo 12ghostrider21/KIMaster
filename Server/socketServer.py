@@ -69,7 +69,10 @@ class SocketServer(AbstractConnectionManager):
         try:
             while True:
                 read_object: dict = await websocket.receive_json()
+
                 lobby: Lobby = self.manager.get_lobby(read_object.get("key"))
+                if lobby is None:
+                    continue
                 p_pos: str | None = read_object.get("to")  # None is Broadcast
 
                 response = read_object.get("response")
@@ -112,11 +115,12 @@ class SocketServer(AbstractConnectionManager):
                     case "draw":
                         await self.draw(read_object, game_instances[command_key], lobby, p_pos)
 
-        except RuntimeError:
-            pass
-        except WebSocketDisconnect:
-            pass
-        await self.disconnect(websocket)
+        except WebSocketDisconnect as e:
+            code = {1000: "Normal dissconnect", 1001: "Browser reload/tab close",
+                    1006: "GameClient was stopped connection break!"}
+            print(websocket.client, f"WebSocket dissconnected with code: {e.code}, {code.get(e.code)}")
+        finally:
+            await self.disconnect(websocket)
 
     async def ai_Action(self, board: np.array, it: int, mcts, cur_player, game_client: WebSocket):
         func = lambda x, y, n: np.argmax(mcts.get_action_prob(x, y, temp=(0.5 if n <= 6 else 0.)))

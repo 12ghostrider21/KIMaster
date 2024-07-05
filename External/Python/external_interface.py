@@ -1,10 +1,11 @@
+# external_interface.py
 import asyncio
 import json
 from abc import ABC, abstractmethod
 from typing import Coroutine
 
 import websockets
-from websockets.exceptions import InvalidStatusCode, ConnectionClosedOK
+from websockets.exceptions import InvalidStatusCode, ConnectionClosedOK, ConnectionClosedError
 
 __all__ = ["Interface"]
 
@@ -17,16 +18,15 @@ class Interface(ABC):
 
     async def connect(self):
         uri = f"ws://{self._host}:{self._port}/ws"
-        try:
-            self._websocket = await websockets.connect(uri, ping_interval=None)
-            print("\nSuccessfully connected.\n")
-            return True
-        except InvalidStatusCode as e:
-            print(e)
-            return False
-        except ConnectionRefusedError as e:
-            print(f"Cannot connect to server with: {uri}")
-            return False
+        while not self._websocket:
+            try:
+                self._websocket = await websockets.connect(uri, ping_interval=20, ping_timeout=20)
+                print("\nSuccessfully connected.\n")
+                return True
+            except (InvalidStatusCode, ConnectionRefusedError) as e:
+                print(f"Connection error: {e}. Retrying in 5 seconds...")
+                await asyncio.sleep(5)
+        return False
 
     async def disconnect(self):
         if self._websocket:
@@ -35,10 +35,7 @@ class Interface(ABC):
             print("\nDisconnected successfully.\n")
 
     async def connected(self) -> bool:
-        if self._websocket:
-            return True
-        else:
-            return False
+        return self._websocket is not None and not self._websocket.closed
 
     async def send_cmd(self, command: str, command_key: str, data: dict = None):
         if await self.connected():
@@ -49,14 +46,16 @@ class Interface(ABC):
 
     async def receive(self) -> dict | bytes:
         if await self.connected():
+            received = {}
             try:
                 received = await self._websocket.recv()
-            except ConnectionClosedOK:
-                return {}
-            try:
                 return json.loads(received)
+            except (ConnectionClosedOK, ConnectionClosedError) as e:
+                print(f"Connection closed: {e}")
+                await self.disconnect()
+                return received
             except json.decoder.JSONDecodeError:
-                return bytes(received)
+                return received
 
     def start(self, target: Coroutine):
         asyncio.run(target)

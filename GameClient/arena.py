@@ -35,6 +35,9 @@ class Arena:
         self.blunder_history.clear()  # reset
         self.blunder_calculation = False  # reset to default
 
+    def stop(self):
+        self.running = False
+
     async def play(self, board: np.array = None, cur_player: int = 1, it: int = 0, evaluation: bool = False):
         self.running = True
 
@@ -91,12 +94,10 @@ class Arena:
             self.history.append((board, cur_player, it))
             await self.game_client.broadcast_board(board, cur_player, self.game_name, False)
             await self.game_client.send_response(RCODE.P_GAMEOVER, None,
-                                                 {"result":
-                                                  round(cur_player * self.game.getGameEnded(board, cur_player)),
+                                                 {"result": round(cur_player * self.game.getGameEnded(board, cur_player)),
                                                   "turn": it})
         self.time_index_p1 = len(self.history)  # update index to history length
         self.time_index_p2 = len(self.history)  # update index to history length
         self.running = False
-
-    def stop(self):
-        self.running = False
+        await self.game_client.update()
+        return {"result": round(cur_player * self.game.getGameEnded(board, cur_player)), "turn": it}

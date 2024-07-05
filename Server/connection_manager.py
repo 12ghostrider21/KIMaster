@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from fastapi import WebSocket
+from starlette.websockets import WebSocketState
+
 from Tools.language_handler import LanguageHandler, LANGUAGE
 from Tools.rcode import RCODE
 
@@ -53,7 +55,8 @@ class AbstractConnectionManager(ABC):
             data (bytes): The binary data to be sent.
         """
         if client is not None:
-            await client.send_bytes(data)
+            if client.client_state == WebSocketState.CONNECTED:
+                await client.send_bytes(data)
 
     async def send_response(self, client: WebSocket, code: RCODE, data: dict | None = None):
         """
@@ -72,7 +75,8 @@ class AbstractConnectionManager(ABC):
         }
         if data:
             cmd.update(data)
-        await client.send_json(cmd)
+        if client.client_state == WebSocketState.CONNECTED:
+            await client.send_json(cmd)
 
     async def broadcast_response(self, client_list: list[WebSocket], code: RCODE, data: dict | None = None):
         """
@@ -85,7 +89,8 @@ class AbstractConnectionManager(ABC):
         """
         for c in client_list:
             if c is not None:
-                await self.send_response(c, code, data)
+                if c.client_state == WebSocketState.CONNECTED:
+                    await self.send_response(c, code, data)
 
     async def send_cmd(self, game_client: WebSocket, command: str, command_key: str, data: dict = None):
         """
@@ -100,4 +105,5 @@ class AbstractConnectionManager(ABC):
         cmd = {"command": command, "command_key": command_key}
         if data is not None:
             cmd.update(data)
-        await game_client.send_json(cmd)
+        if game_client.client_state == WebSocketState.CONNECTED:
+            await game_client.send_json(cmd)

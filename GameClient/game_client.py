@@ -200,6 +200,7 @@ class GameClient(WebSocketConnectionManager):
                     await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, True, None)
                     data = {"current_player": player, "it": it, "last_it": len(self.pit.arena.history) - 1}
                     await self.send_response(RCODE.P_UNSTEP, p_pos, data)
+
                 # Handling unknown commands
                 case _:
                     await self.send_response(code=RCODE.COMMANDNOTFOUND, to=p_pos, data={"command_key": command_key})
@@ -209,7 +210,8 @@ class GameClient(WebSocketConnectionManager):
         """
         Start the game arena with optional initial board state, current player, and iteration.
         """
-        self.pit.start_battle(board=board, cur_player=cur_player, it=it)
+        task = self.pit.start_battle(board=board, cur_player=cur_player, it=it)
+        print(task)
 
     def stop_arena(self):
         """

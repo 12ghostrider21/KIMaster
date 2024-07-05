@@ -36,7 +36,8 @@ class Example(Interface):
                 "1": Entry("lobby", "pos"),
                 "2": Entry("lobby", "create"),
                 "3": Entry("lobby", "leave"),
-                "4": Entry("lobby", "games")}
+                "4": Entry("lobby", "games"),
+                "5": Entry("play", "create", {"game": "tictactoe", "difficulty": "easy", "mode": "player_vs_kim"})}
 
     async def receive_messages(self):
         while await self.connected():

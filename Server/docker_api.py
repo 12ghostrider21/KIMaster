@@ -100,13 +100,9 @@ class DockerAPI:
         Args:
             token (str): The unique token for the game client.
         """
-        if self._debug:
-            print(f"[DOCKER_API]: Stopping GameClient: {token}")
         try:
             # Stop the container identified by the token
-            self.engine.containers.get(token).stop()
-            if self._debug:
-                print(f'Successfully Stopped GameClient {token}')
+            self.engine.containers.get(token).kill()
         except NotFound as e:
             # Handle case where the container is not found
             print(f"[DOCKER_API]: {e}")
@@ -121,13 +117,9 @@ class DockerAPI:
         Args:
             token (str): The unique token for the game client.
         """
-        if self._debug:
-            print(f"[DOCKER_API]: Removing GameClient: {token}")
         try:
             # Remove the container identified by the token
             self.engine.containers.get(token).remove()
-            if self._debug:
-                print(f'[DOCKER_API]: Successfully GameClient {token} removed')
         except NotFound as e:
             # Handle case where the container is not found
             print(f"[DOCKER_API]: {e}")

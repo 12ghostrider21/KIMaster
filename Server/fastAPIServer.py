@@ -4,6 +4,8 @@ from concurrent.futures import ThreadPoolExecutor
 from fastapi import WebSocket, WebSocketDisconnect
 from json import loads, JSONDecodeError
 
+from starlette.websockets import WebSocketState
+
 # Own modules
 from Server.connection_manager import AbstractConnectionManager
 from Server.lobby import Lobby
@@ -24,8 +26,7 @@ class FastAPIServer(AbstractConnectionManager):
         self.__command_mask: list[str] = ["command", "command_key", "pos", "key", "mode", "game", "difficulty", "num",
                                           "move", "lang", "fromPos"]
         self.__play_mask: list[str] = ["create", "valid_moves", "make_move", "undo_move", "surrender",
-                                       "new_game", "blunder", "timeline", "step", "unstep", "evaluate", "stop_evaluate",
-                                       "games"]
+                                       "new_game", "blunder", "timeline", "step", "unstep"]
 
     # Method to connect a WebSocket client
     async def connect(self, websocket: WebSocket):
@@ -75,8 +76,9 @@ class FastAPIServer(AbstractConnectionManager):
                         self.submit_task(loop, self.handle_client, client, read_object)
                     case _:
                         await self.send_response(client, RCODE.COMMANDNOTFOUND, {"command": command})
-        except WebSocketDisconnect:
-            await self.disconnect(client)
+        except WebSocketDisconnect as e:
+            code = {1000: "Normal dissconnect", 1001: "Browser reload/tab close", 1006: "Critical connection break!"}
+            print(client.client, f"WebSocket dissconnected with code: {e.code}, {code.get(e.code)}")
         finally:
             await self.disconnect(client)
 
@@ -92,7 +94,6 @@ class FastAPIServer(AbstractConnectionManager):
 
         """
         loop.run_in_executor(self.executor, lambda: asyncio.run(coro(*args)))
-
     # *****************************************************************************************************************
     # handle debug
     # *****************************************************************************************************************
@@ -248,6 +249,7 @@ class FastAPIServer(AbstractConnectionManager):
                 return await self.send_response(client=client,
                                                 code=RCODE.L_LOBBYNOTREADY,
                                                 data={i[0]: i[1] for i in missing})
+
         await self.send_cmd(lobby.game_client, "play", command_key, data)
 
     # *****************************************************************************************************************

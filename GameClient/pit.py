@@ -25,7 +25,7 @@ class Pit:
         # Set the arena's running status to True
         self.arena.running = True
         # Create and start an asynchronous task to play the game in the arena
-        asyncio.create_task(self.arena.play(board=board, cur_player=cur_player, it=it))
+        return asyncio.create_task(self.arena.play(board=board, cur_player=cur_player, it=it))
 
     # Stop the battle in the arena
     def stop_battle(self) -> None:
