@@ -1,10 +1,43 @@
 import { createStore } from 'vuex';
 import * as ENUMS from '../components/enums.js';
 
+
+const getDefaultState = () => {
+    return {
+        socket: null,
+        socketConnected: false,
+        connectionLost: false,
+        messages: [],
+        lobbyKey: null,
+        game: 'none',
+        position: "p1",
+        positionsInLobby: [false, false, 0], //Occupied Positions, 0=p1 1=p2, 2= number of Spectators
+        imagesrc: null,
+        //images: [],
+        inLobby: false,
+        popup: null,
+        notif: null,
+        gameReady: false,
+        gameOver: false,
+        gameActive: false,
+        currentImageIndex: -1,
+        turn: 0, //Turn of the Game
+        playerTurn: 1, //Which Player is currently active 1 for Player 1
+        playerWon: 0, //WhichPlayer Won
+        isValidMoveImage: false,
+        callPos: false,
+        invalidMoveObserver: false,
+        skipMove: false,
+    };
+};
+
 export default createStore({
+
+    
     state: {
         socket: null,
         socketConnected:false,
+        connectionLost:false,
         messages: [],
         lobbyKey: null,
         game: null,
@@ -18,7 +51,7 @@ export default createStore({
         gameReady: false,
         gameOver: false,
         gameActive: false,
-        currentImageIndex:-1,
+        //currentImageIndex:-1,
         turn:0, //Turn of the Game
         playerTurn:1, //Which Player is currently active 1 for Player 1
         playerWon:0, //WhichPlayer Won
@@ -29,6 +62,10 @@ export default createStore({
     },
     mutations: {
 
+        resetState(state) {
+            Object.assign(state, getDefaultState());
+            },
+     
         setPositionsInLobby(state,{ p1, p2, sp }) {
             state.positionsInLobby[0]=p1;
             state.positionsInLobby[1]=p2;
@@ -64,6 +101,11 @@ export default createStore({
 
         setSocketConnected(state, socketConnected)
         {state.socketConnected=socketConnected
+
+        },
+
+        setConnectionLost(state, connectionLost)
+        {state.connectionLost=connectionLost
 
         },
         setLobbyKey(state, lobbyKey) {
@@ -108,6 +150,10 @@ export default createStore({
         },
     },
     actions: {
+
+        resetState({ commit }) {
+            commit('resetState');
+        },
 
         updatePosition({ commit }, position) {
             commit('setPosition', position);
@@ -155,6 +201,8 @@ export default createStore({
         },
 
         initWebSocket({ commit,state }) {
+            commit('resetState');
+            
             const currentUrl = window.location.href;
 
             let socket;
@@ -169,12 +217,20 @@ export default createStore({
             }
 
             socket.onopen = () => {
+                
                 console.log('WebSocket is open now.');
                 commit("setSocketConnected",true);
+                commit('setConnectionLost',false);
             };
             socket.onclose = () => {
                 console.log('WebSocket is closed now.');
+                commit('setConnectionLost',true);
             };
+
+            socket.onerror=(error) => {
+                console.log('WebSocketError?'+ error);
+                commit('setConnectionLost',true);
+            }
             socket.onmessage = (event) => {
                 console.log('WebSocket message received:', event);
                 commit('addMessage', event.data); // Commit the message to the store
@@ -211,6 +267,7 @@ export default createStore({
                                     p2: receivedJSONObject.P2,
                                     sp: receivedJSONObject.Spectators
                                 });
+                                commit('setGameActive',GameRunning);
                                 break;
                             case 150: 
                             case 151:
@@ -221,6 +278,7 @@ export default createStore({
                                 commit('setLobbyKey', null);
                                 commit('setInLobby', false);
                                 commit('setGameReady',false);
+                                commit('setGameActive',false);
                                 break;
                             case 154:
                             case 155: commit('setNotif', ENUMS.notifStatus.POSOCCUPIED);
@@ -232,10 +290,11 @@ export default createStore({
                             
                             case 200: //Game has started
                                 commit('setGame', receivedJSONObject.game);
-                                commit('setCurrentImageIndex',-1);
+                               // commit('setCurrentImageIndex',-1);
                                 commit('newImages');
                                 commit('setPopup',null);
                                 commit('setGameActive', true);
+                                commit('setGameOver',false);
                                
                                 break;
                             case 202: //Game is over
@@ -257,7 +316,7 @@ export default createStore({
                                     };
                                 break;
                             case 209:
-                                commit('setCurrentImageIndex', state.currentImageIndex - 3); // Set to the second to last image index
+                                //commit('setCurrentImageIndex', state.currentImageIndex - 3); // Set to the second to last image index
                                 state.images.pop();
                                 state.images.pop();
                                 state.images.pop();
@@ -278,16 +337,16 @@ export default createStore({
                     const blob = new Blob([event.data], { type: 'image/png' });
 
 
-                    console.log("ImageIndex: " +state.currentImageIndex + "ImagesLength:" + state.images.length);
-                    if (state.images.length===0||state.currentImageIndex === state.images.length-1) {
+                    //console.log("ImageIndex: " +state.currentImageIndex + "ImagesLength:" + state.images.length);
+                   // if (state.images.length===0||state.currentImageIndex === state.images.length-1) {
                         const url = URL.createObjectURL(blob);
                         commit('setImagesrc', url);
 
-                    }
+                   /* }
                     if (!state.isValidMoveImage) { //TODO: Better more reliable Solution?
                     commit('addImages',blob);
                     commit('setCurrentImageIndex', state.currentImageIndex+1)}
-                    else { commit('setIsValidMoveImage', false);}
+                    else { commit('setIsValidMoveImage', false);}*/
                 }
             };
 
@@ -325,5 +384,6 @@ export default createStore({
         positionsInLobby:(state) => state.positionsInLobby,
         skipMove:(state) => state.skipMove,
         socketConnected:(state) => state.socketConnected,
+        connectionLost:(state) => state.connectionLost,
     },
 });

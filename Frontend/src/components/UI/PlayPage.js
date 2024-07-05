@@ -17,6 +17,7 @@ export default {
       "turn",
       "invalidMoveObserver",
       "skipMove",
+      "turn",
      
     ]),
     enums() {
@@ -99,10 +100,7 @@ export default {
       "sendWebSocketMessage",
       "setNotif",
       "setPopup",
-      "changePrevImage",
-      "changeNextImage",
-      "changeFirstImage",
-      "changeLastImage"
+
     ]),
     nimMove(pos){
       if (this.nimTest[0]==-1) this.nimTest[0]=pos;
@@ -163,7 +161,8 @@ export default {
     playValidMoves() {
       const data = {
         command: "play",
-        command_key: "valid_moves"
+        command_key: "valid_moves",
+        isFrontend:true,
       };
       this.sendMessage(data);
     },
@@ -171,7 +170,8 @@ export default {
       const data = {
         command: "play",
         command_key: "valid_moves",
-        fromPos: fromPos
+        fromPos: fromPos,
+        isFrontend:true,
       };
       this.sendMessage(data);
     },
@@ -183,13 +183,15 @@ export default {
           data = {
             command: "play",
             command_key: "make_move",
-            move: this.toPos
+            move: this.toPos,
+            isFrontend:true,
           };
         } else {
           data = {
             command: "play",
             command_key: "make_move",
-            move: [this.fromPos, this.toPos]
+            move: [this.fromPos, this.toPos],
+            isFrontend:true
           };
         }
         this.sendMessage(data);
@@ -254,12 +256,6 @@ export default {
     quitGame() {
       console.log("VUE COMPONENT" + this.gameActive);
       if (this.gameActive !== true) {
-        // Debug, real guard must be implemented
-        const data = {
-          command: "play",
-          command_key: "quit"
-        };
-        this.sendMessage(data);
         const data2 = {
           command: "lobby",
           command_key: "leave"
@@ -272,6 +268,40 @@ export default {
         this.setNotif === ENUMS.notifStatus.SURRENDERFIRST;
       }
     },
+
+    leaveGame() {
+    const data2 = {
+      command: "lobby",
+      command_key: "leave"
+          };
+    this.sendMessage(data2);
+    this.$router.push({
+      name: "home"
+    });},
+
+    first(){    const data = {
+        command: 'play',
+        command_key: 'timeline',
+        num: 0,
+      };
+      this.sendMessage(data);
+    },
+    step(){  const data = {
+      command: 'play',
+      command_key: 'step',
+    };
+    this.sendMessage(data);},
+    unstep(){  const data = {
+      command: 'play',
+      command_key: 'unstep',
+    };
+    this.sendMessage(data);},
+    last(){const data = {
+      command: 'play',
+      command_key: 'timeline',
+      num: this.turn,
+    };
+    this.sendMessage(data);},
     firstImage() {
       this.changeFirstImage();
     },

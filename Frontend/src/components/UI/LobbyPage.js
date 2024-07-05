@@ -65,12 +65,11 @@ export default {
         command_key: "leave",
       };
       this.sendMessage(data);
-      this.$router.push("/");
+      this.$router.push({
+        name: 'home',
+      });
     },
-    navigateToGame(){  this.$router.push({
-          name: 'lobby',
-          params: { game: this.selectedGame }})
-         },
+
 
     swapPositionInLobby() {
       const data = {
@@ -97,15 +96,8 @@ export default {
       this.sendMessage(data);
     },
 
-    showStatus() {
-      const data = {
-        command: 'lobby',
-        command_key: 'status',
-      };
-      this.sendMessage(data);
-    },
     playCreate() {
-      this.showStatus();
+      this.lobbyStatus();
       if (true) {
         const data = {
           command: 'play',
@@ -118,15 +110,14 @@ export default {
         this.sendMessage(data);
         if(this.gameActive) 
         this.$router.push({
-          name: 'play',
-          params: { game: this.game }
+          name: 'play'
         }); }
      
     },
   },
   watch: {
     game(){
-      this.selectedGame=game;
+      this.selectedGame=this.game;
     },
     callPos(){
       this.lobbyPos();
@@ -137,7 +128,6 @@ export default {
         if (newVal) {
           this.$router.push({
             name: 'play',
-            params: { game: this.game }
           });
         }
       },

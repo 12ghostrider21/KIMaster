@@ -17,7 +17,7 @@ export default {
     ENUMS() {
       return ENUMS
     },
-    ...mapGetters(['inLobby', 'popup', 'notif','gameActive','game']),
+    ...mapGetters(['inLobby', 'popup', 'notif','gameActive','game','callPos']),
   },
   methods: {
     ...mapActions(['sendWebSocketMessage','setNotif','setGame']),
@@ -33,7 +33,7 @@ export default {
         command: 'lobby',
         command_key: 'join',
         key: this.lobbyKeyToJoin,
-        pos: 'p2',
+        pos: 'sp',
       };
       this.sendMessage(data);
       this.joinLobbyWait();
@@ -62,6 +62,21 @@ export default {
       console.log("Test");
       this.popUpTrigger=false;
     },
+    lobbyPos(){
+      const data = {
+      command: 'lobby',
+      command_key: 'pos',
+    };
+    this.
+    sendMessage(data);
+    },
+    lobbyStatus() {
+      const data = {
+        command: "lobby",
+        command_key: "status",
+      };
+      this.sendMessage(data);
+    },
 
     joinLobbyWait() {
       console.log(this.inLobby);
@@ -79,6 +94,11 @@ export default {
     },
   },
   watch: {
+    callPos(){
+      this.lobbyPos();
+      this.lobbyStatus();
+      console.log(this.positionsInLobby);
+    },
     notif(newVal) {
       setTimeout(() => {
         this.setNotif(null);
