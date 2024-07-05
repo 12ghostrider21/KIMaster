@@ -1,34 +1,18 @@
-import argparse
 import os
-import shutil
 import time
-import random
 import numpy as np
-import math
 import sys
 sys.path.append('../../')
 import pandas as pd
-import argparse
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
-from torchvision import datasets, transforms
 from torch.autograd import Variable
 
+from Games.go.pytorch.GoAlphaNet import AlphaNetMaker as NetMaker
+from Games.go.pytorch.GoNNet import GoNNet
 
-from .GoAlphaNet import AlphaNet as alpNet
-from .GoAlphaNet import AlphaNetMaker as NetMaker
-from .GoNNet import GoNNet
-
-try:
-    from utils import *
-    from pytorch_classification.utils import Bar, AverageMeter
-    from NeuralNet import NeuralNet
-except:
-    from ...utils import *
-    from ...pytorch_classification.utils import Bar, AverageMeter
-    from ...NeuralNet import NeuralNet
+from Tools.utils import *
+from Tools.neural_net import NeuralNet
 
 args = dotdict({
     'lr': 0.001,
@@ -78,7 +62,7 @@ class NNetWrapper(NeuralNet):
             v_losses = AverageMeter()
             end = time.time()
 
-            bar = Bar('Training Net', max=int(len(examples)/args.batch_size))
+            max=int(len(examples)/args.batch_size)
             batch_idx = 0
 
             while batch_idx < int(len(examples)/args.batch_size):
@@ -120,22 +104,8 @@ class NNetWrapper(NeuralNet):
 
                 batch_idx += 1
 
-                # plot progress
-                bar.suffix  = '({batch}/{size}) Data: {data:.3f}s | Batch: {bt:.3f}s | Total: {total:} | ETA: {eta:} | Loss_pi: {lpi:.4f} | Loss_v: {lv:.3f}'.format(
-                            batch=batch_idx,
-                            size=int(len(examples)/args.batch_size),
-                            data=data_time.avg,
-                            bt=batch_time.avg,
-                            total=bar.elapsed_td,
-                            eta=bar.eta_td,
-                            lpi=pi_losses.avg,
-                            lv=v_losses.avg,
-                            )
-                bar.next()
-
             trainLog['P_LOSS'].append(pi_losses.avg)
             trainLog['V_LOSS'].append(v_losses.avg)
-            bar.finish()
 
         return pd.DataFrame(data=trainLog)
 

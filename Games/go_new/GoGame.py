@@ -1,18 +1,8 @@
-from __future__ import print_function
-try:
-    from Game import Game
-    from GoLogic import Board
-except:
-    try:
-        from alphabrain.Game import Game
-        from alphabrain.go.GoLogic import Board
-    except:
-        from Game import Game
-        from go.GoLogic import Board
-import numpy as np
+from Tools.i_game import IGame, np
+from Games.go.GoLogic import Board
 
 
-class GoGame(Game):
+class GoGame(IGame):
     def __init__(self, n=19):
         self.n = n
 
@@ -138,6 +128,76 @@ class GoGame(Game):
     def stringRepresentation(self, board):
         # 8x8 numpy array (canonical board)
         return np.array(board.pieces).tostring()
+
+    def translate(self, board: np.array, player: int, index: int):
+            return index
+
+    def stringRepresentation(self, board):
+        return board.tostring()
+
+    def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
+        if valid_moves:
+            return str([i for (i, valid) in enumerate(self.getValidMoves(board, 1)) if valid])
+        else:
+            horizontal_border = '\t+' + '-' * (4 * self.size - 1) + '+\n'
+            output = horizontal_border
+
+            for row in range(self.size):
+                row_str = f'{row}\t|'
+                for col in range(self.size):
+                    piece = board[row][col]
+                    if piece == 0:
+                        row_str += '   |'
+                    elif piece == 1:
+                        row_str += ' O |'  # Assuming 'O' for black stone
+                    elif piece == -1:
+                        row_str += ' X |'  # Assuming 'X' for white stone
+                output += row_str + '\n' + horizontal_border
+
+            # Add column indices below the board
+            col_indices = '\t  ' + '   '.join([f'{col}' for col in range(10)])
+            col_indices += '   ' + '  '.join([f'{col}' for col in range(10, self.size)]) + '\n'
+            output += col_indices
+
+            return output
+
+    def draw(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
+        import pygame
+        row_count = self.size
+        col_count = self.size
+        SQUARESIZE = 90
+        WIDTH = row_count * SQUARESIZE
+        HEIGHT = col_count * SQUARESIZE
+        MARGIN = SQUARESIZE // 2
+
+        color_background = (251, 196, 103)  # light brown/cream
+        color_grid = (0, 0, 0)  # black
+        color_ply_one = (0, 0, 0)  # black
+        color_ply_minus_one = (255, 255, 255)  # white
+        color_valid = (144, 238, 144)  # Light green for valid moves
+
+        pygame.init()
+        surface = pygame.Surface((WIDTH + 2 * MARGIN, HEIGHT + 2 * MARGIN), pygame.SRCALPHA)
+        surface.fill(color_background)
+
+        # Draw the board
+        for row in range(row_count):
+            for col in range(col_count):
+                center = (col * SQUARESIZE + MARGIN, row * SQUARESIZE + MARGIN)
+                radius = SQUARESIZE // 2 - 1
+
+                pygame.draw.rect(surface, color_grid, (col * SQUARESIZE + MARGIN, row * SQUARESIZE + MARGIN, SQUARESIZE, SQUARESIZE), 1)
+
+                valids = self.getValidMoves(board, cur_player)
+                if valid_moves and valids[row * col_count + col]:
+                    pygame.draw.circle(surface, color_valid, center, radius)
+
+                if board[row][col] == 1:
+                    pygame.draw.circle(surface, color_ply_one, center, radius)
+                elif board[row][col] == -1:
+                    pygame.draw.circle(surface, color_ply_minus_one, center, radius)
+                    pygame.draw.arc(surface, (0, 0, 0), pygame.Rect(center[0] - radius, center[1] - radius, 2 * radius, 2 * radius), 0, np.pi * 2, 1)
+        return surface
 
 
 def display(board):
