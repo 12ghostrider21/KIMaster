@@ -8,6 +8,7 @@ class IGame(ABC):
     def getInitBoard(self) -> np.array:
         """
         Get the initial representation of the game board.
+        As well resets all other data to initial state!
 
         Returns:
             startBoard (numpy.array): A representation of the initial game board.
@@ -188,7 +189,7 @@ class IGame(ABC):
     @abstractmethod
     def translate(self, board: np.array, player: int, index: int) -> any:
         """
-        Converts an index into an action.
+        Converts an index coming from alpha zero AI into an action.
         Comes into effect for games that do not just have a to_position (just an int as move).
         The output depends on the game getting implemented, most likely it's a pair tuple (from_position, to_position),
         but it can also be a triplet tuple and so on - depending on the game.
@@ -202,6 +203,33 @@ class IGame(ABC):
 
         Returns:
             action (any): The action fitting to the index.
+        """
+
+    @abstractmethod
+    def getRedundancyCounter(self) -> int:  # kommt evtl. auch wieder weg => wird sich im Training zeigen
+        """
+        Applies only for games like chess, checkers, nine mens morris and so on.
+        All other games where it is not possible to just move back and forth without game progress,
+        like tic tac toe, othello ..., just return 0.
+        Internally you need to carry along a counter that is getting incremented every time a redundant move
+        (e.g. tokens not getting less...) is made.
+
+        Returns:
+            redundancy (int): The current number of redundant moves without any game progress
+        """
+
+    def rotateMove(self, move: int | tuple[int, int]) -> int | tuple[int, int]:
+        """
+        For games like chess, checkers ...
+        Stands in relation with displaying rotated board frontend-wise.
+        Every player moves from bottom to top (black AND white).
+        So the moves coming from frontend need to be rotated as well for one of the two players.
+
+        Parameters:
+            move (int | tuple[int, int]): The move to rotate.
+
+        Returns:
+            rotated move (int | tuple[int, int])
         """
 
     @abstractmethod
@@ -262,7 +290,7 @@ class IGame(ABC):
             board (np.array): A NumPy array representing the game state. The array should contain
                 the necessary information to visualize the current state of the game.
             valid_moves: Whether displaying / drawing valid moves or not.
-            cur_player: The current player (1 for one player, -1 for the other player).
+            cur_player: The player who is in turn (1 for one player, -1 for the other player).
             args: first arg is from_pos (int): The from_pos to get the valid moves for.
                     That argument is only for games where to move tokens.
                     For Games in which to just one-time set tokens, this arg is redundant

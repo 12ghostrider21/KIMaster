@@ -11,13 +11,13 @@ class CheckersGame(IGame):
     def __init__(self, n: int = None):
         self.board = Board(n)
         self.n = n or self.board.n
-        self.redundant = 0
+        self.redundancy = 0
         self.ll_capture_hist = {}
 
     def getInitBoard(self):
-        """return initial board (numpy array)"""
-        b = Board(self.n)
-        return b.pieces
+        """return initial board (numpy array) and resets data"""
+        self.resetData()
+        return np.copy(self.board.pieces)
 
     def getBoardSize(self):
         return self.n, self.n
@@ -31,8 +31,6 @@ class CheckersGame(IGame):
           action must be a valid move"""
         b = Board(self.n, np.copy(board))
 
-        if np.array_equal(b.pieces, self.getInitBoard()):
-            self.ll_capture_hist.clear()
         if (self.stringRepresentation(b.pieces), player) in self.ll_capture_hist:
             b.last_long_capture = self.ll_capture_hist[(self.stringRepresentation(b.pieces), player)]
 
@@ -40,15 +38,16 @@ class CheckersGame(IGame):
         b.execute_action(action, player)
         post_amount_pieces = np.count_nonzero(b.pieces)
         if pre_amount_pieces == post_amount_pieces:
-            self.redundant += 1
+            self.redundancy += 1
         else:
-            self.redundant = 0
+            self.redundancy = 0
 
         if b.last_long_capture:
             next_actions = b.get_moves_for_square(*b.last_long_capture, player, captures_only=True)
             if next_actions:
                 self.ll_capture_hist.update({(self.stringRepresentation(b.pieces), player): b.last_long_capture})
                 return b.pieces, player  # Player continues with the same board state
+
         return b.pieces, -player
 
     def getValidMoves(self, board: np.array, player: int):
@@ -69,16 +68,19 @@ class CheckersGame(IGame):
 
     def getGameEnded(self, board: np.array, player: int):
         """returns 0 if not ended, 1 if player won, -1 if player lost"""
-        if self.redundant >= 30:
-            self.redundant = 0
+        if self.redundancy >= 30:
+            self.redundancy = 0
             return 1e-4  # draw
         b = Board(self.n, np.copy(board))
         if b.has_legal_moves(player) and b.has_legal_moves(-player):
             return 0
         if b.has_legal_moves(player):
+            self.redundancy = 0
             return 1
         if b.has_legal_moves(-player):
+            self.redundancy = 0
             return -1
+        self.redundancy = 0
         return 1e-4
 
     def getCanonicalForm(self, board: np.array, player: int):
@@ -121,6 +123,28 @@ class CheckersGame(IGame):
         move = moves[i]
         one_d_move = self.two_d_to_one_d(move)
         return one_d_move
+
+    def rotateMove(self, move: int | tuple[int, int]):
+        empty_board = np.zeros([self.n, self.n], dtype=int)
+        if type(move) is tuple:
+            to_rotate = [pos for pos in move]
+        else:
+            to_rotate = [move]
+        rotated = []
+        for pos in to_rotate:
+            empty_board[pos // self.n, pos % self.n] = 1
+            rot_board = np.rot90(empty_board, 2)
+            rotated.append(i for i, pos in enumerate(rot_board) if pos == 1)
+            empty_board[pos // self.n, pos % self.n] = 0
+        return rotated[0] if len(rotated) == 1 else (rotated[0], rotated[1])
+
+    def getRedundancyCounter(self):
+        return self.redundancy
+
+    def resetData(self):
+        self.redundancy = 0
+        self.ll_capture_hist.clear()
+        self.board = Board(self.n)
 
     def two_d_to_one_d(self, move: tuple[int, int, int, int]) -> tuple[int, int]:
         row, col, nrow, ncol = move

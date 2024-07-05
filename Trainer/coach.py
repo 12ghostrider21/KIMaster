@@ -4,6 +4,7 @@ import sys
 from collections import deque
 from pickle import Pickler, Unpickler
 from random import shuffle
+from copy import deepcopy
 
 import numpy as np
 from tqdm import tqdm
@@ -29,7 +30,7 @@ class Coach:
         self.nnet = nnet
         self.pnet = self.nnet.__class__(self.game)  # the competitor network
         self.args = args
-        self.mcts = MCTS(self.game, self.nnet, self.args)
+        self.mcts = MCTS(deepcopy(self.game), self.nnet, self.args)
         self.trainExamplesHistory = []  # history of examples from args.numItersForTrainExamplesHistory latest iterations
 
     def executeEpisode(self):
@@ -55,6 +56,7 @@ class Coach:
         while True:
             episodeStep += 1
             temp = int(episodeStep < self.args.tempThreshold)
+            self.mcts.game = deepcopy(self.game)
             pi = self.mcts.get_action_prob(board, self.curPlayer, temp=temp)
             sym = self.game.getSymmetries(board, pi)
             for b, p in sym:
@@ -63,6 +65,7 @@ class Coach:
             a = np.random.choice(len(pi), p=pi)
             action = self.game.translate(board, self.curPlayer, a)
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
+            # print(self.game.drawTerminal(board, False, self.curPlayer))
             r = self.game.getGameEnded(board, self.curPlayer)
 
             if r != 0:
@@ -87,6 +90,8 @@ class Coach:
                 self.mcts = MCTS(self.game, self.nnet, self.args)  # reset search tree
                 iterationTrainExamples += self.executeEpisode()
 
+            self.game.getInitBoard()  # resets all data
+
             # save the iteration examples to the history
             self.trainExamplesHistory.append(iterationTrainExamples)
 
@@ -107,10 +112,10 @@ class Coach:
             # training new network, keeping a copy of the old one
             self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
             self.pnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
-            pmcts = MCTS(self.game, self.pnet, self.args)
+            pmcts = MCTS(deepcopy(self.game), self.pnet, self.args)
 
             self.nnet.train(trainExamples)
-            nmcts = MCTS(self.game, self.nnet, self.args)
+            nmcts = MCTS(deepcopy(self.game), self.nnet, self.args)
 
             log.info('PITTING AGAINST PREVIOUS VERSION')
             arena = Arena(lambda x, y: np.argmax(pmcts.get_action_prob(x, y, temp=0)),

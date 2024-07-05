@@ -139,6 +139,10 @@ class Board:
         :param action: tuple (from_row, from_column, to_row, to_column)
         :param color: player that is executing the move
         """
+        if type(action) is not tuple:
+            raise ValueError(f"Invalid move: {action}")
+        if len(action) != 2:
+            raise ValueError(f"Invalid move: {action}")
         action = self.one_d_to_two_d(action)
         if action not in self.flat_legal_moves(color):
             raise ValueError(f"Invalid move: {action}")

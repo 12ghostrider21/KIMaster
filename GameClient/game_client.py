@@ -69,9 +69,13 @@ class GameClient(WebSocketConnectionManager):
                         continue
                     hist: tuple = self.pit.get_last_hist_entry()  # Get the last history entry from the Pit
                     from_pos = read_object.get("fromPos")
+                    if read_object.get("isFrontend") and p_pos == "p2":
+                        from_pos = self.pit.arena.game.rotateMove(from_pos)
                     await self.send_board(hist[0], hist[1], self.pit.arena.game_name, True, from_pos)
                     moves = [str(self.pit.arena.game.translate(hist[0], hist[1], i))
                              for i, m in enumerate(self.pit.arena.game.getValidMoves(hist[0], hist[1])) if m == 1]
+                    if read_object.get("isFrontend") and p_pos == "p2":
+                        moves = [self.pit.arena.game.rotateMove(move) for move in moves]
                     await self.send_response(RCODE.P_MOVES, p_pos,{"moves": moves})
 
                 # Handling 'make_move' command
@@ -90,6 +94,8 @@ class GameClient(WebSocketConnectionManager):
                     if move is None:
                         await self.send_response(RCODE.P_INVALIDMOVE, p_pos)
                         continue
+                    if read_object.get("isFrontend") and p_pos == "p2":
+                        move = self.pit.arena.game.rotateMove(move)
                     if not self.pit.set_move(move, p_pos):
                         await self.send_response(RCODE.P_NOTYOURTURN, p_pos)
 
@@ -158,7 +164,8 @@ class GameClient(WebSocketConnectionManager):
                                             p_pos=p_pos, data=self.pit.get_blunder_payload())
                         continue
                     # successfully requested blunder
-                    await self.send_response(code=RCODE.P_BLUNDERLIST, to=p_pos, data=self.pit.get_blunder())
+                    await self.send_response(code=RCODE.P_BLUNDERLIST, to=p_pos, data=self.pit.get_blunder(
+                        p_pos == "p2" and read_object.get("isFrontend")))
 
                 # Handling 'timeline' command
                 case "timeline":

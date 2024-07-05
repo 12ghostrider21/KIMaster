@@ -16,7 +16,7 @@ class Arena:
 
         # configuration storage of current active battle
         self.history: list[tuple[np.array, int, int]] = []  # [board, cur_player, iteration]
-        self.blunder_history: list[tuple[np.array, int, int, any]] = []  # [board, cur_player, move, iteration]
+        self.blunder_history: list[tuple[np.array, int, int, any]] = []  # [board, cur_player, iteration, move]
         self.blunder: list = []  # saves blunder values for each index
         self.blunder_calculation: bool = False  # is true if a calculation request was send
         self.cur_player: int = 1  # default start value
@@ -74,8 +74,6 @@ class Arena:
                                                           "key": self.game_client.key})
                     ai = True
                     continue
-                if ai:
-                    action = self.game.translate(board, cur_player, action)  # ai generated move is just an index
                 try:
                     board, cur_player = self.game.getNextState(board, cur_player, action)
                     await self.game_client.send_response(code=RCODE.P_VALIDMOVE, to=to)

@@ -85,6 +85,10 @@ class OthelloGame(IGame):
     def translate(self, board: np.array, player: int, index: int):
         return index
 
+    def rotateMove(self, move: int):
+        # no rotation at othello
+        return move
+
     def stringRepresentation(self, board):
         return board.tostring()
 
@@ -95,6 +99,9 @@ class OthelloGame(IGame):
     def getScore(self, board, player):
         b = Board(self.n, np.copy(board))
         return b.countDiff(player)
+
+    def getRedundancyCounter(self):
+        return 0
 
     def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         if valid_moves:

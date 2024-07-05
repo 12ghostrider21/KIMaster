@@ -4,7 +4,8 @@ import numpy as np
 
 # Constants
 EPS = 1e-8  # Small value to prevent division by zero errors
-COEFFICIENT = 0.01  # Coefficient used for adjusting UCB values for sanctioned actions
+S_COEFFICIENT = 0.01  # sanction coefficient used for adjusting UCB values for sanctioned actions
+#R_COEFFICIENT = 0.85
 
 # Setting up logging
 log = logging.getLogger(__name__)
@@ -30,7 +31,6 @@ class MCTS:
         self.Ps = {}  # Initial policy returned by the neural network
 
         # Game state storage
-        # self.Es = {}  # Game end status for states
         self.Vs = {}  # Valid moves for states
 
         # Action tracking
@@ -54,7 +54,8 @@ class MCTS:
         # Get the string representation of the board
         s = self.game.stringRepresentation(board)
         # Get the visit counts for each action
-        counts = [self.Nsa[(s, a)] if (s, a) in self.Nsa else 0 for a in range(self.game.getActionSize())]
+        counts = [self.Nsa[(s, cur_player, a)] if (s, cur_player, a) in self.Nsa else 0
+                  for a in range(self.game.getActionSize())]
 
         if temp == 0:
             # Deterministic action selection
@@ -86,20 +87,21 @@ class MCTS:
             return -status
 
         valids = self.game.getValidMoves(board, cur_player)
+        self.Vs[(s, cur_player)] = valids
 
         # If this state has not been visited before, it is a leaf node
-        if s not in self.Ps:
-            self.Ps[s], v = self.nnet.predict(self.game.getCanonicalForm(board, cur_player))
-            self.Ps[s] = self.Ps[s] * valids  # Mask invalid moves
-            sum_ps_s = np.sum(self.Ps[s])
+        if (s, cur_player) not in self.Ps:
+            self.Ps[(s, cur_player)], v = self.nnet.predict(board)
+            self.Ps[(s, cur_player)] = self.Ps[(s, cur_player)] * valids  # Mask invalid moves
+            sum_ps_s = np.sum(self.Ps[(s, cur_player)])
             if sum_ps_s > 0:
-                self.Ps[s] /= sum_ps_s  # Renormalize
+                self.Ps[(s, cur_player)] /= sum_ps_s  # Renormalize
             else:
                 log.error("All valid moves were masked, doing a workaround.")
-                self.Ps[s] = self.Ps[s] + valids
-                self.Ps[s] /= np.sum(self.Ps[s])
+                self.Ps[(s, cur_player)] = self.Ps[(s, cur_player)] + valids
+                self.Ps[(s, cur_player)] /= np.sum(self.Ps[(s, cur_player)])
 
-            self.Ns[s] = 0
+            self.Ns[(s, cur_player)] = 0
             return -v
 
         cur_best = -float('inf')
@@ -108,17 +110,18 @@ class MCTS:
         # Select action with highest upper confidence bound
         for a in range(self.game.getActionSize()):
             if valids[a]:
-                if (s, a) in self.Qsa:
-                    u = self.Qsa[(s, a)] + self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s]) / (
-                                1 + self.Nsa[(s, a)])
+                if (s, cur_player, a) in self.Qsa:
+                    u = (self.Qsa[(s, cur_player, a)] + self.args.cpuct * self.Ps[(s, cur_player)][a] *
+                         math.sqrt(self.Ns[(s, cur_player)]) / (1 + self.Nsa[(s, cur_player, a)]))
                     u += 1  # Make everything positive (negative u is possible)
+                    #u *= R_COEFFICIENT**self.game.getRedundancyCounter()
                     if a in self.sanctioned_acts:
-                        u *= COEFFICIENT
+                        u *= S_COEFFICIENT
                 else:
-                    u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS)
+                    u = self.args.cpuct * self.Ps[(s, cur_player)][a] * math.sqrt(self.Ns[(s, cur_player)] + EPS)
                     u += 1
                     if a in self.sanctioned_acts:
-                        u *= COEFFICIENT
+                        u *= S_COEFFICIENT
 
                 if u > cur_best:
                     cur_best = u
@@ -127,7 +130,6 @@ class MCTS:
         a = best_act
         action = self.game.translate(board, cur_player, a)  # Translate index to actual move
         next_s, next_player = self.game.getNextState(board, cur_player, action)
-
         if best_act == self.act:
             self.act_counter += 1
         else:
@@ -139,12 +141,13 @@ class MCTS:
 
         v = self.search(next_s, next_player)
 
-        if (s, a) in self.Qsa:
-            self.Qsa[(s, a)] = (self.Nsa[(s, a)] * self.Qsa[(s, a)] + v) / (self.Nsa[(s, a)] + 1)
-            self.Nsa[(s, a)] += 1
+        if (s, cur_player, a) in self.Qsa:
+            self.Qsa[(s, cur_player, a)] = ((self.Nsa[(s, cur_player, a)] * self.Qsa[(s, cur_player, a)] + v) /
+                                            (self.Nsa[(s, cur_player, a)] * 4 + 1))
+            self.Nsa[(s, cur_player, a)] += 1
         else:
-            self.Qsa[(s, a)] = v
-            self.Nsa[(s, a)] = 1
+            self.Qsa[(s, cur_player, a)] = v
+            self.Nsa[(s, cur_player, a)] = 1
 
-        self.Ns[s] += 1
+        self.Ns[(s, cur_player)] += 1
         return -v

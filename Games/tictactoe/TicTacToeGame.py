@@ -91,6 +91,13 @@ class TicTacToeGame(IGame):
     def translate(self, board: np.array, player: int, index: int):
         return index
 
+    def rotateMove(self, move: int):
+        # no rotation at TTT
+        return move
+
+    def getRedundancyCounter(self):
+        return 0
+
     def stringRepresentation(self, board):
         return board.tostring()
 

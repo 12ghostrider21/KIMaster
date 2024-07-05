@@ -10,6 +10,7 @@ class NimGame(IGame):
 
     def getInitBoard(self):
         """return initial board (numpy array)"""
+        self.winner = None  # resetting data
         return Board(self.rows).pieces
 
     def getBoardSize(self):
@@ -92,6 +93,13 @@ class NimGame(IGame):
         b = Board(self.rows)
         valids = b.get_legal_moves()
         return valids[index]
+
+    def rotateMove(self, move: int):
+        # no rotation at nim
+        return move
+
+    def getRedundancyCounter(self):
+        return 0
 
     def stringRepresentation(self, board):
         return board.tostring()

@@ -24,7 +24,7 @@ class FastAPIServer(AbstractConnectionManager):
         self.importer: Importer = importer
         self.executor = ThreadPoolExecutor()  # Global Thread Executor without any Thread limits
         self.__command_mask: list[str] = ["command", "command_key", "pos", "key", "mode", "game", "difficulty", "num",
-                                          "move", "lang", "fromPos"]
+                                          "move", "lang", "fromPos", "isFrontend"]
         self.__play_mask: list[str] = ["create", "valid_moves", "make_move", "undo_move", "surrender",
                                        "new_game", "blunder", "timeline", "step", "unstep"]
 

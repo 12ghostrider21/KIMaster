@@ -528,7 +528,7 @@ class Board:
                             self.num_black_prisoners += num_captured
                         # check for ko
                         if num_captured == 1:
-                            # it is a ko iff, were the opponent to play at the captured position,
+                            # it is a ko if, were the opponent to play at the captured position,
                             # it would recapture (x,y) only
                             # (a bigger group containing xy may be captured - this is 'snapback')
                             would_recapture = len(self.liberty_sets[x][y]) == 1

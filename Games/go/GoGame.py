@@ -16,7 +16,7 @@ class GoGame(IGame):
         return self._base_board.pieces
 
     def getBoardSize(self):
-        return (self.size, self.size)
+        return self.size, self.size
 
     def getActionSize(self):
         return self.size * self.size + 1
@@ -28,34 +28,28 @@ class GoGame(IGame):
 
         if action == self.size * self.size:
             b.execute_move(action, player)
-            return (board, -player)
+            return board, -player
 
-        move = (int(action / self.size), action % self.size)
-        # display(b)
-        # print(player,move)
+        move = action // self.size, action % self.size
         b.execute_move(move, player)
-        # display(b)
-        return (b.pieces, -player)
+        return b.pieces, -player
 
     # modified
     def getValidMoves(self, board: np.array, player: int):
         """return a fixed size binary vector"""
-
         valids = [0 for _ in range(self.getActionSize())]
         b = Board(self.size, np.copy(board))
         legalMoves = b.get_legal_moves(player)
-        # display(board)
-        # print("legal moves{}".format(legalMoves))
         valids[-1] = 1
+
         if len(legalMoves) == 0:
             return np.array(valids)
+
         for x, y in legalMoves:
             valids[self.size * x + y] = 1
-        # display(b)
-        # print(legalMoves)
+
         return np.array(valids)
 
-    # modified
     def getGameEnded(self, board: np.array, player: int, returnScore: bool = False):
         """return 0 if not ended, 1 if player won, -1 if player lost"""
 
@@ -125,7 +119,7 @@ class GoGame(IGame):
         score_white += board.komi
         score_white -= board.passes_white
         score_black -= board.passes_black
-        return (score_black, score_white)
+        return score_black, score_white
 
     def getCanonicalForm(self, board: np.array, player: int):
         """return state if player==1, else return -state if player==-1"""
@@ -150,6 +144,13 @@ class GoGame(IGame):
 
     def translate(self, board: np.array, player: int, index: int):
         return index
+
+    def rotateMove(self, move: int):
+        # no rotation at go
+        return move
+
+    def getRedundancyCounter(self):
+        return 0
 
     def stringRepresentation(self, board):
         return board.tostring()

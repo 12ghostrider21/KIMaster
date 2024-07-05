@@ -58,6 +58,13 @@ class Connect4Game(IGame):
     def translate(self, board: np.array, player: int, index: int):
         return index
 
+    def rotateMove(self, move: int):
+        # no rotation at connect4
+        return move
+
+    def getRedundancyCounter(self):
+        return 0
+
     def stringRepresentation(self, board):
         return board.tostring()
 

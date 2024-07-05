@@ -115,10 +115,10 @@ class Pit:
             data[index] = (array.tolist(), player, move)
         return data
 
-    def get_blunder(self) -> dict:
+    def get_blunder(self, rotate: bool) -> dict:
         data = {"blunder": []}
         for b in self.arena.blunder:
-            x = {"action": b[0],
+            x = {"action": b[0] if not rotate else self.arena.game.rotateMove(b[0]),
                  "it": b[1],
                  "player": b[2]}
             data["blunder"].append(x)
