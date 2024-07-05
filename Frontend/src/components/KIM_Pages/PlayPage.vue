@@ -2,10 +2,13 @@
   <div>
     <!-- Game Controls -->
     <div>
-      <base-button @click="surrenderGame()">{{ $t('message.surrender') }}</base-button>
-      <base-button @click="quitGame()">{{ $t('message.quit_game') }}</base-button>
+      <base-button v-if="position!='sp'" @click="surrenderGame()">{{ $t('message.surrender') }}</base-button>
+      <base-button v-if="position!='sp'" @click="quitGame()">{{ $t('message.quit_game') }}</base-button>
       <base-button @click="showRules">{{ $t('message.show_rules') }}</base-button>
+      <base-button v-if="position==='sp'" @click="leaveGame()">{{ $t('message.quit_game') }}</base-button>
+      
       <base-button v-if="game==='nim'" @click="sendNimMove" >NIM MOVE {{ nimTest }}</base-button>
+
     </div>
     
     <!-- Game Board -->
@@ -24,7 +27,6 @@
         @mousemove="highlightCellOnHover"
         @contextmenu.prevent="playValidMoves()"
       />
-     
       <div
         v-if="hoveredCell && currentImageIndex === images.length - 1"
         class="highlight-cell"
@@ -44,8 +46,8 @@
       <base-button @click="nextImage()">{{ $t('message.next') }}</base-button>
       <base-button @click="lastImage()">{{ $t('message.last') }}</base-button>
     </div>
-    <base-button @click="undoMove()">{{ $t('message.undo_move') }}</base-button>
-    <base-button v-if="this.gameOver" @click="newGame()">{{ $t('message.new_game') }}</base-button>
+    <base-button  v-if="position!='sp'" @click="undoMove()">{{ $t('message.undo_move') }}</base-button>
+    <base-button v-if="this.gameOver&& position!='sp'" @click="newGame()">{{ $t('message.new_game') }}</base-button>
     
     <!-- Footer -->
     <footer-bar></footer-bar>
@@ -63,7 +65,7 @@
           <p>{{ $t('message.game_over_after') }} {{ turn }} {{ $t('message.turns') }}</p>
         </template>
         <template #actions>
-          <base-button @click="newGame">{{ $t('message.new_game') }}</base-button>
+          <base-button v-if="position!='sp'" @click="newGame">{{ $t('message.new_game') }}</base-button>
           <base-button @click="closePopup">{{ $t('message.okay') }}</base-button>
         </template>
       </base-dialog>

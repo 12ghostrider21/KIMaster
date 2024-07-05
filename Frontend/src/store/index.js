@@ -211,6 +211,7 @@ export default createStore({
                                     p2: receivedJSONObject.P2,
                                     sp: receivedJSONObject.Spectators
                                 });
+                                commit('setGameActive',GameRunning);
                                 break;
                             case 150: 
                             case 151:
@@ -221,6 +222,7 @@ export default createStore({
                                 commit('setLobbyKey', null);
                                 commit('setInLobby', false);
                                 commit('setGameReady',false);
+                                commit('setGameActive',false);
                                 break;
                             case 154:
                             case 155: commit('setNotif', ENUMS.notifStatus.POSOCCUPIED);

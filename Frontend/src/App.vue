@@ -3,7 +3,11 @@
     <nav-bar></nav-bar>
   </header>
   <main>
-    <RouterView/>
+    <RouterView v-if="socketConnected===true"/>
+    <div v-else>
+      <teleport to="body"><base-dialog  :title="'Building Connection'"><template #actions>
+          <base-button @click="connectWebSocket">Try Connecting</base-button>
+        </template></base-dialog> </teleport></div>
     <dragable-image v-if="gameActive && !isPlayPage"></dragable-image>
   </main>
   <footer>
@@ -16,12 +20,15 @@ import { mapGetters } from "vuex";
 
 export default {
   computed: {
-    ...mapGetters(["gameActive"]),
+    ...mapGetters(["gameActive",'socketConnected']),
     isPlayPage() {
       return this.$route.name === "play";
     }
   },
   methods: {
+    connectWebSocket(){
+      this.$store.dispatch("initWebSocket");
+    },
     showRules() {
       this.$root.$emit('show-rules');
     }

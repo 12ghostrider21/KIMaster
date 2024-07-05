@@ -269,6 +269,7 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
       command: 'play',
       command_key: 'make_move',
       move: this.nimTest,
+      isFrontend:true,
     };
       this.sendMessage(data);
       this.nimTest=[-1,0];
@@ -332,6 +333,7 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
     playValidMoves(){  const data = {
       command: 'play',
       command_key: 'valid_moves',
+      isFrontend:true,
           };
       this.sendMessage(data);
       },
@@ -340,6 +342,7 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
       command: 'play',
       command_key: 'valid_moves',
       fromPos:fromPos,
+      isFrontend:true,
     }; this.sendMessage(data);
     
       },
@@ -349,6 +352,7 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
       data = {
         command: 'play',
         command_key: 'make_move',
+        isFrontend:true,
         move: 36,
     };
     this.sendMessage(data);
@@ -361,12 +365,14 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
       {data = {
         command: 'play',
         command_key: 'make_move',
-        move: this.toPos
+        move: this.toPos,
+        isFrontend:true,
     };}
     else { data = {
         command: 'play',
         command_key: 'make_move',
-        move: [this.fromPos, this.toPos]
+        move: [this.fromPos, this.toPos],
+        isFrontend:true,
     };}
     this.sendMessage(data);
     },
@@ -400,6 +406,7 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
       const data = {
         command: 'play',
         command_key: 'blunder',
+        isFrontend:true,
       };
       this.sendMessage(data);
     },
