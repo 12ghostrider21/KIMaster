@@ -92,15 +92,15 @@ class Pit:
             return (current_index + (1 if direction else -1)) % history_length
 
         if p_pos == "p1":
-            self.arena.time_line_index_p1 = update_index(
-                self.arena.time_line_index_p1, start_index, forward, len(self.arena.history)
+            self.arena.time_index_p1 = update_index(
+                self.arena.time_index_p1, start_index, forward, len(self.arena.history)
             )
-            state, player, iteration = self.arena.history[self.arena.time_line_index_p1]
+            state, player, iteration = self.arena.history[self.arena.time_index_p1]
         else:
-            self.arena.time_line_index_p2 = update_index(
-                self.arena.time_line_index_p2, start_index, forward, len(self.arena.history)
+            self.arena.time_index_p2 = update_index(
+                self.arena.time_index_p2, start_index, forward, len(self.arena.history)
             )
-            state, player, iteration = self.arena.history[self.arena.time_line_index_p2]
+            state, player, iteration = self.arena.history[self.arena.time_index_p2]
 
         return state, player, iteration
 

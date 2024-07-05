@@ -1,9 +1,9 @@
 import asyncio
 import io
-from os import environ
-
 import numpy as np
 import pygame
+from concurrent.futures import ThreadPoolExecutor
+from os import environ
 from fastapi import WebSocket, WebSocketDisconnect
 
 from Tools.dynamic_imports import Importer
@@ -21,6 +21,7 @@ class SocketServer(AbstractConnectionManager):
     def __init__(self, msg_builder: LanguageHandler):
         super().__init__(msg_builder)
         self.manager: LobbyManager = LobbyManager()
+        self.executor = ThreadPoolExecutor()  # Global Thread Executor without any Thread limits
         self.importer: Importer = Importer("/app/Games")
 
     async def connect(self, websocket: WebSocket):
@@ -36,6 +37,22 @@ class SocketServer(AbstractConnectionManager):
         self.active_connections.remove(websocket)
         self.manager.disconnect_game_client(websocket)
 
+    def submit_task(self, loop, coro, *args):
+        """
+        Run async methods in an own thread to reduce response times
+        Args:
+            loop: event loop
+            coro: coroutine to run
+            *args: parameters of coroutine
+
+        Returns: None
+        """
+        loop.run_in_executor(self.executor, lambda: asyncio.run(coro(*args)))
+
+    @staticmethod
+    def player_to_pos(cur_player: int) -> str:
+        return "p1" if cur_player == 1 else "p2"
+
     @staticmethod
     def surface_to_png(img: pygame.surface) -> bytes:
         byte_io = io.BytesIO()
@@ -44,33 +61,9 @@ class SocketServer(AbstractConnectionManager):
         byte_io.close()
         return png_bytes
 
-    async def ai_Action(self, game: IGame, board: np.array, it: int, mcts, cur_player, game_client: WebSocket):
-        func = lambda x, y, n: np.argmax(mcts.get_action_prob(x, y, temp=(0.5 if n <= 6 else 0.)))
-        action = func(board, cur_player, it)
-        await self.send_cmd(game_client, "play", "make_move",
-                            {"move": int(action), "p_pos": "p1" if cur_player == 1 else "p2"})
-
-    async def blunder(self, game: IGame, mcts, actions: any, game_client: WebSocket, p_pos: str):
-        func = lambda x, y: mcts.get_action_prob(x, y, temp=1)
-        blunder_list = []
-        for index, board, player, action in actions:
-
-            # probability vector
-            action_probs = np.array(func(board, player))
-
-            # using mean as reference whether a move is good or not so
-            mean = 1.0 / np.count_nonzero(action_probs)
-            good_actions_indices = np.where(action_probs >= mean)[0]
-            good_actions = [game.translate(board, player, a) for a in good_actions_indices]
-            if action not in good_actions:  # is blunder
-                blunder_list.append((action, index, player))
-        await self.send_cmd(game_client=game_client,
-                            command="blunder",
-                            command_key="blunder",
-                            data={"blunder": blunder_list, "p_pos": p_pos})
-
     async def websocket_endpoint(self, websocket: WebSocket):
         await self.connect(websocket)
+        loop = asyncio.get_event_loop()
         game_instances: dict[str, IGame] = self.importer.get_games()
         ai_funcs = self.importer.get_ai_func()
         try:
@@ -99,16 +92,13 @@ class SocketServer(AbstractConnectionManager):
                     case "update":  # update lobby_states
                         game_running: bool = bool(read_object.get("game_running"))
                         lobby.game_running = game_running
-
                     case "ai_move":
-                        game = game_instances[command_key]
-                        default = game.getInitBoard()
-                        array = read_object["board"]
+                        default = game_instances[command_key].getInitBoard()
                         it = int(read_object["it"])
                         cur_player = int(read_object.get("cur_player"))
-                        board = np.array(array, dtype=default.dtype).reshape(default.shape)
+                        board = np.array(read_object["board"], dtype=default.dtype).reshape(default.shape)
                         mcts = ai_funcs.get(lobby.game).get(lobby.difficulty)
-                        await asyncio.create_task(self.ai_Action(game, board, it, mcts, cur_player, lobby.game_client))
+                        self.submit_task(loop, self.ai_Action, board, it, mcts, cur_player, lobby.game_client)
                     case "blunder":
                         game = game_instances[command_key]
                         default = game.getInitBoard()
@@ -118,34 +108,60 @@ class SocketServer(AbstractConnectionManager):
                             if k not in ["command", "command_key", "to", "key"]:
                                 payload = (k, np.array(v[0], dtype=default.dtype).reshape(default.shape), v[1], v[2])
                                 actions.append(payload)
-                        await asyncio.create_task(self.blunder(game, mcts, actions, lobby.game_client, p_pos))
+                        self.submit_task(loop, self.blunder, game, mcts, actions, lobby.game_client, p_pos)
                     case "draw":
-                        array: np.array = np.array(read_object.get("board"))
-                        valid: bool = bool(read_object.get("valid"))
-                        from_pos = read_object.get("from_pos")
-                        game_name = command_key
-                        game = game_instances[game_name]
-                        default = game.getInitBoard()
-                        board = np.array(array, dtype=default.dtype).reshape(default.shape)
-                        img_surface1 = game.draw(board, valid, 1, from_pos)
-                        img_surface2 = game.draw(board, valid, -1, from_pos)
-                        img1 = self.surface_to_png(img_surface1)
-                        img2 = self.surface_to_png(img_surface2)
-                        if p_pos is None:
-                            # broadcast
-                            clients = lobby.get(p_pos)
-                            spec = clients[:-2]
-                            for c in spec:
-                                await self.send_bytes(c, img1)  # spectators
-                            await self.send_bytes(clients[-2], img1)  # p1
-                            await self.send_bytes(clients[-1], img2)  # p2
-                        else:
-                            # to p_pos
-                            img = img1 if p_pos == "p1" else img2
-                            await self.send_bytes(lobby.get(p_pos), img)
+                        await self.draw(read_object, game_instances[command_key], lobby, p_pos)
 
         except RuntimeError:
             pass
         except WebSocketDisconnect:
             pass
         await self.disconnect(websocket)
+
+    async def ai_Action(self, board: np.array, it: int, mcts, cur_player, game_client: WebSocket):
+        func = lambda x, y, n: np.argmax(mcts.get_action_prob(x, y, temp=(0.5 if n <= 6 else 0.)))
+        action = func(board, cur_player, it)
+        await self.send_cmd(game_client, "play", "make_move",
+                            {"move": int(action), "p_pos": self.player_to_pos(cur_player)})
+
+    async def draw(self, read_object: dict, game: IGame, lobby: Lobby, p_pos: str):
+        array: np.array = np.array(read_object.get("board"))
+        valid: bool = bool(read_object.get("valid"))
+        from_pos = read_object.get("from_pos")
+        default = game.getInitBoard()
+        board = np.array(array, dtype=default.dtype).reshape(default.shape)
+        img_surface1 = game.draw(board, valid, 1, from_pos)
+        img_surface2 = game.draw(board, valid, -1, from_pos)
+        img1 = self.surface_to_png(img_surface1)
+        img2 = self.surface_to_png(img_surface2)
+        if p_pos is None:
+            # broadcast
+            clients = lobby.get(p_pos)
+            spec = clients[:-2]
+            for c in spec:
+                await self.send_bytes(c, img1)  # spectators
+            await self.send_bytes(clients[-2], img1)  # p1
+            await self.send_bytes(clients[-1], img2)  # p2
+        else:
+            # to p_pos
+            img = img1 if p_pos == "p1" else img2
+            await self.send_bytes(lobby.get(p_pos), img)
+
+    async def blunder(self, game: IGame, mcts, actions: any, game_client: WebSocket, p_pos: str):
+        func = lambda x, y: mcts.get_action_prob(x, y, temp=1)
+        blunder_list = []
+        for index, board, player, action in actions:
+
+            # probability vector
+            action_probs = np.array(func(board, player))
+
+            # using mean as reference whether a move is good or not so
+            mean = 1.0 / np.count_nonzero(action_probs)
+            good_actions_indices = np.where(action_probs >= mean)[0]
+            good_actions = [game.translate(board, player, a) for a in good_actions_indices]
+            if action not in good_actions:  # is blunder
+                blunder_list.append((action, index, player))
+        await self.send_cmd(game_client=game_client,
+                            command="blunder",
+                            command_key="blunder",
+                            data={"blunder": blunder_list, "p_pos": p_pos})

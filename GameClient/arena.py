@@ -11,8 +11,8 @@ class Arena:
     def __init__(self, game_client):
         self.game_client = game_client  # need to send information over websocket connection
         self.running: bool = False  # var to stop battle if necessary
-        self.time_line_index_p1: int = 0
-        self.time_line_index_p2: int = 0
+        self.time_index_p1: int = 0
+        self.time_index_p2: int = 0
 
         # configuration storage of current active battle
         self.history: list[tuple[np.array, int, int]] = []  # [board, cur_player, iteration]
@@ -94,8 +94,8 @@ class Arena:
                                                  {"result":
                                                   round(cur_player * self.game.getGameEnded(board, cur_player)),
                                                   "turn": it})
-        self.time_line_index_p1 = len(self.history)  # update index to history length
-        self.time_line_index_p2 = len(self.history)  # update index to history length
+        self.time_index_p1 = len(self.history)  # update index to history length
+        self.time_index_p2 = len(self.history)  # update index to history length
         self.running = False
 
     def stop(self):

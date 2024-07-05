@@ -1,4 +1,6 @@
 # External imports
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from fastapi import WebSocket, WebSocketDisconnect
 from json import loads, JSONDecodeError
 
@@ -18,6 +20,7 @@ class FastAPIServer(AbstractConnectionManager):
         super().__init__(msg_builder)
         self.manager: LobbyManager = manager
         self.importer: Importer = importer
+        self.executor = ThreadPoolExecutor()  # Global Thread Executor without any Thread limits
         self.__command_mask: list[str] = ["command", "command_key", "pos", "key", "mode", "game", "difficulty", "num",
                                           "move", "lang", "fromPos"]
         self.__play_mask: list[str] = ["create", "valid_moves", "make_move", "undo_move", "surrender",
@@ -47,6 +50,7 @@ class FastAPIServer(AbstractConnectionManager):
     # Main endpoint for WebSocket connections
     async def websocket_endpoint(self, client: WebSocket):
         await self.connect(client)
+        loop = asyncio.get_event_loop()  # event loop for threading (each connection gets its own)
         try:
             while True:
                 try:
@@ -62,19 +66,32 @@ class FastAPIServer(AbstractConnectionManager):
                 command = read_object.get("command")
                 match command:
                     case "debug":
-                        await self.handle_debug_command(client, read_object)
+                        self.submit_task(loop, self.handle_debug_command, client, read_object)
                     case "lobby":
-                        await self.handle_lobby(client, read_object)
+                        self.submit_task(loop, self.handle_lobby, client, read_object)
                     case "play":
-                        await self.handle_play_command(client, read_object)
+                        self.submit_task(loop, self.handle_play_command, client, read_object)
                     case "client":
-                        await self.handle_client(client, read_object)
+                        self.submit_task(loop, self.handle_client, client, read_object)
                     case _:
                         await self.send_response(client, RCODE.COMMANDNOTFOUND, {"command": command})
         except WebSocketDisconnect:
             await self.disconnect(client)
         finally:
             await self.disconnect(client)
+
+    def submit_task(self, loop, coro, *args):
+        """
+        Run async methods in an own thread to reduce response times
+        Args:
+            loop: event loop
+            coro: coroutine to run
+            *args: parameters of coroutine
+
+        Returns: None
+
+        """
+        loop.run_in_executor(self.executor, lambda: asyncio.run(coro(*args)))
 
     # *****************************************************************************************************************
     # handle debug
