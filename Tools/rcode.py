@@ -37,9 +37,7 @@ class RCODE(Enum):
 
     # Play success codes
     P_ARENAINIT = 200  # Arena has been successfully initialized
-    #P_EVAL = 201  # Play evaluation has been successfully performed
     P_GAMEOVER = 202  # Game has ended successfully
-    #P_EVALOVER = 203  # Evaluation process has concluded successfully
     P_VALIDMOVE = 207  # A valid move has been made
     P_MOVES = 208  # List of possible moves has been successfully retrieved
     P_VALIDUNDO = 209  # A valid undo action has been performed
@@ -65,11 +63,7 @@ class RCODE(Enum):
     P_INVALIDUNDO = 259  # The undo action attempted is invalid
     P_NOTIMELINE = 260  # No timeline available
     P_INVALIDTIMELINE = 261  # The specified timeline is invalid
-    #P_NOEVALUATION = 262  # No evaluation available
-    #P_INVALIDEVALUATION = 263  # The evaluation attempted is invalid
-    #P_GAMENOTAVAILABLE = 265  # The specified game is not available
     P_NOGAMEINIT = 266  # Create a game first
-    #P_EVALNUMOVER = 267  # The selected number is too high
     P_NOTYOURTURN = 268  # Player tried to make a move out of turn
     P_NOBLUNDER = 269  # Nothing in history to define blunder
     P_BLUNDER = 270  # Server is working on blunder, please wait!

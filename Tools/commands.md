@@ -70,7 +70,7 @@
 ---
 # Available JSON Keys
 - **command:** `debug`, `lobby`, `play`, `client`
-- **command_key:** `create`, `valid_moves`, `make_move`, `undo_move`, `surrender`, `new_game`, `blunder`, `timeline`, `step`, `unstep`, `evaluate`, `stop_evaluate`, `games`
+- **command_key:** `create`, `valid_moves`, `make_move`, `undo_move`, `surrender`, `new_game`, `blunder`, `timeline`, `step`, `unstep`, `games`
 - **data:** `pos`, `key`, `mode`, `game`, `difficulty`, `num`, `move`, `lang`
 
 ---
@@ -98,19 +98,19 @@
 
 ---
 # Play Module
-| command | command_key   | Parameter              | Success code    | Error code                               | Return                            | Discription                                                                                         |
-|---------|---------------|------------------------|-----------------|------------------------------------------|-----------------------------------|-----------------------------------------------------------------------------------------------------|
-| play    | create        | game, mode, difficulty | 200             | 53, 54, 55, 153, 157, 250, 251, 253, 254 | game, mode, difficulty, available | Will initialise a **game_config** and start the game.                                               |
-| play    | surrender     | None                   | 210 (Broadcast) | 153, 250, 251, 252                       | result                            | Client surrender active game and a broadcast message get triggered. Result is the winning player.   |
-| play    | valid_moves   | None                   | 208             | 153, 250, 251, 252                       | moves                             | Returns a new image from game with highlighted positions of possible moves.                         |
-| play    | make_move     | move                   | 207             | 153, 250, 251, 252, 255, 256, 268        | None                              | Make a move on current game. - **move** can be an int or an tuple[int, int]. Like [from, to] [2, 3] |
-| play    | undo_move     | num                    | 209             | 153, 250, 251, 252, 258, 259             | num                               | Undo the last **num** moves.                                                                        |
-| play    | new_game      | None                   | 200             | 53, 54, 55, 153, 157, 250, 251, 254, 266 | None                              | Will start a new Game with last set configuration.                                                  |
-| play    | blunder       | None                   | 212, 220        | 153, 250, 251, 254, 269, 270             | blunder                           | After finished game, **blunder** will show the bad moves the client did.                            |
-| play    | timeline      | num                    | 214             | 153, 250, 251, 254, 260, 261             | num, current_player, it           | After finished game.**timeline** display the **num** move of the game.                              |
-| play    | step          | None                   | 216             | 153, 250, 251, 254                       | current_player, it, last_it       | After finished game. Step to next **timeline** index.                                               |
-| play    | unstep        | None                   | 217             | 153, 250, 251, 254                       | current_player, it, last_it       | After finished game. Step to bevore **timeline** index.                                             |
-| play    | _             | None                   |                 | 52, 153, 250, 251                        | command_key                       | Return a Error message if command_key is unknown to server!                                         |
+| command | command_key | Parameter              | Success code    | Error code                               | Return                            | Discription                                                                                               |
+|---------|-------------|------------------------|-----------------|------------------------------------------|-----------------------------------|-----------------------------------------------------------------------------------------------------------|
+| play    | create      | game, mode, difficulty | 200             | 53, 54, 55, 153, 157, 250, 251, 253, 254 | game, mode, difficulty, available | Will initialise a **game_config** and start the game.                                                     |
+| play    | surrender   | None                   | 210 (Broadcast) | 153, 250, 251, 252                       | result                            | Client surrender active game and a broadcast message get triggered. Result is the winning player.         |
+| play    | valid_moves | None                   | 208             | 153, 250, 251, 252                       | moves                             | Returns a new image from game with highlighted positions of possible moves.                               |
+| play    | make_move   | move                   | 207             | 153, 250, 251, 252, 255, 256, 268        | None                              | Make a move on current game. - **move** can be an int or an tuple'[int, int]'. Like '[from, to]' '[2, 3]' |
+| play    | undo_move   | num                    | 209             | 153, 250, 251, 252, 258, 259             | num                               | Undo the last **num** moves.                                                                              |
+| play    | new_game    | None                   | 200             | 53, 54, 55, 153, 157, 250, 251, 254, 266 | None                              | Will start a new Game with last set configuration.                                                        |
+| play    | blunder     | None                   | 212, 220        | 153, 250, 251, 254, 269, 270             | blunder                           | After finished game, **blunder** will show the bad moves the client did.                                  |
+| play    | timeline    | num                    | 214             | 153, 250, 251, 254, 260, 261             | num, current_player, it           | After finished game.**timeline** display the **num** move of the game.                                    |
+| play    | step        | None                   | 216             | 153, 250, 251, 254                       | current_player, it, last_it       | After finished game. Step to next **timeline** index.                                                     |
+| play    | unstep      | None                   | 217             | 153, 250, 251, 254                       | current_player, it, last_it       | After finished game. Step to bevore **timeline** index.                                                   |
+| play    | _           | None                   | None            | 52, 153, 250, 251                        | command_key                       | Return a Error message if command_key is unknown to server!                                               |
 - **Broadcast:** Every in this lobby gets the same response message. 
 
 ---
@@ -124,10 +124,10 @@
 # Game Configuration
 ## Parameter: Difficulty
 | Difficulty | MCTS Depth |
-| ---------- | ---------- |
-| easy       | 75         |
-| medium     | 175        |
-| hard       | 275        |
+|------------|------------|
+| easy       | 35         |
+| medium     | 75         |
+| hard       | 150        |
 
 ## Parameter: Mode
 - **Player vs Player mode**: `player_vs_player = 0`
@@ -138,16 +138,33 @@
 - **Kim vs AI Player mode**: `kim_vs_playerai = 5`
 
 ## Parameter: Games
-- Connect4
-- Othello
-- TicTacToe
-- Checkers
-- Go
-- Nim
+- **Connect4**
+  - A two-player connection game in which the players take turns dropping colored discs into a seven-column, six-row grid. The objective is to be the first to form a horizontal, vertical, or diagonal line of four discs.
+- **Othello**
+  - Also known as Reversi, this two-player strategy board game involves players taking turns placing discs on the board with their assigned color facing up. The goal is to have the majority of discs turned to display your color when the last playable empty square is filled.
+- **TicTacToe**
+  - A simple two-player game played on a 3x3 grid where players take turns marking a space with an X or O. The first player to align three of their marks horizontally, vertically, or diagonally wins the game.
+- **Checkers**
+  - A classic board game for two players, played on an 8x8 board with alternating colored squares. Each player starts with 12 pieces, and the objective is to capture all of the opponent's pieces or block them so they cannot move.
+- **Nim**
+  - A mathematical game of strategy where two players take turns removing objects from distinct heaps. On each turn, a player must remove at least one object, and the player forced to remove the last object loses.
+
+---
+
+## Available Languages
+- **EN** English
+  - The most widely spoken language in the world, primarily used in the United Kingdom, the United States, and many other countries.
+- **DE** Deutsch
+  - The official language of Germany, Austria, and parts of Switzerland, known for its rich literary and philosophical traditions.
+- **FR** Français
+  - The official language of France and many African countries, renowned for its influence on art, cuisine, and diplomacy.
+- **ES** Español
+  - The second most spoken language in the world, primarily used in Spain and Latin America, celebrated for its vibrant culture and history.
+
 
 ---
 # Examples
-## Lobby:
+## Lobby Module:
 ```json
 {"command": "lobby", "command_key": "create"}
 ```
@@ -166,7 +183,10 @@
 ```json
 {"command": "lobby", "command_key": "status"}
 ```
-## Lobby:
+```json
+{"command": "lobby", "command_key": "games"}
+```
+## Play Module:
 ```json
 {"command": "play", "command_key": "create", "game": "Connect4", "mode": "player_vs_ai", "difficulty": "hard"}
 ```
@@ -183,9 +203,6 @@
 {"command": "play", "command_key": "surrender"}
 ```
 ```json
-{"command": "play", "command_key": "quit"}
-```
-```json
 {"command": "play", "command_key": "new_game"}
 ```
 ```json
@@ -200,19 +217,14 @@
 ```json
 {"command": "play", "command_key": "unstep"}
 ```
-```json
-{"command": "play", "command_key": "games"}
-```
-```json
-{"command": "play", "command_key": "evaluate", "game": "Connect4", "difficutly": "hard", "num": 50}
-```
-```json
-{"command": "play", "command_key": "stop_evaluate"}
-```
-## Debug
+## Debug Module
 ```json
 {"command": "debug", "command_key": "active_container"}
 ```
 ```json
 {"command": "debug", "command_key": "game_client"}
+```
+## Client Module
+```json
+{"command": "client", "command_key": "language", "lang":  "en"}
 ```
