@@ -6,7 +6,7 @@ const getDefaultState = () => {
     return {
         socket: null,
         socketConnected: false,
-        connectionLost: false,
+        connectionLost: true, //True here so reset doesn't close and pop up again
         messages: [],
         lobbyKey: null,
         game: 'none',

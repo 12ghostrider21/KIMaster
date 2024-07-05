@@ -45,7 +45,7 @@
 }
 
   dialog {
-    position: relative;
+    position: fixed;
   width: 80%;
   max-width: 600px;
   max-height: 80vh;
