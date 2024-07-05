@@ -210,8 +210,7 @@ class GameClient(WebSocketConnectionManager):
         """
         Start the game arena with optional initial board state, current player, and iteration.
         """
-        task = self.pit.start_battle(board=board, cur_player=cur_player, it=it)
-        print(task)
+        self.pit.start_battle(board=board, cur_player=cur_player, it=it)
 
     def stop_arena(self):
         """
