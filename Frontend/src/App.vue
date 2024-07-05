@@ -3,10 +3,14 @@
     <nav-bar></nav-bar>
   </header>
   <main>
-    <RouterView v-if="socketConnected===true"/>
+    <RouterView v-if="connectionLost===false"/>
     <div v-else>
-      <teleport to="body"><base-dialog  :title="'Building Connection'"><template #actions>
-          <base-button @click="connectWebSocket">Try Connecting</base-button>
+      <teleport to="body"><base-dialog  :title="'Connection Lost'">
+        <template #default>
+          Connecting to Server wasn't possible
+        </template>
+        <template #actions>
+          <base-button @click="connectWebSocket">Try Reconnecting</base-button>
         </template></base-dialog> </teleport></div>
     <dragable-image v-if="gameActive && !isPlayPage"></dragable-image>
   </main>
@@ -16,17 +20,22 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
 import { mapGetters } from "vuex";
 
 export default {
   computed: {
-    ...mapGetters(["gameActive",'socketConnected']),
+    ...mapGetters(["gameActive",'connectionLost']),
     isPlayPage() {
       return this.$route.name === "play";
+
     }
   },
   methods: {
     connectWebSocket(){
+      this.$router.push({
+      name: "home"
+    });
       this.$store.dispatch("initWebSocket");
     },
     showRules() {

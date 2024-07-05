@@ -17,6 +17,7 @@ export default {
       "turn",
       "invalidMoveObserver",
       "skipMove",
+      "turn",
      
     ]),
     enums() {
@@ -99,10 +100,7 @@ export default {
       "sendWebSocketMessage",
       "setNotif",
       "setPopup",
-      "changePrevImage",
-      "changeNextImage",
-      "changeFirstImage",
-      "changeLastImage"
+
     ]),
     nimMove(pos){
       if (this.nimTest[0]==-1) this.nimTest[0]=pos;
@@ -280,6 +278,30 @@ export default {
     this.$router.push({
       name: "home"
     });},
+
+    first(){    const data = {
+        command: 'play',
+        command_key: 'timeline',
+        num: 0,
+      };
+      this.sendMessage(data);
+    },
+    step(){  const data = {
+      command: 'play',
+      command_key: 'step',
+    };
+    this.sendMessage(data);},
+    unstep(){  const data = {
+      command: 'play',
+      command_key: 'unstep',
+    };
+    this.sendMessage(data);},
+    last(){const data = {
+      command: 'play',
+      command_key: 'timeline',
+      num: this.turn,
+    };
+    this.sendMessage(data);},
     firstImage() {
       this.changeFirstImage();
     },

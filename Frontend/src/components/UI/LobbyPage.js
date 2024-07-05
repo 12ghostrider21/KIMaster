@@ -117,7 +117,7 @@ export default {
   },
   watch: {
     game(){
-      this.selectedGame=game;
+      this.selectedGame=this.game;
     },
     callPos(){
       this.lobbyPos();

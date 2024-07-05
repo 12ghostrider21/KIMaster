@@ -40,14 +40,15 @@
     </div>
     
     <!-- Image Control Buttons -->
-    <div class="control-Buttons">
-      <base-button @click="firstImage()">{{ $t('message.first') }}</base-button>
-      <base-button @click="prevImage()">{{ $t('message.previous') }}</base-button>
-      <base-button @click="nextImage()">{{ $t('message.next') }}</base-button>
-      <base-button @click="lastImage()">{{ $t('message.last') }}</base-button>
-    </div>
+
     <base-button  v-if="position!='sp'" @click="undoMove()">{{ $t('message.undo_move') }}</base-button>
     <base-button v-if="this.gameOver&& position!='sp'" @click="newGame()">{{ $t('message.new_game') }}</base-button>
+    <div v-if="gameOver" class="control-Buttons">
+      <base-button @click="first()">{{ $t('message.first') }}</base-button>
+      <base-button @click="unstep()">{{ $t('message.previous') }}</base-button>
+      <base-button @click="step()">{{ $t('message.next') }}</base-button>
+      <base-button @click="last()">{{ $t('message.last') }}</base-button>
+    </div>
     
     <!-- Footer -->
     <footer-bar></footer-bar>
@@ -57,7 +58,7 @@
       <base-dialog
         v-if="popup === enums.popUpStatus.GAMEOVER"
         :title="$t('message.game_over')"
-        @close="closePopup"
+        @close="() => { closePopup(); unstep(); }"
       >
         <template #default>
           <p v-if="playerWon === 1">{{ $t('message.player_1_won') }}</p>
@@ -66,7 +67,7 @@
         </template>
         <template #actions>
           <base-button v-if="position!='sp'" @click="newGame">{{ $t('message.new_game') }}</base-button>
-          <base-button @click="closePopup">{{ $t('message.okay') }}</base-button>
+          <base-button @click="() => { closePopup(); unstep(); }">{{ $t('message.okay') }}</base-button>
         </template>
       </base-dialog>
     </teleport>
