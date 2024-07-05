@@ -38,12 +38,13 @@ class FastAPIServer(AbstractConnectionManager):
         if websocket in self.active_connections:
             lobby: Lobby = self.manager.get_lobby(websocket)
             if lobby is not None:
-                if lobby.game_running:  # surrender on connection lost
-                    await self.send_cmd(game_client=lobby.game_client,
-                                        command="play",
-                                        command_key="surrender",
-                                        data={"p_pos": self.manager.get_pos_of_client(websocket), "key": lobby.key})
-                    lobby.game_running = False  # override running mode for unresolved surrender
+                if self.manager.get_pos_of_client(websocket) != "sp":
+                    if lobby.game_running:  # surrender on connection lost
+                        await self.send_cmd(game_client=lobby.game_client,
+                                            command="play",
+                                            command_key="surrender",
+                                            data={"p_pos": self.manager.get_pos_of_client(websocket), "key": lobby.key})
+                        lobby.game_running = False  # override running mode for unresolved surrender
             self.active_connections.remove(websocket)
         self.manager.leave_lobby(websocket)
         self.msg_builder.remove_client(websocket)  # remove all not connected clients from private language selections
