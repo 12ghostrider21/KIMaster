@@ -99,7 +99,7 @@
       style="display: block; margin: auto; position: relative;"
     />
     <button v-if="game==='nim'" @click="sendNimMove" position:absolute>NIM MOVE {{ nimTest }}</button>
-    <button v-if="othelloSkipButton" @click="playSkipMove" position:absolute>Skip</button>
+    <button v-if="this.game==='othello'" @click="playSkipMove" position:absolute>Skip</button>
     <div
       v-if="hoveredCell"
       class="highlight-cell"
@@ -232,7 +232,6 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
           this.receivedJSONObject=JSON.parse(event.data);
         
         if (this.receivedJSONObject.key!= null) {this.lobbyKey=this.receivedJSONObject.key;};
-        if (this.receivedJSONObject.moves!=null && this.game==="othello"){if (this.receivedJSONObject.moves.includes("36")) {this.othelloSkipButton=true}else {this.othelloSkipButton=false ;}};
       } catch (e) {
         console.log(e);
         const blob = new Blob([event.data], { type: 'image/png' }); 
@@ -353,7 +352,7 @@ else {this.socket = new WebSocket('ws://localhost:8010/ws');} //Static URL if ad
         command: 'play',
         command_key: 'make_move',
         isFrontend:true,
-        move: 36,
+        move: this.boardWidth*this.boardHeight,
     };
     this.sendMessage(data);
     },
