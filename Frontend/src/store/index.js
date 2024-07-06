@@ -289,7 +289,8 @@ export default createStore({
                                 break;
                             
                             case 200: //Game has started
-                                commit('setGame', receivedJSONObject.game);
+                                if(receivedJSONObject.game!=null)
+                                {commit('setGame', receivedJSONObject.game);}
                                // commit('setCurrentImageIndex',-1);
                                 commit('newImages');
                                 commit('setPopup',null);
@@ -306,7 +307,7 @@ export default createStore({
                                 break;
                             case 207:
                                 break;
-                            case 208:
+                            case 208:s
                                 commit('setIsValidMoveImage', true);
                                  if (state.game=ENUMS.games.OTHELLO){
                                     if (receivedJSONObject.moves.includes("36")){
