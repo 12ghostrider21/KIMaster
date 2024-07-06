@@ -102,7 +102,7 @@ class SocketServer(AbstractConnectionManager):
                         cur_player = int(read_object.get("cur_player"))
                         board = np.array(read_object["board"], dtype=default.dtype).reshape(default.shape)
                         mcts = ai_funcs.get(lobby.game).get(lobby.difficulty)
-                        self.submit_task(loop, self.ai_Action, game, board, it, mcts, cur_player, lobby.game_client)
+                        self.submit_task(loop, self.kim_Action, game, board, it, mcts, cur_player, lobby.game_client)
                     case "blunder":
                         game = game_instances[command_key]
                         default = game.getInitBoard()
@@ -123,12 +123,16 @@ class SocketServer(AbstractConnectionManager):
         finally:
             await self.disconnect(websocket)
 
-    async def ai_Action(self, game: IGame, board: np.array, it: int, mcts, cur_player, game_client: WebSocket):
+    async def kim_Action(self, game: IGame, board: np.array, it: int, mcts, cur_player, game_client: WebSocket):
         func = lambda x, y, n: np.argmax(mcts.get_action_prob(x, y, temp=(0.5 if n <= 6 else 0.)))
         action_index = func(board, cur_player, it)
         move = game.translate(board, cur_player, action_index)
         await self.send_cmd(game_client, "play", "make_move",
                             {"move": str(move), "p_pos": self.player_to_pos(cur_player)})
+        
+        
+        
+
 
     async def draw(self, read_object: dict, game: IGame, lobby: Lobby, p_pos: str):
         array: np.array = np.array(read_object.get("board"))
