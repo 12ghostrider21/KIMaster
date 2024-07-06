@@ -42,7 +42,7 @@
     <!-- Image Control Buttons -->
 
     <base-button  v-if="position!='sp'" @click="undoMove()">{{ $t('message.undo_move') }}</base-button>
-    <base-button v-if="this.gameOver&& position!='sp'" @click="newGame()">{{ $t('message.new_game') }}</base-button>
+    <base-button v-if="this.gameOver&& position!='sp'" @click="newGame">{{ $t('message.new_game') }}</base-button>
     <div v-if="gameOver" class="control-Buttons">
       <base-button @click="first()">{{ $t('message.first') }}</base-button>
       <base-button @click="unstep()">{{ $t('message.previous') }}</base-button>
