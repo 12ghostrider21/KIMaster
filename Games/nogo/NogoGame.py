@@ -167,13 +167,6 @@ class NogoGame(IGame):
         return 0
 
     def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
-        pass
-
-    def draw(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
-        pass
-
-    @staticmethod
-    def display(board):
         n = board.shape[0]
         print("   ", end="")
         for y in range(n):
@@ -188,3 +181,41 @@ class NogoGame(IGame):
             print("|")
 
         print("-----------------------")
+
+    def draw(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
+        import pygame
+        row_count = len(board) #baord.size
+        col_count = len(board[0]) #baord.size
+        SQUARESIZE = 90
+        WIDTH = row_count * SQUARESIZE
+        HEIGHT = col_count * SQUARESIZE
+        MARGIN = SQUARESIZE // 2  # Rand um das Spielbrett
+
+        color_background = (251, 196, 103)  # light brown/cream
+        color_grid = (0, 0, 0) # black
+        color_ply_one = (0, 0, 0)  # black
+        color_ply_minus_one = (255, 255, 255)  # white
+        color_valid = (144, 238, 144)  # Light green for valid moves
+
+        pygame.init()
+        surface = pygame.Surface((WIDTH + 2 * MARGIN, HEIGHT + 2 * MARGIN), pygame.SRCALPHA)
+        surface.fill(color_background)
+
+        # Draw the board
+        for row in range(row_count):
+            for col in range(col_count):
+                center = (col * SQUARESIZE + MARGIN, row * SQUARESIZE + MARGIN)
+                radius = SQUARESIZE // 2 - 1
+
+                pygame.draw.rect(surface, color_grid, (col * SQUARESIZE + MARGIN, row * SQUARESIZE + MARGIN, SQUARESIZE, SQUARESIZE), 1)
+
+                valids = self.getValidMoves(board, cur_player)
+                if valid_moves and valids[row * col_count + col]:
+                    pygame.draw.circle(surface, color_valid, center, radius)
+
+                if board[row][col] == 1:
+                    pygame.draw.circle(surface, color_ply_one, center, radius)
+                elif board[row][col] == -1:
+                    pygame.draw.circle(surface, color_ply_minus_one, center, radius)
+                    pygame.draw.arc(surface, (0, 0, 0), pygame.Rect(center[0] - radius, center[1] - radius, 2 * radius, 2 * radius), 0, np.pi * 2, 1)
+        return surface

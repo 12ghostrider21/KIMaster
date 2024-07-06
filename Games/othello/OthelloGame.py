@@ -13,7 +13,7 @@ class OthelloGame(IGame):
     def getSquarePiece(piece):
         return OthelloGame.square_content[piece]
 
-    def __init__(self, n=6):
+    def __init__(self, n=8):
         self.n = n
 
     def getInitBoard(self):
