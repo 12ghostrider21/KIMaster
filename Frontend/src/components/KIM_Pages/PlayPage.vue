@@ -61,8 +61,9 @@
         @close="() => { closePopup(); unstep(); }"
       >
         <template #default>
-          <p v-if="playerWon === 1">{{ $t('message.player_1_won') }}</p>
-          <p v-else>{{ $t('message.player_2_won') }}</p>
+          <p v-if="playerWon ===1">{{ $t('message.player_1_won') }}</p>
+          <p v-if="playerWon ===-1">{{ $t('message.player_2_won') }}</p>
+          <p v-if="playerWon ===0">Draw!</p> <!--TODO Translate-->
           <p>{{ $t('message.game_over_after') }} {{ turn }} {{ $t('message.turns') }}</p>
         </template>
         <template #actions>
