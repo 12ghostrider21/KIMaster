@@ -80,8 +80,14 @@ class Pit:
     def undo(self, steps: int):
         state, player, it = None, None, None
         if len(self.arena.history) >= 3:
-            for _ in range(3):
-                state, player, it = self.arena.history.pop()
+            for _ in range(steps * 2 + 1):  # steps * 2 (own and enemy) + 1 for arena initial append
+                if len(self.arena.history) != 0:
+                    state, player, it = self.arena.history.pop()
+                    for i, h in enumerate(self.arena.blunder_history):
+                        x = h[0] == state
+                        if np.all(x):
+                            self.arena.blunder_history.pop(i)
+                            break
         return state, player, it
 
     # Navigate through the game timeline

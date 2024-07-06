@@ -62,7 +62,6 @@ class Arena:
                 await self.game_client.send_response(code=RCODE.P_PLAYER, to=None, data={"cur_player": cur_player})
             await self.game_client.broadcast_board(self.board, cur_player, self.game_name, False)
 
-
             to: str = "p1" if cur_player == 1 else "p2"
             ai: bool = False
             while self.running:
