@@ -12,14 +12,14 @@ class DockerAPI:
         engine: The Docker client initialized from the environment.
         _debug (bool): Flag to enable or disable debug mode.
     """
-    image: str = "game-client-img"
+    image: str = "game-client-img"  # name of docker image
 
     def __init__(self):
         """
         Initialize the DockerAPI class, setting up the Docker client.
         """
         self.engine = docker.from_env()
-        self._debug: bool = False
+        self._debug: bool = True
 
     @property
     def debug(self) -> bool:

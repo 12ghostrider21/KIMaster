@@ -46,6 +46,7 @@ class GameClient(WebSocketConnectionManager):
                         await self.send_response(code=RCODE.P_ARGS, to=p_pos, data=game_config.to_dict())
                         continue
                     self.pit.init_arena(game_config)  # Initialize arena with game configuration
+                    self.pit.clear_arena()
                     self.start_arena()  # Start the arena
                     await self.send_response(code=RCODE.P_ARENAINIT, to=None, data=game_config.to_dict())
                     await self.update()  # Update the state
@@ -107,6 +108,9 @@ class GameClient(WebSocketConnectionManager):
                     if not self.is_arena_running():
                         await self.send_response(RCODE.P_NOTRUNNING, p_pos)
                         continue
+                    if self.pit.get_cur_player() != (1 if p_pos == "p1" else -1):
+                        await self.send_response(RCODE.P_NOTYOURTURN, p_pos)
+                        continue
                     num = read_object.get("num")
                     if num is None:
                         await self.send_response(RCODE.P_NOUNDO, p_pos)
@@ -119,12 +123,13 @@ class GameClient(WebSocketConnectionManager):
                     if num <= 0:
                         await self.send_response(RCODE.P_INVALIDUNDO, p_pos, {"num": num})
                         continue
-                    state, player, it = self.pit.undo(num, p_pos)  # Perform the undo operation
-                    if state is None or player is None or it is None:
+                    if len(self.pit.arena.history) < 3:
                         await self.send_response(RCODE.P_NOUNDO, p_pos)
                         continue
-                    self.stop_arena()
+                    while self.pit.arena.running:
+                        self.stop_arena()
                     await self.send_response(RCODE.P_VALIDUNDO, p_pos)
+                    state, player, it = self.pit.undo(num)  # Perform the undo operation
                     self.start_arena(state, player, it)
 
                 # Handling 'new_game' command
@@ -135,7 +140,7 @@ class GameClient(WebSocketConnectionManager):
                     if self.pit.arena.game is None:
                         await self.send_response(RCODE.P_NOGAMEINIT, p_pos)
                         continue
-                    self.pit.arena.history.clear()  # Clear the game history
+                    self.pit.clear_arena()
                     self.start_arena()
                     await self.send_response(code=RCODE.P_ARENAINIT, to=None)
                     await self.update()  # Update the state

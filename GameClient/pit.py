@@ -16,16 +16,19 @@ class Pit:
         self.player1: Player = Player()
         self.player2: Player = Player()
 
-    # Start the battle in the arena
-    def start_battle(self, board: np.array, cur_player: int, it: int):
+    def clear_arena(self):
         self.arena.history.clear()  # reset history on new game configuration
         self.arena.blunder.clear()  # reset blunder on new game configuration
         self.arena.blunder_history.clear()  # reset
         self.arena.blender_calculation = False  # reset to default
+
+    # Start the battle in the arena
+    def start_battle(self, board: np.array, cur_player: int, it: int):
         # Set the arena's running status to True
         self.arena.running = True
+        self.arena.board = board
         # Create and start an asynchronous task to play the game in the arena
-        return asyncio.create_task(self.arena.play(board=board, cur_player=cur_player, it=it))
+        asyncio.create_task(self.arena.play(cur_player=cur_player, it=it))
 
     # Stop the battle in the arena
     def stop_battle(self) -> None:
@@ -63,31 +66,23 @@ class Pit:
                 play1 = self.player1.playAI
                 play2 = self.player2.play
         # Print the new game configuration
-        print("new game loaded:", game_config.game_name)
+        print("New game loaded:", game_config)
         # Set the arena with the game and player configurations
         self.arena.set_arena(game_config.game, game_config.game_name, play1, play2)
 
     # Retrieve the last entry from the arena's history
-    def get_last_hist_entry(self) -> tuple[list, int, int]:
+    def get_last_hist_entry(self) -> tuple[list | None, int | None, int | None]:
         if len(self.arena.history) > 0:
             return self.arena.history[-1]
+        return None, None, None
 
     # Undo a certain number of steps in the game
-    def undo(self, steps: int, p_pos: str):
-        state, player, iteration = None, None, None
-        steps = steps * 2 + 1  # Multiply by 2 for both players and add 1 for initial append
-        if len(self.arena.history) == 1:
-            return state, player, iteration  # Return None if no undo is available
-
-        if steps >= len(self.arena.history):
-            steps = len(self.arena.history)
-        # Remove the specified number of steps from the history
-        for _ in range(steps):
-            state, player, iteration = self.arena.history.pop()
-        new_state = self.get_last_hist_entry()
-        while len(new_state) > 0 and new_state[1] != 1 if p_pos == "p1" else -1:
-            self.arena.history.pop()
-        return state, player, iteration
+    def undo(self, steps: int):
+        state, player, it = None, None, None
+        if len(self.arena.history) >= 3:
+            for _ in range(3):
+                state, player, it = self.arena.history.pop()
+        return state, player, it
 
     # Navigate through the game timeline
     def timeline(self, p_pos: str, forward: bool = True, start_index: int | None = None):
