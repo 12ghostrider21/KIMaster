@@ -19,7 +19,7 @@ class DockerAPI:
         Initialize the DockerAPI class, setting up the Docker client.
         """
         self.engine = docker.from_env()
-        self._debug: bool = True
+        self._debug: bool = False
 
     @property
     def debug(self) -> bool:
