@@ -247,7 +247,8 @@ class GameClient(WebSocketConnectionManager):
                             {"key": self.key,
                              "game_running": self.is_arena_running()})
 
-    def parse_input(self, input_str: str):
+    @staticmethod
+    def parse_input(input_str: str):
         """
         Parse the input string to convert it into an appropriate format (integer or tuple).
         """
