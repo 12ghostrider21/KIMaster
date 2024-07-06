@@ -41,7 +41,7 @@
 217;Time step backwards was successful.;Zeitschritt rückwärts erfolgreich angezeigt.;Recul temporel réussi.;Paso de tiempo hacia atrás exitoso.
 218;Current active player retrieved successfully.;Aktueller aktiver Spieler erfolgreich abgerufen.;Joueur actif actuel récupéré avec succès.;Jugador activo actual recuperado con éxito.
 219;Kim is taking their turn and thinking.;Kim ist am Zug und denkt nach.;Kim est en train de jouer et réfléchit.;Kim está tomando su turno y pensando.
-220;Server is calculating blunder for the  last game.  Taking some time.;;;
+220;Server is calculating blunder for the  last game. Taking some time.;Server berechnet den Fehler für das letzte Spiel. Dies kann einige Zeit dauern.;Le serveur calcule la bévue pour le dernier jeu. Cela prend du temps.;El servidor está calculando el error del último juego. Esto tomará algún tiempo.
 ;;;;
 250;No game client available. Please try again.;Kein Spiel-Client verfügbar. Bitte versuchen Sie es erneut.;Pas de client de jeu disponible. Veuillez réessayer.;No hay cliente de juego disponible. Por favor, inténtelo de nuevo.
 251;Player does not have permission to perform the action.;Spieler hat keine Berechtigung für diese Aktion.;Le joueur n'a pas la permission d'effectuer l'action.;El jugador no tiene permiso para realizar la acción.
@@ -56,8 +56,8 @@
 261;Specified timeline is invalid.;Angegebene Zeitachse ist ungültig.;Chronologie spécifiée invalide.;Línea de tiempo especificada es inválida.
 266;Create a game first.;Erstellen Sie zuerst ein Spiel.;Créez d'abord un jeu.;Cree un juego primero.
 268;Player tried to make a move out of turn.;Spieler hat versucht, einen Zug außerhalb der Reihe zu machen.;Le joueur a essayé de faire un coup hors de son tour.;El jugador intentó hacer un movimiento fuera de turno.
-269;Nothing in history to define blunder.;;;
-270;Server is working on blunder, please wait.;;;
+269;Nothing in history to define blunder.;Nichts in der Historie, um den Fehler zu definieren.;Rien dans l'historique pour définir la bévue.;No hay nada en el historial para definir el error.
+270;Server is working on blunder, please wait.;Server arbeitet an der Fehlerberechnung, bitte warten.;Le serveur travaille sur le calcul de l'erreur, veuillez patienter.;El servidor está trabajando en el cálculo del error, por favor espere.
 ;;;;
 300;List all active containers.;Liste aller aktiven Container.;Lister tous les conteneurs actifs.;Listar todos los contenedores activos.
 301;Toggle debug mode of game client.;Debug-Modus des Spiel-Clients umschalten.;Basculez le mode debug du client de jeu.;Alternar el modo de depuración del cliente de juego.
