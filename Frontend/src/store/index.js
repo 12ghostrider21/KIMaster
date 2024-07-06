@@ -44,7 +44,7 @@ export default createStore({
         position: "p1",
         positionsInLobby:[false,false,0], //Occupied Positions, 0=p1 1=p2, 2= number of Spectators
         imagesrc: null,
-        images:[],
+        //images:[],
         inLobby: false,
         popup: null,
         notif: null,
@@ -91,13 +91,13 @@ export default createStore({
             state.messages.push(message);
         },
 
-        addImages(state, image) {
+       /* addImages(state, image) {
             state.images.push(image);
-        },
+        }, */
         
-        newImages(state) {
+       /* newImages(state) {
             state.images= [];
-        },
+        },*/
 
         setSocketConnected(state, socketConnected)
         {state.socketConnected=socketConnected
@@ -159,7 +159,7 @@ export default createStore({
             commit('setPosition', position);
         },
 
-        changePrevImage({ commit, state }) {
+      /*  changePrevImage({ commit, state }) {
             if (state.currentImageIndex > 0) {
                 commit("setImagesrc", URL.createObjectURL(state.images[state.currentImageIndex - 1]));
                 commit("setCurrentImageIndex", state.currentImageIndex - 1);
@@ -183,7 +183,7 @@ export default createStore({
                 commit("setImagesrc", URL.createObjectURL(state.images[lastIndex]));
                 commit("setCurrentImageIndex", lastIndex);
             }
-        },
+        },*/
 
         setPopup({ commit }, popup) {
             commit('setPopup', popup);
@@ -292,7 +292,7 @@ export default createStore({
                                 if(receivedJSONObject.game!=null)
                                 {commit('setGame', receivedJSONObject.game);}
                                // commit('setCurrentImageIndex',-1);
-                                commit('newImages');
+                                //commit('newImages');
                                 commit('setPopup',null);
                                 commit('setGameActive', true);
                                 commit('setGameOver',false);
@@ -307,10 +307,10 @@ export default createStore({
                                 break;
                             case 207:
                                 break;
-                            case 208:s
-                                commit('setIsValidMoveImage', true);
+                            case 208: 
+                                //commit('setIsValidMoveImage', true);
                                  if (state.game=ENUMS.games.OTHELLO){
-                                    if (receivedJSONObject.moves.includes("36")){
+                                    if (receivedJSONObject.moves.includes("64")){
                                         commit('setSkipMove',true);
                                         commit('setNotif',ENUMS.notifStatus.SKIPMOVE)}
                                     else commit('setSkipMove',false); //For Special case no avaiable Move on Othello Board to skip a turn
@@ -318,9 +318,6 @@ export default createStore({
                                 break;
                             case 209:
                                 //commit('setCurrentImageIndex', state.currentImageIndex - 3); // Set to the second to last image index
-                                state.images.pop();
-                                state.images.pop();
-                                state.images.pop();
                                 break;
                             case 210: //Surrender
                                 commit('setGameOver', true);
@@ -335,20 +332,47 @@ export default createStore({
                         }
                     }
                 } catch (e) {
-                    const blob = new Blob([event.data], { type: 'image/png' });
-
-
-                    //console.log("ImageIndex: " +state.currentImageIndex + "ImagesLength:" + state.images.length);
-                   // if (state.images.length===0||state.currentImageIndex === state.images.length-1) {
-                        const url = URL.createObjectURL(blob);
-                        commit('setImagesrc', url);
-
-                   /* }
-                    if (!state.isValidMoveImage) { //TODO: Better more reliable Solution?
-                    commit('addImages',blob);
-                    commit('setCurrentImageIndex', state.currentImageIndex+1)}
-                    else { commit('setIsValidMoveImage', false);}*/
-                }
+                    try {
+                        const reader = new FileReader();
+                        
+                        reader.onload = function() {
+                            const arrayBuffer = reader.result;
+                            const dataView = new DataView(arrayBuffer);
+                            const pngSignature = [
+                                0x89, 0x50, 0x4E, 0x47, 
+                                0x0D, 0x0A, 0x1A, 0x0A
+                            ];
+                    
+                            // Check if the event.data starts with the PNG signature
+                            let isPng = true;
+                            for (let i = 0; i < pngSignature.length; i++) {
+                                if (dataView.getUint8(i) !== pngSignature[i]) {
+                                    isPng = false;
+                                    break;
+                                }
+                            }
+                    
+                            if (!isPng) {
+                                throw new Error("Data is not a PNG file.");
+                            }
+                    
+                            const blob = new Blob([arrayBuffer], { type: 'image/png' });
+                            console.log(event);
+                    
+                            const url = URL.createObjectURL(blob);
+                            commit('setImagesrc', url);
+                        };
+                    
+                        reader.onerror = function() {
+                            throw new Error("Failed to read the Blob.");
+                        };
+                    
+                        reader.readAsArrayBuffer(event.data);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    }
+                
             };
 
             commit('setWebSocket', socket);
@@ -378,7 +402,7 @@ export default createStore({
         playerTurn: (state) => state.playerTurn,
         turn: (state) => state.turn,
         notif:(state) => state.notif,
-        currentImageIndex:(state) => state.currentImageIndex,
+       //currentImageIndex:(state) => state.currentImageIndex,
         isValidMoveImage:(state) => state.isValidMoveImage,
         callPos:(state) => state.callPos, 
         invalidMoveObserver:(state) => state.invalidMoveObserver,

@@ -13,7 +13,6 @@ export default {
       "notif",
       "popup",
       "images",
-      "currentImageIndex",
       "turn",
       "invalidMoveObserver",
       "skipMove",
@@ -84,8 +83,8 @@ export default {
         this.twoTurnGame = false;
         break;
       case "othello":
-        this.boardWidth = 6;
-        this.boardHeight = 6;
+        this.boardWidth = 8;
+        this.boardHeight = 8;
         this.twoTurnGame = false;
         break;
       case "nim":
@@ -177,7 +176,7 @@ export default {
     },
 
     playMakeMove() {
-      if (this.currentImageIndex === this.images.length - 1) {
+       
         let data;
         if (!this.twoTurnGame) {
           data = {
@@ -195,7 +194,7 @@ export default {
           };
         }
         this.sendMessage(data);
-      }
+      
     },
     closePopup() {
       this.setPopup(null);
@@ -302,7 +301,7 @@ export default {
       num: this.turn,
     };
     this.sendMessage(data);},
-    firstImage() {
+    /*firstImage() {
       this.changeFirstImage();
     },
     prevImage() {
@@ -313,7 +312,7 @@ export default {
     },
     lastImage() {
       this.changeLastImage();
-    }
+    }*/
   },
   watch: {
     invalidMoveObserver(){

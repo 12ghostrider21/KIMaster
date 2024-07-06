@@ -28,7 +28,7 @@
         @contextmenu.prevent="playValidMoves()"
       />
       <div
-        v-if="hoveredCell && currentImageIndex === images.length - 1"
+        v-if="hoveredCell"
         class="highlight-cell"
         :style="{
           width: `${300 / boardWidth}px`,
@@ -64,7 +64,7 @@
           <p v-if="playerWon ===1">{{ $t('message.player_1_won') }}</p>
           <p v-if="playerWon ===-1">{{ $t('message.player_2_won') }}</p>
           <p v-if="playerWon ===0">Draw!</p> <!--TODO Translate-->
-          <p>{{ $t('message.game_over_after') }} {{ turn }} {{ $t('message.turns') }}</p>
+          <p>{{ $t('message.game_over_after')}}  {{ turn }} {{ $t('message.turns') }}</p>
         </template>
         <template #actions>
           <base-button v-if="position!='sp'" @click="newGame">{{ $t('message.new_game') }}</base-button>
