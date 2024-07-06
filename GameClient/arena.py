@@ -75,10 +75,11 @@ class Arena:
                     ai = True
                     continue
                 try:
+                    tmp = board
                     board, cur_player = self.game.getNextState(board, cur_player, action)
                     await self.game_client.send_response(code=RCODE.P_VALIDMOVE, to=to)
                     if not ai:
-                        self.blunder_history.append((board, cur_player, it, action))
+                        self.blunder_history.append((tmp, self.cur_player, it, action))
                     break
                 except ValueError:
                     if ai:

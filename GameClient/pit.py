@@ -35,7 +35,7 @@ class Pit:
     # Set the move for a player
     def set_move(self, move, pos) -> bool:
         # Check if it's the correct player's turn based on their position
-        if self.arena.cur_player == (1 if pos == "p1" else -1):
+        if self.get_cur_player() == (1 if pos == "p1" else -1):
             # Set the move for player 1
             if pos == "p1":
                 self.player1.move = move
@@ -44,6 +44,9 @@ class Pit:
                 self.player2.move = move
             return True  # It is the player's turn
         return False  # Not the player's turn
+
+    def get_cur_player(self) -> int:
+        return self.arena.cur_player
 
     # Initialize the arena with the game configuration
     def init_arena(self, game_config: GameConfig):
@@ -70,7 +73,7 @@ class Pit:
             return self.arena.history[-1]
 
     # Undo a certain number of steps in the game
-    def undo(self, steps):
+    def undo(self, steps: int, p_pos: str):
         state, player, iteration = None, None, None
         steps = steps * 2 + 1  # Multiply by 2 for both players and add 1 for initial append
         if len(self.arena.history) == 1:
@@ -81,6 +84,9 @@ class Pit:
         # Remove the specified number of steps from the history
         for _ in range(steps):
             state, player, iteration = self.arena.history.pop()
+        new_state = self.get_last_hist_entry()
+        while len(new_state) > 0 and new_state[1] != 1 if p_pos == "p1" else -1:
+            self.arena.history.pop()
         return state, player, iteration
 
     # Navigate through the game timeline

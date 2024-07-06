@@ -67,16 +67,19 @@ class GameClient(WebSocketConnectionManager):
                     if not self.is_arena_running():
                         await self.send_response(RCODE.P_NOTRUNNING, p_pos)
                         continue
+                    if self.pit.get_cur_player() != (1 if p_pos == "p1" else -1):
+                        await self.send_response(RCODE.P_NOTYOURTURN, p_pos)
+                        continue
                     hist: tuple = self.pit.get_last_hist_entry()  # Get the last history entry from the Pit
                     from_pos = read_object.get("fromPos")
                     if read_object.get("isFrontend") and p_pos == "p2":
                         from_pos = self.pit.arena.game.rotateMove(from_pos)
                     await self.send_board(hist[0], hist[1], self.pit.arena.game_name, True, from_pos)
-                    moves = [str(self.pit.arena.game.translate(hist[0], hist[1], i))
+                    moves = [self.pit.arena.game.translate(hist[0], hist[1], i)
                              for i, m in enumerate(self.pit.arena.game.getValidMoves(hist[0], hist[1])) if m == 1]
                     if read_object.get("isFrontend") and p_pos == "p2":
-                        moves = [self.pit.arena.game.rotateMove(move) for move in moves]
-                    await self.send_response(RCODE.P_MOVES, p_pos,{"moves": moves})
+                        moves = str([self.pit.arena.game.rotateMove(move) for move in moves])
+                    await self.send_response(RCODE.P_MOVES, p_pos, {"moves": moves})
 
                 # Handling 'make_move' command
                 case "make_move":
@@ -116,7 +119,7 @@ class GameClient(WebSocketConnectionManager):
                     if num <= 0:
                         await self.send_response(RCODE.P_INVALIDUNDO, p_pos, {"num": num})
                         continue
-                    state, player, it = self.pit.undo(num)  # Perform the undo operation
+                    state, player, it = self.pit.undo(num, p_pos)  # Perform the undo operation
                     if state is None or player is None or it is None:
                         await self.send_response(RCODE.P_NOUNDO, p_pos)
                         continue

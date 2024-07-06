@@ -5,7 +5,7 @@ import numpy as np
 # Constants
 EPS = 1e-8  # Small value to prevent division by zero errors
 S_COEFFICIENT = 0.01  # sanction coefficient used for adjusting UCB values for sanctioned actions
-#R_COEFFICIENT = 0.85
+# R_COEFFICIENT = 0.9
 
 # Setting up logging
 log = logging.getLogger(__name__)
@@ -114,7 +114,7 @@ class MCTS:
                     u = (self.Qsa[(s, cur_player, a)] + self.args.cpuct * self.Ps[(s, cur_player)][a] *
                          math.sqrt(self.Ns[(s, cur_player)]) / (1 + self.Nsa[(s, cur_player, a)]))
                     u += 1  # Make everything positive (negative u is possible)
-                    #u *= R_COEFFICIENT**self.game.getRedundancyCounter()
+                    # u *= R_COEFFICIENT**self.game.getRedundancyCounter()
                     if a in self.sanctioned_acts:
                         u *= S_COEFFICIENT
                 else:
@@ -130,14 +130,6 @@ class MCTS:
         a = best_act
         action = self.game.translate(board, cur_player, a)  # Translate index to actual move
         next_s, next_player = self.game.getNextState(board, cur_player, action)
-        if best_act == self.act:
-            self.act_counter += 1
-        else:
-            self.act = best_act
-            self.act_counter = 0
-
-        if self.act_counter == 40 and not self.game.getGameEnded(next_s, next_player):
-            self.sanctioned_acts.append(best_act)
 
         v = self.search(next_s, next_player)
 

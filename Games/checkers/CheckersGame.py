@@ -52,7 +52,7 @@ class CheckersGame(IGame):
 
     def getValidMoves(self, board: np.array, player: int):
         """returns a binary np.array (1 = still valid action, 0 = invalid)"""
-        b = Board(self.n, pieces=np.copy(board))
+        b = Board(self.n, np.copy(board))
 
         if (self.stringRepresentation(b.pieces), player) in self.ll_capture_hist:
             b.last_long_capture = self.ll_capture_hist[(self.stringRepresentation(b.pieces), player)]
@@ -127,14 +127,14 @@ class CheckersGame(IGame):
     def rotateMove(self, move: int | tuple[int, int]):
         empty_board = np.zeros([self.n, self.n], dtype=int)
         if type(move) is tuple:
-            to_rotate = [pos for pos in move]
+            to_rotate = [*move]
         else:
             to_rotate = [move]
         rotated = []
         for pos in to_rotate:
             empty_board[pos // self.n, pos % self.n] = 1
             rot_board = np.rot90(empty_board, 2)
-            rotated.append(i for i, pos in enumerate(rot_board) if pos == 1)
+            rotated.append([i for i, pos in enumerate(rot_board.flatten()) if pos == 1][0])
             empty_board[pos // self.n, pos % self.n] = 0
         return rotated[0] if len(rotated) == 1 else (rotated[0], rotated[1])
 
@@ -203,8 +203,7 @@ class CheckersGame(IGame):
 
     def draw(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         import pygame
-
-        b = Board(self.n, pieces=np.copy(board))
+        b = Board(self.n, np.copy(board))
         if (self.stringRepresentation(b.pieces), cur_player) in self.ll_capture_hist:
             b.last_long_capture = self.ll_capture_hist[(self.stringRepresentation(b.pieces), cur_player)]
 

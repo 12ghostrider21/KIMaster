@@ -128,7 +128,7 @@ class SocketServer(AbstractConnectionManager):
         action_index = func(board, cur_player, it)
         move = game.translate(board, cur_player, action_index)
         await self.send_cmd(game_client, "play", "make_move",
-                            {"move": move, "p_pos": self.player_to_pos(cur_player)})
+                            {"move": str(move), "p_pos": self.player_to_pos(cur_player)})
 
     async def draw(self, read_object: dict, game: IGame, lobby: Lobby, p_pos: str):
         array: np.array = np.array(read_object.get("board"))
@@ -157,7 +157,6 @@ class SocketServer(AbstractConnectionManager):
         func = lambda x, y: mcts.get_action_prob(x, y, temp=1)
         blunder_list = []
         for index, board, player, action in actions:
-
             # probability vector
             action_probs = np.array(func(board, player))
 

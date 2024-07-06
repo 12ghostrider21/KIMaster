@@ -49,7 +49,7 @@ class RCODE(Enum):
     P_UNSTEP = 217  # Step backward in the timeline
     P_PLAYER = 218  # Sends the current active player
     P_KIM = 219  # Send message if KIM is at turn
-    P_CREATEBLUNDER = 220  # Creating blunder for last game... taking some time.
+    P_CREATEBLUNDER = 220  # Server is calculating blunder for the  last game. Taking some time.
 
     # Play error codes
     P_NOGAMECLIENT = 250  # No game client available; try again
