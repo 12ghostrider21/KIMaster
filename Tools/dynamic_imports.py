@@ -110,26 +110,29 @@ class Importer:
                         if f.lower().endswith("game.py"):
                             entry.keras.game_py = os.path.join(root, f)
                             entry.torch.game_py = os.path.join(root, f)
+                            break
 
                 # check for pytorch files
-                if root_l == "pytorch":
+                elif root_l == "pytorch":
                     entry.torch.found = True
                     entry.x += 1
                     for f in filenames:
                         if f.lower().endswith("best.pth.tar"):
                             entry.torch.model_path = os.path.dirname(os.path.join(root, f))
                             entry.torch.model_file = os.path.basename(os.path.join(root, f))
+                            continue
                         if f.lower() == "nnet.py":
                             entry.torch.nnet_py = os.path.join(root, f)
 
                 # check for keras files
-                if root_l == "keras":
+                elif root_l == "keras":
                     entry.keras.found = True
                     entry.x += 1
                     for f in filenames:
                         if f.lower().endswith("best.h5"):
                             entry.keras.model_path = os.path.dirname(os.path.join(root, f))
                             entry.keras.model_file = os.path.basename(os.path.join(root, f))
+                            continue
                         if f.lower() == "nnet.py":
                             entry.keras.nnet_py = os.path.join(root, f)
 
