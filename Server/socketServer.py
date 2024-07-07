@@ -130,10 +130,6 @@ class SocketServer(AbstractConnectionManager):
         await self.send_cmd(game_client, "play", "make_move",
                             {"move": str(move), "p_pos": self.player_to_pos(cur_player)})
         
-        
-        
-
-
     async def draw(self, read_object: dict, game: IGame, lobby: Lobby, p_pos: str):
         array: np.array = np.array(read_object.get("board"))
         valid: bool = bool(read_object.get("valid"))
