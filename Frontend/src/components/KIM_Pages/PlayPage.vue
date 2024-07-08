@@ -63,7 +63,7 @@
         <template #default>
           <p v-if="playerWon ===1">{{ $t('message.player_1_won') }}</p>
           <p v-if="playerWon ===-1">{{ $t('message.player_2_won') }}</p>
-          <p v-if="playerWon ===0">Draw!</p> <!--TODO Translate-->
+          <p v-if="playerWon ===0">{{ $t('message.draw') }}</p> 
           <p>{{ $t('message.game_over_after')}}  {{ turn }} {{ $t('message.turns') }}</p>
         </template>
         <template #actions>
@@ -96,6 +96,7 @@ import Connect4Rules from '@/components/gameRules/Connect4Rules.vue';
 import TicTacToeRules from '@/components/gameRules/TicTacToeRules.vue';
 import OthelloRules from '@/components/gameRules/OthelloRules.vue';
 import NimRules from '@/components/gameRules/NimRules.vue';
+import CheckersRules from '@/components/gameRules/CheckersRules.vue';
 
 export default {
   mixins: [PlayPageLogic],
@@ -103,7 +104,8 @@ export default {
     Connect4Rules,
     TicTacToeRules,
     NimRules,
-    OthelloRules
+    OthelloRules,
+    CheckersRules
    
   },
   methods: {

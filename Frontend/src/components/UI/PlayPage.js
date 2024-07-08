@@ -33,7 +33,9 @@ export default {
         case 'othello':
           return 'OthelloRules';
           case 'nim':
-            return'NimRules'
+            return'NimRules';
+          case 'checkers':
+            return 'CheckersRules'
         default:
           return null;
       }

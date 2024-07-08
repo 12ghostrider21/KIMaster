@@ -39,11 +39,11 @@
         @close="closePopUp"
       >
         <template #default>
-         <p>You need to first surrender before you can start a new Game or Lobby</p>
+         <p>{{ $t('message.surrender_before_start') }}</p>
         </template>
         <template #actions>
           <base-button @click="surrenderGame">{{ $t('message.surrender') }}</base-button>
-          <base-button @click="returnToGame">  Return to Game </base-button>
+          <base-button @click="returnToGame">  {{ $t('message.return_to_game') }} </base-button>
           <base-button @click="closePopUp">{{ $t('message.okay') }}</base-button>
         </template>
       </base-dialog>

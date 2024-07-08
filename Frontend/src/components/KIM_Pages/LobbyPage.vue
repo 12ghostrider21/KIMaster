@@ -17,9 +17,9 @@
         <select v-model="mode" >
           <option value="player_vs_player">{{ $t('message.player_vs_player') }}</option>
           <option value="player_vs_kim">{{ $t('message.player_vs_ai') }}</option>
-          <option value="kim_vs_player">Kim vs Player</option>
+          <option value="kim_vs_player">{{ $t('message.KIM_vs_Player') }}</option>
           <option value="playerai_vs_kim">{{ $t('message.playerai_vs_ai') }}</option>
-          <option value="kim_vs_playerai">Kim vs Player Ai</option>
+          <option value="kim_vs_playerai">{{ $t('message.KIM_vs_Player_AI') }}</option>
           <option value="playerai_vs_playerai">{{ $t('message.playerai_vs_playerai') }}</option>
           
         </select>
@@ -45,7 +45,7 @@
         <p>{{ $t('message.lobby_position', { p1: positionsInLobby[0], p2: positionsInLobby[1], spectators: positionsInLobby[2] }) }}</p>
       </div>
 
-      <base-button @click="playCreate">Start Game!</base-button>
+      <base-button @click="playCreate">{{ $t('message.startGame') }}</base-button>
     </div>
 
   </section>
