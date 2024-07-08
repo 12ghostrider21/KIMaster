@@ -213,7 +213,7 @@ export default createStore({
                 }
                 socket = new WebSocket(modifiedUrl); //TODO change to proper address, for now, it's hacked together
             } else {
-                socket = new WebSocket('ws://localhost:8010/ws'); // Static URL if address not in the correct format
+                socket = new WebSocket('wss://localhost:8010/ws'); // Static URL if address not in the correct format
             }
 
             socket.onopen = () => {
