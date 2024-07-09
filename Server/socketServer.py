@@ -157,6 +157,8 @@ class SocketServer(AbstractConnectionManager):
         func = lambda x, y: mcts.get_action_prob(x, y, temp=1)
         blunder_list = []
         for index, board, player, action in actions:
+            if type(action) is list:
+                action = tuple(action)
             # probability vector
             action_probs = np.array(func(board, player))
 
