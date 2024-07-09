@@ -17,11 +17,15 @@ export default {
       "invalidMoveObserver",
       "skipMove",
       "turn",
+      "blunders",
+      "yourTurn",
+      "playerTurn",
      
     ]),
     enums() {
       return ENUMS;
     },
+
     currentRuleComponent() {
       switch (this.game) {
         case 'chess':
@@ -126,6 +130,7 @@ export default {
         this.sendMessage(data);
         this.nimTest=[-1,0];
         },
+
     sendMessage(data) {
       console.log(data);
       this.sendWebSocketMessage(JSON.stringify(data));
@@ -143,6 +148,15 @@ export default {
 
       // Set the hovered cell coordinates
       this.hoveredCell = { x: cellX, y: cellY };
+    },
+
+    blunder() {
+      const data = {
+        command: "play",
+        command_key: "blunder",
+        isFrontend: true,
+      };
+      this.sendMessage(data);
     },
     undoMove() {
       const data = {
@@ -167,6 +181,7 @@ export default {
       };
       this.sendMessage(data);
     },
+
     playValidMoves(fromPos) {
       const data = {
         command: "play",
@@ -297,10 +312,18 @@ export default {
       command_key: 'unstep',
     };
     this.sendMessage(data);},
+
     last(){const data = {
       command: 'play',
       command_key: 'timeline',
       num: this.turn,
+    };
+    this.sendMessage(data);},
+
+    jumpTimeLine(it){const data = {
+      command: 'play',
+      command_key: 'timeline',
+      num: it,
     };
     this.sendMessage(data);},
     /*firstImage() {

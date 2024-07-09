@@ -7,6 +7,10 @@
       </base-button>
       <base-button v-if="this.gameOver&&position!='sp'" @click="quitGame()">{{ $t('message.quit_game') }}</base-button>
       <base-button v-if="position==='sp'" @click="leaveGame()">{{ $t('message.quit_game') }}</base-button>
+      <div>
+        <p v-if="yourTurn&&position!='sp'">{{ $t('message.your_turn') }}</p>
+        <p v-if="!yourTurn&&position!='sp'">{{ $t('message.opponent_turn') }}</p>
+      </div>
     </div>
     
     <!-- Game Board -->
@@ -35,12 +39,14 @@
           left: `${(hoveredCell.x - 1) * (300 / boardWidth)}px`,
         }"
       ></div>
+      
     </div>
     
     <!-- Image Control Buttons -->
+ 
     <div class="control-buttons">
       <base-button v-if="!this.gameOver && game==='nim' && nimTest[0]!==-1" @click="sendNimMove" >
-        {{ $t('message.nim_move') }} {{ nimTest }}
+        {{ $t('message.nim_move') }} Row: {{Number(nimTest[0])+1 }} Amount: {{ nimTest[1]}}
       </base-button>
       <base-button  v-if="!this.gameOver&&position!='sp'" @click="undoMove()">{{ $t('message.undo_move') }}</base-button>
       <base-button v-if="this.gameOver&& position!='sp'" @click="newGame">{{ $t('message.new_game') }}</base-button>
@@ -56,11 +62,43 @@
         <div class="control-buttons-horizontal">
           <base-button @click="blunder()">{{ $t('message.blunder') }}</base-button>
         </div>
-      </div>
+      </div> 
+  
     </div>
     
     <!-- Footer -->
     <footer-bar></footer-bar>
+    <teleport to="body">
+      <base-dialog
+        v-if="popup === enums.popUpStatus.BLUNDER"
+        :title="$t('message.blunder')"
+        @close="() => { closePopup();}"
+      >
+        <template #default>
+          <div class="scrollable"> 
+            <img
+              width="300"
+              height="300"
+              v-if="imageSrc"
+              :src="imageSrc"
+               alt="Received Image"/>
+
+               <base-button @click="unstep()">{{ $t('message.previous') }}</base-button>
+               <base-button @click="step()">{{ $t('message.next') }}</base-button>
+          </div>
+          <div>
+            <base-button v-for="blunder in blunders" :key="blunders.action" @click="jumpTimeLine(blunder.it)">
+               {{ $t('message.turn') }}: {{ Number(blunder.it) +1 }}
+            </base-button>
+          </div>
+        </template>
+        <template #actions>
+          <base-button v-if="position!='sp'" @click="newGame">{{ $t('message.new_game') }}</base-button>
+          <base-button @click="() => { closePopup();}">{{ $t('message.okay') }}</base-button>
+        </template>
+      </base-dialog>
+    </teleport>
+
 
     <!-- Game Over Dialog -->
     <teleport to="body">

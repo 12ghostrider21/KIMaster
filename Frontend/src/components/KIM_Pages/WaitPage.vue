@@ -17,7 +17,7 @@ import { mapActions, mapGetters } from 'vuex';
 import * as ENUMS from '../enums';
 export default {
 
-  mounted() {},
+
   data() {
     return {
       difficulty:'hard',
@@ -36,9 +36,13 @@ export default {
     }
   },
 
-  mounted() {
+  beforeMount() {
     this.lobbyPos();
     this.lobbyStatus();
+  },
+
+  mounted(){
+    if(this.gameActive) {this.goToGame();};
   },
 methods: {
 
@@ -56,6 +60,7 @@ methods: {
   };
   this.sendMessage(data);
   },
+
   lobbyStatus(){ 
       const data = {
         command: "lobby",
@@ -73,8 +78,6 @@ swapPositionInLobby() {
 },
 
 goToGame() {
-  console.log("GAME:" + this.game);
- 
 
   this.$router.push({
     name: 'play',

@@ -28,6 +28,8 @@ const getDefaultState = () => {
         callPos: false,
         invalidMoveObserver: false,
         skipMove: false,
+        blunder:[],
+        yourTurn:false,
     };
 };
 
@@ -57,8 +59,10 @@ export default createStore({
         playerWon:0, //WhichPlayer Won
         isValidMoveImage:false,
         callPos:false,
+        blunders:[],
         invalidMoveObserver:false,
         skipMove:false,
+        yourTurn:false,
     },
     mutations: {
 
@@ -70,6 +74,10 @@ export default createStore({
             state.positionsInLobby[0]=p1;
             state.positionsInLobby[1]=p2;
             state.positionsInLobby[2]=sp;
+        },
+
+        setBlunders(state,blunders){
+            state.blunders=blunders;
         },
         setCallPos(state) {
             state.callPos=!state.callPos;
@@ -112,6 +120,7 @@ export default createStore({
             state.lobbyKey = lobbyKey;
         },
         setGame(state, game) {
+            console.log("Game changed?");
             state.game = game;
         },
         setInLobby(state, inLobby) {
@@ -148,6 +157,10 @@ export default createStore({
         setIsValidMoveImage(state, isValidMoveImage){
             state.isValidMoveImage=isValidMoveImage;
         },
+
+        setYourTurn(state,yourTurn){
+            state.yourTurn=yourTurn;
+        }
     },
     actions: {
 
@@ -213,7 +226,7 @@ export default createStore({
                 }
                 socket = new WebSocket(modifiedUrl); //TODO change to proper address, for now, it's hacked together
             } else {
-                socket = new WebSocket('wss://kimaster.mni.thm.de/ws'); // Static URL if address not in the correct format
+                socket = new WebSocket('ws://localhost:8010/ws' )//'wss://kimaster.mni.thm.de/ws'); // Static URL if address not in the correct format
             }
 
             socket.onopen = () => {
@@ -267,7 +280,7 @@ export default createStore({
                                     p2: receivedJSONObject.P2,
                                     sp: receivedJSONObject.Spectators
                                 });
-                                commit('setGameActive',GameRunning);
+                                commit('setGameActive',receivedJSONObject.GameRunning);
                                 break;
                             case 150: 
                             case 151:
@@ -309,7 +322,7 @@ export default createStore({
                                 break;
                             case 208: 
                                 //commit('setIsValidMoveImage', true);
-                                 if (state.game=ENUMS.games.OTHELLO){
+                                 if (state.game===ENUMS.games.OTHELLO){
                                     if (receivedJSONObject.moves.includes("64")){
                                         commit('setSkipMove',true);
                                         commit('setNotif',ENUMS.notifStatus.SKIPMOVE)}
@@ -326,6 +339,20 @@ export default createStore({
                                 commit('setPlayerWon', receivedJSONObject.result)
                                 commit('setPopup',ENUMS.popUpStatus.GAMEOVER);
                                 break;
+
+                            case 212: //Blunder
+                             commit('setBlunders',receivedJSONObject.blunder);
+                            if(state.blunders.length>0){
+                             commit('setPopup',ENUMS.popUpStatus.BLUNDER);}
+                             break;
+                             case 218:
+                                commit('setYourTurn',state.position==="p1"&&receivedJSONObject.cur_player==1||state.position==="p2"&&receivedJSONObject.cur_player==-1);
+                                break;
+                                case 219: 
+                            commit('setYourTurn',false);
+                                break;
+                            
+                            commit('setPlayerTurn',) //new Active player
                             case 256:
                                 commit('setInvalidMoveMade',true);
                                 break;
@@ -405,9 +432,11 @@ export default createStore({
        //currentImageIndex:(state) => state.currentImageIndex,
         isValidMoveImage:(state) => state.isValidMoveImage,
         callPos:(state) => state.callPos, 
+        blunders:(state) => state.blunders, 
         invalidMoveObserver:(state) => state.invalidMoveObserver,
         positionsInLobby:(state) => state.positionsInLobby,
         skipMove:(state) => state.skipMove,
+        yourTurn:(state) => state.yourTurn,
         socketConnected:(state) => state.socketConnected,
         connectionLost:(state) => state.connectionLost,
     },

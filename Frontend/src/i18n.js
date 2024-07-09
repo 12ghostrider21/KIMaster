@@ -58,6 +58,7 @@ const messages = {
       player_1_won: "Player 1 Won",
       player_2_won: "Player 2 Won",
       game_over_after: "Game over after",
+      turn:"Turn",
       turns: "Turns",
       okay: "Okay",
       show_rules: "Rules",
@@ -84,7 +85,10 @@ const messages = {
       key: "Key",
       value: "Value",
       add_pair: "Add Pair",
-      json_output: "JSON Output"
+      json_output: "JSON Output",
+      your_turn:"Your Turn",
+      opponent_turn: "Opponents Turn",
+      blunder:"Show Blunders",
 
     },
 
@@ -309,6 +313,7 @@ const messages = {
       player_1_won: "Spieler 1 hat gewonnen",
       player_2_won: "Spieler 2 hat gewonnen",
       game_over_after: "Spiel vorbei nach",
+      turn: "Zug",
       turns: "Zügen",
       okay: "Okay",
       show_rules: "Regeln",
@@ -335,7 +340,10 @@ const messages = {
       key: "Schlüssel",
       value: "Wert",
       add_pair: "Paar hinzufügen",
-      json_output: "JSON-Ausgabe"
+      json_output: "JSON-Ausgabe",
+      your_turn: "Dein Zug",
+      opponent_turn: "Gegner am Zug",
+      blunder:"Fehler anzeigen",
     },
 
     rules: {
@@ -567,6 +575,7 @@ const messages = {
         player_1_won: "Le joueur 1 a gagné",
         player_2_won: "Le joueur 2 a gagné",
         game_over_after: "Fin du jeu après",
+        turn: "Tour",
         turns: "Tours",
         okay: "D'accord",
         show_rules: "réglementer",
@@ -593,7 +602,11 @@ const messages = {
         key: "Clé",
         value: "Valeur",
         add_pair: "Ajouter une paire",
-        json_output: "Sortie JSON"
+        json_output: "Sortie JSON",
+        your_turn: "Ton tour",
+        opponent_turn: "Au tour de l'adversaire",
+        blunder:"Montre Erreurs",
+
       },
 
       rules: {
@@ -820,6 +833,7 @@ const messages = {
         player_1_won: "El jugador 1 ganó",
         player_2_won: "El jugador 2 ganó",
         game_over_after: "Fin del juego después de",
+        turn:"Turno",
         turns: "Turnos",
         okay: "Aceptar",
         show_rules: "regular",
@@ -846,7 +860,11 @@ const messages = {
         key: "Clave",
         value: "valor",
         add_pair: "Añadir par",
-        json_output: "Salida JSON"
+        json_output: "Salida JSON",
+        your_turn: "Tu turno",
+        opponent_turn: "Turno del adversario",
+        blunder:"Muestra Errores",
+
       },
 
       rules: {

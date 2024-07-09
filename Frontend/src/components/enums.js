@@ -1,7 +1,8 @@
 export const popUpStatus = Object.freeze({
     SURRENDER: 'Surrender',
     GAMEOVER: 'Game Over',
-    POSOCCUPIED: 'pos_occupied'
+    POSOCCUPIED: 'pos_occupied',
+    BLUNDER: 'blunder',
   });
   export const notifStatus = Object.freeze({
     LOBBYJOINFAIL: "Lobby Join Failed",
