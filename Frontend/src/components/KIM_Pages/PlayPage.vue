@@ -46,7 +46,8 @@
  
     <div class="control-buttons">
       <base-button v-if="!this.gameOver && game==='nim' && nimTest[0]!==-1" @click="sendNimMove" >
-        {{ $t('message.nim_move') }} Row: {{Number(nimTest[0])+1 }} Amount: {{ nimTest[1]}}
+        {{ $t('message.nim_move') }} - {{ $t('message.row') }}: {{Number(nimTest[0])+1 }},
+        {{ $t('message.amount') }}: {{ nimTest[1]}}
       </base-button>
       <base-button  v-if="!this.gameOver&&position!='sp'" @click="undoMove()">{{ $t('message.undo_move') }}</base-button>
       <base-button v-if="this.gameOver&& position!='sp'" @click="newGame">{{ $t('message.new_game') }}</base-button>

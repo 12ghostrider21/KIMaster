@@ -162,7 +162,7 @@ class SocketServer(AbstractConnectionManager):
 
             # using mean as reference whether a move is good or not so
             mean = 1.0 / np.count_nonzero(action_probs)
-            good_actions_indices = np.where(action_probs >= mean)[0]
+            good_actions_indices = np.where(action_probs >= (mean/1.3))[0]
             good_actions = [game.translate(board, player, a) for a in good_actions_indices]
             if action not in good_actions:  # is blunder
                 blunder_list.append((action, index, player))

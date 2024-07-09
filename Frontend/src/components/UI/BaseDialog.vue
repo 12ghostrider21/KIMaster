@@ -1,37 +1,37 @@
-  <template>
-    <div class="dialog-overlay" @click="$emit('close')">
-      <dialog open @click.stop>
-        <header>
-          <slot name="header">
-            <h2>{{ title }}</h2>
-          </slot>
-        </header>
-        <section>
-          <slot></slot>
-        </section>
-        <menu>
-          <slot name="actions">
-            <base-button @click="$emit('close')">Close</base-button>
-          </slot>
-        </menu>
-      </dialog>
-    </div>
-  </template>
+<template>
+  <div class="dialog-overlay" @click="$emit('close')">
+    <dialog open @click.stop>
+      <header>
+        <slot name="header">
+          <h2>{{ title }}</h2>
+        </slot>
+      </header>
+      <section>
+        <slot></slot>
+      </section>
+      <menu>
+        <slot name="actions">
+          <base-button @click="$emit('close')">Close</base-button>
+        </slot>
+      </menu>
+    </dialog>
+  </div>
+</template>
 
-  <script>
-  export default {
-    props: {
-      title: {
-        type: String,
-        required: false,
-      },
+<script>
+export default {
+  props: {
+    title: {
+      type: String,
+      required: false,
     },
-    emits: ["close"],
-  };
-  </script>
+  },
+  emits: ["close"],
+};
+</script>
 
-  <style scoped> 
-  .dialog-overlay {
+<style scoped>
+.dialog-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -44,8 +44,8 @@
   align-items: center;
 }
 
-  dialog {
-    position: fixed;
+dialog {
+  position: relative;
   width: 80%;
   max-width: 600px;
   max-height: 80vh;
@@ -55,33 +55,34 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
   padding: 0;
   margin: 0;
-  }
+  background: white;
+}
 
-  header {
-    background-color: white;
-    color: black;
-    width: 100%;
-    padding: 1rem;
-  }
+header {
+  background-color: white;
+  color: black;
+  width: 100%;
+  padding: 1rem;
+}
 
-  header h2 {
-    margin: 0;
-  }
+header h2 {
+  margin: 0;
+}
 
-  section {
-    padding: 1rem;
-  }
+section {
+  padding: 1rem;
+}
 
-  menu {
-    padding: 1rem;
-    display: flex;
-    justify-content: flex-end;
-    margin: 0;
-  }
+menu {
+  padding: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  margin: 0;
+}
 
-  @media (min-width: 768px) {
-    dialog {
-      left: calc(50% - 20rem);
-      width: 40rem;
-    }
-  }</style>
+@media (min-width: 768px) {
+  dialog {
+    width: 40rem;
+  }
+}
+</style>
