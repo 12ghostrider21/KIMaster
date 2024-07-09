@@ -202,7 +202,7 @@ class GameClient(WebSocketConnectionManager):
                         await self.send_response(RCODE.P_STILLRUNNING, p_pos)
                         continue
                     state, player, it = self.pit.timeline(p_pos, True, None)
-                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, True, None)
+                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, False, None)
                     data = {"current_player": player, "it": it, "last_it": len(self.pit.arena.history) - 1}
                     await self.send_response(RCODE.P_STEP, p_pos, data)
 
@@ -212,7 +212,7 @@ class GameClient(WebSocketConnectionManager):
                         await self.send_response(RCODE.P_STILLRUNNING, p_pos)
                         continue
                     state, player, it = self.pit.timeline(p_pos, False, None)
-                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, True, None)
+                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, False, None)
                     data = {"current_player": player, "it": it, "last_it": len(self.pit.arena.history) - 1}
                     await self.send_response(RCODE.P_UNSTEP, p_pos, data)
 

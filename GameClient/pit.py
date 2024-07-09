@@ -76,11 +76,12 @@ class Pit:
             return self.arena.history[-1]
         return None, None, None
 
+    """
     # Undo a certain number of steps in the game
     def undo(self, steps: int):
         state, player, it = None, None, None
         if len(self.arena.history) >= 3:
-            for _ in range(steps * 2 + 1):  # steps * 2 (own and enemy) + 1 for arena initial append
+            for _ in range(steps * 2 + 1):  # steps * 2 (own and enemy) + 1 for final arena append
                 if len(self.arena.history) != 0:
                     state, player, it = self.arena.history.pop()
                     for i, h in enumerate(self.arena.blunder_history):
@@ -89,6 +90,24 @@ class Pit:
                             self.arena.blunder_history.pop(i)
                             break
         return state, player, it
+    """
+
+    def undo(self, steps: int) -> tuple[np.array, int, int]:
+        board, last_player, it = self.arena.history.pop()  # popping off last state (current player in turn doing undo)
+
+        last_player = 0  # players are always -1 / 1, never 0
+        cur_player = self.get_cur_player()
+        for i in range(steps):
+            while cur_player != last_player:
+                if len(self.arena.history) > 0:
+                    board, last_player, it = self.arena.history.pop()
+
+                    it_blunder_hist = self.arena.blunder_history[-1][2]
+                    if it_blunder_hist >= it:
+                        self.arena.blunder_history.pop()
+
+        return board, last_player, it
+
 
     # Navigate through the game timeline
     def timeline(self, p_pos: str, forward: bool = True, start_index: int | None = None):

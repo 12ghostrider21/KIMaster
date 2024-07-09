@@ -24,6 +24,9 @@
           <li class="nav-item" v-if="isPlayPage">
             <a class="nav-link" href="#" @click.prevent="showRules">{{ $t('message.show_rules') }}</a>
           </li>
+          <li class="nav-item" v-if="isLobbyPage">
+            <a class="nav-link" href="#" @click.prevent="showRules">{{ $t('message.show_rules') }}</a>
+          </li>
           <!-- <li class="nav-item">
             <a class="nav-link" href="#">{{ $t('message.leaderboard') }}</a>
           </li>
@@ -84,6 +87,9 @@ export default {
     },
     isPlayPage() {
       return this.$route.name === 'play';
+    },
+    isLobbyPage() {
+       return this.$route.name === 'lobby';
     }
   },
   methods: {

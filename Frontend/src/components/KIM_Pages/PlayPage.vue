@@ -1,14 +1,12 @@
 <template>
   <div>
     <!-- Game Controls -->
-    <div>
-      <base-button v-if="position!='sp'" @click="surrenderGame()">{{ $t('message.surrender') }}</base-button>
-      <base-button v-if="position!='sp'" @click="quitGame()">{{ $t('message.quit_game') }}</base-button>
-      <base-button @click="showRules">{{ $t('message.show_rules') }}</base-button>
+    <div class="control-buttons">
+      <base-button v-if="!this.gameOver&&position!='sp'" @click="surrenderGame()">
+        {{ $t('message.surrender') }}
+      </base-button>
+      <base-button v-if="this.gameOver&&position!='sp'" @click="quitGame()">{{ $t('message.quit_game') }}</base-button>
       <base-button v-if="position==='sp'" @click="leaveGame()">{{ $t('message.quit_game') }}</base-button>
-      
-      <base-button v-if="game==='nim'" @click="sendNimMove" >NIM MOVE {{ nimTest }}</base-button>
-
     </div>
     
     <!-- Game Board -->
@@ -40,14 +38,25 @@
     </div>
     
     <!-- Image Control Buttons -->
-
-    <base-button  v-if="position!='sp'" @click="undoMove()">{{ $t('message.undo_move') }}</base-button>
-    <base-button v-if="this.gameOver&& position!='sp'" @click="newGame">{{ $t('message.new_game') }}</base-button>
-    <div v-if="gameOver" class="control-Buttons">
-      <base-button @click="first()">{{ $t('message.first') }}</base-button>
-      <base-button @click="unstep()">{{ $t('message.previous') }}</base-button>
-      <base-button @click="step()">{{ $t('message.next') }}</base-button>
-      <base-button @click="last()">{{ $t('message.last') }}</base-button>
+    <div class="control-buttons">
+      <base-button v-if="!this.gameOver && game==='nim' && nimTest[0]!==-1" @click="sendNimMove" >
+        {{ $t('message.nim_move') }} {{ nimTest }}
+      </base-button>
+      <base-button  v-if="!this.gameOver&&position!='sp'" @click="undoMove()">{{ $t('message.undo_move') }}</base-button>
+      <base-button v-if="this.gameOver&& position!='sp'" @click="newGame">{{ $t('message.new_game') }}</base-button>
+      <div v-if="gameOver">
+        <h1>Timeline</h1>
+        <div class="control-buttons-horizontal">
+          <base-button @click="first()">{{ $t('message.first') }}</base-button>
+          <base-button @click="unstep()">{{ $t('message.previous') }}</base-button>
+          <base-button @click="step()">{{ $t('message.next') }}</base-button>
+          <base-button @click="last()">{{ $t('message.last') }}</base-button>
+        </div>
+        <h1>Blunder</h1>
+        <div class="control-buttons-horizontal">
+          <base-button @click="blunder()">{{ $t('message.blunder') }}</base-button>
+        </div>
+      </div>
     </div>
     
     <!-- Footer -->

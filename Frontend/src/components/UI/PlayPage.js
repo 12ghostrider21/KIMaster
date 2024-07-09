@@ -105,9 +105,11 @@ export default {
     ]),
     nimMove(pos){
       if (this.nimTest[0]==-1) this.nimTest[0]=pos;
-      if (this.nimTest[0]==pos) this.nimTest[1]+=1;
-     
-      
+      if (this.nimTest[0]==pos) {
+        this.nimTest[1]+=1;
+        this.nimTest[1]%=(this.nimTest[0]+1)*2;
+        if (this.nimTest[1]==0) this.nimTest[1]=1
+      }
     },
     invalidMoveHandling() { 
       if (this.savedPos!=null) { 
@@ -268,6 +270,13 @@ export default {
       } else {
         this.setNotif === ENUMS.notifStatus.SURRENDERFIRST;
       }
+    },
+    blunder() {
+      const data = {
+        command: "play",
+        command_key: "blunder",
+      };
+      this.sendMessage(data);
     },
 
     leaveGame() {
