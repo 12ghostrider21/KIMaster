@@ -7,7 +7,7 @@
     <div v-else>
       <teleport to="body"><base-dialog  :title="'Connection Lost'">
         <template #default>
-          Connecting to Server wasn't possible
+          {{$t('message.connection_not_possible')}}:
         </template>
         <template #actions>
           <base-button @click="connectWebSocket">Try Reconnecting</base-button>

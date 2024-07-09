@@ -2,79 +2,79 @@
   <div id="app">
     <div class="box">
       <div class="grid-section">
-        Lobby:
-        <button @click="createLobby">Create Lobby</button>
+        {{ $t('message.lobby') }}:
+        <button @click="createLobby">{{ $t('message.createLobby') }}</button>
         <input type="text" v-model="lobbyKey" placeholder="Enter Lobby Key">
        
         <br>
         
-        <label for="joinLobbyPosition">Join as:</label>
+        <label for="joinLobbyPosition">{{$t('message.joinAs')}}:</label>
     <select id="joinLobbyPosition" v-model="joinLobbyPosition">
-        <option value="p1">Player 1</option>
-        <option value="p2">Player 2</option>
-        <option value="sp">Spectator</option>
+        <option value="p1">{{ $t('message.player1') }}</option>
+        <option value="p2">{{ $t('message.player2') }}</option>
+        <option value="sp">{{ $t('message.spectator') }}</option>
         <option value=null>null</option>
     </select>
-    <button @click="joinLobby">Join Lobby</button>
+    <button @click="joinLobby">{{ $t('message.join_lobby') }}</button>
         <br>
-        <button @click="leaveLobby">Leave Lobby</button>
+        <button @click="leaveLobby">{{ $t('message.leave_lobby') }}</button>
         <select v-model="position" @change="swapPositionInLobby">
-          <option value="p1">Player 1</option>
-          <option value="p2">Player 2</option>
-          <option value="sp">Spectator</option>
-          <option value="sp">Spectator</option>
+          <option value="p1">{{ $t('message.player1') }}</option>
+          <option value="p2">{{ $t('message.player2') }}</option>
+          <option value="sp">{{ $t('message.spectator') }}</option>
+          <option value="sp">{{ $t('message.spectator') }}</option> 
         </select>
         <br>
-        <button @click="showPos">Lobby Pos</button>
-        <button @click="showLobbyList">Lobby Status</button>
-        <h1>WebSocket Connection Status: {{ connectionStatus }}</h1>
+        <button @click="showPos">{{ $t('message. lobbyPos') }}</button>
+        <button @click="showLobbyList">{{ $t('message.lobbyStatus') }}</button>
+        <h1>{{ $t('message. webSocketConnectionStatus') }}:{{ connectionStatus }}</h1>
       </div>
     </div>
 
     <div class="box">
       <div class="grid-section">
-        Play:
+        {{ $t('message.play') }}:
         <select v-model="game" >
-          <option value='connect4'>Vier Gewinnt</option>
-          <option value="tictactoe">Tic Tac Toe</option>
-          <option value="othello">Othello</option>
+          <option value='connect4'>{{ $t('message.connect4') }}</option>
+          <option value="tictactoe">{{ $t('message.tictactoe') }}</option>
+          <option value="othello">{{ $t('message.othello') }}</option>
         </select>
         <select v-model="mode">
-          <option value="player_vs_player">Player vs Player</option>
-          <option value='player_vs_ai'>Player vs Ai</option>
-          <option value="playerai_vs_ai">Player Ai vs Ai</option>
-          <option value="playerai_vs_playerai">Player Ai vs Player Ai</option>
+          <option value="player_vs_player">{{ $t('message.player_vs_player') }}</option>
+          <option value='player_vs_ai'>{{ $t('message.player_vs_ai') }}</option>
+          <option value="playerai_vs_ai">{{ $t('message.playerai_vs_ai') }}</option>
+          <option value="playerai_vs_playerai">{{ $t('message.playerai_vs_playerai') }}</option>
         </select>
         <select v-model="difficulty" >
-          <option value="easy">Easy</option>
-          <option value="medium">Medium</option>
-          <option value='hard'>Hard</option>
+          <option value="easy">{{ $t('message.easy') }}</option>
+          <option value="medium">{{ $t('message.medium') }}</option>
+          <option value='hard'>{{ $t('message.hard') }}</option>
         </select>
-        <button @click="playCreate">Create </button>
+        <button @click="playCreate">{{ $t('message.create') }}</button>
         <br>
-        <label for="widthInput">Grid Width:</label>
+        <label for="widthInput">{{ $t('message. grid_Width') }}:</label>
         <input type="number" id="widthInput" v-model="boardWidth" min="1" step="1">
         <br>
-        <label for="heightInput">Grid Height:</label>
+        <label for="heightInput">{{ $t('message. grid_Height') }}:</label>
         <input type="number" id="heightInput" v-model="boardHeight"  min="1" step="1">
         <br>
-        <label for="undoNum">Undo this Number of turns:</label>
+        <label for="undoNum">{{$t('message.undo_this_num_of_terms')}}:</label>
         <input type="number" id="undoNum" v-model="undoNum"  min="1" step="1">
-        <button @click="playUndoMove">Undo Moves</button>
-        <button @click="playSurrender">Surrender</button>
-        <button @click="playNewGame">New Game</button>
+        <button @click="playUndoMove">{{ $t('message.undo_move') }}</button>
+        <button @click="playSurrender">{{ $t('message.surrender') }}</button>
+        <button @click="playNewGame">{{ $t('message.new_game') }}</button>
         <button @click="playBlunder">Blunder</button>
-        <button @click="playTimeLine">TimeLine</button>
-        <button @click="playStep">Step</button>
-        <button @click="playUnstep">Unstep</button>
+        <button @click="playTimeLine">{{ $t('message.timeLine') }}</button>
+        <button @click="playStep">{{ $t('message.step') }}</button>
+        <button @click="playUnstep">{{ $t('message.unstep') }}</button>
         <br>
         <input type="number" id="evaluateNum" v-model="evaluateNum"  min="1" step="1">
-        <button @click="playEvaluate">Evaluate</button>
+        <button @click="playEvaluate">{{ $t('message.evaluate') }}</button>
         <br>
-        <label for="moveSwitch">Valid Moves Instead of Make Move:</label>
+        <label for="moveSwitch">{{ $t('message. valid_Moves_Instead') }}:</label>
         <input type="checkbox" id="moveSwitch" v-model="validMoveInsteadOfMakeMove">
         <br>
-        <label for="twoTurnGame">Activate two turn Game (fromPos-> toPos):</label>
+        <label for="twoTurnGame">{{ $t('message.activateTwoTurnGame') }} (fromPos-> toPos):</label>
         <input type="checkbox" id="twoTurnGame" v-model="twoTurnGame">
         <br>
       </div>
@@ -109,7 +109,7 @@
 
     <div class="box limited-width-box">
       <div class="grid-section">
-        <h2>Received From Server:</h2>
+        <h2>{{ $t('message.received_from_server') }}:</h2>
         <pre>{{ receivedJSONObject }}</pre>
       </div>
     </div>
@@ -117,28 +117,28 @@
 <div class="box">
   <div class="grid-section">
     <div style="display: inline-block;">
-     <label for="commandInUserJSON">command:</label>
+     <label for="commandInUserJSON">{{ $t('message.command') }}:</label>
      <input id="commandKeyInUserJSON" type="text" v-model="commandInUserJSON" placeholder="Enter Command">
     </div>
     <div style="display: inline-block;">
-      <label for="commandKeyInUserJSON">command_key:</label>
+      <label for="commandKeyInUserJSON">{{ $t('message.command_key') }}:</label>
       <input id="commandKeyInUserJSON" type="text" v-model="commandKeyInUserJSON" placeholder="Enter Command Key">
     </div>
-  <h1>Key-Value Pair Input</h1>
+  <h1>{{ $t('message.key_value_pair_input') }}</h1>
   <div class="grid-section">
     <form @submit.prevent="addPair">
       <div>
-        <label for="key">Key:</label>
+        <label for="key">{{ $t('message.key') }}:</label>
         <input type="text" v-model="newKey" id="key" required />
       </div>
       <div>
-        <label for="value">Value:</label>
+        <label for="value">{{ $t('message.value') }}:</label>
         <input type="text" v-model="newValue" id="value" required />
       </div>
-      <button type="submit">Add Pair</button>
+      <button type="submit">{{ $t('message.add_pair') }}</button>
       <br>
     </form>
-    <h2>JSON Output</h2>
+    <h2>{{ $t('message.json_output') }}</h2>
     <pre>{{ userSentJSON }}</pre>
     <button @click="sendUserSentJSON">Send</button>
   </div>
