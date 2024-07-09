@@ -114,8 +114,7 @@ class NogoGame(IGame):
 
 
     def getGameEnded(self, board, player, search=False):
-        # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
-        # player = 1
+        # return 0 if not ended, 1 if player won, -1 if player lost
         if search:
             return 0
         legal_moves = self.getValidMoves(board, player)
@@ -123,10 +122,6 @@ class NogoGame(IGame):
             return 0
         else:
             return -self.convert_back_color()
-
-    def getCanonicalForm(self, board, player, search=False):
-        # return state if player==1, else return -state if player==-1
-        return self.convert_back_color()*self.get_pieces()
 
     def get_pieces(self):
         pieces = GoBoardUtil.get_twoD_board(self.board)
@@ -162,9 +157,6 @@ class NogoGame(IGame):
 
     def translate(self, board: np.array, player: int, index: int):
         return index
-
-    def getRedundancyCounter(self):
-        return 0
 
     def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         n = board.shape[0]

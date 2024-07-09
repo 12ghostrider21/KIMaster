@@ -93,7 +93,6 @@ class Board():
         for direction in self.__directions:
             move = self._discover_move(square, direction)
             if move:
-                # print(square,move,direction)
                 moves.append(move)
 
         # return the generated move list
@@ -108,7 +107,6 @@ class Board():
         #follow it on all 8 directions to look for a piece allowing flipping.
 
         # Add the piece to the empty square.
-        # print(move)
         if move not in self.get_legal_moves(color):
             raise ValueError(f"Invalid move: {move}")
         flips = [flip for direction in self.__directions
@@ -116,7 +114,6 @@ class Board():
         if len(list(flips)) == 0:
             raise ValueError(f"No flips")
         for x, y in flips:
-            #print(self[x][y],color)
             self[x][y] = color
 
     def _discover_move(self, origin, direction):
@@ -129,14 +126,12 @@ class Board():
         for x, y in Board._increment_move(origin, direction, self.n):
             if self[x][y] == 0:
                 if flips:
-                    # print("Found", x,y)
                     return (x, y)
                 else:
                     return None
             elif self[x][y] == color:
                 return None
             elif self[x][y] == -color:
-                # print("Flip",x,y)
                 flips.append((x, y))
 
     def _get_flips(self, origin, direction, color):
@@ -146,25 +141,19 @@ class Board():
         flips = [origin]
 
         for x, y in Board._increment_move(origin, direction, self.n):
-            #print(x,y)
             if self[x][y] == 0:
                 return []
             if self[x][y] == -color:
                 flips.append((x, y))
             elif self[x][y] == color and len(flips) > 0:
-                #print(flips)
                 return flips
 
         return []
 
     @staticmethod
     def _increment_move(move, direction, n):
-        # print(move)
         """ Generator expression for incrementing moves """
         move = list(map(sum, zip(move, direction)))
-        #move = (move[0]+direction[0], move[1]+direction[1])
         while all(map(lambda x: 0 <= x < n, move)):
-            #while 0<=move[0] and move[0]<n and 0<=move[1] and move[1]<n:
             yield move
             move = list(map(sum, zip(move, direction)))
-            #move = (move[0]+direction[0],move[1]+direction[1])

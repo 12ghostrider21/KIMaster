@@ -141,32 +141,6 @@ class IGame(ABC):
         pass
 
     @abstractmethod
-    def getCanonicalForm(self, board: np.array, player: int) -> np.array:
-        """
-        Get the canonical form of the board that is independent of the current player.
-
-        Parameters:
-            board (numpy.array): The current game board represented as a numpy array.
-            player (int): The current player (1 for one player, -1 for the other player).
-
-        Returns:
-            canonicalBoard (numpy.array): The canonical form of the board, which is invariant
-                                           with respect to the player's perspective.
-
-        This method returns a canonical form of the game board that is independent of the current
-        player's perspective. For example, in a two-player game like chess, the canonical form
-        can be chosen to be from the point of view of the white player. Therefore, when the `player`
-        parameter is 1 (representing the white player), the `canonicalBoard` can be returned as is.
-        However, when the `player` parameter is -1 (representing the black player), the board colors
-        can be inverted to reflect the view from the white player's perspective.
-
-        Example:
-            If `board` represents the current game state and `player` is the current player,
-            this method returns a transformed version of `board` that is invariant to the player's perspective.
-        """
-        pass
-
-    @abstractmethod
     def getSymmetries(self, board: np.array, pi: np.array) -> list:
         """
         Generate symmetrical forms of the given board and corresponding policy vector.
@@ -205,19 +179,6 @@ class IGame(ABC):
             action (any): The action fitting to the index.
         """
 
-    @abstractmethod
-    def getRedundancyCounter(self) -> int:  # kommt evtl. auch wieder weg => wird sich im Training zeigen
-        """
-        Applies only for games like chess, checkers, nine mens morris and so on.
-        All other games where it is not possible to just move back and forth without game progress,
-        like tic tac toe, othello ..., just return 0.
-        Internally you need to carry along a counter that is getting incremented every time a redundant move
-        (e.g. tokens not getting less...) is made.
-
-        Returns:
-            redundancy (int): The current number of redundant moves without any game progress
-        """
-
     def rotateMove(self, move: int | tuple[int, int]) -> int | tuple[int, int]:
         """
         For games like chess, checkers ...
@@ -229,7 +190,7 @@ class IGame(ABC):
             move (int | tuple[int, int]): The move to rotate.
 
         Returns:
-            rotated move (int | tuple[int, int])
+            rotated move by 180 degree (int | tuple[int, int])
         """
 
     @abstractmethod

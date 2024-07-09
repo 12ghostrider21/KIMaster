@@ -40,7 +40,6 @@ class Arena:
         players = [self.player2, None, self.player1]
         cur_player = 1
         board = self.game.getInitBoard()
-        #print(self.game.drawTerminal(board, False, cur_player))
         it = 0
 
         for player in players[0], players[2]:
@@ -59,11 +58,9 @@ class Arena:
             opponent = players[-cur_player + 1]
             if hasattr(opponent, "notify"):
                 opponent.notify(board, action)
-            #print("cur_playerArena", cur_player)
 
             converted_action = self.game.translate(board, cur_player, action)  # ai generated "move" is just an index
             board, cur_player = self.game.getNextState(board, cur_player, converted_action)
-            #print(self.game.drawTerminal(board, False, cur_player))
 
         for player in players[0], players[2]:
             if hasattr(player, "endGame"):

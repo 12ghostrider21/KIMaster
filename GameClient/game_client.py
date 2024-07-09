@@ -174,6 +174,7 @@ class GameClient(WebSocketConnectionManager):
                         await self.send_response(code=RCODE.P_CREATEBLUNDER, to=p_pos)
                         await self.send_cmd(command="blunder", command_key=self.pit.arena.game_name,
                                             p_pos=p_pos, data=self.pit.get_blunder_payload())
+                        continue
                     # successfully requested blunder
                     await self.send_response(code=RCODE.P_BLUNDERLIST, to=p_pos, data=self.pit.get_blunder(
                         p_pos == "p2" and read_object.get("isFrontend")))

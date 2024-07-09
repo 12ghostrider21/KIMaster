@@ -12,7 +12,7 @@ class CheckersGame(IGame):
         self.board = Board(n)
         self.n = n or self.board.n
         self.redundancy = 0
-        self.ll_capture_hist = {}
+        self.ll_capture_hist = {}  # necessity of having a hist because undo function
 
     def getInitBoard(self):
         """return initial board (numpy array) and resets data"""
@@ -46,12 +46,12 @@ class CheckersGame(IGame):
             next_actions = b.get_moves_for_square(*b.last_long_capture, player, captures_only=True)
             if next_actions:
                 self.ll_capture_hist.update({(self.stringRepresentation(b.pieces), player): b.last_long_capture})
-                return b.pieces, player  # Player continues with the same board state
+                return b.pieces, player  # player stays in turn if being able to capture another piece after capture
 
         return b.pieces, -player
 
     def getValidMoves(self, board: np.array, player: int):
-        """returns a binary np.array (1 = still valid action, 0 = invalid)"""
+        """returns a binary np.array (1 = valid action, 0 = invalid)"""
         b = Board(self.n, np.copy(board))
 
         if (self.stringRepresentation(b.pieces), player) in self.ll_capture_hist:
@@ -83,19 +83,21 @@ class CheckersGame(IGame):
         self.redundancy = 0
         return 1e-4
 
-    def getCanonicalForm(self, board: np.array, player: int):
-        """Board independent of the current player."""
-        return player * board
-
     def getSymmetries(self, board: np.array, pi: list):
-        # mirror, rotational
+        """mirror, rotational"""
         length = math.sqrt(len(pi))
         assert length.is_integer()  # otherwise padding would be wrong
         length = int(length)
+
+        # therefore the padding:
+        # => getting a pi distribution in form of a square two-dimensional array according to all the valid moves
+        # in validMoves
+        # => being able to rotate pi vector in the same manner as the board
+        # ==> moves getting their according pi probability
         pi_board = np.reshape(pi, (length, length))
         lst = []
 
-        for i in [2, 4]:
+        for i in [2, 4]:  # rotate by 180 degree
             for fliplr in [False, True]:
                 for flipud in [False, True]:
                     newB = np.rot90(board, i)
@@ -125,6 +127,8 @@ class CheckersGame(IGame):
         return one_d_move
 
     def rotateMove(self, move: int | tuple[int, int]):
+        """for our frontend - both players play from bottom to top
+        => necessity to rotate move for one of the players"""
         empty_board = np.zeros([self.n, self.n], dtype=int)
         if type(move) is tuple:
             to_rotate = [*move]
@@ -138,9 +142,6 @@ class CheckersGame(IGame):
             empty_board[pos // self.n, pos % self.n] = 0
         return rotated[0] if len(rotated) == 1 else (rotated[0], rotated[1])
 
-    def getRedundancyCounter(self):
-        return self.redundancy
-
     def resetData(self):
         self.redundancy = 0
         self.ll_capture_hist.clear()
@@ -151,11 +152,12 @@ class CheckersGame(IGame):
         return row * self.n + col, nrow * self.n + ncol
 
     def calcValidMoveIndex(self, board: Board, move: tuple[int, int, int, int]):
+        """calculates unique index for every move in range getActionsSize for method validMoves ..."""
         row, col, nrow, ncol = move
         index = ((((row * self.n + col) * (self.n - 1) * 4 + (nrow - row + 1) * 2 + (ncol - col + 1) * 2) // 2) +
                  (self.n - 3))
         padding = board.get_action_size()[1]
-        if index > ((self.getActionSize() - padding) // 2):
+        if index > ((self.getActionSize() - padding) // 2):  # inserting padding "in the middle"
             index += padding
         return index - 1  # because array starts with index 0
 
@@ -226,7 +228,7 @@ class CheckersGame(IGame):
 
         valid_squares = []
 
-        if valid_moves and args and len(args) > 0:
+        if valid_moves and args and len(args) > 0:  # for drawing highlighting where moves are possible
             from_pos = args[0]
 
             legal_moves = b.flat_legal_moves(cur_player)
@@ -235,7 +237,7 @@ class CheckersGame(IGame):
             for i, from_pos in indices:
                 to_pos = one_dim_moves[i][1]
                 row, col = to_pos // self.n, to_pos % self.n
-                valid_squares.append((row, col, from_pos))
+                valid_squares.append((row, col, from_pos))  # destin. row and col and the pos from where the move came
 
         # Draw the board
         for row in range(self.n):

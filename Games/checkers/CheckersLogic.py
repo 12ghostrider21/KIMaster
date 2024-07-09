@@ -32,6 +32,8 @@ class Board:
     def __init__(self, n: int = None, pieces: np.array = None, last_long_capture: bool = None):
         """Set up initial board configuration."""
         self.n = n or DEFAULT_SIZE
+
+        # capture position for piece of the player that is staying in turn (jumping over multiple enemy pieces)
         self.last_long_capture = last_long_capture or None
 
         if pieces is None:
@@ -56,14 +58,14 @@ class Board:
         return self.pieces[index]
 
     def get_action_size(self):
-        square_from = (self.n * self.n) / 2
-        move_vector = (self.n - 1) * 4
-        size = square_from * move_vector  # size is always an even integer
+        square_from = (self.n * self.n) / 2  # half of all fields are possible positions for pieces
+        move_vector = (self.n - 1) * 4  # at max n-1 fields times 4 directions
+        size = square_from * move_vector  # size is always an even integer (odd or even * even = even)
         assert size % 2 == 0 and size.is_integer()
         size = int(size)
         sqrt_rounded = math.ceil(math.sqrt(size))
         square = sqrt_rounded * sqrt_rounded
-        padding = square - size
+        padding = square - size  # calculating padding in order to rotate pi vector in getSymmetries later
         return size, padding
 
     def is_within_bounds(self, row: int, col: int):

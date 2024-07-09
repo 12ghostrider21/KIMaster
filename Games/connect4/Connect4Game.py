@@ -47,10 +47,6 @@ class Connect4Game(IGame):
             # 0 used to represent unfinished game.
             return 0
 
-    def getCanonicalForm(self, board, player) -> np.array:
-        """Flip player from 1 to -1"""
-        return board * player
-
     def getSymmetries(self, board, pi):
         """Board is left/right board symmetric"""
         return [(board, pi), (board[:, ::-1], pi[::-1])]
@@ -59,11 +55,8 @@ class Connect4Game(IGame):
         return index
 
     def rotateMove(self, move: int):
-        # no rotation at connect4
+        """no rotation at connect4"""
         return move
-
-    def getRedundancyCounter(self):
-        return 0
 
     def stringRepresentation(self, board):
         return board.tostring()

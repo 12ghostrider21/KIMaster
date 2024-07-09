@@ -62,10 +62,6 @@ class OthelloGame(IGame):
             return 1
         return -1
 
-    def getCanonicalForm(self, board, player):
-        """return state if player==1, else return -state if player==-1"""
-        return player * board
-
     def getSymmetries(self, board, pi):
         # mirror, rotational
         assert (len(pi) == self.n ** 2 + 1)  # 1 for pass
@@ -86,7 +82,7 @@ class OthelloGame(IGame):
         return index
 
     def rotateMove(self, move: int):
-        # no rotation at othello
+        """no rotation at othello"""
         return move
 
     def stringRepresentation(self, board):
@@ -99,9 +95,6 @@ class OthelloGame(IGame):
     def getScore(self, board, player):
         b = Board(self.n, np.copy(board))
         return b.countDiff(player)
-
-    def getRedundancyCounter(self):
-        return 0
 
     def drawTerminal(self, board: np.array, valid_moves: bool, cur_player: int, *args: any):
         if valid_moves:
@@ -120,11 +113,6 @@ class OthelloGame(IGame):
                     else:
                         row_str += ' X |'
                 output += row_str + '\n' + horizontal_border
-
-            '''column_letters = '|'
-            for col in range(len(board[0])):
-                column_letters += f' {chr(col + 65)} |'
-            output += column_letters + '\n' + horizontal_border'''
 
             return output
 

@@ -13,6 +13,7 @@ from Tools.rcode import RCODE
 from connection_manager import AbstractConnectionManager
 from lobby import Lobby
 from lobby_manager import LobbyManager
+from Tools.Game_Config.difficulty import EDifficulty
 
 environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # disable some logging features
 
@@ -106,7 +107,7 @@ class SocketServer(AbstractConnectionManager):
                     case "blunder":
                         game = game_instances[command_key]
                         default = game.getInitBoard()
-                        mcts = ai_funcs.get(lobby.game).get(lobby.difficulty)
+                        mcts = ai_funcs.get(lobby.game).get(EDifficulty.easy)
                         actions = []  # reconstruct blunder_history from payload
                         for k, v in read_object.items():
                             if k not in ["command", "command_key", "to", "key"]:
@@ -164,7 +165,7 @@ class SocketServer(AbstractConnectionManager):
 
             # using mean as reference whether a move is good or not so
             mean = 1.0 / np.count_nonzero(action_probs)
-            good_actions_indices = np.where(action_probs >= (mean/1.3))[0]
+            good_actions_indices = np.where(action_probs >= (mean/4))[0]
             good_actions = [game.translate(board, player, a) for a in good_actions_indices]
             if action not in good_actions:  # is blunder
                 blunder_list.append((action, index, player))

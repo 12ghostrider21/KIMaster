@@ -50,10 +50,6 @@ class NimGame(IGame):
         if self.winner == -player:
             return -1
 
-    def getCanonicalForm(self, board, player):
-        """Does not matter with NimGame"""
-        return board
-
     def getSymmetries(self, board, pi):
         """rows are interchangeable"""
         fresh_board = Board(self.rows)
@@ -95,11 +91,8 @@ class NimGame(IGame):
         return valids[index]
 
     def rotateMove(self, move: int):
-        # no rotation at nim
+        """no rotation at nim"""
         return move
-
-    def getRedundancyCounter(self):
-        return 0
 
     def stringRepresentation(self, board):
         return board.tostring()

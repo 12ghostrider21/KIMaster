@@ -68,10 +68,6 @@ class TicTacToeGame(IGame):
         # draw has a very little value
         return 1e-4
 
-    def getCanonicalForm(self, board, player):
-        """return state if player==1, else return -state if player==-1"""
-        return player * board
-
     def getSymmetries(self, board, pi):
         # mirror, rotational
         assert (len(pi) == self.n ** 2 + 1)
@@ -92,11 +88,8 @@ class TicTacToeGame(IGame):
         return index
 
     def rotateMove(self, move: int):
-        # no rotation at TTT
+        """no rotation at TTT"""
         return move
-
-    def getRedundancyCounter(self):
-        return 0
 
     def stringRepresentation(self, board):
         return board.tostring()

@@ -65,7 +65,6 @@ class Coach:
             a = np.random.choice(len(pi), p=pi)
             action = self.game.translate(board, self.curPlayer, a)
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
-            # print(self.game.drawTerminal(board, False, self.curPlayer))
             r = self.game.getGameEnded(board, self.curPlayer)
 
             if r != 0:

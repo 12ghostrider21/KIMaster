@@ -34,7 +34,6 @@ class GoGame(IGame):
         b.execute_move(move, player)
         return b.pieces, -player
 
-    # modified
     def getValidMoves(self, board: np.array, player: int):
         """return a fixed size binary vector"""
         valids = [0 for _ in range(self.getActionSize())]
@@ -121,11 +120,6 @@ class GoGame(IGame):
         score_black -= board.passes_black
         return score_black, score_white
 
-    def getCanonicalForm(self, board: np.array, player: int):
-        """return state if player==1, else return -state if player==-1"""
-        return board * player
-
-    # modified
     def getSymmetries(self, board: np.array, pi: np.array):
         # mirror, rotational
         assert (len(pi) == self.size**2 + 1)  # 1 for pass
@@ -148,9 +142,6 @@ class GoGame(IGame):
     def rotateMove(self, move: int):
         # no rotation at go
         return move
-
-    def getRedundancyCounter(self):
-        return 0
 
     def stringRepresentation(self, board):
         return board.tostring()
