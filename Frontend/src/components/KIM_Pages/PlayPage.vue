@@ -87,7 +87,7 @@
                <base-button @click="step()">{{ $t('message.next') }}</base-button>
           </div>
           <div>
-            <base-button v-for="blunder in blunders" :key="blunders.action" @click="jumpTimeLine(blunder.it)">
+            <base-button v-for="blunder in blunders" :key="blunders.action" @click="jumpTimeLine(Number(blunder.it) +1)">
                {{ $t('message.turn') }}: {{ Number(blunder.it) +1 }}
             </base-button>
           </div>
