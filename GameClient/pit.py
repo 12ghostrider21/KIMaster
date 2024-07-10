@@ -68,7 +68,7 @@ class Pit:
         # Print the new game configuration
         print("New game loaded:", game_config)
         # Set the arena with the game and player configurations
-        self.arena.set_arena(game_config.game, game_config.game_name, play1, play2)
+        self.arena.set_arena(game_config.game, game_config.game_name, game_config.difficulty, play1, play2)
 
     # Retrieve the last entry from the arena's history
     def get_last_hist_entry(self) -> tuple[list | None, int | None, int | None]:

@@ -1,8 +1,10 @@
 import asyncio
+
 import numpy as np
 from typing import Callable
 
 from GameClient.player import Player
+from Tools.Game_Config.difficulty import EDifficulty
 from Tools.i_game import IGame
 from Tools.rcode import RCODE
 
@@ -22,13 +24,15 @@ class Arena:
         self.cur_player: int = 1  # default start value
         self.game_name: str = ""  # needed in some response messages
         self.game: IGame | None = None
+        self.difficulty: EDifficulty = EDifficulty.easy
         self.player1 = None
         self.player2 = None
         self.board: np.array = None
 
-    def set_arena(self, game: IGame, game_name: str, play1: Callable, play2: Callable):
+    def set_arena(self, game: IGame, game_name: str, difficulty: EDifficulty, play1: Callable, play2: Callable):
         self.game = game
         self.game_name = game_name
+        self.difficulty = difficulty
         self.player1 = play1
         self.player2 = play2
         self.history.clear()  # reset history on new game configuration
@@ -41,6 +45,13 @@ class Arena:
 
     def append_history(self, board: np.array, cur_player: int, it: int):
         self.history.append((board.copy(), cur_player, it))
+
+    async def kim_action(self, to, it):
+        await self.game_client.send_cmd(command="ai_move", command_key=self.game_name, p_pos=to,
+                                        data={"board": self.board.tolist(),
+                                              "cur_player": self.cur_player,
+                                              "it": it,
+                                              "key": self.game_client.key})
 
     async def play(self, cur_player: int = 1, it: int = 0, evaluation: bool = False):
         self.running = True
@@ -70,11 +81,7 @@ class Arena:
                 if action is None:
                     continue
                 if isinstance(action, bool):  # do a request to server with ai move
-                    await self.game_client.send_cmd(command="ai_move", command_key=self.game_name, p_pos=to,
-                                                    data={"board": self.board.tolist(),
-                                                          "cur_player": cur_player,
-                                                          "it": it,
-                                                          "key": self.game_client.key})
+                    await self.kim_action(to, it)
                     ai = True
                     continue
                 try:

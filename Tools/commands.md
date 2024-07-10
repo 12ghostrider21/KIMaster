@@ -135,9 +135,9 @@
 ## Parameter: Difficulty
 | Difficulty | MCTS Depth |
 |------------|------------|
-| easy       | 5          |
-| medium     | 50         |
-| hard       | 250        |
+| easy       | 2          |
+| medium     | 35         |
+| hard       | 100        |
 
 ## Parameter: Mode
 - **Player vs Player mode**: `player_vs_player = 0`
