@@ -329,7 +329,7 @@ export default createStore({
                             case 208: 
                                 //commit('setIsValidMoveImage', true);
                                  if (state.game===ENUMS.games.OTHELLO){
-                                    if (receivedJSONObject.moves.includes("64")){
+                                    if (receivedJSONObject.moves.includes("64")|| receivedJSONObject.moves.includes(64)){
                                         commit('setSkipMove',true);
                                         commit('setNotif',ENUMS.notifStatus.SKIPMOVE)}
                                     else commit('setSkipMove',false); //For Special case no avaiable Move on Othello Board to skip a turn

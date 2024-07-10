@@ -375,7 +375,7 @@ export default {
       const data = {
         command: "play",
         command_key: "make_move",
-        move: 36,
+        move: 64,
       };
     
     this.sendMessage(data);}
