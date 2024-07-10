@@ -162,7 +162,7 @@ const messages = {
 
         gameplay: {
           title: "Gameplay",
-          pont1: "Players take turns removing stones from a single row.",
+          point1: "Players take turns removing stones from a single row.",
           point2: "A player must take at least one stone on their turn.",
           point3: "A player may take multiple stones from the same row.",
           point4:
@@ -215,7 +215,7 @@ const messages = {
         setup: {
           title: "The Game Board at the Beginning",
           description:
-            "The checkerboard is automatically placed so that a dark square is on the bottom left. The player with the black pieces starts.",
+            "The checkerboard is automatically placed so that a dark square is on the bottom left. The player with the white pieces starts.",
         },
 
         movement: {
@@ -227,9 +227,11 @@ const messages = {
         capturing: {
           title: "Capturing",
           description1:
-            "Capturing is mandatory. If your pieces cannot be selected, it may be because a capture is possible. Only one of these pieces can be selected. Single pieces can only capture forward.",
+            "There is a capture obligation. If your own free pieces cannot be clicked during a move, it may be because there is a capture opportunity somewhere on the board. Only one of these pieces can then be selected. Single pieces are only allowed to capture forward. When capturing, the piece must stand directly in front of the opponent's piece and must land directly behind the captured piece. This square must be free.",
           description2:
-            "If you have a choice between different capture options, you are free to choose. Neither multiple captures nor captures with a king have absolute priority.",
+            "If you have a choice between different capture opportunities, you are free to decide. An exception is multiple captures.",
+          description3:
+            "Multiple captures mean: If a piece has captured and there is an opportunity to capture again with the same piece, the player continues their turn until multiple captures are no longer possible.",
         },
 
         queening: {
@@ -237,7 +239,7 @@ const messages = {
           description1:
             "You get a queen when one of your pieces reaches the opponent's back row, either by a normal move or by a capture. The piece is marked with a 'Crown' (in the board game, a second piece is placed on top).",
           description2:
-            "A queen can move diagonally both forward and backward and can also capture in both directions. Unlike international checkers, the king can only move one square forward or backward. When capturing, the queen must stand directly in front of the opponent's piece and land directly behind the captured piece.",
+            "A queen can move diagonally both forward and backward and can also capture in both directions. Unlike international checkers, the king can only move one square forward or backward.",
         },
 
         endgame: {
@@ -249,11 +251,10 @@ const messages = {
         draw: {
           title: "Draw",
           description:
-            "Some games end in a draw. This happens when neither player can win unless the other makes a significant mistake. To prevent endless games, there are three ways to declare a draw:",
+            "Some games end in a draw. This happens when neither player can win unless the other makes a significant mistake. To prevent endless games, there are two ways to declare a draw:",
           point1: "Both players agree to a draw, or",
           point2:
-            "25 moves have been made without a capture or promotion to a quuen, or",
-          point3: "The same position occurs for the third time.",
+            "30 moves have been made without a capture."
         },
       },
     },
@@ -410,7 +411,7 @@ const messages = {
       },
 
       nim: {
-        title: "Nim Regeln",
+        game_title: "Nim Regeln",
         description:
           "Nim ist ein Strategiespiel, bei dem die Spieler abwechselnd Steine aus verschiedenen Reihen nehmen. Der Spieler, der den letzten Stein nimmt, gewinnt.",
 
@@ -434,12 +435,12 @@ const messages = {
         endgame: {
           title: "Spielende",
           point1:
-            "Der Spieler, der den letzten Stein nimmt, gewinnt (oder verliert, je nach vereinbarter Regel).",
+            "Der Spieler, der den letzten Stein nimmt, gewinnt.",
         },
       },
 
       othello: {
-        title: "Othello Regeln",
+        game_title: "Othello Regeln",
         description:
           "Othello wird von zwei Spielern auf einem 8×8-Brett mit runden Steinen gespielt, die eine schwarze und eine weiße Seite haben. Jeder Spieler erhält mehrere Steine.",
 
@@ -478,7 +479,7 @@ const messages = {
         setup: {
           title: "Das Spielbrett zu Beginn",
           description:
-            "Das Damebrett wird automatisch so platziert, dass links unten ein dunkles Feld liegt. Der Startspieler beginnt mit den schwarzen Steinen.",
+            "Das Damebrett wird automatisch so platziert, dass links unten ein dunkles Feld liegt. Der Startspieler beginnt mit den weißen Steinen.",
         },
 
         movement: {
@@ -490,9 +491,11 @@ const messages = {
         capturing: {
           title: "Schlagen",
           description1:
-            "Es gilt Schlagzwang. Wenn sich eigene freie Steine bei einem Zug nicht anklicken lassen, kann das daran liegen, dass irgendwo auf dem Brett die Möglichkeit zum Schlagen besteht. Nur einer dieser Steine kann dann ausgewählt werden. Einfache Steine dürfen nur vorwärts schlagen.",
+            "Es gilt Schlagzwang. Wenn sich eigene freie Steine bei einem Zug nicht anklicken lassen, kann das daran liegen, dass irgendwo auf dem Brett die Möglichkeit zum Schlagen besteht. Nur einer dieser Steine kann dann ausgewählt werden. Einfache Steine dürfen nur vorwärts schlagen. Beim Schlagen muss der Stein direkt vor dem gegnerischen Stein stehen und muss nach dem Schlagen direkt hinter dem geschlagenen Stein landen. Dieses Feld muss frei sein.",
           description2:
-            "Wenn man die Auswahl zwischen verschiedenen Schlagmöglichkeiten hat, darf man frei entscheiden. Weder ein Mehrfachschlagen, noch ein Schlagen mit einer Dame hat absoluten Vorrang.",
+            "Wenn man die Auswahl zwischen verschiedenen Schlagmöglichkeiten hat, darf man frei entscheiden. Ausnahme bildet Mehrfachschlagen.",
+          description3:
+            "Mehrfachschlagen bedeutet: Wenn geschlagen wurde und danach die Möglichkeit besteht, noch einmal zu schlagen mit demselben Stein, so bleibt der Spieler am Zug, bis Mehrfachschlagen nicht länger möglich ist.",
         },
 
         queening: {
@@ -500,23 +503,22 @@ const messages = {
           description1:
             "Man bekommt eine Dame, wenn einer der eigenen Steine auf der gegnerischen Grundlinie stehen bleibt, egal ob durch einen normalen Zug oder durch ein Schlagen. Der Stein wird dann durch eine 'Krone' gekennzeichnet (im Brettspiel wird ein zweiter Stein darauf gestellt).",
           description2:
-            "Eine Dame kanns nun sowohl schräg vorwärts als auch rückwärts bewegt werden und genauso darfst man mit ihr auch schlagen. Im Gegensatz zur internationalen Damenvariante darf sich die Dame aber nur um ein Feld vorwärts oder rückwärts bewegen. Beim Schlagen muss die Dame direkt vor dem gegnerischen Stein stehen und muss nach dem Schlagen direkt hinter dem geschlagenen Stein landen.",
+            "Eine Dame kann nun sowohl schräg vorwärts als auch rückwärts bewegt werden und genauso darf man mit ihr auch schlagen. Im Gegensatz zur internationalen Damenvariante darf sich die Dame aber nur um ein Feld vorwärts oder rückwärts bewegen.",
         },
 
         endgame: {
           title: "Spielende",
           description:
-            "Man hat verloren, wenn keinen Stein mehr hat oder wenn man mit seinen Steinen keinen Zug mehr machen kann, weil die eigenen Steine durch den Gegner blockiert sind. Man kann auch die Partie verloren geben durch die Aktion 'Aufgeben', zum Beispiel weil man so weit zurück liegt, dass ein weiteres Spielen keinen Sinn mehr macht.",
+            "Man hat verloren, wenn man keinen Stein mehr hat oder wenn man mit seinen Steinen keinen Zug mehr machen kann, weil die eigenen Steine durch den Gegner blockiert sind. Man kann auch die Partie verloren geben durch die Aktion 'Aufgeben', zum Beispiel weil man so weit zurück liegt, dass ein weiteres Spielen keinen Sinn mehr macht.",
         },
 
         draw: {
           title: "Unentschieden",
-          description1:
-            "Manche Partien gehen unentschieden aus. In so einem Fall kann keiner der beiden Spieler mehr gewinnen, es sei denn, der andere macht einen enormen Fehler. Um endlose Partien zu vermeiden, gibt es drei Möglichkeiten für ein Unentschieden:",
+          description:
+            "Manche Partien gehen unentschieden aus. In so einem Fall kann keiner der beiden Spieler mehr gewinnen, es sei denn, der andere macht einen enormen Fehler. Um endlose Partien zu vermeiden, gibt es zwei Möglichkeiten für ein Unentschieden:",
           point1: "Beide Spieler sind sich darin einig geworden, oder",
           point2:
-            "25 Züge wurden gezogen, in denen weder ein Stein geschlagen noch zur Dame umgewandelt wurde, oder",
-          point3: "Eine Stellung wiederholt sich zum dritten Mal.",
+            "30 Züge wurden gezogen, in denen kein Stein geschlagen wurde."
         },
       },
     },
@@ -677,7 +679,7 @@ const messages = {
         },
 
         nim: {
-          title: "Règles de Nim",
+          game_title: "Règles de Nim",
           description:
             "Nim est un jeu de stratégie où les joueurs prennent tour à tour des pierres dans des tas distincts. Le joueur qui enlève la dernière pierre gagne ou perd, selon la règle convenue.",
           setup: {
@@ -698,12 +700,12 @@ const messages = {
           endgame: {
             title: "Fin de la partie",
             point1:
-              "Le joueur qui prend la dernière pierre gagne (ou perd, selon la règle convenue).",
+              "Le joueur qui prend la dernière pierre gagne.",
           },
         },
 
         othello: {
-          title: "Règles de Othello",
+          game_title: "Règles de Othello",
           description:
             "Othello se joue à deux joueurs sur un plateau de 8×8 avec des disques ronds qui sont noirs d'un côté et blancs de l'autre. Chaque joueur dispose de plusieurs disques.",
 
@@ -742,7 +744,7 @@ const messages = {
 
           setup: {
             title: "Le plateau de jeu au début",
-            description: "Le plateau de dames est automatiquement placé de manière à ce qu'il y ait une case sombre en bas à gauche. Le premier joueur commence avec les pions noirs.",
+            description: "Le plateau de dames est automatiquement placé de manière à ce qu'il y ait une case sombre en bas à gauche. Le premier joueur commence avec les pions blancs.",
            
           },
 
@@ -754,9 +756,11 @@ const messages = {
           capturing: {
             title: "Frapper",
             description1:
-              "Il y a obligation de frapper. Si ses propres pions libres ne peuvent pas être cliqués lors d'un coup, cela peut être dû au fait qu'il existe quelque part sur le plateau la possibilité de frapper. Seul un de ces pions peut alors être sélectionné. Les pions simples ne peuvent que frapper en avant.",
+              "Il y a une obligation de capture. Si vos propres pièces libres ne peuvent pas être cliquées pendant un coup, cela peut être dû au fait qu'il y a une possibilité de capture quelque part sur le plateau. Seule une de ces pièces peut alors être sélectionnée. Les simples pièces ne sont autorisées à capturer que vers l'avant. Lors de la capture, la pièce doit se trouver directement devant la pièce adverse et doit atterrir directement derrière la pièce capturée. Cette case doit être libre.",
             description2:
-              "Si l'on a le choix entre plusieurs possibilités de frappe, on peut décider librement. Ni une frappe multiple, ni une frappe avec une dame n'ont la priorité absolue.",
+              "Si vous avez le choix entre différentes possibilités de capture, vous êtes libre de décider. Une exception est la capture multiple.",
+            description3:
+              "La capture multiple signifie: Si une pièce a capturé et qu'il est possible de capturer à nouveau avec la même pièce, le joueur continue son tour jusqu'à ce que les captures multiples ne soient plus possibles.",
           },
   
           queening: {
@@ -764,7 +768,7 @@ const messages = {
             description1:
               "On obtient une dame lorsqu'un de ses pions s'arrête sur la ligne de base de l'adversaire, que ce soit par un coup normal ou par une prise. Le pion est alors marqué par une 'couronne' (dans le jeu de plateau, on place un deuxième pion dessus).",
             description2:
-              "Une dame peut être déplacée en oblique vers l'avant ou vers l'arrière et il est également possible de frapper avec elle. Contrairement à la variante internationale de la dame, la dame ne peut se déplacer que d'une case en avant ou en arrière. Lors de la prise, la dame doit se trouver directement devant le pion adverse et doit atterrir après la prise directement derrière le pion pris.",
+              "Une dame peut être déplacée en oblique vers l'avant ou vers l'arrière et il est également possible de frapper avec elle. Contrairement à la variante internationale de la dame, la dame ne peut se déplacer que d'une case en avant ou en arrière.",
           },
   
           endgame: {
@@ -775,11 +779,10 @@ const messages = {
   
           draw: {
             title: "Match nul",
-            description1:
-              "Certaines parties se terminent par un match nul. Dans ce cas, aucun des deux joueurs ne peut plus gagner, à moins que l'autre ne fasse une énorme erreur. Pour éviter les parties interminables, il existe trois possibilités de match nul :",
+            description:
+              "Certaines parties se terminent par un match nul. Dans ce cas, aucun des deux joueurs ne peut plus gagner, à moins que l'autre ne fasse une énorme erreur. Pour éviter les parties interminables, il existe deux possibilités de match nul :",
             point1: "Les deux joueurs se sont mis d'accord sur ce point, ou",
-            point2: "25 coups ont été tirés, au cours desquels aucun pion n'a été capturé ni transformé en dame, ou",
-            point3: "Une position se répète pour la troisième fois.",
+            point2: "30 coups ont été tirés, au cours desquels aucun pion n'a été capturé."
           },
         }
       }
@@ -940,7 +943,7 @@ const messages = {
         },
 
         nim: {
-          title: "Reglas de Nim",
+          game_title: "Reglas de Nim",
           description:
             "Nim es un juego de estrategia donde los jugadores se turnan para quitar piedras de montones distintos. El jugador que quita la última piedra gana o pierde, dependiendo de la regla acordada.",
 
@@ -963,12 +966,12 @@ const messages = {
           endgame: {
             title: "Fin del juego",
             point1:
-              "El jugador que toma la última piedra gana (o pierde, dependiendo de la regla acordada).",
+              "El jugador que toma la última piedra gana.",
           },
         },
 
         othello: {
-          title: "Reglas de Othello",
+          game_title: "Reglas de Othello",
           description:
             "Othello se juega entre dos jugadores en un tablero de 8×8 con discos redondos que son negros por un lado y blancos por el otro. Cada jugador recibe varios discos.",
 
@@ -1009,7 +1012,7 @@ const messages = {
           setup: {
             title: "El tablero de juego al principio",
             description:
-              "El tablero se coloca automáticamente de modo que haya una casilla oscura en la parte inferior izquierda. El jugador inicial comienza con las fichas negras.",
+              "El tablero se coloca automáticamente de modo que haya una casilla oscura en la parte inferior izquierda. El jugador inicial comienza con las fichas blancas.",
           },
   
           movement: {
@@ -1021,9 +1024,11 @@ const messages = {
           capturing: {
             title: "Vencer a",
             description1:
-              "Es obligatorio capturar. Si sus propias piezas libres no pueden ser pulsadas durante un movimiento, esto puede deberse a que hay una oportunidad de capturar en algún lugar del tablero. Sólo una de estas piezas puede entonces ser seleccionada. Las fichas simples sólo pueden capturar hacia delante.",
+              "Existe obligación de capturar. Si no se pueden hacer clic en tus propias piezas libres durante un movimiento, puede ser porque hay una oportunidad de captura en algún lugar del tablero. Solo una de estas piezas puede ser seleccionada. Las piezas simples solo pueden capturar hacia adelante. Al capturar, la pieza debe estar directamente frente a la pieza del oponente y debe aterrizar directamente detrás de la pieza capturada. Esta casilla debe estar libre.",
             description2:
-              "Si puede elegir entre diferentes opciones de golpe, puede decidir libremente. Ni un golpe múltiple ni un golpe con reina tienen prioridad absoluta.",
+              "Si tienes la opción entre diferentes oportunidades de captura, puedes decidir libremente. La excepción es la captura múltiple.",
+            description3:
+              "Captura múltiple significa: Si una pieza ha capturado y existe la posibilidad de capturar nuevamente con la misma pieza, el jugador continúa su turno hasta que la captura múltiple ya no sea posible.",
           },
   
           queening: {
@@ -1031,7 +1036,7 @@ const messages = {
             description1:
               "Obtienes una dama si una de tus fichas se detiene en la línea de fondo de tu adversario, ya sea mediante un movimiento normal o una captura. La ficha se marca entonces con una 'corona' (en el juego de mesa, se coloca una segunda ficha encima).",
             description2:
-              "Ahora la dama puede moverse en diagonal hacia delante y hacia atrás, y también se puede capturar con ella. Sin embargo, a diferencia de la variante de dama internacional, la dama sólo puede avanzar o retroceder una casilla. Al capturar, la dama debe estar directamente delante de la pieza del adversario y debe caer directamente detrás de la pieza capturada tras la captura.",
+              "Ahora la dama puede moverse en diagonal hacia delante y hacia atrás, y también se puede capturar con ella. Sin embargo, a diferencia de la variante de dama internacional, la dama sólo puede avanzar o retroceder una casilla.",
           },
   
           endgame: {
@@ -1042,11 +1047,10 @@ const messages = {
   
           draw: {
             title: "Dibujar",
-            description1:
-              "Algunas partidas acaban en tablas. En tal caso, ningún jugador puede volver a ganar a menos que el otro cometa un error garrafal. Para evitar partidas interminables, hay tres posibilidades de tablas:",
+            description:
+              "Algunas partidas acaban en tablas. En tal caso, ningún jugador puede volver a ganar a menos que el otro cometa un error garrafal. Para evitar partidas interminables, hay dos posibilidades de tablas:",
             point1: "Ambos jugadores se han puesto de acuerdo",
-            point2: "se realizaron 25 jugadas en las que no se capturó ninguna pieza ni se convirtió en dama, o",
-            point3: "Se repite una posición por tercera vez.",
+            point2: "se realizaron 30 jugadas en las que no se capturó ninguna pieza."
           },
         },
 

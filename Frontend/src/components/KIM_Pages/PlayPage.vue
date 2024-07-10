@@ -142,7 +142,6 @@
   <!-- Rules Dialog -->
   <teleport to="body">
     <base-dialog
-      :title="$t('rules.game_title')"
       v-if="isRulesVisible"
       @close="closeRules"
     >

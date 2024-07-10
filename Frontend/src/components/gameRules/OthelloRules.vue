@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h2>{{ $t('rules.othello.title') }}</h2>
+      <h2>{{ $t('rules.othello.game_title') }}</h2>
       <p>{{ $t('rules.othello.description') }}</p>
   
       <h3>{{ $t('rules.othello.setup.title') }}</h3>
