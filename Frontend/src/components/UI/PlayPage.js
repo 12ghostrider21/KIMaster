@@ -1,5 +1,13 @@
 import { mapActions, mapGetters } from "vuex";
 import * as ENUMS from '../enums';
+import click1 from '@/assets/Audio/Click1.mp3';
+import click2 from '@/assets/Audio/Click2.mp3';
+import click3 from '@/assets/Audio/Click3.mp3';
+import click4 from '@/assets/Audio/Click4.mp3';
+import click5 from '@/assets/Audio/Click5.mp3';
+import click6 from '@/assets/Audio/Click6.mp3';
+import click7 from '@/assets/Audio/Click7.mp3';
+
 
 export default {
   computed: {
@@ -20,6 +28,7 @@ export default {
       "blunders",
       "yourTurn",
       "playerTurn",
+      "playSound",
      
     ]),
     enums() {
@@ -47,6 +56,8 @@ export default {
   },
   data() {
     return {
+      isPlaying:false,
+      sounds: [click1, click2, click3, click4, click5, click6,click7],
       mouseX: null,
       mouseY: null,
       boardWidth: 0,
@@ -342,11 +353,23 @@ export default {
     lastImage() {
       this.changeLastImage();
     }*/
+      playRandomSound() {
+        if(this.game==='Nim') {return}
+        this.isPlaying = true;
+        const randomIndex = Math.floor(Math.random() * this.sounds.length);
+        const audio = new Audio(this.sounds[randomIndex]);
+        audio.play();
+      
+        setTimeout(() => {
+          this.isPlaying = false;
+        }, 100); // 500 milliseconds delay
+      },
   },
   watch: {
     invalidMoveObserver(){
       if(this.twoTurnGame)this.invalidMoveHandling();
     },
+    playSound(){this.playRandomSound();},
     skipMove(newval){
       if(newval){
       const data = {

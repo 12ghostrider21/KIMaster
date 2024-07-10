@@ -30,6 +30,7 @@ const getDefaultState = () => {
         skipMove: false,
         blunder:[],
         yourTurn:false,
+        playSound:false,
     };
 };
 
@@ -63,9 +64,14 @@ export default createStore({
         invalidMoveObserver:false,
         skipMove:false,
         yourTurn:false,
+        playSound:false,
     },
     mutations: {
 
+
+        playSound(state) {
+            state.playSound=!state.playSound
+        },
         resetState(state) {
             Object.assign(state, getDefaultState());
             },
@@ -226,7 +232,7 @@ export default createStore({
                 }
                 socket = new WebSocket(modifiedUrl); //TODO change to proper address, for now, it's hacked together
             } else {
-                socket = new WebSocket('ws://localhost:8010/ws' )//'wss://kimaster.mni.thm.de/ws'); // Static URL if address not in the correct format
+                socket = new WebSocket('wss://kimaster.mni.thm.de/ws'); //'ws://localhost:8010/ws' ) Static URL if address not in the correct format
             }
 
             socket.onopen = () => {
@@ -346,10 +352,12 @@ export default createStore({
                              commit('setPopup',ENUMS.popUpStatus.BLUNDER);}
                              break;
                              case 218:
+                                commit('playSound');
                                 commit('setYourTurn',state.position==="p1"&&receivedJSONObject.cur_player==1||state.position==="p2"&&receivedJSONObject.cur_player==-1);
                                 break;
-                                case 219: 
-                            commit('setYourTurn',false);
+                            case 219: 
+                            commit('playSound');
+                                commit('setYourTurn',false);
                                 break;
                             
                             commit('setPlayerTurn',) //new Active player
@@ -439,5 +447,6 @@ export default createStore({
         yourTurn:(state) => state.yourTurn,
         socketConnected:(state) => state.socketConnected,
         connectionLost:(state) => state.connectionLost,
+        playSound:(state) => state.playSound,
     },
 });

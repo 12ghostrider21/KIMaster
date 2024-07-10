@@ -15,7 +15,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["lobbyKey", "position","gameActive","positionsInLobby","callPos",'game','socketConnected','popup']),
+    ...mapGetters(["lobbyKey", "position","gameActive","positionsInLobby","callPos",'game','socketConnected','popup','gameReady']),
     enums() {return ENUMS},
     positionSelect: {
       get() {
@@ -75,7 +75,7 @@ export default {
     closePopup() {
       this.setPopup(null);
     },
-    
+
     swapPositionInLobby() {
       const data = {
         command: "lobby",
@@ -116,7 +116,7 @@ export default {
 
     playCreate() {
       this.lobbyStatus();
-      if (true) {
+      if (this.gameReady) {
         const data = {
           command: 'play',
           command_key: 'create',
@@ -130,6 +130,10 @@ export default {
         this.$router.push({
           name: 'play'
         }); }
+        else {
+          setTimeout(() => {
+            this.playCreate();
+          }, 1000);}
      
     },
   },
