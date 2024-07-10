@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary nav-bar">
     <div class="container-fluid">
-      <router-link class="navbar-brand" :to="{name:'home'}">{{ $t('KI Master') }}</router-link>
+      <router-link class="navbar-brand" @click="leaveLobby()" :to="{name:'home'}">{{ $t('KI Master') }}</router-link>
       <div class="navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item" v-if="isStartingPage">
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import { useRoute } from "vue-router";
 // import ChessRules from '@/components/gameRules/ChessRules.vue';
 import Connect4Rules from '@/components/gameRules/Connect4Rules.vue';
@@ -72,9 +72,32 @@ export default {
     isLobbyPage() {
        return this.$route.name === 'lobby';
     },
-    /** ...mapGetters(['game']) */
+     ...mapGetters(['gameActive'])
   },
   methods: {
+    ...mapActions(["sendWebSocketMessage"]),
+
+    sendMessage(data) {
+      console.log(data);
+      this.sendWebSocketMessage(JSON.stringify(data));
+    },
+    leaveLobby(){
+
+      if (this.$route.name === 'lobby' || 
+       this.$route.name === 'wait' || 
+       ( this.$route.name === 'play'&&!this.gameActive )|| 
+       ( this.$route.name === 'instructions'&&!this.gameActive )|| 
+       ( this.$route.name === 'impressum'&&!this.gameActive )
+       || ( this.$route.name === 'about'&&!this.gameActive )) 
+    {   const data = {
+        command: "lobby",
+        command_key: "leave",
+      };
+      this.sendMessage(data);
+      ;}
+       
+      
+    },
     changeLanguage() {
       if (this.$i18n.locale === 'en') {
         this.$i18n.locale = 'de';
