@@ -1,5 +1,7 @@
 import { mapActions, mapGetters } from "vuex";
 import * as ENUMS from '../enums';
+import QRCode from 'qrcode';
+import { nextTick } from 'vue';
 export default {
 
  
@@ -13,7 +15,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["lobbyKey", "position","gameActive","positionsInLobby","callPos",'game','socketConnected']),
+    ...mapGetters(["lobbyKey", "position","gameActive","positionsInLobby","callPos",'game','socketConnected','popup']),
     enums() {return ENUMS},
     positionSelect: {
       get() {
@@ -31,7 +33,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["initWebSocket", "sendWebSocketMessage","setGame","updatePosition"]),
+    ...mapActions(["initWebSocket", "sendWebSocketMessage","setGame","updatePosition",'setPopup']),
     sendMessage(data) {
       //if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       console.log(data);
@@ -70,7 +72,10 @@ export default {
       });
     },
 
-
+    closePopup() {
+      this.setPopup(null);
+    },
+    
     swapPositionInLobby() {
       const data = {
         command: "lobby",
@@ -78,6 +83,19 @@ export default {
         pos: this.positionSelect,
       };
       this.sendMessage(data);
+    },
+
+    async generateQrCode() {
+      await nextTick(); // Ensure the DOM updates are done
+      const canvas = this.$refs.qrcodeCanvas;
+      if (this.lobbyKey) {
+        try {
+          await QRCode.toCanvas(canvas, this.lobbyKey);
+          console.log('QR code generated!');
+        } catch (error) {
+          console.error('Failed to generate QR code:', error);
+        }
+      }
     },
 
     showPos() {

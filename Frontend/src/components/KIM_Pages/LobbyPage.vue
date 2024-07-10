@@ -45,16 +45,27 @@
     <base-card>
       <div class="button-group">
         <p v-if="lobbyKey === null">{{ $t('message.lobby_key_generating') }}</p>
-        <p v-else>Lobby Key: {{ lobbyKey }}</p>
+        <p v-else>Lobby Key: {{ lobbyKey }} <base-button @click="{setPopup(enums.popUpStatus.QR);generateQrCode();}">QR-Code</base-button></p>
         <p>{{ $t('message.your_position', { position: position }) }}</p>
         <p>{{ $t('message.lobby_position', { p1: positionsInLobby[0], p2: positionsInLobby[1], spectators: positionsInLobby[2] }) }}</p>
       </div>
     </base-card>
     
     <base-card class="LobbyButton">
-      <base-button @click="playCreate">{{ $t('message.startGame') }}</base-button>
       <base-button @click="leaveLobby">{{ $t('message.leave_lobby') }}</base-button>
+      <base-button @click="playCreate">{{ $t('message.startGame') }}</base-button>
     </base-card>
+
+<div v-if="popup===enums.popUpStatus.QR">
+ <teleport to="body"><base-dialog  @close="() => { closePopup();}">
+      <template #default>
+        <canvas ref="qrcodeCanvas"></canvas>
+        </template>
+       <template #actions>
+        <base-button @click="() => { closePopup();}">{{ $t('message.okay') }}</base-button>
+      </template></base-dialog> </teleport>
+ </div>
+
   </section>
 </section>
   <footer-bar></footer-bar>

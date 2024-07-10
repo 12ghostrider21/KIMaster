@@ -3,6 +3,7 @@ export const popUpStatus = Object.freeze({
     GAMEOVER: 'Game Over',
     POSOCCUPIED: 'pos_occupied',
     BLUNDER: 'blunder',
+    QR: 'Show Qr',
   });
   export const notifStatus = Object.freeze({
     LOBBYJOINFAIL: "Lobby Join Failed",
