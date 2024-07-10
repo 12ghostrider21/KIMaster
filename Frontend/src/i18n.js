@@ -544,8 +544,6 @@ const messages = {
         othello: "Othello",
         nim: "Nim",
         checkers: "Dame",
-        lobby: "Lobby",
-        lobby_welcome: "",
         leave_lobby: "Quitter la salle",
         start_game: "Commencer le jeu!",
         lobby_key_generating: "Clé de salle: Génération en cours",

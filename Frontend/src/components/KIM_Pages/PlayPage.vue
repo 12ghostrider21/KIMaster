@@ -16,7 +16,7 @@
       <base-button v-if="this.gameOver && position != 'sp'" @click="newGame">
       {{ $t('message.new_game') }}   
       </base-button>
-      <div v-if="gameOver">
+      <div v-if="gameOver" && position != 'sp'>
         <base-button @click="blunder()">{{ $t('message.blunder') }}</base-button>
       </div>
     </div>
@@ -64,7 +64,7 @@
     <base-button v-if="!this.gameOver && position != 'sp'" @click="undoMove()">
       {{ $t('message.undo_move') }}
     </base-button>
-    <div v-if="gameOver">
+    <div v-if="gameOver" && position != 'sp'>
       <div class="control-Buttons">
         <base-button @click="first()">{{ $t('message.first') }}</base-button>
         <base-button @click="unstep()">{{ $t('message.previous') }}</base-button>
