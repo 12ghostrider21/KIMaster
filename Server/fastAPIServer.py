@@ -26,7 +26,7 @@ class FastAPIServer(AbstractConnectionManager):
         self.__command_mask: list[str] = ["command", "command_key", "pos", "key", "mode", "game", "difficulty", "num",
                                           "move", "lang", "fromPos", "isFrontend"]
         self.__play_mask: list[str] = ["create", "valid_moves", "make_move", "undo_move", "surrender",
-                                       "new_game", "blunder", "timeline", "step", "unstep"]
+                                       "new_game", "blunder", "timeline", "step", "unstep", "image"]
 
     # Method to connect a WebSocket client
     async def connect(self, websocket: WebSocket):
@@ -139,6 +139,10 @@ class FastAPIServer(AbstractConnectionManager):
                 if lobby.game_running:
                     if pos != "sp":
                         return await self.send_response(client=client, code=RCODE.L_RUNNINGNOJOIN)
+                    else:  # pos is sp
+                        await self.send_cmd(game_client=lobby.game_client,
+                                            command="",
+                                            command_key="image")
                 if not self.manager.join_lobby(lobby_key, client, pos):
                     return await self.send_response(client=client, code=RCODE.L_CLIENTALREADYINLOBBY,
                                                     data={"key": lobby_key})

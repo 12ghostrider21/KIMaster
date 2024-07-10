@@ -220,6 +220,15 @@ class GameClient(WebSocketConnectionManager):
                     data = {"current_player": player, "it": it, "last_it": len(self.pit.arena.history) - 1}
                     await self.send_response(RCODE.P_UNSTEP, p_pos, data)
 
+                # Handling extern request of current game image
+                case "image":
+                    if self.pit.arena.running:
+                        if self.pit.arena.board is not None:
+                            await self.broadcast_board(board=self.pit.arena.board,
+                                                       cur_player=self.pit.arena.cur_player,
+                                                       game_name=self.pit.arena.game_name,
+                                                       valid=False)
+
                 # Handling unknown commands
                 case _:
                     await self.send_response(code=RCODE.COMMANDNOTFOUND, to=p_pos, data={"command_key": command_key})

@@ -121,6 +121,16 @@
 | debug   | _           | None      | None         | 52         | command_key | Return a Error message if command_key is unknown to server! |
 
 ---
+
+---
+# Internal messages
+| command | command_key | Parameter | Success code | Error code | Return | Discription                                                                           |
+|---------|-------------|-----------|--------------|------------|--------|---------------------------------------------------------------------------------------|
+| ""      | image       | None      | None         | None       | None   | Will get triggered by an join 'sp' to an running game current board will be broadcast |
+
+---
+
+
 # Game Configuration
 ## Parameter: Difficulty
 | Difficulty | MCTS Depth |
