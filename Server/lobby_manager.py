@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timezone
 from hashlib import sha256
 from fastapi import WebSocket
@@ -17,6 +18,9 @@ class LobbyManager:
         # Generate a unique lobby key using the current UTC timestamp and SHA256 hash
         time_bytes = str(datetime.now(timezone.utc).timestamp()).encode('utf-8')  # current UTC timestamp to bytes
         sha256_hash = sha256(time_bytes).hexdigest()  # Calculate the SHA256 hash of the timestamp bytes
+        key_len = int(os.environ["KEYLEN"])
+        if key_len > 0:
+            sha256_hash = sha256_hash[:key_len]
         if sha256_hash in self.lobbies.keys():  # Check if the hash already exists in the lobbies dictionary
             # Recursively generate a new lobby key if the hash already exists
             return self._generate_lobby_key()

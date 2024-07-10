@@ -10,6 +10,7 @@ services:
       - SERVER_PORT=8010
       - NETWORK=swtp-net
       - WORKER=1
+      - KEYLEN=5
     
     ports:
       - "8010:8010"
