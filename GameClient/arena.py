@@ -21,6 +21,7 @@ class Arena:
         self.blunder_history: list[tuple[np.array, int, int, any]] = []  # [board, cur_player, iteration, move]
         self.blunder: list = []  # saves blunder values for each index
         self.blunder_calculation: bool = False  # is true if a calculation request was send
+        self.rotate: bool = False  # whether rotating blunder actions
         self.cur_player: int = 1  # default start value
         self.game_name: str = ""  # needed in some response messages
         self.game: IGame | None = None
@@ -39,6 +40,7 @@ class Arena:
         self.blunder.clear()  # reset blunder on new game configuration
         self.blunder_history.clear()  # reset
         self.blunder_calculation = False  # reset to default
+        self.rotate: bool = False  # reset to default
 
     def stop(self):
         self.running = False

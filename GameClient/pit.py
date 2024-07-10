@@ -76,22 +76,6 @@ class Pit:
             return self.arena.history[-1]
         return None, None, None
 
-    """
-    # Undo a certain number of steps in the game
-    def undo(self, steps: int):
-        state, player, it = None, None, None
-        if len(self.arena.history) >= 3:
-            for _ in range(steps * 2 + 1):  # steps * 2 (own and enemy) + 1 for final arena append
-                if len(self.arena.history) != 0:
-                    state, player, it = self.arena.history.pop()
-                    for i, h in enumerate(self.arena.blunder_history):
-                        x = h[0] == state
-                        if np.all(x):
-                            self.arena.blunder_history.pop(i)
-                            break
-        return state, player, it
-    """
-
     def undo(self, steps: int) -> tuple[np.array, int, int]:
         board, last_player, it = self.arena.history.pop()  # popping off last state (current player in turn doing undo)
 
@@ -132,6 +116,8 @@ class Pit:
 
     def set_blunder(self, blunder: list):
         for b in blunder:
+            if type(b[0]) is list:  # b[0] is action
+                b[0] = tuple(b[0])
             self.arena.blunder.append(b)
 
     def get_blunder_payload(self) -> dict:
@@ -141,11 +127,15 @@ class Pit:
             data[index] = (array.tolist(), player, move)
         return data
 
-    def get_blunder(self, rotate: bool) -> dict:
+    def get_blunder(self, p_pos: str) -> dict:
+        demanding_player = 1 if p_pos == "p1" else -1
         data = {"blunder": []}
-        for b in self.arena.blunder:
-            x = {"action": b[0] if not rotate else self.arena.game.rotateMove(b[0]),
-                 "it": b[1],
-                 "player": b[2]}
+        for action, it, player in self.arena.blunder:
+            if player != demanding_player:
+                continue
+            x = {"action": action if not self.arena.rotate else self.arena.game.rotateMove(action),
+                 "it": it,
+                 "player": player}
             data["blunder"].append(x)
+        self.arena.rotate = False
         return data

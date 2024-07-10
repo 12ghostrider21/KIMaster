@@ -161,8 +161,7 @@ class GameClient(WebSocketConnectionManager):
                         self.pit.set_blunder(blunder)
                         self.pit.arena.blunder_calculation = False  # blunder received deactivate function
                         # successfully requested blunder
-                        await self.send_response(code=RCODE.P_BLUNDERLIST, to=p_pos, data=self.pit.get_blunder(
-                            p_pos == "p2" and read_object.get("isFrontend")))
+                        await self.send_response(code=RCODE.P_BLUNDERLIST, to=p_pos, data=self.pit.get_blunder(p_pos))
                         continue
                     # only one create request of blunder possible
                     if self.pit.arena.blunder_calculation:
@@ -170,14 +169,17 @@ class GameClient(WebSocketConnectionManager):
                         continue
                     # request blunder create on first request
                     if len(self.pit.arena.blunder) == 0:
+                        if read_object.get("isFrontend") and p_pos == "p2":
+                            self.pit.arena.rotate = True
                         self.pit.arena.blunder_calculation = True
                         await self.send_response(code=RCODE.P_CREATEBLUNDER, to=p_pos)
                         await self.send_cmd(command="blunder", command_key=self.pit.arena.game_name,
                                             p_pos=p_pos, data=self.pit.get_blunder_payload())
                         continue
+                    if read_object.get("isFrontend") and p_pos == "p2":
+                        self.pit.arena.rotate = True
                     # successfully requested blunder
-                    await self.send_response(code=RCODE.P_BLUNDERLIST, to=p_pos, data=self.pit.get_blunder(
-                        p_pos == "p2" and read_object.get("isFrontend")))
+                    await self.send_response(code=RCODE.P_BLUNDERLIST, to=p_pos, data=self.pit.get_blunder(p_pos))
 
                 # Handling 'timeline' command
                 case "timeline":
@@ -197,7 +199,8 @@ class GameClient(WebSocketConnectionManager):
                         await self.send_response(RCODE.P_INVALIDTIMELINE, p_pos)
                         continue
                     state, player, it = self.pit.timeline(p_pos, True, num)
-                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, False, None)
+                    await self.send_board(state, 1 if p_pos == "p1" else -1, self.pit.arena.game_name,
+                                          False, None)
                     await self.send_response(RCODE.P_TIMELINE, p_pos, {"current_player": player, "it": it})
 
                 # Handling 'step' command
@@ -206,7 +209,8 @@ class GameClient(WebSocketConnectionManager):
                         await self.send_response(RCODE.P_STILLRUNNING, p_pos)
                         continue
                     state, player, it = self.pit.timeline(p_pos, True, None)
-                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, False, None)
+                    await self.send_board(state, 1 if p_pos == "p1" else -1, self.pit.arena.game_name,
+                                          False, None)
                     data = {"current_player": player, "it": it, "last_it": len(self.pit.arena.history) - 1}
                     await self.send_response(RCODE.P_STEP, p_pos, data)
 
@@ -216,7 +220,8 @@ class GameClient(WebSocketConnectionManager):
                         await self.send_response(RCODE.P_STILLRUNNING, p_pos)
                         continue
                     state, player, it = self.pit.timeline(p_pos, False, None)
-                    await self.send_board(state, 1 if p_pos else -1, self.pit.arena.game_name, False, None)
+                    await self.send_board(state, 1 if p_pos == "p1" else -1, self.pit.arena.game_name,
+                                          False, None)
                     data = {"current_player": player, "it": it, "last_it": len(self.pit.arena.history) - 1}
                     await self.send_response(RCODE.P_UNSTEP, p_pos, data)
 
