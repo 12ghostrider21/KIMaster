@@ -4,27 +4,27 @@
   <base-card>
     <div class="ButtonUp">
       <base-button @click="showRules">{{ $t('message.show_rules') }}</base-button>
-      <base-button v-if="!this.gameOver && position != 'sp'" @click="surrenderGame()">
+      <base-button v-if="!this.gameOver && position !== 'sp'" @click="surrenderGame()">
         {{ $t('message.surrender') }}
       </base-button>
-      <base-button v-if="this.gameOver && position != 'sp'" @click="quitGame()">
+      <base-button v-if="this.gameOver && position !== 'sp'" @click="quitGame()">
         {{ $t('message.quit_game') }}
       </base-button>
       <base-button v-if="position === 'sp'" @click="leaveGame()">
         {{ $t('message.quit_game') }}
       </base-button>
-      <base-button v-if="this.gameOver && position != 'sp'" @click="newGame">
+      <base-button v-if="this.gameOver && position !== 'sp'" @click="newGame">
       {{ $t('message.new_game') }}   
       </base-button>
-      <div v-if="gameOver" && position != 'sp'>
+      <div v-if="this.gameOver && position !== 'sp'">
         <base-button @click="blunder()">{{ $t('message.blunder') }}</base-button>
       </div>
     </div>
   </base-card>
 
   <div class="SpielerZug">
-    <p v-if="yourTurn && position != 'sp'">{{ $t('message.your_turn') }}</p>
-    <p v-if="!yourTurn && position != 'sp'">{{ $t('message.opponent_turn') }}</p>
+    <p v-if="yourTurn && position !== 'sp'">{{ $t('message.your_turn') }}</p>
+    <p v-if="!yourTurn && position !== 'sp'">{{ $t('message.opponent_turn') }}</p>
   </div>
   
   <!-- Game Board -->
@@ -61,10 +61,10 @@
       {{ $t('message.nim_move') }} - {{ $t('message.row') }}: {{ Number(nimTest[0]) + 1 }},
       {{ $t('message.amount') }}: {{ nimTest[1] }}
     </base-button>
-    <base-button v-if="!this.gameOver && position != 'sp'" @click="undoMove()">
+    <base-button v-if="!this.gameOver && position !== 'sp'" @click="undoMove()">
       {{ $t('message.undo_move') }}
     </base-button>
-    <div v-if="gameOver" && position != 'sp'>
+    <div v-if="this.gameOver && position !== 'sp'">
       <div class="control-Buttons">
         <base-button @click="first()">{{ $t('message.first') }}</base-button>
         <base-button @click="unstep()">{{ $t('message.previous') }}</base-button>
@@ -107,7 +107,7 @@
         </div>
       </template>
       <template #actions>
-        <base-button v-if="position != 'sp'" @click="newGame">
+        <base-button v-if="position !== 'sp'" @click="newGame">
           {{ $t('message.new_game') }}
         </base-button>
         <base-button @click="() => { closePopup(); }">{{ $t('message.okay') }}</base-button>
@@ -129,7 +129,7 @@
         <p>{{ $t('message.game_over_after') }} {{ turn }} {{ $t('message.turns') }}</p>
       </template>
       <template #actions>
-        <base-button v-if="position != 'sp'" @click="newGame">
+        <base-button v-if="position !== 'sp'" @click="newGame">
           {{ $t('message.new_game') }}
         </base-button>
         <base-button @click="() => { closePopup(); unstep(); }">
