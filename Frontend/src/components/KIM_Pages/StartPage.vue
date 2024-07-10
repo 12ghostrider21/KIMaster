@@ -22,14 +22,15 @@
             </router-link>
           </template>
         </div>
-      <div class="LobbySection">
+      </base-card>
+
+      <base-card class="LobbySection">
         <input type="text" v-model="lobbyKeyToJoin" :placeholder="$t('message.enter_lobby_key')" />
         <div class="message-box" v-if="this.notif === ENUMS.notifStatus.LOBBYJOINFAIL">
           {{ $t('message.lobby_join_failed') }}
         </div>
         <base-button @click.prevent="joinLobbyStart">{{ $t('message.join_lobby') }}</base-button>
-      </div>
-      </base-card>
+    </base-card>
     </div>
 
     <teleport to="body">
@@ -50,7 +51,7 @@
     </teleport>
     
   </section>
-  <footer-bar></footer-bar>
+  <footer-bar class="FooterStart"></footer-bar>
 </template>
 
 <script src="./src/components/UI/StartPage.js"></script>

@@ -2,42 +2,22 @@
   <nav class="navbar navbar-expand-lg bg-body-tertiary nav-bar">
     <div class="container-fluid">
       <router-link class="navbar-brand" :to="{name:'home'}">{{ $t('KI Master') }}</router-link>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item"> 
-            <router-link class="nav-link" v-if="!isStartingPage" to="/">{{ $t('message.home') }}</router-link>
-          </li>
           <li class="nav-item" v-if="isStartingPage">
-            <router-link class="nav-link":to="{name:'instruction'}">{{ $t('message.instruction') }}</router-link>
+            <router-link class="nav-link" :to="{name:'instruction'}">{{ $t('message.instruction') }}</router-link>
           </li>
-          <li class="nav-item" v-if="isPlayPage">
-            <a class="nav-link" href="#" @click.prevent="showRules">{{ $t('message.show_rules') }}</a>
-          </li>
-          <li class="nav-item" v-if="isLobbyPage">
-            <a class="nav-link" href="#" @click.prevent="showRules">{{ $t('message.show_rules') }}</a>
-          </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="#">{{ $t('message.leaderboard') }}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">{{ $t('message.achievements') }}</a>
-          </li> -->
         </ul>
-        <language-switcher></language-switcher>
+      </div>
+      <div class="top-right-controls">
+        <label class="switch">
+          <input type="checkbox" v-model="isDarkMode" @change="toggleDarkMode">
+          <span class="slider round"></span>
+        </label>
+        <language-switcher class="me-2"></language-switcher>
       </div>
     </div>
-
+    <!-- Rules Dialog -->
     <teleport to="body">
       <base-dialog
         :title="$t('rules.game_title')"
@@ -54,6 +34,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import { useRoute } from "vue-router";
 // import ChessRules from '@/components/gameRules/ChessRules.vue';
 import Connect4Rules from '@/components/gameRules/Connect4Rules.vue';
@@ -71,7 +52,7 @@ export default {
     OthelloRules,
     TicTacToeRules,
     LanguageSwitcher,
-    BaseDialog, // Registriere die base-dialog Komponente
+    BaseDialog,
   },
   mixins: [PlayPageLogic],
   data() {
@@ -90,7 +71,8 @@ export default {
     },
     isLobbyPage() {
        return this.$route.name === 'lobby';
-    }
+    },
+    /** ...mapGetters(['game']) */
   },
   methods: {
     changeLanguage() {
@@ -105,15 +87,16 @@ export default {
         document.querySelector('.form-select').blur();
       });
     },
+
     showRules() {
       // Setze die Regel-Komponente abhängig vom aktuellen Spiel
-      if (this.$route.params.game === 'connect4') {
+      if (this.game === 'connect4') {
         this.currentRuleComponent = 'Connect4Rules';
-      } else if (this.$route.params.game === 'tictactoe') {
+      } else if (this.game === 'tictactoe') {
         this.currentRuleComponent = 'TicTacToeRules';
-      } else if (this.$route.params.game === 'nim') {
+      } else if (this.game === 'nim') {
         this.currentRuleComponent = 'NimRules';
-      } else if (this.$route.params.game === 'othello') {
+      } else if (this.game === 'othello') {
         this.currentRuleComponent = 'OthelloRules';
       } else {
         this.currentRuleComponent = null;
@@ -121,6 +104,7 @@ export default {
 
       this.isRulesVisible = true;
     },
+
     closeRules() {
       this.isRulesVisible = false;
     },
@@ -134,6 +118,10 @@ export default {
   padding-right: 15px;
   margin-right: auto;
   margin-left: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
 }
 
 .navbar-brand {
@@ -150,34 +138,80 @@ export default {
   color: #007bff;
 }
 
-#navbarSupportedContent {
+.navbar-collapse {
   display: flex;
+  flex-grow: 1;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
 }
 
-.form-select {
-  width: auto;
-  min-width: 100px;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
+.top-right-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
 }
 
-.form-select:focus {
-  box-shadow: none;
+/* Toggle Switch Styles */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  margin-right: 10px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
 }
 
 @media (max-width: 991.98px) {
-  #navbarSupportedContent {
-    flex-direction: column;
-    align-items: flex-start; /* Align items to the start */
+  .navbar-collapse {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
   }
 
   .navbar-nav {
-    width: 100%;
+    flex-direction: row;
+    align-items: center;
   }
-  
+
   .form-select {
     margin-bottom: 0.5rem;
   }

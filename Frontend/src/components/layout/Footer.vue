@@ -11,7 +11,6 @@
 <style scoped>
 footer {
   width: 100%;
-  position: fixed;
   bottom: 0;
   display: flex;
   justify-content: center;

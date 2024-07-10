@@ -1,23 +1,58 @@
+#hauptteil-lobby {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+}
+
 .content-container {
-    display: flex;
-    width: 100%;
-    max-width: 100rem;
-    justify-content: center;
-    align-items: center;
-  }
-  .control {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem; /* Abstand zwischen den Elementen */
-    margin-top: 2rem; /* Oberer Abstand */
-  }
-  .message-box {
-    background-color: #f8d7da;
-    color: #721c24;
-    padding: 8px;
-    border: 1px solid #f5c6cb;
-    border-radius: 4px;
-    margin-top: 5px;
-  }
-  
+  display: flex;
+  width: 100%;
+  max-width: 100rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem; /* Abstand zwischen den Elementen */
+  margin-top: 1.5rem; /* Oberer Abstand */
+}
+
+.message-box {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 8px;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.base-card {
+  background-color: #ffffff; /* Hintergrundfarbe auf Weiß gesetzt */
+}
+
+.base-card.LobbyButton {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Neues CSS für die horizontalen Dropdown-Menüs */
+.horizontal-selects {
+  display: flex;
+  gap: 19px; /* Abstand zwischen den Dropdowns */
+  flex-wrap: wrap; /* Umbrüche erlauben, wenn der Platz nicht reicht */
+}
+
+.horizontal-selects select {
+  flex: none; /* Verhindert, dass die Dropdowns die gleiche Breite haben */
+  width: auto; /* Automatische Breite basierend auf Inhalt */
+  padding: 5px 10px; /* Reduziertes Padding für kleinere Dropdowns */
+  font-size: 14px; /* Kleinere Schriftgröße für Dropdown-Text */
+  border: 1px solid #ccc; /* Optional: Rand hinzufügen */
+  border-radius: 4px; /* Optional: Abgerundete Ecken */
+  margin-bottom: 19px;
+}

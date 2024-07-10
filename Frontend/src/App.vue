@@ -14,9 +14,6 @@
         </template></base-dialog> </teleport></div>
     <dragable-image v-if="gameActive && !isPlayPage"></dragable-image>
   </main>
-  <footer>
-    <footer-bar></footer-bar>
-  </footer>
 </template>
 
 <script>

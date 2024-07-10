@@ -1,91 +1,96 @@
 #hauptteil {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-size: cover;
-  }
-  
-  .content-container {
-    display: flex;
-    flex-direction: column; 
-    flex-direction: column; 
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 20px; /* Added padding to prevent edge overlap */
-    box-sizing: border-box;
-    max-width: 80rem;
-    max-width: 80rem;
-  }
-  
-  .welcome-container {
-    
-    
-    margin-bottom: 20px; /* Margin to ensure space between welcome text and buttons */
-  }
-  
-  .welcome-container h1 {
-    font-size: 4rem; /* Größe der Überschrift */
-    color: black; /* Farbe der Überschrift */
-    margin-bottom: 0.5rem; /* Abstand zwischen Überschrift und Untertitel */
-  }
-  
-  .subtitle {
-    font-size: 1.5rem; /* Größe des Untertitels */
-    color: grey; /* Farbe des Untertitels */
-  }
-  
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px; /* Added padding to prevent edge overlap */
+  box-sizing: border-box;
+  max-width: 80rem;
+}
+
+.welcome-container h1 {
+  font-size: 4rem; /* Größe der Überschrift */
+  color: black; /* Farbe der Überschrift */
+  margin-bottom: 0.5rem; /* Abstand zwischen Überschrift und Untertitel */
+}
+
+.subtitle {
+  font-size: 1.5rem; /* Größe des Untertitels */
+  color: grey; /* Farbe des Untertitels */
+}
+
+.game-selection-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 19px; /* Verringert den Abstand zwischen den Buttons */
+}
+
+.base-card {
+  background-color: #ffffff; /* Hintergrundfarbe auf Weiß gesetzt */
+}
+
+.base-card.LobbySection {
+  display: flex;
+  gap: 19px;
+  position: relative;
+}
+
+input[type="text"] {
+  border: 2px solid black;
+  padding: 15px 30px;
+  border-radius: 5px;
+  box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+}
+
+.message-box {
+  position: absolute;
+  top: calc(100% + 8px); /* Adjusts the top position to place it directly under the input field */
+  left: 0;
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 8px;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  width: 100%; /* Adjust the width to match the input field */
+  white-space: nowrap; /* Ensures the message stays on one line */
+  overflow: hidden; /* Hides overflow text */
+  text-overflow: ellipsis; /* Adds ellipsis (...) if text overflows */
+  z-index: 1000;
+}
+
+.FooterStart{
+  position: fixed;
+}
+
+
+@media (max-width: 768px) {
   .game-selection-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 19px; /* Verringert den Abstand zwischen den Buttons */
-    margin-bottom: 1.5rem;
-  }
-  
-  .LobbySection{
-    display: flex;
-    gap: 19px;
-    margin-bottom: 10%;
-    position:relative;
-  }
-  
-  .message-box {
-    position: absolute;
-    top: calc(100% - 105px); /*TODO: Properly Implement Styling */
-    left: 0;
-    background-color: #f8d7da;
-    color: #721c24;
-    padding: 8px;
-    border: 1px solid #f5c6cb;
-    border-radius: 4px;
-    width: 200px;
-    z-index: 1000; 
-  }
-  
-  @media (max-width: 768px) {
-    .game-selection-container{
       flex-direction: column;
-    }
   }
-  
-  @media (max-width: 768px) {
-    .LobbySection{
+
+  .LobbySection {
       flex-direction: column;
-    }
   }
-  
-  /* Responsive Design: Anpassungen für kleinere Bildschirme */
-  @media (max-width: 768px) {
-    .welcome-container h1 {
+
+  .welcome-container h1 {
       font-size: 3rem; /* Kleinere Schriftgröße für Überschrift */
-    }
-  
-    .subtitle {
-      font-size: 1.2rem; /* Kleinere Schriftgröße für Untertitel */
-    }
   }
+
+  .subtitle {
+      font-size: 1.2rem; /* Kleinere Schriftgröße für Untertitel */
+  }
+
+  .base-card.LobbySection {
+    margin-bottom: 10%;
+  }
+}
