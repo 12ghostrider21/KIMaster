@@ -1,7 +1,7 @@
 import asyncio
 from dataclasses import dataclass, field
 
-from external_interface import Interface
+from kim_interface import Interface
 
 
 @dataclass
