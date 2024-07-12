@@ -4,8 +4,6 @@ from concurrent.futures import ThreadPoolExecutor
 from fastapi import WebSocket, WebSocketDisconnect
 from json import loads, JSONDecodeError
 
-from starlette.websockets import WebSocketState
-
 # Own modules
 from Server.connection_manager import AbstractConnectionManager
 from Server.lobby import Lobby
@@ -18,7 +16,25 @@ from Tools.rcode import RCODE
 
 
 class FastAPIServer(AbstractConnectionManager):
+    """
+    FastAPI Server class to manage WebSocket connections, lobby, and game interactions.
+
+    Attributes:
+        manager (LobbyManager): Manages lobbies.
+        importer (Importer): Imports game configurations.
+        executor (ThreadPoolExecutor): Thread pool executor for asynchronous tasks.
+        __command_mask (list[str]): List of allowed command keys.
+        __play_mask (list[str]): List of allowed play command keys.
+    """
     def __init__(self, manager: LobbyManager, msg_builder: LanguageHandler, importer: Importer):
+        """
+        Initializes the FastAPIServer with given managers and handlers.
+
+        Args:
+            manager (LobbyManager): Manages lobbies.
+            msg_builder (LanguageHandler): Handles language-based messages.
+            importer (Importer): Imports game configurations.
+        """
         super().__init__(msg_builder)
         self.manager: LobbyManager = manager
         self.importer: Importer = importer
@@ -28,35 +44,50 @@ class FastAPIServer(AbstractConnectionManager):
         self.__play_mask: list[str] = ["create", "valid_moves", "make_move", "undo_move", "surrender",
                                        "new_game", "blunder", "timeline", "step", "unstep", "image"]
 
-    # Method to connect a WebSocket client
     async def connect(self, websocket: WebSocket):
+        """
+        Connects a WebSocket client.
+
+        Args:
+            websocket (WebSocket): The WebSocket connection to the client.
+        """
         await websocket.accept()
         self.active_connections.append(websocket)
 
-    # Method to disconnect a WebSocket client
     async def disconnect(self, websocket: WebSocket):
+        """
+        Disconnects a WebSocket client and performs necessary clean-up.
+
+        Args:
+            websocket (WebSocket): The WebSocket connection to the client.
+        """
         if websocket in self.active_connections:
-            lobby: Lobby = self.manager.get_lobby(websocket)
+            lobby: Lobby = self.manager.get_lobby(websocket)  # Get the lobby the client is part of
             if lobby is not None:
                 if self.manager.get_pos_of_client(websocket) != "sp":
-                    if lobby.game_running:  # surrender on connection lost
+                    if lobby.game_running:  # If a game is running, handle surrender on connection loss
                         await self.send_cmd(game_client=lobby.game_client,
                                             command="play",
                                             command_key="surrender",
                                             data={"p_pos": self.manager.get_pos_of_client(websocket), "key": lobby.key})
-                        lobby.game_running = False  # override running mode for unresolved surrender
-            self.active_connections.remove(websocket)
-        self.manager.leave_lobby(websocket)
-        self.msg_builder.remove_client(websocket)  # remove all not connected clients from private language selections
+                        lobby.game_running = False  # Override running mode for unresolved surrender
+            self.active_connections.remove(websocket)  # Remove client from active connections
+        self.manager.leave_lobby(websocket)  # Remove client from lobby
+        self.msg_builder.remove_client(websocket)  # Remove client from private language selections
 
-    # Main endpoint for WebSocket connections
     async def websocket_endpoint(self, client: WebSocket):
+        """
+        Main endpoint for WebSocket connections, handling incoming messages.
+
+        Args:
+            client (WebSocket): The WebSocket connection to the client.
+        """
         await self.connect(client)
-        loop = asyncio.get_event_loop()  # event loop for threading (each connection gets its own)
+        loop = asyncio.get_event_loop()  # Event loop for threading (each connection gets its own)
         try:
             while True:
                 try:
-                    read_object = await client.receive_json()
+                    read_object = await client.receive_json()  # Receive JSON data from the client
                     if isinstance(read_object, str):
                         read_object = loads(read_object)
                     # Filter read_object based on allowed keys
@@ -78,49 +109,54 @@ class FastAPIServer(AbstractConnectionManager):
                     case _:
                         await self.send_response(client, RCODE.COMMANDNOTFOUND, {"command": command})
         except WebSocketDisconnect as e:
-            code = {1000: "Normal dissconnect", 1001: "Browser reload/tab close", 1006: "Critical connection break!"}
-            print(client.client, f"WebSocket dissconnected with code: {e.code}, {code.get(e.code)}")
+            code = {1000: "Normal disconnect", 1001: "Browser reload/tab close", 1006: "Critical connection break!"}
+            print(client.client, f"WebSocket disconnected with code: {e.code}, {code.get(e.code)}")
         finally:
             await self.disconnect(client)
 
     def submit_task(self, loop, coro, *args):
         """
-        Run async methods in an own thread to reduce response times
+        Run async methods in an own thread to reduce response times.
+
         Args:
-            loop: event loop
-            coro: coroutine to run
-            *args: parameters of coroutine
+            loop: Event loop.
+            coro: Coroutine to run.
+            *args: Parameters of coroutine.
 
         Returns: None
-
         """
         loop.run_in_executor(self.executor, lambda: asyncio.run(coro(*args)))
-    # *****************************************************************************************************************
-    # handle debug
-    # *****************************************************************************************************************
+
     async def handle_debug_command(self, client: WebSocket, read_object: dict):
+        """
+        Handles debug commands received from the client.
+
+        Args:
+            client (WebSocket): The WebSocket connection to the client.
+            read_object (dict): The received command object.
+        """
         command_key = read_object.get("command_key")
         match command_key:
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "active_container":
                 await self.send_response(client=client, code=RCODE.D_CONTAINER,
                                          data=self.manager.docker.list_containers())
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "game_client":
                 self.manager.docker.debug = not self.manager.docker.debug
                 await self.send_response(client=client, code=RCODE.D_TOGGLECLIENT,
                                          data={"debug": self.manager.docker.debug})
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case _:
                 await self.send_response(client=client, code=RCODE.COMMANDNOTFOUND, data={"command": command_key})
 
-    # *****************************************************************************************************************
-    # handle lobby
-    # *****************************************************************************************************************
     async def handle_lobby(self, client: WebSocket, read_object: dict):
+        """
+        Handles lobby commands received from the client.
+
+        Args:
+            client (WebSocket): The WebSocket connection to the client.
+            read_object (dict): The received command object.
+        """
         command_key = read_object.get("command_key")
         match command_key:
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "create":
                 lobby = self.manager.get_lobby(client)
                 if lobby:
@@ -128,7 +164,6 @@ class FastAPIServer(AbstractConnectionManager):
                 new_lobby_key = self.manager.create_lobby()
                 self.manager.join_lobby(new_lobby_key, client, "p1")
                 await self.send_response(client=client, code=RCODE.L_CREATED, data={"key": new_lobby_key})
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "join":
                 lobby_key = read_object.get("key")
                 lobby: Lobby = self.manager.get_lobby(lobby_key)
@@ -148,7 +183,6 @@ class FastAPIServer(AbstractConnectionManager):
                                                     data={"key": lobby_key})
                 await self.broadcast_response(client_list=lobby.get(None), code=RCODE.L_JOINED,
                                               data={"pos": self.manager.get_pos_of_client(client)})
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "leave":
                 lobby: Lobby = self.manager.get_lobby(client)
                 if lobby is None:
@@ -160,7 +194,6 @@ class FastAPIServer(AbstractConnectionManager):
                         return await self.send_response(client=client, code=RCODE.L_NOLEAVEACTIVPLAYER)
                 await self.broadcast_response(client_list=client_list, code=RCODE.L_LEFT,
                                               data={"pos": pos})
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "swap":
                 pos: str = read_object.get("pos")
                 lobby: Lobby = self.manager.get_lobby(client)
@@ -174,22 +207,18 @@ class FastAPIServer(AbstractConnectionManager):
                 if not self.manager.swap_to(pos, client):
                     return await self.send_response(client=client, code=RCODE.L_POSOCCUPIED, data={"pos": pos})
                 await self.broadcast_response(client_list=lobby.get(None), code=RCODE.L_SWAPPED, data={"pos": pos})
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "pos":
                 pos: str = self.manager.get_pos_of_client(client)
                 if pos:
                     await self.send_response(client=client, code=RCODE.L_POS, data={"pos": pos})
                 else:  # client not in lobby
                     await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
-
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "status":
                 lobby: Lobby = self.manager.get_lobby(client)
                 if lobby:  # success
                     await self.send_response(client=client, code=RCODE.L_STATUS, data=lobby.status())
                 else:  # client not in lobby
                     await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "games":
                 lobby: Lobby = self.manager.get_lobby(client)
                 if lobby:  # success
@@ -197,14 +226,17 @@ class FastAPIServer(AbstractConnectionManager):
                                              data={"games": [k for k in self.importer.get_games().keys()]})
                 else:  # client not in lobby
                     await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case _:
                 await self.send_response(client=client, code=RCODE.COMMANDNOTFOUND, data={"command_key": command_key})
 
-    # *****************************************************************************************************************
-    # handle play
-    # *****************************************************************************************************************
     async def handle_play_command(self, client: WebSocket, read_object: dict):
+        """
+        Handles play commands received from the client.
+
+        Args:
+            client (WebSocket): The WebSocket connection to the client.
+            read_object (dict): The received command object.
+        """
         lobby = self.manager.get_lobby(client)
         if lobby is None:
             return await self.send_response(client=client, code=RCODE.L_CLIENTNOTINLOBBY)
@@ -235,7 +267,7 @@ class FastAPIServer(AbstractConnectionManager):
                                                 data={"mode": data.get("mode"),
                                                       "available": [m.name for m in EGameMode]})
 
-        if command_key in ["create", "new_game"]:  # prevent a game to start without enough player
+        if command_key in ["create", "new_game"]:  # prevent a game to start without enough players
             missing = []
             mode_checks = {
                 0: [("P1", True, " not connected!"), ("P2", True, " not connected!")],  # player_vs_player
@@ -257,13 +289,16 @@ class FastAPIServer(AbstractConnectionManager):
 
         await self.send_cmd(lobby.game_client, "play", command_key, data)
 
-    # *****************************************************************************************************************
-    # handle client
-    # *****************************************************************************************************************
     async def handle_client(self, client: WebSocket, read_object: dict):
+        """
+        Handles client-specific commands received from the client.
+
+        Args:
+            client (WebSocket): The WebSocket connection to the client.
+            read_object (dict): The received command object.
+        """
         command_key = read_object.get("command_key")
         match command_key:
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case "language":
                 lang: str = read_object.get("lang")
                 if lang is not None:
@@ -273,6 +308,5 @@ class FastAPIServer(AbstractConnectionManager):
                             await self.send_response(client, RCODE.LANGUAGECHANGED, {"lang": e.name})
                             return
                 await self.send_response(client, RCODE.INVALIDLANGUAGE, {"lang": lang})
-            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             case _:
                 await self.send_response(client, RCODE.COMMANDNOTFOUND, {"command": command_key})
