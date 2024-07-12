@@ -32,7 +32,7 @@ export default {
       const data = {
         command: 'lobby',
         command_key: 'join',
-        key: this.lobbyKeyToJoin,
+        key: this.lobbyKeyToJoin.trim(),
         pos: 'sp',
       };
       this.sendMessage(data);

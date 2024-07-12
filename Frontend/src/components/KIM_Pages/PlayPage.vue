@@ -7,6 +7,9 @@
       <base-button v-if="!this.gameOver && position !== 'sp'" @click="surrenderGame()">
         {{ $t('message.surrender') }}
       </base-button>
+      <base-button v-if="this.gameOver && position !== 'sp'" @click="returnLobby()">
+      {{ $t('message.lobby') }}   
+      </base-button>
       <base-button v-if="this.gameOver && position !== 'sp'" @click="quitGame()">
         {{ $t('message.quit_game') }}
       </base-button>
@@ -53,7 +56,7 @@
     ></div>
   </div>
 
-  <base-card class="lower-card">
+  <base-card class="lower-card" v-if="position!=='sp'">
     <base-button
       v-if="!this.gameOver && game === 'nim' && nimTest[0] !== -1"
       @click="sendNimMove"
@@ -61,10 +64,10 @@
       {{ $t('message.nim_move') }} - {{ $t('message.row') }}: {{ Number(nimTest[0]) + 1 }},
       {{ $t('message.amount') }}: {{ nimTest[1] }}
     </base-button>
-    <base-button v-if="!this.gameOver && position !== 'sp'" @click="undoMove()">
+    <base-button v-if="!this.gameOver" @click="undoMove()">
       {{ $t('message.undo_move') }}
     </base-button>
-    <div v-if="this.gameOver && position !== 'sp'">
+    <div v-if="this.gameOver" >
       <div class="control-Buttons">
         <base-button @click="first()">{{ $t('message.first') }}</base-button>
         <base-button @click="unstep()">{{ $t('message.previous') }}</base-button>
@@ -123,9 +126,11 @@
       @close="() => { closePopup(); unstep(); }"
     >
       <template #default>
-        <p v-if="playerWon === 1">{{ $t('message.player_1_won') }}</p>
+        <p v-if="playerWon === 1&& position==='sp'">{{ $t('message.player_1_won') }}</p>
         <p v-if="playerWon === -1">{{ $t('message.player_2_won') }}</p>
-        <p v-if="playerWon === 0">{{ $t('message.draw') }}</p>
+        <p v-if="playerWon === 0 && position==='sp'">{{ $t('message.draw') }}</p>
+        <p v-if="playerWon === 1&& position==='p1' ||playerWon === -1 & position==='p2'" >{{ $t('message.you_won') }}</p>
+        <p v-if="playerWon === 1&& position==='p2' ||playerWon === -1 & position==='p1'"> {{ $t('message.opponent_won') }}</p>
         <p>{{ $t('message.game_over_after') }} {{ turn }} {{ $t('message.turns') }}</p>
       </template>
       <template #actions>

@@ -18,9 +18,7 @@
           <select v-model="mode">
             <option value="player_vs_player">{{ $t('message.player_vs_player') }}</option>
             <option value="player_vs_kim">{{ $t('message.player_vs_ai') }}</option>
-            <option value="kim_vs_player">{{ $t('message.KIM_vs_Player') }}</option>
             <option value="playerai_vs_kim">{{ $t('message.playerai_vs_ai') }}</option>
-            <option value="kim_vs_playerai">{{ $t('message.KIM_vs_Player_AI') }}</option>
             <option value="playerai_vs_playerai">{{ $t('message.playerai_vs_playerai') }}</option>
           </select>
 

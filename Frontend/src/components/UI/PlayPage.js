@@ -341,6 +341,12 @@ export default {
       num: it,
     };
     this.sendMessage(data);},
+    returnLobby(){  
+      this.$router.push({
+      name: 'lobby',
+    });
+      
+    },
     /*firstImage() {
       this.changeFirstImage();
     },

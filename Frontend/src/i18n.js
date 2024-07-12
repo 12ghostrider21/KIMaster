@@ -92,6 +92,8 @@ const messages = {
       your_turn:"Your Turn",
       opponent_turn: "Opponents Turn",
       blunder:"Show Blunders",
+      you_won: "You Won!",
+      opponent_won: "Opponent Won",
 
     },
 
@@ -351,6 +353,8 @@ const messages = {
       your_turn: "Dein Zug",
       opponent_turn: "Gegner am Zug",
       blunder:"Fehler anzeigen",
+      you_won: "Du hast gewonnen!",
+      opponent_won: "Gegner hat gewonnen"
     },
 
     rules: {
@@ -615,6 +619,8 @@ const messages = {
         your_turn: "Ton tour",
         opponent_turn: "Au tour de l'adversaire",
         blunder:"Montre Erreurs",
+        you_won: "Vous avez gagné!",
+        opponent_won: "L'adversaire a gagné"
 
       },
 
@@ -877,6 +883,8 @@ const messages = {
         your_turn: "Tu turno",
         opponent_turn: "Turno del adversario",
         blunder:"Muestra Errores",
+        you_won: "¡Has ganado!",
+          opponent_won: "El oponente ganó",
 
       },
 

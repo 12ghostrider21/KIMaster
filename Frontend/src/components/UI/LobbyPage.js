@@ -116,7 +116,7 @@ export default {
 
     playCreate() {
       this.lobbyStatus();
-      if (this.gameReady) {
+      if (this.gameReady&&this.position==='p1') {
         const data = {
           command: 'play',
           command_key: 'create',
@@ -130,6 +130,23 @@ export default {
         this.$router.push({
           name: 'play'
         }); }
+        else if (this.gameReady){
+          const data = {
+            command: 'play',
+            command_key: 'create',
+            game: this.game,
+            mode: this.mode === 'player_vs_kim' ? 'kim_vs_player' : 
+               this.mode === 'playerai_vs_kim' ? 'kim_vs_playerai' : this.mode,
+            difficulty: this.difficulty,
+          };
+          this.setGame(this.game);
+          this.sendMessage(data);
+          if(this.gameActive) 
+          this.$router.push({
+            name: 'play'
+          }); 
+          
+        }
         else {
           setTimeout(() => {
             this.playCreate();
