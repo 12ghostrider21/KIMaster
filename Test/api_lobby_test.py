@@ -348,12 +348,13 @@ async def test_lobby_status(web_socket_uri: str, create_lobby_msg: dict, lobby_s
     create_res = await send(create_lobby_msg, conn_p1)
 
     # test start-up-time is lower than 1 sec
-    time_of_creation:float = time()
+    time_of_creation:float = time()                                 # save time when the create command was send
     res_status_create = await send(lobby_status_msg, conn_p1)
     
     while res_status_create["GameClient"] == False:
-        assert time()-time_of_creation <= 1.0
-        res_status_create = await send(lobby_status_msg, conn_p1)
+        startuptime = time()-time_of_creation                       # calculate the time passed since sending create lobby command
+        assert startuptime <= 1.0                                   # assert time to start up a game_client to run the lobby is lower than 1 sec
+        res_status_create = await send(lobby_status_msg, conn_p1)   # refresh lobby status message
     
 
     # test status after creation

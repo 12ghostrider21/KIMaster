@@ -63,7 +63,7 @@ services:
 
   swtp-test:
     build: ./Test
-    image: swtp-test
+    image: swtp-test-img
     container_name: swtp-test
     networks:
       - swtp-net
