@@ -179,7 +179,7 @@ class Trainer:
 
             'checkpoint': path,
             'load_model': ld_model,
-            # whether to load an existing model & checkpoint.examples (can be set at True always)
+            # whether to load an existing model & checkpoint.examples
             'load_folder_file': (path, highest_checkpoint_file),
             'current_iteration': it,
             'numItersForTrainExamplesHistory': 20,

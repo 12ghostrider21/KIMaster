@@ -223,12 +223,9 @@ class IGame(ABC):
                     That argument is only for games where to move tokens.
                     For Games in which to just one-time set tokens, this arg is redundant
                     and need to get no further attention.
-                    Wrong indices need to raise a ValueError.
 
         Notes:
-            -Needs to handle invalid from_pos for displaying valid moves (None / invalid pos). If invalid
-            throw a ValueError.
-
+            -Needs to handle invalid from_pos for displaying valid moves (None / invalid pos).
 
         Returns:
             str: The terminal representation of the board.
@@ -256,7 +253,6 @@ class IGame(ABC):
                     That argument is only for games where to move tokens.
                     For Games in which to just one-time set tokens, this arg is redundant
                     and need to get no further attention.
-                    Wrong indices need to raise a ValueError.
 
         Returns:
             pygame.Surface
@@ -266,8 +262,7 @@ class IGame(ABC):
           format suitable for visualization. The specific structure and meaning of the array's
           contents are defined by the concrete implementations of `Drawable`.
 
-        - Needs to handle invalid from_pos for displaying valid moves (None / invalid pos). If invalid
-          throw a ValueError.
+        - Needs to handle invalid from_pos for displaying valid moves (None / invalid pos).
 
         - The method should handle the rendering of the game state based on the provided `board`
           data and any additional optional arguments (`args`). The resulting surface should
