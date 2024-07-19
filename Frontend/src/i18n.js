@@ -494,6 +494,7 @@ const messages = {
 
         capturing: {
           title: "Schlagen",
+          
           description1:
             "Es gilt Schlagzwang. Wenn sich eigene freie Steine bei einem Zug nicht anklicken lassen, kann das daran liegen, dass irgendwo auf dem Brett die Möglichkeit zum Schlagen besteht. Nur einer dieser Steine kann dann ausgewählt werden. Einfache Steine dürfen nur vorwärts schlagen. Beim Schlagen muss der Stein direkt vor dem gegnerischen Stein stehen und muss nach dem Schlagen direkt hinter dem geschlagenen Stein landen. Dieses Feld muss frei sein.",
           description2:
@@ -526,6 +527,160 @@ const messages = {
         },
       },
     },
+
+    instructions: {
+      instruction_title: "Anmeldungsdokumentation",
+
+      introduction: {
+        title: "Einleitung",
+        description1: "Diese Dokumentation beschreibt den Prozess zur Nutzung einer WebSocket-Verbindung in einer ausgewählten Programmiersprache, um eine Verbindung zu der URI wss://kimaster.mni.thm.de/ws herzustellen. ",
+        description2: "Zusätzlich wird beschrieben, wie man sich im THM internen Netzwerk anmeldet und Nachrichten im JSON-Format sendet sowie Rückmeldungen vom Server empfängt.",
+        description3: " Es wird auch eine Beispielsverbindung mit Python vorgestellt.",
+      },
+
+      requirements: {
+        title: "Voraussetzungen",
+        network_acces: "Sie müssen sich im THM internen Netzwerk befinden. Dies kann entweder über das THM VPN oder das Eduroam Netzwerk erfolgen.",
+        websocket_uri: "WebSocket-URI*: wss://kimaster.mni.thm.de/ws",
+        browser_url: "Browser-URL: https://kimaster.mni.thm.de (für Verbindungen über den Browser)",
+        message_format: "Nachrichtenformat: JSON",
+        documentation: "Dokumentation: Informationen zu den JSON-Kommandos finden Sie in der Datei command.md."
+      },
+
+      webSocketConnection: {
+        title: "Verbindung mit Websocket",
+        step1: {
+          title: "Schritt 1: Netzwerkzugang herstellen",
+          vpn: "THM VPN: Verbinden Sie sich mit dem THM VPN. Anweisungen zur Einrichtung finden Sie auf der offiziellen THM-Website.",
+          eduroam: "Eduroam Netzwerk: Alternativ können Sie sich mit dem Eduroam Netzwerk verbinden, falls verfügbar."
+        },
+        step2: {
+          title: "Schritt 2: WebSocket-Verbindung herstellen",
+          browser: {
+            title: " Verbindung über Browser",
+            open_browser: "1. Öffnen Sie Ihren Webbrowser.",
+            enter_url: "2. Geben Sie die URL https://kimaster.mni.thm.de ein.",
+            internal_network: "3. Stellen Sie sicher, dass Sie sich im THM internen Netzwerk befinden."
+          },
+          connection_with_ProgrammingLanguage: {
+            title: "Verbindung mit einer Programmiersprache (Beispiel in Python)",
+            install_python: "1. Python installieren: Stellen Sie sicher, dass Python auf Ihrem Computer installiert ist.",
+            install_webSocket: "2. WebSocket-Bibliothek installieren: Installieren Sie die WebSocket-Bibliothek für Python mit folgendem Befehl:",
+            pip_command: "pip install websocket-client",
+            connection_code: "Connection code:",
+            
+            example_code:`
+            \`\`\`python
+            import asyncio
+            import json
+            from abc import ABC
+            import io
+            from typing import Coroutine
+            from PIL import Image
+            from websockets import WebSocketClientProtocol, connect, InvalidURI, ConnectionClosedOK
+            
+            class KIMaster(ABC):
+                def __init__(self, uri_pool: list[str]):
+                    """
+                    Initialize the KIMaster with a list of URIs.
+                    :param uri_pool: List of URIs to connect to.
+                    """
+                    self.connection: WebSocketClientProtocol | None = None
+                    self.uri_pool: list[str] = uri_pool
+            
+                async def connect(self) -> None:
+                    """
+                    Try to connect to one of the URIs in the uri_pool.
+                    """
+                    for uri in self.uri_pool:
+                        print(f"Try to connect to URI: '{uri}'")
+                        try:
+                            self.connection = await connect(uri)
+                            print(f"Connected to URI: '{uri}'")
+                            break
+                        except InvalidURI:
+                            print(f"URI: '{uri}' not reachable!")
+            
+                async def send_cmd(self, command: str, command_key: str, data: dict | None = None) -> None:
+                    """
+                    Send a command to the connected WebSocket server.
+                    :param command: The command to send.
+                    :param command_key: The command key associated with the command.
+                    :param data: Optional additional data to send with the command.
+                    """
+                    if self.connection:
+                        payload: dict = {"command": command, "command_key": command_key}
+                        if data is not None:
+                            payload.update(data)
+                        await self.connection.send(json.dumps(payload))
+            
+                async def receive(self) -> dict | str | bytes | None:
+                    """
+                    Receive a message from the WebSocket server.
+                    :return: The received message, either as a dictionary, string, or bytes.
+                    """
+                    if self.connection:
+                        message = None
+                        try:
+                            message = await self.connection.recv()
+                        except ConnectionClosedOK:
+                            return
+                        try:
+                            data = json.loads(message)
+                            return data
+                        except json.JSONDecodeError:
+                            return message
+                        except UnicodeDecodeError:
+                            return message
+            
+                async def close(self) -> None:
+                    """
+                    Close the WebSocket connection.
+                    """
+                    if self.connection:
+                        await self.connection.close()
+            
+                def run(self, target: Coroutine) -> None:
+                    """
+                    Run the given coroutine until it completes.
+                    :param target: The coroutine to run.
+                    """
+                    asyncio.run(target)
+            
+                async def handler(self, send_handler, receive_handler) -> None:
+                    """
+                    Handle both sending and receiving of WebSocket messages.
+                    :param send_handler: The coroutine handling sending messages.
+                    :param receive_handler: The coroutine handling receiving messages.
+                    """
+                    send_task = asyncio.create_task(send_handler())
+                    receive_task = asyncio.create_task(receive_handler())
+                    await asyncio.gather(send_task, receive_task)
+            
+                def print_message(self, message: dict) -> None:
+                    """
+                    Print a formatted message to the console.
+                    :param message: The message to print.
+                    """
+                    print("\\n")
+                    for k, v in message.items():
+                        print(f" -- {k}: {v}")
+            
+                def show(self, message: bytes) -> None:
+                    """
+                    Display an image from a byte stream.
+                    :param message: The image data as bytes.
+                    """
+                    image_stream = io.BytesIO(message)
+                    image = Image.open(image_stream)
+                    image.show()
+            \`\`\`
+                    `
+          }
+        },
+      },
+    },
+
   },
 
     fr: {
