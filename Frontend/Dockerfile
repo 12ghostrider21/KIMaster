@@ -1,17 +1,28 @@
-FROM node:lts-alpine    
+# Use the official Node.js image based on Alpine Linux.
+# The Node.js version is 20.15.1 and Alpine version is 3.20.
+FROM node:20.15.1-alpine3.20    
 
+# Set the working directory in the container to /app.
 WORKDIR /app
 
-COPY ./Frontend/package.json ./
-
-RUN npm install
-
-WORKDIR /app/Frontend
-
-COPY ./Frontend .
-
-RUN npm run build
-
+# Install http-server globally in the container.
 RUN npm install -g http-server
 
+# Copy the package.json file from the local ./Frontend directory to the current working directory in the container.
+ADD ./Frontend/package.json ./
+
+# Run npm install to install all dependencies defined in the package.json file.
+RUN npm install
+
+# Change the working directory in the container to /app/Frontend.
+WORKDIR /app/Frontend
+
+# Copy the entire contents of the local ./Frontend directory to the current working directory in the container.
+ADD ./Frontend .
+
+# Run the build process for the frontend project.
+RUN npm run build
+
+# Set the default command to be executed when the container starts.
+# In this case, it starts the http-server and serves the "dist" directory.
 CMD [ "http-server", "dist" ]
