@@ -35,10 +35,6 @@
   gap: 19px; /* Verringert den Abstand zwischen den Buttons */
 }
 
-.base-card {
-  background-color: #ffffff; /* Hintergrundfarbe auf Weiß gesetzt */
-}
-
 .base-card.LobbySection {
   display: flex;
   gap: 19px;

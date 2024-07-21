@@ -33,8 +33,8 @@
   <!-- Game Board -->
   <div class="grid-section">
     <img
-      width="300"
-      height="300"
+      width="301"
+      height="301"
       class="imageRef"
       ref="imageRef"
       v-if="imageSrc"
@@ -48,10 +48,10 @@
       v-if="hoveredCell"
       class="highlight-cell"
       :style="{
-        width: `${300 / boardWidth}px`,
-        height: `${300 / boardHeight}px`,
-        top: `${(hoveredCell.y - 1) * (300 / boardHeight)}px`,
-        left: `${(hoveredCell.x - 1) * (300 / boardWidth)}px`,
+        width: `${301 / boardWidth}px`,
+        height: `${301 / boardHeight}px`,
+        top: `${(hoveredCell.y - 1) * (301 / boardHeight)}px`,
+        left: `${(hoveredCell.x - 1) * (301 / boardWidth)}px`,
       }"
     ></div>
   </div>

@@ -75,7 +75,7 @@
           <li>{{ $t('instructions.webSocketConnection.step3.json_format') }}</li>
           <p>{{ $t('instructions.webSocketConnection.step3.json_format_descripton') }}</p>
           <li>{{ $t('instructions.webSocketConnection.step3.example_message') }}</li>
-          <img src="@/assets/terminal_screenshot.png" alt="Example Terminal Command" class="example-image">
+          <img :src="terminalScreenshot" alt="Example Terminal Command" class="example-image">
           <li>{{ $t('instructions.webSocketConnection.step3.send_message') }}</li>
           <p>{{ $t('instructions.webSocketConnection.step3.send_message_description') }}</p>
         </ul>

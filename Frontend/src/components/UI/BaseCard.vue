@@ -30,4 +30,8 @@ div {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
   padding: 1rem;
 }
+
+.base-card {
+  background-color: #ffffff; /* Hintergrundfarbe auf Weiß gesetzt */
+}
 </style>

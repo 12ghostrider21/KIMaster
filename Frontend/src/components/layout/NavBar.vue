@@ -1,11 +1,13 @@
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary nav-bar">
     <div class="container-fluid">
-      <router-link class="navbar-brand" @click="leaveLobby()" :to="{name:'home'}">{{ $t('KI Master') }}</router-link>
+      <router-link class="navbar-brand" @click="leaveLobby()" :to="{ name: 'home' }">
+        <img :src="logo" alt="KI Master Logo" class="logo" />
+      </router-link>
       <div class="navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item" v-if="isStartingPage">
-            <router-link class="nav-link" :to="{name:'instruction'}">{{ $t('message.instruction') }}</router-link>
+            <router-link class="nav-link" :to="{ name: 'instruction' }">{{ $t('message.instruction') }}</router-link>
           </li>
         </ul>
       </div>
@@ -19,11 +21,7 @@
     </div>
     <!-- Rules Dialog -->
     <teleport to="body">
-      <base-dialog
-        :title="$t('rules.game_title')"
-        v-if="isRulesVisible"
-        @close="closeRules"
-      >
+      <base-dialog :title="$t('rules.game_title')" v-if="isRulesVisible" @close="closeRules">
         <component :is="currentRuleComponent" />
         <template #actions>
           <base-button @click="closeRules">{{ $t('message.okay') }}</base-button>
@@ -42,8 +40,9 @@ import NimRules from '@/components/gameRules/NimRules.vue';
 import OthelloRules from '@/components/gameRules/OthelloRules.vue';
 import TicTacToeRules from '@/components/gameRules/TicTacToeRules.vue';
 import PlayPageLogic from '../UI/PlayPage.js';
-import BaseDialog from '@/components/UI/BaseDialog.vue'; // Importiere die base-dialog Komponente
+import BaseDialog from '@/components/UI/BaseDialog.vue';
 import LanguageSwitcher from './LanguageSwitcher.vue';
+import logo from '@/components/icons/logo.png'; // Importiere das Logo
 
 export default {
   components: {
@@ -60,6 +59,7 @@ export default {
       currentLanguage: this.$i18n.locale,
       isRulesVisible: false,
       currentRuleComponent: null,
+      logo, // Füge das Logo zur Datenfunktion hinzu
     };
   },
   computed: {
@@ -70,33 +70,29 @@ export default {
       return this.$route.name === 'play';
     },
     isLobbyPage() {
-       return this.$route.name === 'lobby';
+      return this.$route.name === 'lobby';
     },
-     ...mapGetters(['gameActive'])
+    ...mapGetters(['gameActive']),
   },
   methods: {
     ...mapActions(["sendWebSocketMessage"]),
-
     sendMessage(data) {
       console.log(data);
       this.sendWebSocketMessage(JSON.stringify(data));
     },
-    leaveLobby(){
-
+    leaveLobby() {
       if (this.$route.name === 'lobby' || 
-       this.$route.name === 'wait' || 
-       ( this.$route.name === 'play'&&!this.gameActive )|| 
-       ( this.$route.name === 'instructions'&&!this.gameActive )|| 
-       ( this.$route.name === 'impressum'&&!this.gameActive )
-       || ( this.$route.name === 'about'&&!this.gameActive )) 
-    {   const data = {
-        command: "lobby",
-        command_key: "leave",
-      };
-      this.sendMessage(data);
-      ;}
-       
-      
+        this.$route.name === 'wait' || 
+        (this.$route.name === 'play' && !this.gameActive) || 
+        (this.$route.name === 'instructions' && !this.gameActive) || 
+        (this.$route.name === 'impressum' && !this.gameActive) || 
+        (this.$route.name === 'about' && !this.gameActive)) {   
+        const data = {
+          command: "lobby",
+          command_key: "leave",
+        };
+        this.sendMessage(data);
+      }
     },
     changeLanguage() {
       if (this.$i18n.locale === 'en') {
@@ -110,9 +106,7 @@ export default {
         document.querySelector('.form-select').blur();
       });
     },
-
     showRules() {
-      // Setze die Regel-Komponente abhängig vom aktuellen Spiel
       if (this.game === 'connect4') {
         this.currentRuleComponent = 'Connect4Rules';
       } else if (this.game === 'tictactoe') {
@@ -124,10 +118,8 @@ export default {
       } else {
         this.currentRuleComponent = null;
       }
-
       this.isRulesVisible = true;
     },
-
     closeRules() {
       this.isRulesVisible = false;
     },
@@ -151,6 +143,8 @@ export default {
   font-size: 1.5rem;
   font-weight: bold;
   color: #333;
+  display: flex;
+  align-items: center; /* Ensures the logo is vertically centered */
 }
 
 .nav-item {
@@ -169,11 +163,10 @@ export default {
 }
 
 .top-right-controls {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   display: flex;
   align-items: center;
+  position: absolute;
+  right: 10px;
 }
 
 /* Toggle Switch Styles */
@@ -223,7 +216,14 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
-@media (max-width: 991.98px) {
+.logo {
+  width: auto;
+  height: 40px; /* Adjust the height to fit within the navbar */
+  max-height: 40px; /* Ensure it doesn't overflow the navbar */
+  aspect-ratio: 2.31; /* Maintain the aspect ratio */
+}
+
+@media (max-width: 768px) {
   .navbar-collapse {
     flex-direction: row;
     align-items: center;

@@ -31,10 +31,6 @@
   margin-top: 5px;
 }
 
-.base-card {
-  background-color: #ffffff; /* Hintergrundfarbe auf Weiß gesetzt */
-}
-
 .base-card.LobbyButton {
   display: flex;
   gap: 1rem;

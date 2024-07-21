@@ -49,7 +49,7 @@
         </template>
       </base-dialog>
     </teleport>
-    
+
   </section>
   <footer-bar class="FooterStart"></footer-bar>
 </template>
