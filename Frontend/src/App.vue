@@ -40,7 +40,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch("initWebSocket");
+    this.$store.dispatch("initWebSocket"); /*Start the WebSocket Connection on start */
     const savedLanguage = localStorage.getItem("locale");
     if (savedLanguage) {
       this.$i18n.locale = savedLanguage;

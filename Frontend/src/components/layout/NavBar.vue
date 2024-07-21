@@ -80,7 +80,7 @@ export default {
       console.log(data);
       this.sendWebSocketMessage(JSON.stringify(data));
     },
-    leaveLobby() {
+    leaveLobby() { //Leaving Lobby when pressing on the KIM Button in the Top right when a Game isn't running, removes unexpected behaviour when seemingly leaving a lobby and trying to join/create a new one
       if (this.$route.name === 'lobby' || 
         this.$route.name === 'wait' || 
         (this.$route.name === 'play' && !this.gameActive) || 

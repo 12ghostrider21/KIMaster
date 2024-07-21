@@ -2,16 +2,16 @@ import { createStore } from 'vuex';
 import * as ENUMS from '../components/enums.js';
 
 
-const getDefaultState = () => {
+const getDefaultState = () => { /* Backup of Initial state, used to reset the Website to original state should the WebSocket connection be recreated */
     return {
         socket: null,
         socketConnected: false,
-        connectionLost: true, //True here so reset doesn't close and pop up again
+        connectionLost: true, /*True here so reset doesn't close and popup again */
         messages: [],
         lobbyKey: null,
         game: 'none',
         position: "p1",
-        positionsInLobby: [false, false, 0], //Occupied Positions, 0=p1 1=p2, 2= number of Spectators
+        positionsInLobby: [false, false, 0],
         imagesrc: null,
         //images: [],
         inLobby: false,
@@ -20,10 +20,10 @@ const getDefaultState = () => {
         gameReady: false,
         gameOver: false,
         gameActive: false,
-        currentImageIndex: -1,
-        turn: 0, //Turn of the Game
-        playerTurn: 1, //Which Player is currently active 1 for Player 1
-        playerWon: 0, //WhichPlayer Won
+        //currentImageIndex: -1,
+        turn: 0,
+        playerTurn: 1,
+        playerWon: 0,
         isValidMoveImage: false,
         callPos: false,
         invalidMoveObserver: false,
@@ -38,23 +38,23 @@ export default createStore({
 
     
     state: {
-        socket: null,
+        socket: null,/*Stores the WebSocket  */
         socketConnected:false,
-        connectionLost:false,
+        connectionLost:false, /*If the WebSocket connection cuts off for any reason, this is set to true */
         messages: [],
-        lobbyKey: null,
-        game: null,
-        position: "p1",
+        lobbyKey: null, 
+        game: null, /*Which Game */
+        position: "p1", /*Position of yourself in the Lobby */
         positionsInLobby:[false,false,0], //Occupied Positions, 0=p1 1=p2, 2= number of Spectators
-        imagesrc: null,
+        imagesrc: null, /*Holds the currently active GameBoard */
         //images:[],
         inLobby: false,
-        popup: null,
-        notif: null,
+        popup: null, /*Activates PopUps */
+        notif: null, /*Activates Notificiations */
         gameReady: false,
         gameOver: false,
         gameActive: false,
-        //currentImageIndex:-1,
+        //currentImageIndex:-1, //Used for Frontend Timeline
         turn:0, //Turn of the Game
         playerTurn:1, //Which Player is currently active 1 for Player 1
         playerWon:0, //WhichPlayer Won
@@ -104,14 +104,6 @@ export default createStore({
         addMessage(state, message) {
             state.messages.push(message);
         },
-
-       /* addImages(state, image) {
-            state.images.push(image);
-        }, */
-        
-       /* newImages(state) {
-            state.images= [];
-        },*/
 
         setSocketConnected(state, socketConnected)
         {state.socketConnected=socketConnected
@@ -178,7 +170,8 @@ export default createStore({
             commit('setPosition', position);
         },
 
-      /*  changePrevImage({ commit, state }) {
+      /* Methods to cycle through the Frontend generated Timeline, unused because Undo Moves and Valid Moves break the Timeline
+       changePrevImage({ commit, state }) {
             if (state.currentImageIndex > 0) {
                 commit("setImagesrc", URL.createObjectURL(state.images[state.currentImageIndex - 1]));
                 commit("setCurrentImageIndex", state.currentImageIndex - 1);
@@ -202,6 +195,13 @@ export default createStore({
                 commit("setImagesrc", URL.createObjectURL(state.images[lastIndex]));
                 commit("setCurrentImageIndex", lastIndex);
             }
+        },
+            addImages(state, image) {
+            state.images.push(image);
+        }, 
+        
+      newImages(state) {
+            state.images= [];
         },*/
 
         setPopup({ commit }, popup) {
@@ -230,9 +230,9 @@ export default createStore({
                 if (modifiedUrl.endsWith('/')) {
                     modifiedUrl = modifiedUrl.slice(0, -1);
                 }
-                socket = new WebSocket(modifiedUrl); //TODO change to proper address, for now, it's hacked together
+                socket = new WebSocket(modifiedUrl); /*When deployed on Local System */
             } else {
-                socket = new WebSocket('wss://kimaster.mni.thm.de/ws'); //'ws://localhost:8010/ws') Static URL if address not in the correct format
+                socket = new WebSocket('wss://kimaster.mni.thm.de/ws'); /* Change to 'ws://localhost:8010/ws' when Locally deployed outside of the Docker File */
             }
 
             socket.onopen = () => {
@@ -273,10 +273,9 @@ export default createStore({
                             
                             break;
                             case 103: //Swapped Position
-                                console.log("1")
                                 commit('setCallPos');
                                 break;
-                            case 104:   
+                            case 104:   //Current Position in Lobby
                                 commit('setPosition', receivedJSONObject.pos);
                                 break;
                             case 105: //LobbyStatus
@@ -300,8 +299,9 @@ export default createStore({
                                 commit('setGameActive',false);
                                 break;
                             case 154:
-                            case 155: commit('setNotif', ENUMS.notifStatus.POSOCCUPIED);
-                                      commit('setCallPos');
+                            case 155: //LobbySwap Failed, position occupied
+                                 commit('setNotif', ENUMS.notifStatus.POSOCCUPIED);
+                                commit('setCallPos');
                                 break;
                             case 157: //Game not started, wrong amount of player
                                 commit('setNotif', ENUMS.notifStatus.NOTENOUGHPLAYERS);
@@ -332,7 +332,7 @@ export default createStore({
                                     if (receivedJSONObject.moves.includes("64")|| receivedJSONObject.moves.includes(64)){
                                         commit('setSkipMove',true);
                                         commit('setNotif',ENUMS.notifStatus.SKIPMOVE)}
-                                    else commit('setSkipMove',false); //For Special case no avaiable Move on Othello Board to skip a turn
+                                    else commit('setSkipMove',false); //For Special case no available Move on Othello Board to skip a turn
                                     };
                                 break;
                             case 209:
@@ -351,16 +351,15 @@ export default createStore({
                             if(state.blunders.length>0){
                              commit('setPopup',ENUMS.popUpStatus.BLUNDER);}
                              break;
-                             case 218:
+                             case 218: //Currently active Player
                                 commit('playSound');
                                 commit('setYourTurn',state.position==="p1"&&receivedJSONObject.cur_player==1||state.position==="p2"&&receivedJSONObject.cur_player==-1);
                                 break;
-                            case 219: 
+                            case 219:  //KIM is making a move
                             commit('playSound');
                                 commit('setYourTurn',false);
                                 break;
                             
-                            commit('setPlayerTurn',) //new Active player
                             case 256:
                                 commit('setInvalidMoveMade',true);
                                 break;

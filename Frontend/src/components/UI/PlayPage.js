@@ -78,7 +78,7 @@ export default {
     };
   },
   mounted() {
-    switch (this.game) {
+    switch (this.game) { /*Define the behaviour of clicking on a board twoTurnGame decides wether a move has the form move:<pos> or move:[<from>,<to>] */
       case "chess":
         this.boardWidth = 8;
         this.boardHeight = 8;
@@ -118,7 +118,7 @@ export default {
       "setPopup",
 
     ]),
-    nimMove(pos){
+    nimMove(pos){ /*Special behaviour when playing Nim */
       if (this.nimTest[0]==-1) this.nimTest[0]=pos;
        if (this.nimTest[0]==pos) {
         this.nimTest[1]+=1;
@@ -128,7 +128,7 @@ export default {
      
       
     },
-    invalidMoveHandling() { 
+    invalidMoveHandling() {  /*Automatically plays valid Move when an Invalid Move was made, so that it feels more akin to switching the Game Piece rather than failing to execute a move */
       if (this.savedPos!=null) { 
       this.playValidMoves(this.savedPos);
       this.fromPos=this.savedPos;
@@ -136,7 +136,7 @@ export default {
       this.savedPos=null;
 
     },
-    sendNimMove(){
+    sendNimMove(){ /* Actually sends the Move for the NIm Game */
       const data = { 
         command: 'play',
         command_key: 'make_move',
@@ -150,7 +150,7 @@ export default {
       console.log(data);
       this.sendWebSocketMessage(JSON.stringify(data));
     },
-    highlightCellOnHover(event) {
+    highlightCellOnHover(event) { /*Responsible for Highlighting on the game Board, needs to be adjusted for non rectangular Boards or different Areas that should be highlighted*/
       const imageRect = this.$refs.imageRef.getBoundingClientRect();
       const mouseX = event.clientX - imageRect.left;
       const mouseY = event.clientY - imageRect.top;
@@ -231,7 +231,7 @@ export default {
     closePopup() {
       this.setPopup(null);
     },
-    trackMousePosition(event) {
+    trackMousePosition(event) { /*Executes the actual Move on the GameBoard */
       this.mouseX = event.clientX;
       this.mouseY = event.clientY;
       const imageRect = this.$refs.imageRef.getBoundingClientRect();
@@ -244,7 +244,7 @@ export default {
         this.mouseY / (this.$refs.imageRef.offsetHeight / this.boardHeight)
       );
       if (this.twoTurnGame) {
-        if (this.turnSelect) {
+        if (this.turnSelect) { /*In a twoTurnGame, check wether it's the <from> coordinate, or the <to> coordinate */
           this.fromPos =
             this.mouseX +
             (this.boardHeight * this.mouseY - this.boardHeight - 1);
@@ -261,11 +261,11 @@ export default {
         }
       } else {
         
-          switch (this.game) {
-           case ENUMS.games.NIM:
+          switch (this.game) { /*Defines wether Special Rules apply for what moves the player can make*/
+           case ENUMS.games.NIM: /*Executes special behaviour for the Nim Game */
            this.nimMove(this.mouseY-1)
            break;
-           case ENUMS.games.CONNECT4:
+           case ENUMS.games.CONNECT4: /*Only makes move in the Top rows, no matter where the User Input came from*/
            this.toPos= this.mouseX-1;
            this.playMakeMove();
            
@@ -285,7 +285,6 @@ export default {
       this.sendMessage(data);
     },
     quitGame() {
-      console.log("VUE COMPONENT" + this.gameActive);
       if (this.gameActive !== true) {
         const data2 = {
           command: "lobby",
@@ -347,7 +346,10 @@ export default {
     });
       
     },
-    /*firstImage() {
+    
+    /*
+     Deactivated methods to realise a Frontline based Timeline
+    firstImage() {
       this.changeFirstImage();
     },
     prevImage() {
@@ -360,7 +362,7 @@ export default {
       this.changeLastImage();
     }*/
       playRandomSound() {
-        if(this.game==='Nim') {return}
+        if(this.game==='Nim') {return} /*Disabling sound when playing Nim */
         this.isPlaying = true;
         const randomIndex = Math.floor(Math.random() * this.sounds.length);
         const audio = new Audio(this.sounds[randomIndex]);
@@ -368,15 +370,15 @@ export default {
       
         setTimeout(() => {
           this.isPlaying = false;
-        }, 100); // 500 milliseconds delay
+        }, 100); /*100 milliseconds delay so Sounds don't overlap to strongly */
       },
   },
   watch: {
-    invalidMoveObserver(){
+    invalidMoveObserver(){ /*Checks if an Invalid Move has been commited */
       if(this.twoTurnGame)this.invalidMoveHandling();
     },
     playSound(){this.playRandomSound();},
-    skipMove(newval){
+    skipMove(newval){ /*Special case to skip your Turn in Othello when it's the only avaiable Move, may need to be expanded if new games are added */
       if(newval){
       const data = {
         command: "play",

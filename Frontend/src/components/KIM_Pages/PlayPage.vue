@@ -127,8 +127,8 @@
     >
       <template #default>
         <p v-if="playerWon === 1&& position==='sp'">{{ $t('message.player_1_won') }}</p>
-        <p v-if="playerWon === -1">{{ $t('message.player_2_won') }}</p>
-        <p v-if="playerWon === 0 && position==='sp'">{{ $t('message.draw') }}</p>
+        <p v-if="playerWon === -1&& position==='sp'">{{ $t('message.player_2_won') }}</p>
+        <p v-if="playerWon === 0">{{ $t('message.draw') }}</p>
         <p v-if="playerWon === 1&& position==='p1' ||playerWon === -1 & position==='p2'" >{{ $t('message.you_won') }}</p>
         <p v-if="playerWon === 1&& position==='p2' ||playerWon === -1 & position==='p1'"> {{ $t('message.opponent_won') }}</p>
         <p>{{ $t('message.game_over_after') }} {{ turn }} {{ $t('message.turns') }}</p>

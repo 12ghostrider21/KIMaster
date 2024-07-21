@@ -64,12 +64,12 @@ export default {
     },
   },
   watch: {
-    gameActive(newVal) {
+    gameActive(newVal) { /*once a Game has started automatically go the PlayPage */
       if (newVal) {
         this.goToGame();
       }
     },
-    callPos(newVal) {
+    callPos(newVal) { /*Automatically update the current Lobby Status */
       this.lobbyPos();
       this.lobbyStatus();
     },

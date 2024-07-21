@@ -35,12 +35,8 @@ export default {
   methods: {
     ...mapActions(["initWebSocket", "sendWebSocketMessage","setGame","updatePosition",'setPopup']),
     sendMessage(data) {
-      //if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       console.log(data);
       this.sendWebSocketMessage(JSON.stringify(data));
-      /*} else {
-      console.error('WebSocket connection is not open.');
-    }*/
     },
     transformGameName(game) {
       return this.$t(`message.${game}`);
@@ -107,14 +103,14 @@ export default {
     },
 
     lobbyStatus() {
-      const data = {
+      const data = { 
         command: "lobby",
         command_key: "status",
       };
       this.sendMessage(data);
     },
 
-    playCreate() {
+    playCreate() { /*Checks what position is currently occupied to decide which Command to send. Also tests wether a GameClient is connected to the Lobby so play Create actually works */
       this.lobbyStatus();
       if (this.gameReady&&this.position==='p1') {
         const data = {
@@ -158,23 +154,18 @@ export default {
     game(){
       this.selectedGame=this.game;
     },
-    callPos(){
+    callPos(){ /*Automatically update the current Status of the Lobby */
       this.lobbyPos();
       this.lobbyStatus();
       console.log(this.positionsInLobby);
     },
-   gameActive(newVal) {
+   gameActive(newVal) { /*once a Game has started automatically go the PlayPage */
         if (newVal) {
           this.$router.push({
             name: 'play',
           });
         }
       },
-      socketConnected(newVal){if
-        (newVal) {
-          this.createLobby();
-        }
-      }
    
   },
 };
