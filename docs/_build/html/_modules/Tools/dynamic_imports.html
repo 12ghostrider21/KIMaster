@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tools.dynamic_imports &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Tools.dynamic_imports</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Tools.dynamic_imports</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">importlib.util</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">splitext</span><span class="p">,</span> <span class="n">basename</span>
+
+<span class="kn">from</span> <span class="nn">Tools.Game_Config.difficulty</span> <span class="kn">import</span> <span class="n">EDifficulty</span>
+<span class="kn">from</span> <span class="nn">Tools.i_game</span> <span class="kn">import</span> <span class="n">IGame</span>
+<span class="kn">from</span> <span class="nn">Tools.mcts</span> <span class="kn">import</span> <span class="n">MCTS</span>
+<span class="kn">from</span> <span class="nn">Tools.utils</span> <span class="kn">import</span> <span class="n">dotdict</span>
+
+
+<div class="viewcode-block" id="ExcludeModule">
+<a class="viewcode-back" href="../../Tools.html#Tools.dynamic_imports.ExcludeModule">[Doku]</a>
+<span class="k">class</span> <span class="nc">ExcludeModule</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">GAME_PY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">MCTS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="FilePaths">
+<a class="viewcode-back" href="../../Tools.html#Tools.dynamic_imports.FilePaths">[Doku]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">FilePaths</span><span class="p">:</span>
+    <span class="n">game_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">game_py</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">nnet_py</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">model_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">found</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FilePaths.missing">
+<a class="viewcode-back" href="../../Tools.html#Tools.dynamic_imports.FilePaths.missing">[Doku]</a>
+    <span class="k">def</span> <span class="nf">missing</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Entry">
+<a class="viewcode-back" href="../../Tools.html#Tools.dynamic_imports.Entry">[Doku]</a>
+<span class="k">class</span> <span class="nc">Entry</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">game_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keras</span><span class="p">:</span> <span class="n">FilePaths</span> <span class="o">=</span> <span class="n">FilePaths</span><span class="p">(</span><span class="n">game_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">game_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">torch</span><span class="p">:</span> <span class="n">FilePaths</span> <span class="o">=</span> <span class="n">FilePaths</span><span class="p">(</span><span class="n">game_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">game_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="Entry.print">
+<a class="viewcode-back" href="../../Tools.html#Tools.dynamic_imports.Entry.print">[Doku]</a>
+    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Game: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game_name</span><span class="si">}</span><span class="s2"> does not have a NeuralNet folder!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">found</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">missing</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[92mGame: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game_name</span><span class="si">}</span><span class="s2"> (Keras) available.</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[93mGame: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game_name</span><span class="si">}</span><span class="s2"> (Keras)</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">missing</span><span class="p">():</span>
+                    <span class="k">match</span> <span class="n">att</span><span class="p">:</span>
+                        <span class="k">case</span> <span class="s2">&quot;game_py&quot;</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91m-- Game.py is missing!</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+                        <span class="k">case</span> <span class="s2">&quot;nnet_py&quot;</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91m-- NNet.py is missing!</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+                        <span class="k">case</span> <span class="s2">&quot;model_path&quot;</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91m-- Model is missing! (best.h5)</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">found</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">missing</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[92mGame: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game_name</span><span class="si">}</span><span class="s2"> (PyTorch) available.</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[93mGame: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game_name</span><span class="si">}</span><span class="s2"> (PyTorch)</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">missing</span><span class="p">():</span>
+                        <span class="k">match</span> <span class="n">att</span><span class="p">:</span>
+                            <span class="k">case</span> <span class="s2">&quot;game_py&quot;</span><span class="p">:</span>
+                                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91m-- Game.py is missing!</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+                            <span class="k">case</span> <span class="s2">&quot;nnet_py&quot;</span><span class="p">:</span>
+                                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91m-- NNet.py is missing!</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+                            <span class="k">case</span> <span class="s2">&quot;model_path&quot;</span><span class="p">:</span>
+                                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91m-- Model is missing! (best.pth.tar)</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Importer">
+<a class="viewcode-back" href="../../Tools.html#Tools.dynamic_imports.Importer">[Doku]</a>
+<span class="k">class</span> <span class="nc">Importer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeModule</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[94m[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="s2">&quot;Fetching files...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Entry</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__crawl_game_files</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__game_classes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__game_mcts</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">ExcludeModule</span><span class="o">.</span><span class="n">GAME_PY</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>  <span class="c1"># get all game classes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__game_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__import_game_classes</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ExcludeModule</span><span class="o">.</span><span class="n">MCTS</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>  <span class="c1"># create MCTS functions for each game and difficulty</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__game_funcs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__import_funcs</span><span class="p">()</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[94m[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Initialised fully in </span><span class="si">{</span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="si">:</span><span class="s2">.4</span><span class="si">}</span><span class="s2">s.</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Importer.get_games">
+<a class="viewcode-back" href="../../Tools.html#Tools.dynamic_imports.Importer.get_games">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get_games</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IGame</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">game</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">game</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__game_classes</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+
+
+<div class="viewcode-block" id="Importer.get_ai_func">
+<a class="viewcode-back" href="../../Tools.html#Tools.dynamic_imports.Importer.get_ai_func">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get_ai_func</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__game_funcs</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__crawl_game_files</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Entry</span><span class="p">]:</span>
+        <span class="c1"># Initialize return values</span>
+        <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Entry</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">game_name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">game_name</span><span class="p">)):</span>
+                <span class="k">continue</span>
+            <span class="n">entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">game_name</span><span class="o">=</span><span class="n">game_name</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dir_names</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">game_name</span><span class="p">)):</span>
+                <span class="n">root_l</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+                <span class="c1"># get game.py</span>
+                <span class="k">if</span> <span class="n">root_l</span> <span class="o">==</span> <span class="n">game_name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;game.py&quot;</span><span class="p">):</span>
+                            <span class="n">entry</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">game_py</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                            <span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">game_py</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                            <span class="k">break</span>
+
+                <span class="c1"># check for pytorch files</span>
+                <span class="k">elif</span> <span class="n">root_l</span> <span class="o">==</span> <span class="s2">&quot;pytorch&quot;</span><span class="p">:</span>
+                    <span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">entry</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;best.pth.tar&quot;</span><span class="p">):</span>
+                            <span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                            <span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">model_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                            <span class="k">continue</span>
+                        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nnet.py&quot;</span><span class="p">:</span>
+                            <span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">nnet_py</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+                <span class="c1"># check for keras files</span>
+                <span class="k">elif</span> <span class="n">root_l</span> <span class="o">==</span> <span class="s2">&quot;keras&quot;</span><span class="p">:</span>
+                    <span class="n">entry</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">entry</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;best.h5&quot;</span><span class="p">):</span>
+                            <span class="n">entry</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                            <span class="n">entry</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">model_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                            <span class="k">continue</span>
+                        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nnet.py&quot;</span><span class="p">:</span>
+                            <span class="n">entry</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">nnet_py</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">found</span> <span class="ow">or</span> <span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">found</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">missing</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">missing</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">result</span><span class="p">[</span><span class="n">game_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">entry</span>
+            <span class="n">entry</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="Importer.import_class_from_file">
+<a class="viewcode-back" href="../../Tools.html#Tools.dynamic_imports.Importer.import_class_from_file">[Doku]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">import_class_from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">module_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># try to resolve automatically</span>
+        <span class="n">class_name</span> <span class="o">=</span> <span class="n">module_name</span> <span class="k">if</span> <span class="n">class_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">class_name</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">module_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
+        <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+
+        <span class="c1"># Return the class from the module</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Class </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2"> not found in </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">. To make sure your Game can be found, name the class &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;the same as the Game.py file, (but with out the Game.py). The file for the neural net must be named &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;NNet.py&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__import_game_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">missing</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">entry</span><span class="o">.</span><span class="n">game_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Importer</span><span class="o">.</span><span class="n">import_class_from_file</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">game_py</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">entry</span><span class="o">.</span><span class="n">game_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Importer</span><span class="o">.</span><span class="n">import_class_from_file</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">game_py</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">__import_funcs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">game</span><span class="p">:</span> <span class="n">IGame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__game_classes</span><span class="p">[</span><span class="n">name</span><span class="p">]()</span>
+            <span class="n">nn</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">missing</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">old_std</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>  <span class="c1"># redirect stdout to nothing</span>
+                <span class="n">nn</span> <span class="o">=</span> <span class="n">Importer</span><span class="o">.</span><span class="n">import_class_from_file</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">nnet_py</span><span class="p">,</span> <span class="s2">&quot;NNetWrapper&quot;</span><span class="p">)(</span><span class="n">game</span><span class="p">)</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">model_path</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">model_file</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">old_std</span>  <span class="c1"># restore old stdout</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">missing</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">old_std</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>  <span class="c1"># redirect stdout to nothing</span>
+                <span class="n">nn</span> <span class="o">=</span> <span class="n">Importer</span><span class="o">.</span><span class="n">import_class_from_file</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">nnet_py</span><span class="p">,</span> <span class="s2">&quot;NNetWrapper&quot;</span><span class="p">)(</span><span class="n">game</span><span class="p">)</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">model_path</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">model_file</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">old_std</span>  <span class="c1"># restore old stdout</span>
+
+            <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">diff</span> <span class="ow">in</span> <span class="n">EDifficulty</span><span class="p">:</span>
+                <span class="n">mcts</span> <span class="o">=</span> <span class="n">MCTS</span><span class="p">(</span><span class="n">game</span><span class="p">,</span> <span class="n">nn</span><span class="p">,</span> <span class="n">dotdict</span><span class="p">({</span><span class="s1">&#39;numMCTSSims&#39;</span><span class="p">:</span> <span class="n">diff</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                               <span class="s1">&#39;fpu&#39;</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span>
+                                               <span class="s1">&#39;universes&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                               <span class="s1">&#39;cpuct&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                               <span class="s1">&#39;prob_fullMCTS&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+                                               <span class="s1">&#39;forced_playouts&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                                               <span class="s1">&#39;no_mem_optim&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="p">}))</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">diff</span><span class="p">:</span> <span class="n">mcts</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># For testing purposes</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">Importer</span><span class="p">(</span><span class="s2">&quot;../Games&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">get_games</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">get_ai_func</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

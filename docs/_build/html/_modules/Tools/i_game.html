@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tools.i_game &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Tools.i_game</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Tools.i_game</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="IGame">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame">[Doku]</a>
+<span class="k">class</span> <span class="nc">IGame</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+
+<div class="viewcode-block" id="IGame.getInitBoard">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame.getInitBoard">[Doku]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">getInitBoard</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the initial representation of the game board.</span>
+<span class="sd">        As well resets all other data to initial state!</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            startBoard (numpy.array): A representation of the initial game board.</span>
+<span class="sd">                                      This representation is suitable for input to a neural network.</span>
+
+<span class="sd">        This method returns a numpy array `startBoard` representing the initial state or</span>
+<span class="sd">        configuration of the game board. The `startBoard` is intended to be a suitable input</span>
+<span class="sd">        format for feeding into a neural network model for game evaluation or decision-making.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            If implemented for a game like tic-tac-toe, `getInitBoard` might return a numpy array</span>
+<span class="sd">            representing an empty 3x3 game board.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            The `startBoard` should provide an accurate and meaningful representation of the</span>
+<span class="sd">            initial state of the game board, which serves as the starting point for gameplay.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="IGame.getBoardSize">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame.getBoardSize">[Doku]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">getBoardSize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the dimensions of the game board.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            x (int): the one-dimensional size of the game board.</span>
+<span class="sd">            (x, y) (tuple[int, int]): A tuple representing the dimensions of the game board.</span>
+<span class="sd">                                       - `x` (int): The number of rows in the board.</span>
+<span class="sd">                                       - `y` (int): The number of columns in the board.</span>
+
+<span class="sd">        This method returns a tuple `(x, y)` representing the dimensions (number of rows and columns)</span>
+<span class="sd">        of the game board. The values `x` and `y` indicate the size or shape of the board grid.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            If implemented for a game like tic-tac-toe, `getBoardSize` might return `(3, 3)`,</span>
+<span class="sd">            representing a 3x3 grid for the game board.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            The tuple `(x, y)` should accurately reflect the dimensions of the game board,</span>
+<span class="sd">            providing information about its structure and layout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="IGame.getActionSize">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame.getActionSize">[Doku]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">getActionSize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the total number of possible actions in the game.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            actionSize (int): The number of all possible actions available in the game.</span>
+
+<span class="sd">        This method returns the total number of possible actions that can be taken by players</span>
+<span class="sd">        in the game. The value `actionSize` represents the size of the action space, which</span>
+<span class="sd">        defines the set of all valid actions that players can choose from during gameplay.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            If implemented for a game like tic-tac-toe, `getActionSize` might return 9,</span>
+<span class="sd">            representing the number of cells on the game board where a player can make a move.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="IGame.getNextState">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame.getNextState">[Doku]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">getNextState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the next game state after applying the specified action for the current player.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            board (numpy.array): The current game board represented as a numpy array.</span>
+<span class="sd">            player (int): The current player (1 for one player, -1 for the other player).</span>
+<span class="sd">            action (any): The action taken by the current player on the board. Can be an int,</span>
+<span class="sd">                        a tuple or anything else that represents an action for the chosen game.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            nextBoard (numpy.array): The game board after applying the specified action.</span>
+<span class="sd">            nextPlayer (int): The player who plays in the next turn (should be `-player`).</span>
+
+<span class="sd">        This method computes the next game state (`nextBoard`) after the specified `action`</span>
+<span class="sd">        is applied by the `player` on the current `board`. It also determines the next player</span>
+<span class="sd">        (`nextPlayer`) who will play in the subsequent turn.</span>
+
+<span class="sd">        The `nextPlayer` is calculated as `-player`, which effectively alternates between players</span>
+<span class="sd">        in each turn.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="IGame.getValidMoves">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame.getValidMoves">[Doku]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">getValidMoves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">player</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the valid moves for the current player on the given board in binary form.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            board (numpy.array): The current game board represented as a numpy array.</span>
+<span class="sd">            player (int): The current player (1 for one player, -1 for the other player).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            validMoves (numpy.array): A binary vector indicating valid moves.</span>
+<span class="sd">                                       - `1` for valid moves.</span>
+<span class="sd">                                       - `0` for invalid moves.</span>
+
+<span class="sd">        This method generates a binary vector `validMoves` indicating which moves are valid</span>
+<span class="sd">        for the specified `player` on the current `board`. Each element of `validMoves`</span>
+<span class="sd">        corresponds to a possible action or move in the game.</span>
+
+<span class="sd">        The value `1` in `validMoves[i]` indicates that the move corresponding to index `i`</span>
+<span class="sd">        is valid for the `player` on the given `board`, while `0` indicates that the move</span>
+<span class="sd">        is invalid or not allowed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="IGame.getGameEnded">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame.getGameEnded">[Doku]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">getGameEnded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">player</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the outcome of the game for the given player on the current board state.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            board (numpy.array): The current game board represented as a numpy array.</span>
+<span class="sd">            player (int): The current player (1 for one player, -1 for the other player).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            result (int): An integer representing the game outcome for the specified player.</span>
+<span class="sd">                          - `0` if the game has not ended.</span>
+<span class="sd">                          - `1` if the `player` has won.</span>
+<span class="sd">                          - `-1` if the `player` has lost.</span>
+<span class="sd">                          - A small non-zero value (e.g., `0.1`) indicating a draw or game tie.</span>
+
+<span class="sd">        This method evaluates the current game state on the given `board` and determines the outcome</span>
+<span class="sd">        for the specified `player`. The `player` parameter indicates which player&#39;s perspective to consider</span>
+<span class="sd">        when determining the game outcome.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="IGame.getSymmetries">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame.getSymmetries">[Doku]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">getSymmetries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">pi</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate symmetrical forms of the given board and corresponding policy vector.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            board (numpy.array): The current game board represented as a numpy array.</span>
+<span class="sd">            pi (numpy.array): The policy vector of size `self.getActionSize()`, providing action probabilities.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            symmForms (list): A list of tuples (board, pi) where each tuple represents a symmetrical</span>
+<span class="sd">                              form of the board and the corresponding policy vector `pi`.</span>
+
+<span class="sd">        This method generates symmetrical transformations of the given board along with the associated</span>
+<span class="sd">        policy vector `pi`. The purpose is to create additional training data for the neural network by</span>
+<span class="sd">        considering different orientations or reflections of the board, which helps in enhancing the</span>
+<span class="sd">        model&#39;s ability to generalize across different board configurations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="IGame.translate">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame.translate">[Doku]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts an index coming from alpha zero AI into an action.</span>
+<span class="sd">        Comes into effect for games that do not just have a to_position (just an int as move).</span>
+<span class="sd">        The output depends on the game getting implemented, most likely it&#39;s a pair tuple (from_position, to_position),</span>
+<span class="sd">        but it can also be a triplet tuple and so on - depending on the game.</span>
+<span class="sd">        Alpha-zero AI generates just an index that needs to get converted back into the original move by comparison</span>
+<span class="sd">        with the valid_moves method from the logic.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            index (int): The index of the move to translate.</span>
+<span class="sd">            board (np.array): The current game board represented as a numpy array.</span>
+<span class="sd">            player (int): The current player (1 for one player, -1 for the other player).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            action (any): The action fitting to the index.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IGame.rotateMove">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame.rotateMove">[Doku]</a>
+    <span class="k">def</span> <span class="nf">rotateMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">move</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For games like chess, checkers ...</span>
+<span class="sd">        Stands in relation with displaying rotated board frontend-wise.</span>
+<span class="sd">        Every player moves from bottom to top (black AND white).</span>
+<span class="sd">        So the moves coming from frontend need to be rotated as well for one of the two players.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            move (int | tuple[int, int]): The move to rotate.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            rotated move by 180 degree (int | tuple[int, int])</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="IGame.stringRepresentation">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame.stringRepresentation">[Doku]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">stringRepresentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the current game board into a string format required for hashing, used by Monte Carlo Tree Search (MCTS).</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            board (numpy.array): The current game board represented as a numpy array.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            boardString (str): A string representation of the board suitable for hashing in MCTS.</span>
+
+<span class="sd">        This method is used to convert the current game board into a string format that can be used as a unique identifier</span>
+<span class="sd">        for the board state within the context of Monte Carlo Tree Search (MCTS). The resulting string representation is</span>
+<span class="sd">        used for efficient state hashing and lookup during the MCTS simulation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="IGame.drawTerminal">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame.drawTerminal">[Doku]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">drawTerminal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">valid_moves</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displays a terminal representation of the game board for debugging purposes.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            board (numpy.array): The game board represented as a numpy array.</span>
+<span class="sd">            valid_moves: Whether displaying / drawing valid moves or not.</span>
+<span class="sd">            cur_player: The current player (1 for one player, -1 for the other player).</span>
+<span class="sd">            args: first arg is from_pos (int): The from_pos to get the valid moves for.</span>
+<span class="sd">                    That argument is only for games where to move tokens.</span>
+<span class="sd">                    For Games in which to just one-time set tokens, this arg is redundant</span>
+<span class="sd">                    and need to get no further attention.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            -Needs to handle invalid from_pos for displaying valid moves (None / invalid pos).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The terminal representation of the board.</span>
+
+<span class="sd">        This method is intended to visually display the current state of the game board</span>
+<span class="sd">        in a terminal/console environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="IGame.draw">
+<a class="viewcode-back" href="../../Tools.html#Tools.i_game.IGame.draw">[Doku]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">valid_moves</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw the game representation onto a Pygame surface.</span>
+
+<span class="sd">        This method is responsible for rendering the current game state represented by `board`</span>
+<span class="sd">        onto a Pygame surface. This surface will be returned in bytes format, twice.</span>
+<span class="sd">        One representation for player1, the other one mirrored for player2.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            board (np.array): A NumPy array representing the game state. The array should contain</span>
+<span class="sd">                the necessary information to visualize the current state of the game.</span>
+<span class="sd">            valid_moves: Whether displaying / drawing valid moves or not.</span>
+<span class="sd">            cur_player: The player who is in turn (1 for one player, -1 for the other player).</span>
+<span class="sd">            args: first arg is from_pos (int): The from_pos to get the valid moves for.</span>
+<span class="sd">                    That argument is only for games where to move tokens.</span>
+<span class="sd">                    For Games in which to just one-time set tokens, this arg is redundant</span>
+<span class="sd">                    and need to get no further attention.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pygame.Surface</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">        - The `board` parameter should be a NumPy array representing the game state in a structured</span>
+<span class="sd">          format suitable for visualization. The specific structure and meaning of the array&#39;s</span>
+<span class="sd">          contents are defined by the concrete implementations of `Drawable`.</span>
+
+<span class="sd">        - Needs to handle invalid from_pos for displaying valid moves (None / invalid pos).</span>
+
+<span class="sd">        - The method should handle the rendering of the game state based on the provided `board`</span>
+<span class="sd">          data and any additional optional arguments (`args`). The resulting surface should</span>
+<span class="sd">          visually represent the game&#39;s current state.</span>
+
+<span class="sd">        - Implementations of this method should ensure that the returned surface is ready for</span>
+<span class="sd">          display within a Pygame environment, such as by initializing the Pygame library and</span>
+<span class="sd">          handling any necessary graphical operations.</span>
+
+<span class="sd">        Example Usage:</span>
+<span class="sd">            # Example implementation for drawing a game state</span>
+<span class="sd">            surface = pygame.Surface((800, 600))  # Create a Pygame surface</span>
+<span class="sd">            surface.fill((255, 255, 255))         # Fill with white background</span>
+
+<span class="sd">            # Render game state onto the surface based on `board` data</span>
+<span class="sd">            # Example: Draw a grid based on the `board` content</span>
+<span class="sd">            cell_size = 50</span>
+<span class="sd">            for i in range(board.shape[0]):</span>
+<span class="sd">                for j in range(board.shape[1]):</span>
+<span class="sd">                    if board[i, j] == 1:</span>
+<span class="sd">                        pygame.draw.rect(surface, (0, 0, 0), (j * cell_size, i * cell_size, cell_size, cell_size))</span>
+
+<span class="sd">            return surface</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+</div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

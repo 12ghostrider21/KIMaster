@@ -1,0 +1,29 @@
+Games.checkers package
+======================
+
+Submodules
+----------
+
+Games.checkers.CheckersGame module
+----------------------------------
+
+.. automodule:: Games.checkers.CheckersGame
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Games.checkers.CheckersLogic module
+-----------------------------------
+
+.. automodule:: Games.checkers.CheckersLogic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Games.checkers
+   :members:
+   :undoc-members:
+   :show-inheritance:

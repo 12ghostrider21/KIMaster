@@ -1,0 +1,22 @@
+Games package
+=============
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   Games.checkers
+   Games.connect4
+   Games.nim
+   Games.othello
+   Games.tictactoe
+
+Module contents
+---------------
+
+.. automodule:: Games
+   :members:
+   :undoc-members:
+   :show-inheritance:

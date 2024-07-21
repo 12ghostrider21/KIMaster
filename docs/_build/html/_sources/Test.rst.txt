@@ -1,0 +1,37 @@
+Test package
+============
+
+Submodules
+----------
+
+Test.api\_lobby\_fixtures module
+--------------------------------
+
+.. automodule:: Test.api_lobby_fixtures
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Test.api\_lobby\_test module
+----------------------------
+
+.. automodule:: Test.api_lobby_test
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Test.utils module
+-----------------
+
+.. automodule:: Test.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Test
+   :members:
+   :undoc-members:
+   :show-inheritance:

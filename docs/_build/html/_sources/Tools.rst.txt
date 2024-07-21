@@ -1,0 +1,69 @@
+Tools package
+=============
+
+Submodules
+----------
+
+Tools.dynamic\_imports module
+-----------------------------
+
+.. automodule:: Tools.dynamic_imports
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Tools.i\_game module
+--------------------
+
+.. automodule:: Tools.i_game
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Tools.language\_handler module
+------------------------------
+
+.. automodule:: Tools.language_handler
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Tools.mcts module
+-----------------
+
+.. automodule:: Tools.mcts
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Tools.neural\_net module
+------------------------
+
+.. automodule:: Tools.neural_net
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Tools.rcode module
+------------------
+
+.. automodule:: Tools.rcode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Tools.utils module
+------------------
+
+.. automodule:: Tools.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Tools
+   :members:
+   :undoc-members:
+   :show-inheritance:

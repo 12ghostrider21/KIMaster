@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Games.tictactoe.TicTacToeGame &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
+    <link rel="search" title="Suche" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Games.tictactoe.TicTacToeGame</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Games.tictactoe.TicTacToeGame</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">Tools.i_game</span> <span class="kn">import</span> <span class="n">IGame</span><span class="p">,</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">Games.tictactoe.TicTacToeLogic</span> <span class="kn">import</span> <span class="n">Board</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Game class implementation for the game of TicTacToe.</span>
+<span class="sd">Based on the OthelloGame then getGameEnded() was adapted to new rules.</span>
+
+<span class="sd">Author: Evgeny Tyurin, github.com/evg-tyurin</span>
+<span class="sd">Date: Jan 5, 2018.</span>
+
+<span class="sd">Based on the OthelloGame by Surag Nair.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="TicTacToeGame">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame">[Doku]</a>
+<span class="k">class</span> <span class="nc">TicTacToeGame</span><span class="p">(</span><span class="n">IGame</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+
+<div class="viewcode-block" id="TicTacToeGame.getInitBoard">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame.getInitBoard">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getInitBoard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;return initial board (numpy board)&quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">pieces</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TicTacToeGame.getBoardSize">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame.getBoardSize">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getBoardSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span></div>
+
+
+<div class="viewcode-block" id="TicTacToeGame.getActionSize">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame.getActionSize">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getActionSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;return number of actions&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># the +1 is wrong actually, but the trained model coming with alpha zero framework</span></div>
+
+        <span class="c1"># is based on it and everything is working so do not mind that.</span>
+        <span class="c1"># =&gt; TTT does not have the option to pass a move</span>
+
+<div class="viewcode-block" id="TicTacToeGame.getNextState">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame.getNextState">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getNextState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;if player takes action on board, return next (board,player)</span>
+<span class="sd">           action must be a valid move&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">:</span>  <span class="c1"># same as with getActionSize =&gt; TTT has actually no possibility to pass a move</span>
+            <span class="k">return</span> <span class="n">board</span><span class="p">,</span> <span class="o">-</span><span class="n">player</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">pieces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+        <span class="n">move</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">action</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">),</span> <span class="n">action</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">execute_move</span><span class="p">(</span><span class="n">move</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span><span class="o">.</span><span class="n">pieces</span><span class="p">,</span> <span class="o">-</span><span class="n">player</span></div>
+
+
+<div class="viewcode-block" id="TicTacToeGame.getValidMoves">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame.getValidMoves">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getValidMoves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;return a fixed size binary vector&quot;&quot;&quot;</span>
+        <span class="n">valids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">getActionSize</span><span class="p">()</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">pieces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+        <span class="n">legalMoves</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">get_legal_moves</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">legalMoves</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># same as with getActionSize =&gt; TTT has actually no possibility to pass a move</span>
+            <span class="n">valids</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">valids</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">legalMoves</span><span class="p">:</span>
+            <span class="n">valids</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">valids</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TicTacToeGame.getGameEnded">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame.getGameEnded">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getGameEnded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;return 0 if not ended, 1 if player won, -1 if player lost&quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">pieces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">is_win</span><span class="p">(</span><span class="n">player</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">is_win</span><span class="p">(</span><span class="o">-</span><span class="n">player</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">has_legal_moves</span><span class="p">():</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="c1"># draw has a very little value</span>
+        <span class="k">return</span> <span class="mf">1e-4</span></div>
+
+
+<div class="viewcode-block" id="TicTacToeGame.getSymmetries">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame.getSymmetries">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getSymmetries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">pi</span><span class="p">):</span>
+        <span class="c1"># mirror, rotational</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">pi_board</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">pi</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">))</span>   <span class="c1"># same as with getActionSize =&gt; TTT has actually</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>                                                     <span class="c1"># no possibility to pass a move</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+                <span class="n">newB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="n">newPi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">pi_board</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="n">newB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">newB</span><span class="p">)</span>
+                    <span class="n">newPi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">newPi</span><span class="p">)</span>
+                <span class="n">x</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">newB</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">newPi</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span> <span class="o">+</span> <span class="p">[</span><span class="n">pi</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])]</span>  <span class="c1"># same here with pass move</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+
+<div class="viewcode-block" id="TicTacToeGame.translate">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame.translate">[Doku]</a>
+    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">index</span></div>
+
+
+<div class="viewcode-block" id="TicTacToeGame.rotateMove">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame.rotateMove">[Doku]</a>
+    <span class="k">def</span> <span class="nf">rotateMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">move</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;no rotation at TTT&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">move</span></div>
+
+
+<div class="viewcode-block" id="TicTacToeGame.stringRepresentation">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame.stringRepresentation">[Doku]</a>
+    <span class="k">def</span> <span class="nf">stringRepresentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">board</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TicTacToeGame.drawTerminal">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame.drawTerminal">[Doku]</a>
+    <span class="k">def</span> <span class="nf">drawTerminal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">valid_moves</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">valid_moves</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">valid</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getValidMoves</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="k">if</span> <span class="n">valid</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">output</span> <span class="o">+=</span> <span class="s1">&#39;   &#39;</span>
+                    <span class="k">elif</span> <span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">output</span> <span class="o">+=</span> <span class="s1">&#39; X &#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">output</span> <span class="o">+=</span> <span class="s1">&#39; O &#39;</span>
+                    <span class="k">if</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">output</span> <span class="o">+=</span> <span class="s1">&#39;|&#39;</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="k">if</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">output</span> <span class="o">+=</span> <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+            <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="TicTacToeGame.draw">
+<a class="viewcode-back" href="../../../Games.tictactoe.html#Games.tictactoe.TicTacToeGame.TicTacToeGame.draw">[Doku]</a>
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">valid_moves</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">pygame</span>
+        <span class="n">row_count</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">col_count</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">SQUARESIZE</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">WIDTH</span> <span class="o">=</span> <span class="n">col_count</span> <span class="o">*</span> <span class="n">SQUARESIZE</span>
+        <span class="n">HEIGHT</span> <span class="o">=</span> <span class="n">row_count</span> <span class="o">*</span> <span class="n">SQUARESIZE</span>
+
+        <span class="n">color_background</span> <span class="o">=</span> <span class="p">(</span><span class="mi">252</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">244</span><span class="p">)</span>  <span class="c1"># cream</span>
+        <span class="n">color_grid</span> <span class="o">=</span> <span class="p">(</span><span class="mi">172</span><span class="p">,</span> <span class="mi">244</span><span class="p">,</span> <span class="mi">230</span><span class="p">)</span>  <span class="c1"># light blue</span>
+        <span class="n">color_X</span> <span class="o">=</span> <span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">188</span><span class="p">,</span> <span class="mi">156</span><span class="p">)</span>  <span class="c1"># turquoise</span>
+        <span class="n">color_O</span> <span class="o">=</span> <span class="p">(</span><span class="mi">44</span><span class="p">,</span> <span class="mi">62</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>  <span class="c1"># dark blue</span>
+        <span class="n">color_valid</span> <span class="o">=</span> <span class="p">(</span><span class="mi">144</span><span class="p">,</span> <span class="mi">238</span><span class="p">,</span> <span class="mi">144</span><span class="p">)</span>  <span class="c1"># turquoise</span>
+
+        <span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+        <span class="n">surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">WIDTH</span><span class="p">,</span> <span class="n">HEIGHT</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="n">surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">color_background</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">row_count</span><span class="p">):</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_grid</span><span class="p">,</span>
+                             <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQUARESIZE</span><span class="p">),</span>
+                             <span class="p">(</span><span class="n">WIDTH</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQUARESIZE</span><span class="p">),</span>
+                             <span class="mi">7</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">col_count</span><span class="p">):</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_grid</span><span class="p">,</span>
+                             <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQUARESIZE</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                             <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQUARESIZE</span><span class="p">,</span> <span class="n">HEIGHT</span><span class="p">),</span>
+                             <span class="mi">7</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">board</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="n">valid_moves</span> <span class="ow">and</span> <span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_valid</span><span class="p">,</span>
+                                       <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">SQUARESIZE</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">SQUARESIZE</span> <span class="o">//</span> <span class="mi">2</span><span class="p">),</span>
+                                       <span class="n">SQUARESIZE</span> <span class="o">//</span> <span class="mi">8</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_X</span><span class="p">,</span>
+                                     <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="mi">15</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="mi">15</span><span class="p">),</span>
+                                     <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">SQUARESIZE</span> <span class="o">-</span> <span class="mi">15</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">SQUARESIZE</span> <span class="o">-</span> <span class="mi">15</span><span class="p">),</span>
+                                     <span class="mi">13</span><span class="p">)</span>
+                    <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_X</span><span class="p">,</span>
+                                     <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="mi">15</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">SQUARESIZE</span> <span class="o">-</span> <span class="mi">15</span><span class="p">),</span>
+                                     <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">SQUARESIZE</span> <span class="o">-</span> <span class="mi">15</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="mi">15</span><span class="p">),</span>
+                                     <span class="mi">13</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_O</span><span class="p">,</span>
+                                       <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">SQUARESIZE</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">SQUARESIZE</span> <span class="o">//</span> <span class="mi">2</span><span class="p">),</span>
+                                       <span class="n">SQUARESIZE</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">surface</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

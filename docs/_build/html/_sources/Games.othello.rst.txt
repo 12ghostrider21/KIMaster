@@ -1,0 +1,29 @@
+Games.othello package
+=====================
+
+Submodules
+----------
+
+Games.othello.OthelloGame module
+--------------------------------
+
+.. automodule:: Games.othello.OthelloGame
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Games.othello.OthelloLogic module
+---------------------------------
+
+.. automodule:: Games.othello.OthelloLogic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Games.othello
+   :members:
+   :undoc-members:
+   :show-inheritance:

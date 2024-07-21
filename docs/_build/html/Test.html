@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test package &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=245627df"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/translations.js?v=79cc9f76"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="genindex.html" />
+    <link rel="search" title="Suche" href="search.html" />
+    <link rel="next" title="Tools package" href="Tools.html" />
+    <link rel="prev" title="Server package" href="Server.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Projekt</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="GameClient.html">GameClient package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Games.html">Games package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Server.html">Server package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Test package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Test.api_lobby_fixtures">Test.api_lobby_fixtures module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_fixtures.create_lobby_msg"><code class="docutils literal notranslate"><span class="pre">create_lobby_msg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_fixtures.empty_lobby_msg"><code class="docutils literal notranslate"><span class="pre">empty_lobby_msg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_fixtures.join_lobby_as_p1_msg"><code class="docutils literal notranslate"><span class="pre">join_lobby_as_p1_msg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_fixtures.join_lobby_as_p2_msg"><code class="docutils literal notranslate"><span class="pre">join_lobby_as_p2_msg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_fixtures.join_lobby_as_sp_msg"><code class="docutils literal notranslate"><span class="pre">join_lobby_as_sp_msg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_fixtures.join_lobby_msg"><code class="docutils literal notranslate"><span class="pre">join_lobby_msg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_fixtures.leave_lobby_msg"><code class="docutils literal notranslate"><span class="pre">leave_lobby_msg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_fixtures.lobby_status_msg"><code class="docutils literal notranslate"><span class="pre">lobby_status_msg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_fixtures.max_response_time"><code class="docutils literal notranslate"><span class="pre">max_response_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_fixtures.pos_msg"><code class="docutils literal notranslate"><span class="pre">pos_msg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_fixtures.swap_msg"><code class="docutils literal notranslate"><span class="pre">swap_msg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_fixtures.web_socket_uri"><code class="docutils literal notranslate"><span class="pre">web_socket_uri()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Test.api_lobby_test">Test.api_lobby_test module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_creating_multiple_lobbies"><code class="docutils literal notranslate"><span class="pre">test_creating_multiple_lobbies()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_get_pos_of_lobby_creator"><code class="docutils literal notranslate"><span class="pre">test_get_pos_of_lobby_creator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_get_pos_of_p2"><code class="docutils literal notranslate"><span class="pre">test_get_pos_of_p2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_get_pos_of_sp"><code class="docutils literal notranslate"><span class="pre">test_get_pos_of_sp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_get_pos_with_no_lobby"><code class="docutils literal notranslate"><span class="pre">test_get_pos_with_no_lobby()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_joining_existing_lobby"><code class="docutils literal notranslate"><span class="pre">test_joining_existing_lobby()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_joining_multiple_lobbies"><code class="docutils literal notranslate"><span class="pre">test_joining_multiple_lobbies()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_joining_non_existing_lobby"><code class="docutils literal notranslate"><span class="pre">test_joining_non_existing_lobby()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_leaving_current_lobby"><code class="docutils literal notranslate"><span class="pre">test_leaving_current_lobby()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_leaving_non_existing_lobby"><code class="docutils literal notranslate"><span class="pre">test_leaving_non_existing_lobby()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_lobby_creation"><code class="docutils literal notranslate"><span class="pre">test_lobby_creation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_lobby_status"><code class="docutils literal notranslate"><span class="pre">test_lobby_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_non_sense_lobby_command_key"><code class="docutils literal notranslate"><span class="pre">test_non_sense_lobby_command_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_none_lobby_command_key"><code class="docutils literal notranslate"><span class="pre">test_none_lobby_command_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_swap_player"><code class="docutils literal notranslate"><span class="pre">test_swap_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_swap_player_to_non_sense_pos"><code class="docutils literal notranslate"><span class="pre">test_swap_player_to_non_sense_pos()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_swap_player_to_none_pos"><code class="docutils literal notranslate"><span class="pre">test_swap_player_to_none_pos()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_swap_player_to_undefined_pos"><code class="docutils literal notranslate"><span class="pre">test_swap_player_to_undefined_pos()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_swap_player_when_occupied"><code class="docutils literal notranslate"><span class="pre">test_swap_player_when_occupied()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_swap_player_while_not_in_lobby"><code class="docutils literal notranslate"><span class="pre">test_swap_player_while_not_in_lobby()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.api_lobby_test.test_websocket_connection"><code class="docutils literal notranslate"><span class="pre">test_websocket_connection()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Test.utils">Test.utils module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Test.utils.from_json"><code class="docutils literal notranslate"><span class="pre">from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.utils.send"><code class="docutils literal notranslate"><span class="pre">send()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Test.utils.to_json"><code class="docutils literal notranslate"><span class="pre">to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Test">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tools.html">Tools package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Trainer.html">Trainer package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Projekt</a></li>
+      <li class="breadcrumb-item active">Test package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Test.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="test-package">
+<h1>Test package<a class="headerlink" href="#test-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-Test.api_lobby_fixtures">
+<span id="test-api-lobby-fixtures-module"></span><h2>Test.api_lobby_fixtures module<a class="headerlink" href="#module-Test.api_lobby_fixtures" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_fixtures.create_lobby_msg">
+<span class="sig-prename descclassname"><span class="pre">Test.api_lobby_fixtures.</span></span><span class="sig-name descname"><span class="pre">create_lobby_msg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Test/api_lobby_fixtures.html#create_lobby_msg"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_fixtures.create_lobby_msg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_fixtures.empty_lobby_msg">
+<span class="sig-prename descclassname"><span class="pre">Test.api_lobby_fixtures.</span></span><span class="sig-name descname"><span class="pre">empty_lobby_msg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Test/api_lobby_fixtures.html#empty_lobby_msg"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_fixtures.empty_lobby_msg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_fixtures.join_lobby_as_p1_msg">
+<span class="sig-prename descclassname"><span class="pre">Test.api_lobby_fixtures.</span></span><span class="sig-name descname"><span class="pre">join_lobby_as_p1_msg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Test/api_lobby_fixtures.html#join_lobby_as_p1_msg"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_fixtures.join_lobby_as_p1_msg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_fixtures.join_lobby_as_p2_msg">
+<span class="sig-prename descclassname"><span class="pre">Test.api_lobby_fixtures.</span></span><span class="sig-name descname"><span class="pre">join_lobby_as_p2_msg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Test/api_lobby_fixtures.html#join_lobby_as_p2_msg"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_fixtures.join_lobby_as_p2_msg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_fixtures.join_lobby_as_sp_msg">
+<span class="sig-prename descclassname"><span class="pre">Test.api_lobby_fixtures.</span></span><span class="sig-name descname"><span class="pre">join_lobby_as_sp_msg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Test/api_lobby_fixtures.html#join_lobby_as_sp_msg"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_fixtures.join_lobby_as_sp_msg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_fixtures.join_lobby_msg">
+<span class="sig-prename descclassname"><span class="pre">Test.api_lobby_fixtures.</span></span><span class="sig-name descname"><span class="pre">join_lobby_msg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Test/api_lobby_fixtures.html#join_lobby_msg"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_fixtures.join_lobby_msg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_fixtures.leave_lobby_msg">
+<span class="sig-prename descclassname"><span class="pre">Test.api_lobby_fixtures.</span></span><span class="sig-name descname"><span class="pre">leave_lobby_msg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Test/api_lobby_fixtures.html#leave_lobby_msg"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_fixtures.leave_lobby_msg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_fixtures.lobby_status_msg">
+<span class="sig-prename descclassname"><span class="pre">Test.api_lobby_fixtures.</span></span><span class="sig-name descname"><span class="pre">lobby_status_msg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Test/api_lobby_fixtures.html#lobby_status_msg"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_fixtures.lobby_status_msg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_fixtures.max_response_time">
+<span class="sig-prename descclassname"><span class="pre">Test.api_lobby_fixtures.</span></span><span class="sig-name descname"><span class="pre">max_response_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/Test/api_lobby_fixtures.html#max_response_time"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_fixtures.max_response_time" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_fixtures.pos_msg">
+<span class="sig-prename descclassname"><span class="pre">Test.api_lobby_fixtures.</span></span><span class="sig-name descname"><span class="pre">pos_msg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Test/api_lobby_fixtures.html#pos_msg"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_fixtures.pos_msg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_fixtures.swap_msg">
+<span class="sig-prename descclassname"><span class="pre">Test.api_lobby_fixtures.</span></span><span class="sig-name descname"><span class="pre">swap_msg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Test/api_lobby_fixtures.html#swap_msg"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_fixtures.swap_msg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_fixtures.web_socket_uri">
+<span class="sig-prename descclassname"><span class="pre">Test.api_lobby_fixtures.</span></span><span class="sig-name descname"><span class="pre">web_socket_uri</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/Test/api_lobby_fixtures.html#web_socket_uri"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_fixtures.web_socket_uri" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-Test.api_lobby_test">
+<span id="test-api-lobby-test-module"></span><h2>Test.api_lobby_test module<a class="headerlink" href="#module-Test.api_lobby_test" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_creating_multiple_lobbies">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_creating_multiple_lobbies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_creating_multiple_lobbies"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_creating_multiple_lobbies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_get_pos_of_lobby_creator">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_get_pos_of_lobby_creator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_get_pos_of_lobby_creator"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_get_pos_of_lobby_creator" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_get_pos_of_p2">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_get_pos_of_p2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_lobby_as_p2_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_get_pos_of_p2"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_get_pos_of_p2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_get_pos_of_sp">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_get_pos_of_sp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_lobby_as_sp_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_get_pos_of_sp"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_get_pos_of_sp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_get_pos_with_no_lobby">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_get_pos_with_no_lobby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_get_pos_with_no_lobby"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_get_pos_with_no_lobby" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_joining_existing_lobby">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_joining_existing_lobby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_joining_existing_lobby"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_joining_existing_lobby" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_joining_multiple_lobbies">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_joining_multiple_lobbies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_joining_multiple_lobbies"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_joining_multiple_lobbies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_joining_non_existing_lobby">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_joining_non_existing_lobby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_joining_non_existing_lobby"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_joining_non_existing_lobby" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_leaving_current_lobby">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_leaving_current_lobby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_leaving_current_lobby"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_leaving_current_lobby" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_leaving_non_existing_lobby">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_leaving_non_existing_lobby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_leaving_non_existing_lobby"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_leaving_non_existing_lobby" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_lobby_creation">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_lobby_creation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_lobby_creation"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_lobby_creation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_lobby_status">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_lobby_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lobby_status_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_lobby_as_p2_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_lobby_as_sp_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_lobby_status"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_lobby_status" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_non_sense_lobby_command_key">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_non_sense_lobby_command_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_non_sense_lobby_command_key"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_non_sense_lobby_command_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_none_lobby_command_key">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_none_lobby_command_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_none_lobby_command_key"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_none_lobby_command_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_swap_player">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_swap_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swap_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_swap_player"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_swap_player" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_swap_player_to_non_sense_pos">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_swap_player_to_non_sense_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swap_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_swap_player_to_non_sense_pos"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_swap_player_to_non_sense_pos" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_swap_player_to_none_pos">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_swap_player_to_none_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swap_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_swap_player_to_none_pos"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_swap_player_to_none_pos" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_swap_player_to_undefined_pos">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_swap_player_to_undefined_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swap_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_swap_player_to_undefined_pos"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_swap_player_to_undefined_pos" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_swap_player_when_occupied">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_swap_player_when_occupied</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_lobby_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swap_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_swap_player_when_occupied"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_swap_player_when_occupied" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_swap_player_while_not_in_lobby">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_swap_player_while_not_in_lobby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swap_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_swap_player_while_not_in_lobby"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_swap_player_while_not_in_lobby" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.api_lobby_test.test_websocket_connection">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.api_lobby_test.</span></span><span class="sig-name descname"><span class="pre">test_websocket_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">web_socket_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_response_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Test/api_lobby_test.html#test_websocket_connection"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.api_lobby_test.test_websocket_connection" title="Link to this definition"></a></dt>
+<dd><p>Checks if a workin connection could be established at all</p>
+</dd></dl>
+
+</section>
+<section id="module-Test.utils">
+<span id="test-utils-module"></span><h2>Test.utils module<a class="headerlink" href="#module-Test.utils" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.utils.from_json">
+<span class="sig-prename descclassname"><span class="pre">Test.utils.</span></span><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Test/utils.html#from_json"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.utils.from_json" title="Link to this definition"></a></dt>
+<dd><p>type safe conversion of a json-string into a dict</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.utils.send">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Test.utils.</span></span><span class="sig-name descname"><span class="pre">send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ClientConnection</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Test/utils.html#send"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.utils.send" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Test.utils.to_json">
+<span class="sig-prename descclassname"><span class="pre">Test.utils.</span></span><span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/Test/utils.html#to_json"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Test.utils.to_json" title="Link to this definition"></a></dt>
+<dd><p>type safe conversion of a dict to a json-string</p>
+</dd></dl>
+
+</section>
+<section id="module-Test">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Test" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Server.html" class="btn btn-neutral float-left" title="Server package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+        <a href="Tools.html" class="btn btn-neutral float-right" title="Tools package" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

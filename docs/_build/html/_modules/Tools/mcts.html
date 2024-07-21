@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tools.mcts &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Tools.mcts</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Tools.mcts</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Constants</span>
+<span class="n">EPS</span> <span class="o">=</span> <span class="mf">1e-8</span>  <span class="c1"># Small value to prevent division by zero errors</span>
+
+<span class="c1"># Setting up logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MCTS">
+<a class="viewcode-back" href="../../Tools.html#Tools.mcts.MCTS">[Doku]</a>
+<span class="k">class</span> <span class="nc">MCTS</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game</span><span class="p">,</span> <span class="n">nnet</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the MCTS (Monte Carlo Tree Search) object with the game, neural network, and arguments.</span>
+
+<span class="sd">        :param game: The game object containing game-specific logic.</span>
+<span class="sd">        :param nnet: The neural network used for predicting policy and value.</span>
+<span class="sd">        :param args: Arguments containing various MCTS parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="n">game</span>  <span class="c1"># Game object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nnet</span> <span class="o">=</span> <span class="n">nnet</span>  <span class="c1"># Neural network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>  <span class="c1"># Arguments for MCTS</span>
+
+        <span class="c1"># Dictionaries to store MCTS values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Qsa</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Q values for state-action pairs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Nsa</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Visit count for state-action pairs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ns</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Visit count for states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Initial policy returned by the neural network</span>
+
+        <span class="c1"># Game state storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Vs</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Valid moves for states</span>
+
+        <span class="c1"># Action tracking</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">act_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sanctioned_acts</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List of sanctioned actions to avoid infinite loops</span>
+
+<div class="viewcode-block" id="MCTS.get_action_prob">
+<a class="viewcode-back" href="../../Tools.html#Tools.mcts.MCTS.get_action_prob">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get_action_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the action probabilities for the given board state using MCTS.</span>
+
+<span class="sd">        :param board: The current state of the board in its canonical form.</span>
+<span class="sd">        :param temp: Temperature parameter for exploration. Lower values make the policy more deterministic.</span>
+<span class="sd">        :param cur_player: The player who is in turn.</span>
+<span class="sd">        :return: A list of action probabilities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Perform MCTS simulations</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">numMCTSSims</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)</span>
+
+        <span class="c1"># Get the string representation of the board</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">stringRepresentation</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+        <span class="c1"># Get the visit counts for each action</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nsa</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)]</span> <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nsa</span> <span class="k">else</span> <span class="mi">0</span>
+                  <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getActionSize</span><span class="p">())]</span>
+
+        <span class="k">if</span> <span class="n">temp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Deterministic action selection</span>
+            <span class="n">best_as</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">counts</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">counts</span><span class="p">)))</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">best_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">best_as</span><span class="p">)</span>
+            <span class="n">probs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span>
+            <span class="n">probs</span><span class="p">[</span><span class="n">best_a</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">probs</span>
+
+        <span class="c1"># Apply temperature to visit counts</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">temp</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">counts</span><span class="p">]</span>
+        <span class="n">counts_sum</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">))</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">/</span> <span class="n">counts_sum</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">counts</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">probs</span></div>
+
+
+<div class="viewcode-block" id="MCTS.search">
+<a class="viewcode-back" href="../../Tools.html#Tools.mcts.MCTS.search">[Doku]</a>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a single MCTS search from the given board state.</span>
+
+<span class="sd">        :param board: The current state of the board in its canonical form.</span>
+<span class="sd">        :param cur_player: The current player.</span>
+<span class="sd">        :return: The negative value of the board state from the current player&#39;s perspective.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">stringRepresentation</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+
+        <span class="c1"># Check if the game has ended for this state</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getGameEnded</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">status</span>
+
+        <span class="n">valids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getValidMoves</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Vs</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)]</span> <span class="o">=</span> <span class="n">valids</span>
+
+        <span class="c1"># If this state has not been visited before, it is a leaf node</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)],</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nnet</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)]</span> <span class="o">*</span> <span class="n">valids</span>  <span class="c1"># Mask invalid moves</span>
+            <span class="n">sum_ps_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)])</span>
+            <span class="k">if</span> <span class="n">sum_ps_s</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)]</span> <span class="o">/=</span> <span class="n">sum_ps_s</span>  <span class="c1"># Renormalize</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;All valid moves were masked, doing a workaround.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)]</span> <span class="o">+</span> <span class="n">valids</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)]</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">Ns</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">v</span>
+
+        <span class="n">cur_best</span> <span class="o">=</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+        <span class="n">best_act</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="c1"># Select action with highest upper confidence bound</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getActionSize</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">valids</span><span class="p">[</span><span class="n">a</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Qsa</span><span class="p">:</span>
+                    <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Qsa</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">cpuct</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)][</span><span class="n">a</span><span class="p">]</span> <span class="o">*</span>
+                         <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Ns</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nsa</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">cpuct</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)][</span><span class="n">a</span><span class="p">]</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Ns</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)]</span> <span class="o">+</span> <span class="n">EPS</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">u</span> <span class="o">&gt;</span> <span class="n">cur_best</span><span class="p">:</span>
+                    <span class="n">cur_best</span> <span class="o">=</span> <span class="n">u</span>
+                    <span class="n">best_act</span> <span class="o">=</span> <span class="n">a</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="n">best_act</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>  <span class="c1"># Translate index to actual move</span>
+        <span class="n">next_s</span><span class="p">,</span> <span class="n">next_player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getNextState</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">next_s</span><span class="p">,</span> <span class="n">next_player</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Qsa</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Qsa</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)]</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Nsa</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">Qsa</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)]</span> <span class="o">+</span> <span class="n">v</span><span class="p">)</span> <span class="o">/</span>
+                                            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Nsa</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Nsa</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Qsa</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Nsa</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">a</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ns</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">v</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

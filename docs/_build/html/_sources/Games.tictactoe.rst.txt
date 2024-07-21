@@ -1,0 +1,29 @@
+Games.tictactoe package
+=======================
+
+Submodules
+----------
+
+Games.tictactoe.TicTacToeGame module
+------------------------------------
+
+.. automodule:: Games.tictactoe.TicTacToeGame
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Games.tictactoe.TicTacToeLogic module
+-------------------------------------
+
+.. automodule:: Games.tictactoe.TicTacToeLogic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Games.tictactoe
+   :members:
+   :undoc-members:
+   :show-inheritance:

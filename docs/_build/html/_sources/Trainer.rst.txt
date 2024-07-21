@@ -1,0 +1,37 @@
+Trainer package
+===============
+
+Submodules
+----------
+
+Trainer.arena module
+--------------------
+
+.. automodule:: Trainer.arena
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Trainer.coach module
+--------------------
+
+.. automodule:: Trainer.coach
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Trainer.main module
+-------------------
+
+.. automodule:: Trainer.main
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Trainer
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Games.tictactoe package &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=245627df"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/translations.js?v=79cc9f76"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="genindex.html" />
+    <link rel="search" title="Suche" href="search.html" />
+    <link rel="next" title="Server package" href="Server.html" />
+    <link rel="prev" title="Games.othello package" href="Games.othello.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Projekt</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="GameClient.html">GameClient package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="Games.html">Games package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="Games.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="Games.checkers.html">Games.checkers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Games.connect4.html">Games.connect4 package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Games.nim.html">Games.nim package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Games.othello.html">Games.othello package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Games.tictactoe package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Games.html#module-Games">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Server.html">Server package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Test.html">Test package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools.html">Tools package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Trainer.html">Trainer package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Projekt</a></li>
+          <li class="breadcrumb-item"><a href="Games.html">Games package</a></li>
+      <li class="breadcrumb-item active">Games.tictactoe package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Games.tictactoe.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="games-tictactoe-package">
+<h1>Games.tictactoe package<a class="headerlink" href="#games-tictactoe-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-Games.tictactoe.TicTacToeGame">
+<span id="games-tictactoe-tictactoegame-module"></span><h2>Games.tictactoe.TicTacToeGame module<a class="headerlink" href="#module-Games.tictactoe.TicTacToeGame" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Games.tictactoe.TicTacToeGame.</span></span><span class="sig-name descname"><span class="pre">TicTacToeGame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="Tools.html#Tools.i_game.IGame" title="Tools.i_game.IGame"><code class="xref py py-class docutils literal notranslate"><span class="pre">IGame</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_moves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cur_player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame.draw"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame.draw" title="Link to this definition"></a></dt>
+<dd><p>Draw the game representation onto a Pygame surface.</p>
+<p>This method is responsible for rendering the current game state represented by <cite>board</cite>
+onto a Pygame surface. This surface will be returned in bytes format, twice.
+One representation for player1, the other one mirrored for player2.</p>
+<dl>
+<dt>Parameters:</dt><dd><dl class="simple">
+<dt>board (np.array): A NumPy array representing the game state. The array should contain</dt><dd><p>the necessary information to visualize the current state of the game.</p>
+</dd>
+</dl>
+<p>valid_moves: Whether displaying / drawing valid moves or not.
+cur_player: The player who is in turn (1 for one player, -1 for the other player).
+args: first arg is from_pos (int): The from_pos to get the valid moves for.</p>
+<blockquote>
+<div><p>That argument is only for games where to move tokens.
+For Games in which to just one-time set tokens, this arg is redundant
+and need to get no further attention.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>pygame.Surface</p>
+</dd>
+</dl>
+<p>Notes:
+- The <cite>board</cite> parameter should be a NumPy array representing the game state in a structured</p>
+<blockquote>
+<div><p>format suitable for visualization. The specific structure and meaning of the array’s
+contents are defined by the concrete implementations of <cite>Drawable</cite>.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Needs to handle invalid from_pos for displaying valid moves (None / invalid pos).</p></li>
+<li><p>The method should handle the rendering of the game state based on the provided <cite>board</cite>
+data and any additional optional arguments (<cite>args</cite>). The resulting surface should
+visually represent the game’s current state.</p></li>
+<li><p>Implementations of this method should ensure that the returned surface is ready for
+display within a Pygame environment, such as by initializing the Pygame library and
+handling any necessary graphical operations.</p></li>
+</ul>
+<dl>
+<dt>Example Usage:</dt><dd><p># Example implementation for drawing a game state
+surface = pygame.Surface((800, 600))  # Create a Pygame surface
+surface.fill((255, 255, 255))         # Fill with white background</p>
+<p># Render game state onto the surface based on <cite>board</cite> data
+# Example: Draw a grid based on the <cite>board</cite> content
+cell_size = 50
+for i in range(board.shape[0]):</p>
+<blockquote>
+<div><dl class="simple">
+<dt>for j in range(board.shape[1]):</dt><dd><dl class="simple">
+<dt>if board[i, j] == 1:</dt><dd><p>pygame.draw.rect(surface, (0, 0, 0), (j * cell_size, i * cell_size, cell_size, cell_size))</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p>return surface</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame.drawTerminal">
+<span class="sig-name descname"><span class="pre">drawTerminal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_moves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cur_player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame.drawTerminal"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame.drawTerminal" title="Link to this definition"></a></dt>
+<dd><p>Displays a terminal representation of the game board for debugging purposes.</p>
+<dl>
+<dt>Parameters:</dt><dd><p>board (numpy.array): The game board represented as a numpy array.
+valid_moves: Whether displaying / drawing valid moves or not.
+cur_player: The current player (1 for one player, -1 for the other player).
+args: first arg is from_pos (int): The from_pos to get the valid moves for.</p>
+<blockquote>
+<div><p>That argument is only for games where to move tokens.
+For Games in which to just one-time set tokens, this arg is redundant
+and need to get no further attention.</p>
+</div></blockquote>
+</dd>
+<dt>Notes:</dt><dd><p>-Needs to handle invalid from_pos for displaying valid moves (None / invalid pos).</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: The terminal representation of the board.</p>
+</dd>
+</dl>
+<p>This method is intended to visually display the current state of the game board
+in a terminal/console environment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame.getActionSize">
+<span class="sig-name descname"><span class="pre">getActionSize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame.getActionSize"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame.getActionSize" title="Link to this definition"></a></dt>
+<dd><p>return number of actions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame.getBoardSize">
+<span class="sig-name descname"><span class="pre">getBoardSize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame.getBoardSize"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame.getBoardSize" title="Link to this definition"></a></dt>
+<dd><p>Get the dimensions of the game board.</p>
+<dl>
+<dt>Returns:</dt><dd><p>x (int): the one-dimensional size of the game board.
+(x, y) (tuple[int, int]): A tuple representing the dimensions of the game board.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>x</cite> (int): The number of rows in the board.</p></li>
+<li><p><cite>y</cite> (int): The number of columns in the board.</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<p>This method returns a tuple <cite>(x, y)</cite> representing the dimensions (number of rows and columns)
+of the game board. The values <cite>x</cite> and <cite>y</cite> indicate the size or shape of the board grid.</p>
+<dl class="simple">
+<dt>Example:</dt><dd><p>If implemented for a game like tic-tac-toe, <cite>getBoardSize</cite> might return <cite>(3, 3)</cite>,
+representing a 3x3 grid for the game board.</p>
+</dd>
+<dt>Note:</dt><dd><p>The tuple <cite>(x, y)</cite> should accurately reflect the dimensions of the game board,
+providing information about its structure and layout.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame.getGameEnded">
+<span class="sig-name descname"><span class="pre">getGameEnded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame.getGameEnded"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame.getGameEnded" title="Link to this definition"></a></dt>
+<dd><p>return 0 if not ended, 1 if player won, -1 if player lost</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame.getInitBoard">
+<span class="sig-name descname"><span class="pre">getInitBoard</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame.getInitBoard"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame.getInitBoard" title="Link to this definition"></a></dt>
+<dd><p>return initial board (numpy board)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame.getNextState">
+<span class="sig-name descname"><span class="pre">getNextState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame.getNextState"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame.getNextState" title="Link to this definition"></a></dt>
+<dd><p>if player takes action on board, return next (board,player)
+action must be a valid move</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame.getSymmetries">
+<span class="sig-name descname"><span class="pre">getSymmetries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame.getSymmetries"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame.getSymmetries" title="Link to this definition"></a></dt>
+<dd><p>Generate symmetrical forms of the given board and corresponding policy vector.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>board (numpy.array): The current game board represented as a numpy array.
+pi (numpy.array): The policy vector of size <cite>self.getActionSize()</cite>, providing action probabilities.</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>symmForms (list): A list of tuples (board, pi) where each tuple represents a symmetrical</dt><dd><p>form of the board and the corresponding policy vector <cite>pi</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>This method generates symmetrical transformations of the given board along with the associated
+policy vector <cite>pi</cite>. The purpose is to create additional training data for the neural network by
+considering different orientations or reflections of the board, which helps in enhancing the
+model’s ability to generalize across different board configurations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame.getValidMoves">
+<span class="sig-name descname"><span class="pre">getValidMoves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame.getValidMoves"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame.getValidMoves" title="Link to this definition"></a></dt>
+<dd><p>return a fixed size binary vector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame.rotateMove">
+<span class="sig-name descname"><span class="pre">rotateMove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">move</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame.rotateMove"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame.rotateMove" title="Link to this definition"></a></dt>
+<dd><p>no rotation at TTT</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame.stringRepresentation">
+<span class="sig-name descname"><span class="pre">stringRepresentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame.stringRepresentation"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame.stringRepresentation" title="Link to this definition"></a></dt>
+<dd><p>Convert the current game board into a string format required for hashing, used by Monte Carlo Tree Search (MCTS).</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>board (numpy.array): The current game board represented as a numpy array.</p>
+</dd>
+<dt>Returns:</dt><dd><p>boardString (str): A string representation of the board suitable for hashing in MCTS.</p>
+</dd>
+</dl>
+<p>This method is used to convert the current game board into a string format that can be used as a unique identifier
+for the board state within the context of Monte Carlo Tree Search (MCTS). The resulting string representation is
+used for efficient state hashing and lookup during the MCTS simulation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeGame.TicTacToeGame.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeGame.html#TicTacToeGame.translate"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeGame.TicTacToeGame.translate" title="Link to this definition"></a></dt>
+<dd><p>Converts an index coming from alpha zero AI into an action.
+Comes into effect for games that do not just have a to_position (just an int as move).
+The output depends on the game getting implemented, most likely it’s a pair tuple (from_position, to_position),
+but it can also be a triplet tuple and so on - depending on the game.
+Alpha-zero AI generates just an index that needs to get converted back into the original move by comparison
+with the valid_moves method from the logic.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>index (int): The index of the move to translate.
+board (np.array): The current game board represented as a numpy array.
+player (int): The current player (1 for one player, -1 for the other player).</p>
+</dd>
+<dt>Returns:</dt><dd><p>action (any): The action fitting to the index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-Games.tictactoe.TicTacToeLogic">
+<span id="games-tictactoe-tictactoelogic-module"></span><h2>Games.tictactoe.TicTacToeLogic module<a class="headerlink" href="#module-Games.tictactoe.TicTacToeLogic" title="Link to this heading"></a></h2>
+<p>Board class for the game of TicTacToe.
+Default board size is 3x3.
+Board data:</p>
+<blockquote>
+<div><p>1=white(O), -1=black(X), 0=empty
+first dim is column , 2nd is row:</p>
+<blockquote>
+<div><p>pieces[0][0] is the top left square,
+pieces[2][0] is the bottom left square,</p>
+</div></blockquote>
+</div></blockquote>
+<p>Squares are stored and manipulated as (x,y) tuples.</p>
+<p>Author: Evgeny Tyurin, github.com/evg-tyurin
+Date: Jan 5, 2018.</p>
+<p>Based on the board for the game of Othello by Eric P. Nichols.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeLogic.Board">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Games.tictactoe.TicTacToeLogic.</span></span><span class="sig-name descname"><span class="pre">Board</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeLogic.html#Board"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeLogic.Board" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeLogic.Board.execute_move">
+<span class="sig-name descname"><span class="pre">execute_move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">move</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeLogic.html#Board.execute_move"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeLogic.Board.execute_move" title="Link to this definition"></a></dt>
+<dd><p>Perform the given move on the board; 
+color gives the color pf the piece to play (1=white,-1=black)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeLogic.Board.get_legal_moves">
+<span class="sig-name descname"><span class="pre">get_legal_moves</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeLogic.html#Board.get_legal_moves"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeLogic.Board.get_legal_moves" title="Link to this definition"></a></dt>
+<dd><p>Returns all the legal moves for the given color.
+(1 for white, -1 for black)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeLogic.Board.has_legal_moves">
+<span class="sig-name descname"><span class="pre">has_legal_moves</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeLogic.html#Board.has_legal_moves"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeLogic.Board.has_legal_moves" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Games.tictactoe.TicTacToeLogic.Board.is_win">
+<span class="sig-name descname"><span class="pre">is_win</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Games/tictactoe/TicTacToeLogic.html#Board.is_win"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Games.tictactoe.TicTacToeLogic.Board.is_win" title="Link to this definition"></a></dt>
+<dd><p>Check whether the given player has collected a triplet in any direction; 
+&#64;param color (1=white,-1=black)</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-Games.tictactoe">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Games.tictactoe" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Games.othello.html" class="btn btn-neutral float-left" title="Games.othello package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+        <a href="Server.html" class="btn btn-neutral float-right" title="Server package" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

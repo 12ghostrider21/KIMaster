@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trainer.coach &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Trainer.coach</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Trainer.coach</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">pickle</span> <span class="kn">import</span> <span class="n">Pickler</span><span class="p">,</span> <span class="n">Unpickler</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">shuffle</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">Trainer.arena</span> <span class="kn">import</span> <span class="n">Arena</span>
+<span class="kn">from</span> <span class="nn">Tools.mcts</span> <span class="kn">import</span> <span class="n">MCTS</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">console_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+<span class="n">console_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console_handler</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Coach">
+<a class="viewcode-back" href="../../Trainer.html#Trainer.coach.Coach">[Doku]</a>
+<span class="k">class</span> <span class="nc">Coach</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class executes the self-play + learning. It uses the functions defined</span>
+<span class="sd">    in Game and NeuralNet. args are specified in main.py.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game</span><span class="p">,</span> <span class="n">nnet</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="n">game</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nnet</span> <span class="o">=</span> <span class="n">nnet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pnet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nnet</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">)</span>  <span class="c1"># the competitor network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mcts</span> <span class="o">=</span> <span class="n">MCTS</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">nnet</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trainExamplesHistory</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># history of examples from args.numItersForTrainExamplesHistory latest iterations</span>
+
+<div class="viewcode-block" id="Coach.executeEpisode">
+<a class="viewcode-back" href="../../Trainer.html#Trainer.coach.Coach.executeEpisode">[Doku]</a>
+    <span class="k">def</span> <span class="nf">executeEpisode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function executes one episode of self-play, starting with player 1.</span>
+<span class="sd">        As the game is played, each turn is added as a training example to</span>
+<span class="sd">        trainExamples. The game is played till the game ends. After the game</span>
+<span class="sd">        ends, the outcome of the game is used to assign values to each example</span>
+<span class="sd">        in trainExamples.</span>
+
+<span class="sd">        It uses a temp=1 if episodeStep &lt; tempThreshold, and thereafter</span>
+<span class="sd">        uses temp=0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            trainExamples: a list of examples of the form (canonicalBoard, currPlayer, pi,v)</span>
+<span class="sd">                           pi is the MCTS informed policy vector, v is +1 if</span>
+<span class="sd">                           the player eventually won the game, else -1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">trainExamples</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">board</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getInitBoard</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curPlayer</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">episodeStep</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">episodeStep</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">episodeStep</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tempThreshold</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mcts</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">)</span>
+            <span class="n">pi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcts</span><span class="o">.</span><span class="n">get_action_prob</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curPlayer</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="n">temp</span><span class="p">)</span>
+            <span class="n">sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getSymmetries</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="n">pi</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sym</span><span class="p">:</span>
+                <span class="n">trainExamples</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curPlayer</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span>
+
+            <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pi</span><span class="p">),</span> <span class="n">p</span><span class="o">=</span><span class="n">pi</span><span class="p">)</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curPlayer</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+            <span class="n">board</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curPlayer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getNextState</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curPlayer</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getGameEnded</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curPlayer</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">r</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">r</span> <span class="o">*</span> <span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">curPlayer</span><span class="p">)))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">trainExamples</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Coach.learn">
+<a class="viewcode-back" href="../../Trainer.html#Trainer.coach.Coach.learn">[Doku]</a>
+    <span class="k">def</span> <span class="nf">learn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs numIters iterations with numEps episodes of self-play in each</span>
+<span class="sd">        iteration. After every iteration, it retrains neural network with</span>
+<span class="sd">        examples in trainExamples (which has a maximum length of maxlenofQueue).</span>
+<span class="sd">        It then pits the new neural network against the old one and accepts it</span>
+<span class="sd">        only if it wins &gt;= updateThreshold fraction of games.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">current_iteration</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">current_iteration</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">numIters</span><span class="p">)):</span>
+            <span class="c1"># bookkeeping</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Starting Iter #</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> ...&#39;</span><span class="p">)</span>
+            <span class="c1"># examples of the iteration</span>
+            <span class="n">iterationTrainExamples</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([],</span> <span class="n">maxlen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">maxlenOfQueue</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">numEps</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Self Play&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mcts</span> <span class="o">=</span> <span class="n">MCTS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nnet</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>  <span class="c1"># reset search tree</span>
+                <span class="n">iterationTrainExamples</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executeEpisode</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getInitBoard</span><span class="p">()</span>  <span class="c1"># resets all data</span>
+
+            <span class="c1"># save the iteration examples to the history</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trainExamplesHistory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iterationTrainExamples</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainExamplesHistory</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">numItersForTrainExamplesHistory</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Removing the oldest entry in trainExamples. len(trainExamplesHistory) = </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainExamplesHistory</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">trainExamplesHistory</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># backup history to a file</span>
+            <span class="c1"># NB! the examples were collected using the model from the previous iteration, so (i-1)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">saveTrainExamples</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+            <span class="c1"># shuffle examples before training</span>
+            <span class="n">trainExamples</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainExamplesHistory</span><span class="p">:</span>
+                <span class="n">trainExamples</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">shuffle</span><span class="p">(</span><span class="n">trainExamples</span><span class="p">)</span>
+
+            <span class="c1"># training new network, keeping a copy of the old one</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nnet</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;temp.pth.tar&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pnet</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;temp.pth.tar&#39;</span><span class="p">)</span>
+            <span class="n">pmcts</span> <span class="o">=</span> <span class="n">MCTS</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">pnet</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">nnet</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">trainExamples</span><span class="p">)</span>
+            <span class="n">nmcts</span> <span class="o">=</span> <span class="n">MCTS</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">nnet</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;PITTING AGAINST PREVIOUS VERSION&#39;</span><span class="p">)</span>
+            <span class="n">arena</span> <span class="o">=</span> <span class="n">Arena</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pmcts</span><span class="o">.</span><span class="n">get_action_prob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="mi">0</span><span class="p">)),</span>
+                          <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">nmcts</span><span class="o">.</span><span class="n">get_action_prob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="mi">0</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">)</span>
+            <span class="n">pwins</span><span class="p">,</span> <span class="n">nwins</span><span class="p">,</span> <span class="n">draws</span> <span class="o">=</span> <span class="n">arena</span><span class="o">.</span><span class="n">playGames</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">arenaCompare</span><span class="p">)</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;NEW/PREV WINS : </span><span class="si">%d</span><span class="s1"> / </span><span class="si">%d</span><span class="s1"> ; DRAWS : </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nwins</span><span class="p">,</span> <span class="n">pwins</span><span class="p">,</span> <span class="n">draws</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">pwins</span> <span class="o">+</span> <span class="n">nwins</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">float</span><span class="p">(</span><span class="n">nwins</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">pwins</span> <span class="o">+</span> <span class="n">nwins</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">updateThreshold</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;REJECTING NEW MODEL&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nnet</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;temp.pth.tar&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;ACCEPTING NEW MODEL&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nnet</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">getCheckpointFile</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nnet</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;best.pth.tar&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Coach.getCheckpointFile">
+<a class="viewcode-back" href="../../Trainer.html#Trainer.coach.Coach.getCheckpointFile">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getCheckpointFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;checkpoint_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.pth.tar&#39;</span></div>
+
+
+<div class="viewcode-block" id="Coach.saveTrainExamples">
+<a class="viewcode-back" href="../../Trainer.html#Trainer.coach.Coach.saveTrainExamples">[Doku]</a>
+    <span class="k">def</span> <span class="nf">saveTrainExamples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="p">):</span>
+        <span class="n">folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">checkpoint</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCheckpointFile</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.examples&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;wb+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">Pickler</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainExamplesHistory</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">closed</span></div>
+
+
+<div class="viewcode-block" id="Coach.loadTrainExamples">
+<a class="viewcode-back" href="../../Trainer.html#Trainer.coach.Coach.loadTrainExamples">[Doku]</a>
+    <span class="k">def</span> <span class="nf">loadTrainExamples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">modelFile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">load_folder_file</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">load_folder_file</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">examplesFile</span> <span class="o">=</span> <span class="n">modelFile</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">examplesFile</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;File &quot;</span><span class="si">{</span><span class="n">examplesFile</span><span class="si">}</span><span class="s1">&quot; with trainExamples not found!&#39;</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Continue? [y|n]&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">!=</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;File with trainExamples found. Loading it...&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">examplesFile</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">trainExamplesHistory</span> <span class="o">=</span> <span class="n">Unpickler</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading done!&#39;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+Server package
+==============
+
+Submodules
+----------
+
+Server.connection\_manager module
+---------------------------------
+
+.. automodule:: Server.connection_manager
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Server.docker\_api module
+-------------------------
+
+.. automodule:: Server.docker_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Server.fastAPIServer module
+---------------------------
+
+.. automodule:: Server.fastAPIServer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Server.lobby module
+-------------------
+
+.. automodule:: Server.lobby
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Server.lobby\_manager module
+----------------------------
+
+.. automodule:: Server.lobby_manager
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Server.socketServer module
+--------------------------
+
+.. automodule:: Server.socketServer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Server.start module
+-------------------
+
+.. automodule:: Server.start
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Server
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tools.language_handler &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Tools.language_handler</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Tools.language_handler</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">csv</span>  <span class="c1"># Import the csv module to handle CSV file operations</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">auto</span><span class="p">,</span> <span class="n">Enum</span>  <span class="c1"># Import auto and Enum from the enum module to define enumerations</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">WebSocket</span>
+
+
+<span class="c1"># Define an enumeration called LANGUAGE to represent different languages</span>
+<div class="viewcode-block" id="LANGUAGE">
+<a class="viewcode-back" href="../../Tools.html#Tools.language_handler.LANGUAGE">[Doku]</a>
+<span class="k">class</span> <span class="nc">LANGUAGE</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">EN</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># English language</span>
+    <span class="n">DE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># German language</span>
+    <span class="n">FR</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># French language</span>
+    <span class="n">SP</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># Spanish language</span></div>
+
+
+
+<span class="c1"># Define a class called LanguageHandler to manage language data from a CSV file</span>
+<div class="viewcode-block" id="LanguageHandler">
+<a class="viewcode-back" href="../../Tools.html#Tools.language_handler.LanguageHandler">[Doku]</a>
+<span class="k">class</span> <span class="nc">LanguageHandler</span><span class="p">:</span>
+    <span class="c1"># Initialize the LanguageHandler with the path to a CSV file</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csv_file</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">csv_file</span> <span class="o">=</span> <span class="n">csv_file</span>  <span class="c1"># Store the CSV file path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_csv</span><span class="p">()</span>  <span class="c1"># Load the CSV data into a dictionary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">language_client</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">WebSocket</span><span class="p">,</span> <span class="n">LANGUAGE</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Private method to load data from the CSV file into a dictionary</span>
+    <span class="k">def</span> <span class="nf">_load_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Initialize an empty dictionary to store the data</span>
+        <span class="c1"># Open the CSV file in read mode with UTF-8-SIG encoding to handle BOM</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csv_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="c1"># Create a CSV DictReader to parse the CSV file with semicolon delimiter</span>
+            <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+            <span class="c1"># Iterate over each row in the CSV file</span>
+            <span class="n">row</span><span class="p">:</span> <span class="nb">dict</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
+                <span class="n">entry</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="n">key</span><span class="p">}</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">entry</span>
+        <span class="k">return</span> <span class="n">data</span>  <span class="c1"># Return the populated dictionary</span>
+
+    <span class="c1"># Method to retrieve a translation entry for a given key and language</span>
+<div class="viewcode-block" id="LanguageHandler.get">
+<a class="viewcode-back" href="../../Tools.html#Tools.language_handler.LanguageHandler.get">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_id</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
+        <span class="n">entry</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key_id</span><span class="p">))</span>  <span class="c1"># Get the entry for the given key as a dictionary</span>
+        <span class="k">if</span> <span class="n">client</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">language_client</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">language_client</span><span class="p">[</span><span class="n">client</span><span class="p">]</span> <span class="o">=</span> <span class="n">LANGUAGE</span><span class="o">.</span><span class="n">EN</span>
+        <span class="n">language</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">language_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">:</span>  <span class="c1"># If the entry exists</span>
+            <span class="k">return</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">language</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># Return the value for the specified language or None if not found</span>
+        <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># Return None if the entry does not exist</span></div>
+
+
+<div class="viewcode-block" id="LanguageHandler.update_language">
+<a class="viewcode-back" href="../../Tools.html#Tools.language_handler.LanguageHandler.update_language">[Doku]</a>
+    <span class="k">def</span> <span class="nf">update_language</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">language</span><span class="p">:</span> <span class="n">LANGUAGE</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">language_client</span><span class="p">[</span><span class="n">client</span><span class="p">]</span> <span class="o">=</span> <span class="n">language</span></div>
+
+
+<div class="viewcode-block" id="LanguageHandler.remove_client">
+<a class="viewcode-back" href="../../Tools.html#Tools.language_handler.LanguageHandler.remove_client">[Doku]</a>
+    <span class="k">def</span> <span class="nf">remove_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">client</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">language_client</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">language_client</span><span class="p">[</span><span class="n">client</span><span class="p">]</span></div>
+</div>
+
+
+
+<span class="c1"># If this script is run as the main program</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">LanguageHandler</span><span class="p">(</span><span class="s2">&quot;language.csv&quot;</span><span class="p">)</span>  <span class="c1"># Create an instance of LanguageHandler with the specified CSV file</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

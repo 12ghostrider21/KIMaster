@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameClient.arena &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">GameClient.arena</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für GameClient.arena</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+
+<span class="kn">from</span> <span class="nn">GameClient.player</span> <span class="kn">import</span> <span class="n">Player</span>
+<span class="kn">from</span> <span class="nn">Tools.Game_Config.difficulty</span> <span class="kn">import</span> <span class="n">EDifficulty</span>
+<span class="kn">from</span> <span class="nn">Tools.i_game</span> <span class="kn">import</span> <span class="n">IGame</span>
+<span class="kn">from</span> <span class="nn">Tools.rcode</span> <span class="kn">import</span> <span class="n">RCODE</span>
+
+
+<div class="viewcode-block" id="Arena">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.arena.Arena">[Doku]</a>
+<span class="k">class</span> <span class="nc">Arena</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_client</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_client</span> <span class="o">=</span> <span class="n">game_client</span>  <span class="c1"># need to send information over websocket connection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># var to stop battle if necessary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_index_p1</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_index_p2</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># configuration storage of current active battle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># [board, cur_player, iteration]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blunder_history</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># [board, cur_player, iteration, move]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blunder</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># saves blunder values for each index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blunder_calculation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># is true if a calculation request was send</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># whether rotating blunder actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># default start value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># needed in some response messages</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">:</span> <span class="n">IGame</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">difficulty</span><span class="p">:</span> <span class="n">EDifficulty</span> <span class="o">=</span> <span class="n">EDifficulty</span><span class="o">.</span><span class="n">easy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player2</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Arena.set_arena">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.arena.Arena.set_arena">[Doku]</a>
+    <span class="k">def</span> <span class="nf">set_arena</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game</span><span class="p">:</span> <span class="n">IGame</span><span class="p">,</span> <span class="n">game_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">difficulty</span><span class="p">:</span> <span class="n">EDifficulty</span><span class="p">,</span> <span class="n">play1</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">play2</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="n">game</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_name</span> <span class="o">=</span> <span class="n">game_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">difficulty</span> <span class="o">=</span> <span class="n">difficulty</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player1</span> <span class="o">=</span> <span class="n">play1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player2</span> <span class="o">=</span> <span class="n">play2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># reset history on new game configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blunder</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># reset blunder on new game configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blunder_history</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># reset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blunder_calculation</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># reset to default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># reset to default</span></div>
+
+
+<div class="viewcode-block" id="Arena.stop">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.arena.Arena.stop">[Doku]</a>
+    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Arena.append_history">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.arena.Arena.append_history">[Doku]</a>
+    <span class="k">def</span> <span class="nf">append_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">it</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">board</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">it</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Arena.kim_action">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.arena.Arena.kim_action">[Doku]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">kim_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">it</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_client</span><span class="o">.</span><span class="n">send_cmd</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;ai_move&quot;</span><span class="p">,</span> <span class="n">command_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">game_name</span><span class="p">,</span> <span class="n">p_pos</span><span class="o">=</span><span class="n">to</span><span class="p">,</span>
+                                        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;board&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                                              <span class="s2">&quot;cur_player&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_player</span><span class="p">,</span>
+                                              <span class="s2">&quot;it&quot;</span><span class="p">:</span> <span class="n">it</span><span class="p">,</span>
+                                              <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_client</span><span class="o">.</span><span class="n">key</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="Arena.play">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.arena.Arena.play">[Doku]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">it</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">evaluation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># initialisation of game</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">board</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getInitBoard</span><span class="p">()</span>
+        <span class="n">players</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">player2</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">player1</span><span class="p">]</span>  <span class="c1"># array of play functions</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getGameEnded</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.0001</span><span class="p">)</span>  <span class="c1"># is needed because of optimiser!</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">append_history</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">it</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_player</span> <span class="o">=</span> <span class="n">cur_player</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">players</span><span class="p">[</span><span class="n">cur_player</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># Broadcast current board and active player</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="vm">__func__</span> <span class="o">==</span> <span class="n">Player</span><span class="o">.</span><span class="n">playAI</span><span class="p">:</span>  <span class="c1"># send Different message if KIM is at turn</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_client</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_KIM</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cur_player&quot;</span><span class="p">:</span> <span class="s2">&quot;KIM&quot;</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_client</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_PLAYER</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cur_player&quot;</span><span class="p">:</span> <span class="n">cur_player</span><span class="p">})</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_client</span><span class="o">.</span><span class="n">broadcast_board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_name</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;p1&quot;</span> <span class="k">if</span> <span class="n">cur_player</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;p2&quot;</span>
+            <span class="n">ai</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.0001</span><span class="p">)</span>  <span class="c1"># is needed because of optimiser!</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">p</span><span class="p">()</span>  <span class="c1"># action can be (None) no move set, (int, tuple) on play action, (bool) ai_move request</span>
+                <span class="k">if</span> <span class="n">action</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>  <span class="c1"># do a request to server with ai move</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">kim_action</span><span class="p">(</span><span class="n">to</span><span class="p">,</span> <span class="n">it</span><span class="p">)</span>
+                    <span class="n">ai</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">continue</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getNextState</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_client</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_VALIDMOVE</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="n">to</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">ai</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">blunder_history</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">tmp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_player</span><span class="p">,</span> <span class="n">it</span><span class="p">,</span> <span class="n">action</span><span class="p">))</span>
+                    <span class="k">break</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">ai</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Fatal Error: Check AI move generator&quot;</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_client</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_INVALIDMOVE</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="n">to</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="s2">&quot;arena&quot;</span><span class="p">})</span>
+                    <span class="k">continue</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+                <span class="n">it</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">append_history</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="n">it</span><span class="p">)</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_client</span><span class="o">.</span><span class="n">broadcast_board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_name</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_client</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_GAMEOVER</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+                                                 <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">cur_player</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getGameEnded</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">)),</span>
+                                                  <span class="s2">&quot;turn&quot;</span><span class="p">:</span> <span class="n">it</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_index_p1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">)</span>  <span class="c1"># update index to history length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_index_p2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">)</span>  <span class="c1"># update index to history length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_client</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

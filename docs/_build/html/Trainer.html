@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trainer package &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=245627df"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/translations.js?v=79cc9f76"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="genindex.html" />
+    <link rel="search" title="Suche" href="search.html" />
+    <link rel="prev" title="Tools package" href="Tools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Projekt</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="GameClient.html">GameClient package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Games.html">Games package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Server.html">Server package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Test.html">Test package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools.html">Tools package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Trainer package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Trainer.arena">Trainer.arena module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Trainer.arena.Arena"><code class="docutils literal notranslate"><span class="pre">Arena</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Trainer.coach">Trainer.coach module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Trainer.coach.Coach"><code class="docutils literal notranslate"><span class="pre">Coach</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Trainer.main">Trainer.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Trainer.main.Entry"><code class="docutils literal notranslate"><span class="pre">Entry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Trainer.main.EntryGame"><code class="docutils literal notranslate"><span class="pre">EntryGame</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Trainer.main.Trainer"><code class="docutils literal notranslate"><span class="pre">Trainer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Trainer">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Projekt</a></li>
+      <li class="breadcrumb-item active">Trainer package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Trainer.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="trainer-package">
+<h1>Trainer package<a class="headerlink" href="#trainer-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-Trainer.arena">
+<span id="trainer-arena-module"></span><h2>Trainer.arena module<a class="headerlink" href="#module-Trainer.arena" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Trainer.arena.Arena">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Trainer.arena.</span></span><span class="sig-name descname"><span class="pre">Arena</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/arena.html#Arena"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.arena.Arena" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An Arena class where any 2 agents can be pit against each other.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Trainer.arena.Arena.playGame">
+<span class="sig-name descname"><span class="pre">playGame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/arena.html#Arena.playGame"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.arena.Arena.playGame" title="Link to this definition"></a></dt>
+<dd><p>Executes one episode of a game.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>either</dt><dd><p>winner: player who won the game (1 if player1, -1 if player2)</p>
+</dd>
+<dt>or</dt><dd><p>draw result returned from the game that is neither 1, -1, nor 0.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Trainer.arena.Arena.playGames">
+<span class="sig-name descname"><span class="pre">playGames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/arena.html#Arena.playGames"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.arena.Arena.playGames" title="Link to this definition"></a></dt>
+<dd><p>Plays num games in which player1 starts num/2 games and player2 starts
+num/2 games.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>one_won: games won by player1
+two_won: games won by player2
+draws:  games won by nobody</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-Trainer.coach">
+<span id="trainer-coach-module"></span><h2>Trainer.coach module<a class="headerlink" href="#module-Trainer.coach" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Trainer.coach.Coach">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Trainer.coach.</span></span><span class="sig-name descname"><span class="pre">Coach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nnet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/coach.html#Coach"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.coach.Coach" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class executes the self-play + learning. It uses the functions defined
+in Game and NeuralNet. args are specified in main.py.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Trainer.coach.Coach.executeEpisode">
+<span class="sig-name descname"><span class="pre">executeEpisode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/coach.html#Coach.executeEpisode"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.coach.Coach.executeEpisode" title="Link to this definition"></a></dt>
+<dd><p>This function executes one episode of self-play, starting with player 1.
+As the game is played, each turn is added as a training example to
+trainExamples. The game is played till the game ends. After the game
+ends, the outcome of the game is used to assign values to each example
+in trainExamples.</p>
+<p>It uses a temp=1 if episodeStep &lt; tempThreshold, and thereafter
+uses temp=0.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>trainExamples: a list of examples of the form (canonicalBoard, currPlayer, pi,v)</dt><dd><p>pi is the MCTS informed policy vector, v is +1 if
+the player eventually won the game, else -1.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Trainer.coach.Coach.getCheckpointFile">
+<span class="sig-name descname"><span class="pre">getCheckpointFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/coach.html#Coach.getCheckpointFile"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.coach.Coach.getCheckpointFile" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Trainer.coach.Coach.learn">
+<span class="sig-name descname"><span class="pre">learn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/coach.html#Coach.learn"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.coach.Coach.learn" title="Link to this definition"></a></dt>
+<dd><p>Performs numIters iterations with numEps episodes of self-play in each
+iteration. After every iteration, it retrains neural network with
+examples in trainExamples (which has a maximum length of maxlenofQueue).
+It then pits the new neural network against the old one and accepts it
+only if it wins &gt;= updateThreshold fraction of games.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Trainer.coach.Coach.loadTrainExamples">
+<span class="sig-name descname"><span class="pre">loadTrainExamples</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/coach.html#Coach.loadTrainExamples"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.coach.Coach.loadTrainExamples" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Trainer.coach.Coach.saveTrainExamples">
+<span class="sig-name descname"><span class="pre">saveTrainExamples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/coach.html#Coach.saveTrainExamples"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.coach.Coach.saveTrainExamples" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-Trainer.main">
+<span id="trainer-main-module"></span><h2>Trainer.main module<a class="headerlink" href="#module-Trainer.main" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Trainer.main.Entry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Trainer.main.</span></span><span class="sig-name descname"><span class="pre">Entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keras_nn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pytorch_nn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/main.html#Entry"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.main.Entry" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Trainer.main.Entry.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/main.html#Entry.check"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.main.Entry.check" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Trainer.main.Entry.game_path">
+<span class="sig-name descname"><span class="pre">game_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#Trainer.main.Entry.game_path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Trainer.main.Entry.keras_nn">
+<span class="sig-name descname"><span class="pre">keras_nn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#Trainer.main.Entry.keras_nn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Trainer.main.Entry.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#Trainer.main.Entry.key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Trainer.main.Entry.pytorch_nn">
+<span class="sig-name descname"><span class="pre">pytorch_nn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#Trainer.main.Entry.pytorch_nn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Trainer.main.EntryGame">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Trainer.main.</span></span><span class="sig-name descname"><span class="pre">EntryGame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/main.html#EntryGame"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.main.EntryGame" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Trainer.main.EntryGame.game_path">
+<span class="sig-name descname"><span class="pre">game_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#Trainer.main.EntryGame.game_path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Trainer.main.EntryGame.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#Trainer.main.EntryGame.key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Trainer.main.EntryGame.nn">
+<span class="sig-name descname"><span class="pre">nn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#Trainer.main.EntryGame.nn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Trainer.main.Trainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Trainer.main.</span></span><span class="sig-name descname"><span class="pre">Trainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/main.html#Trainer"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.main.Trainer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Trainer.main.Trainer.find_games">
+<span class="sig-name descname"><span class="pre">find_games</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/main.html#Trainer.find_games"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.main.Trainer.find_games" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Trainer.main.Trainer.find_highest_checkpoint_file">
+<span class="sig-name descname"><span class="pre">find_highest_checkpoint_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/main.html#Trainer.find_highest_checkpoint_file"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.main.Trainer.find_highest_checkpoint_file" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Trainer.main.Trainer.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Trainer/main.html#Trainer.run"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Trainer.main.Trainer.run" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-Trainer">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Trainer" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Tools.html" class="btn btn-neutral float-left" title="Tools package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

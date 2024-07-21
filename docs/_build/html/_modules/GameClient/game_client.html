@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameClient.game_client &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">GameClient.game_client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für GameClient.game_client</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">websockets</span> <span class="kn">import</span> <span class="n">ConnectionClosedError</span>
+
+<span class="kn">from</span> <span class="nn">GameClient.connection_manager</span> <span class="kn">import</span> <span class="n">WebSocketConnectionManager</span>
+<span class="kn">from</span> <span class="nn">GameClient.pit</span> <span class="kn">import</span> <span class="n">Pit</span>
+<span class="kn">from</span> <span class="nn">Tools.Game_Config.game_config</span> <span class="kn">import</span> <span class="n">GameConfig</span>
+<span class="kn">from</span> <span class="nn">Tools.rcode</span> <span class="kn">import</span> <span class="n">RCODE</span>
+<span class="kn">from</span> <span class="nn">Tools.dynamic_imports</span> <span class="kn">import</span> <span class="n">Importer</span><span class="p">,</span> <span class="n">ExcludeModule</span>
+
+<span class="c1"># Constant to define the maximum number of evaluations</span>
+<span class="n">MAX_EVAL_NUM</span> <span class="o">=</span> <span class="mi">100</span>
+
+
+<div class="viewcode-block" id="GameClient">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.game_client.GameClient">[Doku]</a>
+<span class="k">class</span> <span class="nc">GameClient</span><span class="p">(</span><span class="n">WebSocketConnectionManager</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the GameClient with host, port, and key. It also initializes the Importer and Pit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">importer</span><span class="p">:</span> <span class="n">Importer</span> <span class="o">=</span> <span class="n">Importer</span><span class="p">(</span><span class="s2">&quot;../Games&quot;</span><span class="p">,</span> <span class="n">ExcludeModule</span><span class="o">.</span><span class="n">MCTS</span><span class="p">)</span>  <span class="c1"># Importer for games excluding MCTS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="p">:</span> <span class="n">Pit</span> <span class="o">=</span> <span class="n">Pit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># Initialize the Pit object</span>
+
+<div class="viewcode-block" id="GameClient.run">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.game_client.GameClient.run">[Doku]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main loop to run the game client, handling incoming commands through a WebSocket connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>  <span class="c1"># Connect to the WebSocket server</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">read_object</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">receive_json</span><span class="p">()</span>  <span class="c1"># Await and receive a JSON object from the WebSocket</span>
+            <span class="k">except</span> <span class="n">ConnectionClosedError</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  <span class="c1"># Close the connection if there&#39;s an error</span>
+                <span class="k">break</span>
+            <span class="n">p_pos</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;p_pos&quot;</span><span class="p">)</span>  <span class="c1"># Get player position from the received JSON</span>
+            <span class="n">command_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;command_key&quot;</span><span class="p">)</span>  <span class="c1"># Get the command key from the received JSON</span>
+
+            <span class="k">match</span> <span class="n">command_key</span><span class="p">:</span>
+                <span class="c1"># Handling &#39;create&#39; command</span>
+                <span class="k">case</span> <span class="s2">&quot;create&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arena_running</span><span class="p">():</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_STILLRUNNING</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="n">game_config</span><span class="p">:</span> <span class="n">GameConfig</span> <span class="o">=</span> <span class="n">GameConfig</span><span class="o">.</span><span class="n">dict_to_config</span><span class="p">(</span><span class="n">read_object</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">importer</span><span class="o">.</span><span class="n">get_games</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">game_config</span><span class="o">.</span><span class="n">ready</span><span class="p">():</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_ARGS</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="n">p_pos</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">game_config</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+                        <span class="k">continue</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">init_arena</span><span class="p">(</span><span class="n">game_config</span><span class="p">)</span>  <span class="c1"># Initialize arena with game configuration</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">clear_arena</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">start_arena</span><span class="p">()</span>  <span class="c1"># Start the arena</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_ARENAINIT</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">game_config</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>  <span class="c1"># Update the state</span>
+
+                <span class="c1"># Handling &#39;surrender&#39; command</span>
+                <span class="k">case</span> <span class="s2">&quot;surrender&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arena_running</span><span class="p">():</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOTRUNNING</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">stop_arena</span><span class="p">()</span>  <span class="c1"># Stop the arena</span>
+                        <span class="n">winner</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p1&quot;</span> <span class="k">else</span> <span class="mi">1</span>  <span class="c1"># Determine the winner based on who surrendered</span>
+                        <span class="n">last_it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">get_last_hist_entry</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_SURRENDER</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">winner</span><span class="p">,</span>
+                                                                           <span class="s2">&quot;turn&quot;</span><span class="p">:</span> <span class="n">last_it</span><span class="p">})</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+                <span class="c1"># Handling &#39;valid_moves&#39; command</span>
+                <span class="k">case</span> <span class="s2">&quot;valid_moves&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arena_running</span><span class="p">():</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOTRUNNING</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">get_cur_player</span><span class="p">()</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p1&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOTYOURTURN</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="n">hist</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">get_last_hist_entry</span><span class="p">()</span>  <span class="c1"># Get the last history entry from the Pit</span>
+                    <span class="n">from_pos</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fromPos&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;isFrontend&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p2&quot;</span><span class="p">:</span>
+                        <span class="n">from_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">rotateMove</span><span class="p">(</span><span class="n">from_pos</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_board</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game_name</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">from_pos</span><span class="p">)</span>
+                    <span class="n">moves</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">i</span><span class="p">)</span>
+                             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">getValidMoves</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;isFrontend&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p2&quot;</span><span class="p">:</span>
+                        <span class="n">moves</span> <span class="o">=</span> <span class="nb">str</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">rotateMove</span><span class="p">(</span><span class="n">move</span><span class="p">)</span> <span class="k">for</span> <span class="n">move</span> <span class="ow">in</span> <span class="n">moves</span><span class="p">])</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_MOVES</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;moves&quot;</span><span class="p">:</span> <span class="n">moves</span><span class="p">})</span>
+
+                <span class="c1"># Handling &#39;make_move&#39; command</span>
+                <span class="k">case</span> <span class="s2">&quot;make_move&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arena_running</span><span class="p">():</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOTRUNNING</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>  <span class="c1"># Ignore moves if the game is not running</span>
+                    <span class="n">move</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;move&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">move</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOMOVE</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">move</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                        <span class="n">move</span> <span class="o">=</span> <span class="p">(</span><span class="n">move</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">move</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">move</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+                        <span class="n">move</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_input</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>  <span class="c1"># Parse the move input</span>
+                    <span class="k">if</span> <span class="n">move</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_INVALIDMOVE</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;isFrontend&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p2&quot;</span><span class="p">:</span>
+                        <span class="n">move</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">rotateMove</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">set_move</span><span class="p">(</span><span class="n">move</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">):</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOTYOURTURN</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+
+                <span class="c1"># Handling &#39;undo_move&#39; command</span>
+                <span class="k">case</span> <span class="s2">&quot;undo_move&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arena_running</span><span class="p">():</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOTRUNNING</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">get_cur_player</span><span class="p">()</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p1&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOTYOURTURN</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="n">num</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">num</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOUNDO</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>  <span class="c1"># Validate the number of moves to undo</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_INVALIDUNDO</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;num&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_INVALIDUNDO</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;num&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOUNDO</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">stop_arena</span><span class="p">()</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_VALIDUNDO</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                    <span class="n">state</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">undo</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>  <span class="c1"># Perform the undo operation</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">start_arena</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">it</span><span class="p">)</span>
+
+                <span class="c1"># Handling &#39;new_game&#39; command</span>
+                <span class="k">case</span> <span class="s2">&quot;new_game&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arena_running</span><span class="p">():</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_STILLRUNNING</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOGAMEINIT</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">clear_arena</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">start_arena</span><span class="p">()</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_ARENAINIT</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>  <span class="c1"># Update the state</span>
+
+                <span class="c1"># Handling &#39;blunder&#39; command (currently not implemented)</span>
+                <span class="k">case</span> <span class="s2">&quot;blunder&quot;</span><span class="p">:</span>
+                    <span class="c1"># if arena is running -&gt; break</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arena_running</span><span class="p">():</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_STILLRUNNING</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="c1"># if no action was played</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blunder_history</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOBLUNDER</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="c1"># check if blunder gets updated from server</span>
+                    <span class="n">blunder</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;blunder&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">blunder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">set_blunder</span><span class="p">(</span><span class="n">blunder</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blunder_calculation</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># blunder received deactivate function</span>
+                        <span class="c1"># successfully requested blunder</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_BLUNDERLIST</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="n">p_pos</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">get_blunder</span><span class="p">(</span><span class="n">p_pos</span><span class="p">))</span>
+                        <span class="k">continue</span>
+                    <span class="c1"># only one create request of blunder possible</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blunder_calculation</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_BLUNDER</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="c1"># request blunder create on first request</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blunder</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;isFrontend&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p2&quot;</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">rotate</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blunder_calculation</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_CREATEBLUNDER</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_cmd</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;blunder&quot;</span><span class="p">,</span> <span class="n">command_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game_name</span><span class="p">,</span>
+                                            <span class="n">p_pos</span><span class="o">=</span><span class="n">p_pos</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">get_blunder_payload</span><span class="p">())</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;isFrontend&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p2&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">rotate</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="c1"># successfully requested blunder</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_BLUNDERLIST</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="n">p_pos</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">get_blunder</span><span class="p">(</span><span class="n">p_pos</span><span class="p">))</span>
+
+                <span class="c1"># Handling &#39;timeline&#39; command</span>
+                <span class="k">case</span> <span class="s2">&quot;timeline&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arena_running</span><span class="p">():</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_STILLRUNNING</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="n">num</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">num</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOTIMELINE</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>  <span class="c1"># Validate the timeline input</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_INVALIDTIMELINE</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;num&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_INVALIDTIMELINE</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="n">state</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">timeline</span><span class="p">(</span><span class="n">p_pos</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_board</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p1&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game_name</span><span class="p">,</span>
+                                          <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_TIMELINE</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;current_player&quot;</span><span class="p">:</span> <span class="n">player</span><span class="p">,</span> <span class="s2">&quot;it&quot;</span><span class="p">:</span> <span class="n">it</span><span class="p">})</span>
+
+                <span class="c1"># Handling &#39;step&#39; command</span>
+                <span class="k">case</span> <span class="s2">&quot;step&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arena_running</span><span class="p">():</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_STILLRUNNING</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="n">state</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">timeline</span><span class="p">(</span><span class="n">p_pos</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_board</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p1&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game_name</span><span class="p">,</span>
+                                          <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;current_player&quot;</span><span class="p">:</span> <span class="n">player</span><span class="p">,</span> <span class="s2">&quot;it&quot;</span><span class="p">:</span> <span class="n">it</span><span class="p">,</span> <span class="s2">&quot;last_it&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">}</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_STEP</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+                <span class="c1"># Handling &#39;unstep&#39; command</span>
+                <span class="k">case</span> <span class="s2">&quot;unstep&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arena_running</span><span class="p">():</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_STILLRUNNING</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="n">state</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">timeline</span><span class="p">(</span><span class="n">p_pos</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_board</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p1&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game_name</span><span class="p">,</span>
+                                          <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;current_player&quot;</span><span class="p">:</span> <span class="n">player</span><span class="p">,</span> <span class="s2">&quot;it&quot;</span><span class="p">:</span> <span class="n">it</span><span class="p">,</span> <span class="s2">&quot;last_it&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">}</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_UNSTEP</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+                <span class="c1"># Handling extern request of current game image</span>
+                <span class="k">case</span> <span class="s2">&quot;image&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">board</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_board</span><span class="p">(</span><span class="n">board</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">board</span><span class="p">,</span>
+                                                       <span class="n">cur_player</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">cur_player</span><span class="p">,</span>
+                                                       <span class="n">game_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game_name</span><span class="p">,</span>
+                                                       <span class="n">valid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+                <span class="c1"># Handling unknown commands</span>
+                <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">COMMANDNOTFOUND</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="n">p_pos</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;command_key&quot;</span><span class="p">:</span> <span class="n">command_key</span><span class="p">})</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GameClient.start_arena">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.game_client.GameClient.start_arena">[Doku]</a>
+    <span class="k">def</span> <span class="nf">start_arena</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">it</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the game arena with optional initial board state, current player, and iteration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">start_battle</span><span class="p">(</span><span class="n">board</span><span class="o">=</span><span class="n">board</span><span class="p">,</span> <span class="n">cur_player</span><span class="o">=</span><span class="n">cur_player</span><span class="p">,</span> <span class="n">it</span><span class="o">=</span><span class="n">it</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GameClient.stop_arena">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.game_client.GameClient.stop_arena">[Doku]</a>
+    <span class="k">def</span> <span class="nf">stop_arena</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop the game arena.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">stop_battle</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GameClient.is_arena_running">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.game_client.GameClient.is_arena_running">[Doku]</a>
+    <span class="k">def</span> <span class="nf">is_arena_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the arena is currently running.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pit</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">running</span></div>
+
+
+<div class="viewcode-block" id="GameClient.update">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.game_client.GameClient.update">[Doku]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send an update command to the WebSocket server with the current game state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_cmd</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                             <span class="s2">&quot;game_running&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arena_running</span><span class="p">()})</span></div>
+
+
+<div class="viewcode-block" id="GameClient.parse_input">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.game_client.GameClient.parse_input">[Doku]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_input</span><span class="p">(</span><span class="n">input_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the input string to convert it into an appropriate format (integer or tuple).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">input_str</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_str</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">input_str</span>
+        <span class="k">if</span> <span class="n">input_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">input_str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">input_str</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">result</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_str</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

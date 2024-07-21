@@ -1,0 +1,12 @@
+Projekt
+=======
+
+.. toctree::
+   :maxdepth: 4
+
+   GameClient
+   Games
+   Server
+   Test
+   Tools
+   Trainer

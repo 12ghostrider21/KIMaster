@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test.utils &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Test.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Test.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">websockets.client</span> <span class="kn">import</span> <span class="n">ClientConnection</span>
+<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">dumps</span><span class="p">,</span> <span class="n">loads</span>
+
+
+<span class="c1"># Convert a dictionary to a JSON string</span>
+<span class="c1"># This function takes a dictionary as input and returns its JSON string representation.</span>
+<span class="c1"># It ensures that the conversion is type-safe by using the `dumps` method from the `json` module.</span>
+<div class="viewcode-block" id="to_json">
+<a class="viewcode-back" href="../../Test.html#Test.utils.to_json">[Doku]</a>
+<span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;type safe conversion of a dict to a json-string&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">dumps</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Convert a JSON string to a dictionary</span>
+<span class="c1"># This function takes a JSON string as input and returns its dictionary representation.</span>
+<span class="c1"># It ensures that the conversion is type-safe by using the `loads` method from the `json` module.</span>
+<div class="viewcode-block" id="from_json">
+<a class="viewcode-back" href="../../Test.html#Test.utils.from_json">[Doku]</a>
+<span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="n">json_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;type safe conversion of a json-string into a dict&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">loads</span><span class="p">(</span><span class="n">json_string</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Send a dictionary message over a WebSocket connection and receive a response</span>
+<span class="c1"># This asynchronous function sends a message (in dictionary form) over a WebSocket connection</span>
+<span class="c1"># and waits for a response. The message is first converted to a JSON string using `to_json`,</span>
+<span class="c1"># then sent over the WebSocket connection using the `send` method of the connection object.</span>
+<span class="c1"># After sending, it waits to receive a response, converts the response from JSON string back</span>
+<span class="c1"># to a dictionary using `from_json`, and returns this dictionary.</span>
+<div class="viewcode-block" id="send">
+<a class="viewcode-back" href="../../Test.html#Test.utils.send">[Doku]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="n">ClientConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to_json</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>  <span class="c1"># Send the JSON string representation of the message</span>
+    <span class="k">return</span> <span class="n">from_json</span><span class="p">(</span><span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">())</span>  <span class="c1"># Receive the response and convert it from JSON string to dictionary</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

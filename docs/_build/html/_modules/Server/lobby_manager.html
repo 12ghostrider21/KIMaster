@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Server.lobby_manager &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Server.lobby_manager</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Server.lobby_manager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">sha256</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">WebSocket</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
+
+<span class="kn">from</span> <span class="nn">Server.docker_api</span> <span class="kn">import</span> <span class="n">DockerAPI</span>
+<span class="kn">from</span> <span class="nn">Server.lobby</span> <span class="kn">import</span> <span class="n">Lobby</span>
+
+
+<div class="viewcode-block" id="LobbyManager">
+<a class="viewcode-back" href="../../Server.html#Server.lobby_manager.LobbyManager">[Doku]</a>
+<span class="k">class</span> <span class="nc">LobbyManager</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Initialize the LobbyManager with an empty dictionary of lobbies and a DockerAPI instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lobbies</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Lobby</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docker</span><span class="p">:</span> <span class="n">DockerAPI</span> <span class="o">=</span> <span class="n">DockerAPI</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_generate_lobby_key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># Generate a unique lobby key using the current UTC timestamp and SHA256 hash</span>
+        <span class="n">time_bytes</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>  <span class="c1"># current UTC timestamp to bytes</span>
+        <span class="n">sha256_hash</span> <span class="o">=</span> <span class="n">sha256</span><span class="p">(</span><span class="n">time_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>  <span class="c1"># Calculate the SHA256 hash of the timestamp bytes</span>
+        <span class="n">key_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;KEYLEN&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">key_len</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sha256_hash</span> <span class="o">=</span> <span class="n">sha256_hash</span><span class="p">[:</span><span class="n">key_len</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">sha256_hash</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lobbies</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># Check if the hash already exists in the lobbies dictionary</span>
+            <span class="c1"># Recursively generate a new lobby key if the hash already exists</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_lobby_key</span><span class="p">()</span>
+            <span class="c1"># Return the unique SHA256 hash</span>
+        <span class="k">return</span> <span class="n">sha256_hash</span>
+
+<div class="viewcode-block" id="LobbyManager.create_lobby">
+<a class="viewcode-back" href="../../Server.html#Server.lobby_manager.LobbyManager.create_lobby">[Doku]</a>
+    <span class="k">def</span> <span class="nf">create_lobby</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># Create a new lobby with a unique key</span>
+        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_lobby_key</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lobbies</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">Lobby</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docker</span><span class="o">.</span><span class="n">start_game_client</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">key</span></div>
+
+
+<div class="viewcode-block" id="LobbyManager.lobby_exist">
+<a class="viewcode-back" href="../../Server.html#Server.lobby_manager.LobbyManager.lobby_exist">[Doku]</a>
+    <span class="k">def</span> <span class="nf">lobby_exist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lobby_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Check if a lobby with the given key exists</span>
+        <span class="k">return</span> <span class="n">lobby_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lobbies</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="LobbyManager.remove_lobby">
+<a class="viewcode-back" href="../../Server.html#Server.lobby_manager.LobbyManager.remove_lobby">[Doku]</a>
+    <span class="k">def</span> <span class="nf">remove_lobby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lobby_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Remove a lobby with the given key</span>
+        <span class="n">removed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lobbies</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">lobby_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">removed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+    <span class="c1"># Client operations on lobbies</span>
+<div class="viewcode-block" id="LobbyManager.get_lobby">
+<a class="viewcode-back" href="../../Server.html#Server.lobby_manager.LobbyManager.get_lobby">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get_lobby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lobby</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Get the lobby that a client (WebSocket) or lobby key (str) is associated with</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lobbies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">lobby</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lobbies</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">lobby</span><span class="o">.</span><span class="n">in_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">lobby</span>
+            <span class="k">if</span> <span class="n">lobby</span><span class="o">.</span><span class="n">game_client</span> <span class="o">==</span> <span class="n">client</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">lobby</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="LobbyManager.leave_lobby">
+<a class="viewcode-back" href="../../Server.html#Server.lobby_manager.LobbyManager.leave_lobby">[Doku]</a>
+    <span class="k">def</span> <span class="nf">leave_lobby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Remove a client from their current lobby</span>
+        <span class="n">lobby</span><span class="p">:</span> <span class="n">Lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lobby</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># client not in a lobby to leave</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lobby</span><span class="o">.</span><span class="n">leave</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># error on leave</span>
+        <span class="k">if</span> <span class="n">lobby</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>  <span class="c1"># delete game_client on empty lobby</span>
+            <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__delete_task</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">lobby</span><span class="o">.</span><span class="n">key</span><span class="p">])</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>  <span class="c1"># leave without waiting on delete</span>
+        <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># successfully left</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__delete_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lobby_key</span><span class="p">):</span>
+        <span class="c1"># Internal method to remove a lobby and stop its game client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_lobby</span><span class="p">(</span><span class="n">lobby_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docker</span><span class="o">.</span><span class="n">stop_game_client</span><span class="p">(</span><span class="n">lobby_key</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LobbyManager.join_lobby">
+<a class="viewcode-back" href="../../Server.html#Server.lobby_manager.LobbyManager.join_lobby">[Doku]</a>
+    <span class="k">def</span> <span class="nf">join_lobby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lobby_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Add a client to a lobby in a specific position (p1, p2, sp)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lobby_exist</span><span class="p">(</span><span class="n">lobby_key</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># lobby does not exist</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lobbies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">lobby_key</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LobbyManager.swap_to">
+<a class="viewcode-back" href="../../Server.html#Server.lobby_manager.LobbyManager.swap_to">[Doku]</a>
+    <span class="k">def</span> <span class="nf">swap_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Swap the client&#39;s role to a new position (p1, p2, sp) within their lobby</span>
+        <span class="n">lobby</span><span class="p">:</span> <span class="n">Lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lobby</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># not in lobby</span>
+        <span class="k">match</span> <span class="n">pos</span><span class="p">:</span>
+            <span class="k">case</span> <span class="s2">&quot;p1&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">lobby</span><span class="o">.</span><span class="n">swap_to_p1</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+            <span class="k">case</span> <span class="s2">&quot;p2&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">lobby</span><span class="o">.</span><span class="n">swap_to_p2</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+            <span class="k">case</span> <span class="s2">&quot;sp&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">lobby</span><span class="o">.</span><span class="n">swap_to_spectator</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="LobbyManager.status_of_lobby">
+<a class="viewcode-back" href="../../Server.html#Server.lobby_manager.LobbyManager.status_of_lobby">[Doku]</a>
+    <span class="k">def</span> <span class="nf">status_of_lobby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lobby_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Get the status of a specific lobby</span>
+        <span class="n">lobby</span><span class="p">:</span> <span class="n">Lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lobbies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">lobby_key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lobby</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="k">if</span> <span class="n">lobby</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="LobbyManager.get_pos_of_client">
+<a class="viewcode-back" href="../../Server.html#Server.lobby_manager.LobbyManager.get_pos_of_client">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get_pos_of_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Get the position of a client (p1, p2, sp) within their lobby</span>
+        <span class="n">lobby</span><span class="p">:</span> <span class="n">Lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lobby</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">lobby</span><span class="o">.</span><span class="n">p1</span> <span class="o">==</span> <span class="n">client</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;p1&quot;</span>
+            <span class="k">if</span> <span class="n">lobby</span><span class="o">.</span><span class="n">p2</span> <span class="o">==</span> <span class="n">client</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;p2&quot;</span>
+            <span class="k">if</span> <span class="n">client</span> <span class="ow">in</span> <span class="n">lobby</span><span class="o">.</span><span class="n">spectator_list</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;sp&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># client not in a lobby</span></div>
+
+
+    <span class="c1"># GameClient operations</span>
+<div class="viewcode-block" id="LobbyManager.connect_game_client">
+<a class="viewcode-back" href="../../Server.html#Server.lobby_manager.LobbyManager.connect_game_client">[Doku]</a>
+    <span class="k">def</span> <span class="nf">connect_game_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lobby_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">game_client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Connect a game client to a specific lobby</span>
+        <span class="n">lobby</span><span class="p">:</span> <span class="n">Lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">lobby_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lobby</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># key does not exist</span>
+        <span class="n">lobby</span><span class="o">.</span><span class="n">game_client</span> <span class="o">=</span> <span class="n">game_client</span>
+        <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># game client connected with lobby</span></div>
+
+
+<div class="viewcode-block" id="LobbyManager.disconnect_game_client">
+<a class="viewcode-back" href="../../Server.html#Server.lobby_manager.LobbyManager.disconnect_game_client">[Doku]</a>
+    <span class="k">def</span> <span class="nf">disconnect_game_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Disconnect a game client from its lobby</span>
+        <span class="n">lobby</span><span class="p">:</span> <span class="n">Lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">game_client</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lobby</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># game client not in a lobby</span>
+        <span class="n">lobby</span><span class="o">.</span><span class="n">game_client</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># game client removed from lobby</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

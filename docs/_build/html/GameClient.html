@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameClient package &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=245627df"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/translations.js?v=79cc9f76"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="genindex.html" />
+    <link rel="search" title="Suche" href="search.html" />
+    <link rel="next" title="Games package" href="Games.html" />
+    <link rel="prev" title="Projekt" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Projekt</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">GameClient package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-GameClient.arena">GameClient.arena module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GameClient.arena.Arena"><code class="docutils literal notranslate"><span class="pre">Arena</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-GameClient.connection_manager">GameClient.connection_manager module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GameClient.connection_manager.WebSocketConnectionManager"><code class="docutils literal notranslate"><span class="pre">WebSocketConnectionManager</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-GameClient.game_client">GameClient.game_client module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GameClient.game_client.GameClient"><code class="docutils literal notranslate"><span class="pre">GameClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-GameClient.pit">GameClient.pit module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GameClient.pit.Pit"><code class="docutils literal notranslate"><span class="pre">Pit</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-GameClient.player">GameClient.player module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GameClient.player.Player"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-GameClient.start">GameClient.start module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GameClient.start.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-GameClient">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Games.html">Games package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Server.html">Server package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Test.html">Test package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools.html">Tools package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Trainer.html">Trainer package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Projekt</a></li>
+      <li class="breadcrumb-item active">GameClient package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/GameClient.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gameclient-package">
+<h1>GameClient package<a class="headerlink" href="#gameclient-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-GameClient.arena">
+<span id="gameclient-arena-module"></span><h2>GameClient.arena module<a class="headerlink" href="#module-GameClient.arena" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="GameClient.arena.Arena">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameClient.arena.</span></span><span class="sig-name descname"><span class="pre">Arena</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/arena.html#Arena"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.arena.Arena" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.arena.Arena.append_history">
+<span class="sig-name descname"><span class="pre">append_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cur_player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">it</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/arena.html#Arena.append_history"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.arena.Arena.append_history" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.arena.Arena.kim_action">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kim_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">it</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/arena.html#Arena.kim_action"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.arena.Arena.kim_action" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.arena.Arena.play">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">play</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur_player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">it</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/arena.html#Arena.play"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.arena.Arena.play" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.arena.Arena.set_arena">
+<span class="sig-name descname"><span class="pre">set_arena</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Tools.html#Tools.i_game.IGame" title="Tools.i_game.IGame"><span class="pre">IGame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">difficulty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EDifficulty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">play1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">play2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/arena.html#Arena.set_arena"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.arena.Arena.set_arena" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.arena.Arena.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/arena.html#Arena.stop"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.arena.Arena.stop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GameClient.connection_manager">
+<span id="gameclient-connection-manager-module"></span><h2>GameClient.connection_manager module<a class="headerlink" href="#module-GameClient.connection_manager" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="GameClient.connection_manager.WebSocketConnectionManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameClient.connection_manager.</span></span><span class="sig-name descname"><span class="pre">WebSocketConnectionManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/connection_manager.html#WebSocketConnectionManager"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.connection_manager.WebSocketConnectionManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.connection_manager.WebSocketConnectionManager.broadcast_board">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">broadcast_board</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cur_player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/connection_manager.html#WebSocketConnectionManager.broadcast_board"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.connection_manager.WebSocketConnectionManager.broadcast_board" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.connection_manager.WebSocketConnectionManager.close">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/connection_manager.html#WebSocketConnectionManager.close"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.connection_manager.WebSocketConnectionManager.close" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.connection_manager.WebSocketConnectionManager.connect">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/connection_manager.html#WebSocketConnectionManager.connect"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.connection_manager.WebSocketConnectionManager.connect" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.connection_manager.WebSocketConnectionManager.receive_json">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">receive_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/connection_manager.html#WebSocketConnectionManager.receive_json"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.connection_manager.WebSocketConnectionManager.receive_json" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.connection_manager.WebSocketConnectionManager.send_board">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_board</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cur_player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/connection_manager.html#WebSocketConnectionManager.send_board"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.connection_manager.WebSocketConnectionManager.send_board" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.connection_manager.WebSocketConnectionManager.send_cmd">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_cmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/connection_manager.html#WebSocketConnectionManager.send_cmd"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.connection_manager.WebSocketConnectionManager.send_cmd" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.connection_manager.WebSocketConnectionManager.send_response">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Tools.html#Tools.rcode.RCODE" title="Tools.rcode.RCODE"><span class="pre">RCODE</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/connection_manager.html#WebSocketConnectionManager.send_response"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.connection_manager.WebSocketConnectionManager.send_response" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GameClient.game_client">
+<span id="gameclient-game-client-module"></span><h2>GameClient.game_client module<a class="headerlink" href="#module-GameClient.game_client" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="GameClient.game_client.GameClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameClient.game_client.</span></span><span class="sig-name descname"><span class="pre">GameClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/game_client.html#GameClient"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.game_client.GameClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#GameClient.connection_manager.WebSocketConnectionManager" title="GameClient.connection_manager.WebSocketConnectionManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketConnectionManager</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.game_client.GameClient.is_arena_running">
+<span class="sig-name descname"><span class="pre">is_arena_running</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/GameClient/game_client.html#GameClient.is_arena_running"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.game_client.GameClient.is_arena_running" title="Link to this definition"></a></dt>
+<dd><p>Check if the arena is currently running.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.game_client.GameClient.parse_input">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/game_client.html#GameClient.parse_input"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.game_client.GameClient.parse_input" title="Link to this definition"></a></dt>
+<dd><p>Parse the input string to convert it into an appropriate format (integer or tuple).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.game_client.GameClient.run">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/game_client.html#GameClient.run"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.game_client.GameClient.run" title="Link to this definition"></a></dt>
+<dd><p>Main loop to run the game client, handling incoming commands through a WebSocket connection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.game_client.GameClient.start_arena">
+<span class="sig-name descname"><span class="pre">start_arena</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cur_player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">it</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/game_client.html#GameClient.start_arena"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.game_client.GameClient.start_arena" title="Link to this definition"></a></dt>
+<dd><p>Start the game arena with optional initial board state, current player, and iteration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.game_client.GameClient.stop_arena">
+<span class="sig-name descname"><span class="pre">stop_arena</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/game_client.html#GameClient.stop_arena"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.game_client.GameClient.stop_arena" title="Link to this definition"></a></dt>
+<dd><p>Stop the game arena.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.game_client.GameClient.update">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/game_client.html#GameClient.update"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.game_client.GameClient.update" title="Link to this definition"></a></dt>
+<dd><p>Send an update command to the WebSocket server with the current game state.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GameClient.pit">
+<span id="gameclient-pit-module"></span><h2>GameClient.pit module<a class="headerlink" href="#module-GameClient.pit" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="GameClient.pit.Pit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameClient.pit.</span></span><span class="sig-name descname"><span class="pre">Pit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/pit.html#Pit"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.pit.Pit.clear_arena">
+<span class="sig-name descname"><span class="pre">clear_arena</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/pit.html#Pit.clear_arena"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit.clear_arena" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.pit.Pit.get_blunder">
+<span class="sig-name descname"><span class="pre">get_blunder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/GameClient/pit.html#Pit.get_blunder"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit.get_blunder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.pit.Pit.get_blunder_payload">
+<span class="sig-name descname"><span class="pre">get_blunder_payload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/GameClient/pit.html#Pit.get_blunder_payload"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit.get_blunder_payload" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.pit.Pit.get_cur_player">
+<span class="sig-name descname"><span class="pre">get_cur_player</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/GameClient/pit.html#Pit.get_cur_player"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit.get_cur_player" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.pit.Pit.get_last_hist_entry">
+<span class="sig-name descname"><span class="pre">get_last_hist_entry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/GameClient/pit.html#Pit.get_last_hist_entry"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit.get_last_hist_entry" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.pit.Pit.init_arena">
+<span class="sig-name descname"><span class="pre">init_arena</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GameConfig</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/pit.html#Pit.init_arena"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit.init_arena" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.pit.Pit.set_blunder">
+<span class="sig-name descname"><span class="pre">set_blunder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blunder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/pit.html#Pit.set_blunder"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit.set_blunder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.pit.Pit.set_move">
+<span class="sig-name descname"><span class="pre">set_move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">move</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/GameClient/pit.html#Pit.set_move"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit.set_move" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.pit.Pit.start_battle">
+<span class="sig-name descname"><span class="pre">start_battle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cur_player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">it</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/pit.html#Pit.start_battle"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit.start_battle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.pit.Pit.stop_battle">
+<span class="sig-name descname"><span class="pre">stop_battle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/GameClient/pit.html#Pit.stop_battle"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit.stop_battle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.pit.Pit.timeline">
+<span class="sig-name descname"><span class="pre">timeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forward</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/pit.html#Pit.timeline"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit.timeline" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.pit.Pit.undo">
+<span class="sig-name descname"><span class="pre">undo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/GameClient/pit.html#Pit.undo"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.pit.Pit.undo" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GameClient.player">
+<span id="gameclient-player-module"></span><h2>GameClient.player module<a class="headerlink" href="#module-GameClient.player" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="GameClient.player.Player">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameClient.player.</span></span><span class="sig-name descname"><span class="pre">Player</span></span><a class="reference internal" href="_modules/GameClient/player.html#Player"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.player.Player" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.player.Player.play">
+<span class="sig-name descname"><span class="pre">play</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/player.html#Player.play"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.player.Player.play" title="Link to this definition"></a></dt>
+<dd><p>Processes and returns the current move of the player.</p>
+<p>This method retrieves the player’s move, resets the move attribute to None,
+and then returns the move. If no move has been set (move is None), it returns None.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>temp (None or any): The move that was made by the player. If no move was made, returns None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameClient.player.Player.playAI">
+<span class="sig-name descname"><span class="pre">playAI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/player.html#Player.playAI"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.player.Player.playAI" title="Link to this definition"></a></dt>
+<dd><p>Simulates an AI player making a move.</p>
+<p>This method checks the send flag to determine if a move should be made. If the flag is False,
+it sets it to True and returns True, indicating an AI move should be made. If the flag is True,
+it processes and returns the current move, resets the move attribute to None, and sets the
+send flag back to False.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>(bool or any): If the send flag was initially False, returns True to indicate an AI move.</dt><dd><p>Otherwise, returns the move made by the AI. If no move was made, returns None.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GameClient.start">
+<span id="gameclient-start-module"></span><h2>GameClient.start module<a class="headerlink" href="#module-GameClient.start" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="GameClient.start.main">
+<span class="sig-prename descclassname"><span class="pre">GameClient.start.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GameClient/start.html#main"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#GameClient.start.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-GameClient">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-GameClient" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="Projekt" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+        <a href="Games.html" class="btn btn-neutral float-right" title="Games package" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

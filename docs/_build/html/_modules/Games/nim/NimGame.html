@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Games.nim.NimGame &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
+    <link rel="search" title="Suche" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Games.nim.NimGame</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Games.nim.NimGame</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">Tools.i_game</span> <span class="kn">import</span> <span class="n">IGame</span><span class="p">,</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">Games.nim.NimLogic</span> <span class="kn">import</span> <span class="n">Board</span>
+
+
+<div class="viewcode-block" id="NimGame">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame">[Doku]</a>
+<span class="k">class</span> <span class="nc">NimGame</span><span class="p">(</span><span class="n">IGame</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="n">rows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">winner</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="NimGame.getInitBoard">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.getInitBoard">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getInitBoard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;return initial board (numpy array)&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">winner</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># resetting data</span>
+        <span class="k">return</span> <span class="n">Board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span><span class="o">.</span><span class="n">pieces</span></div>
+
+
+<div class="viewcode-block" id="NimGame.getBoardSize">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.getBoardSize">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getBoardSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span></div>
+
+
+<div class="viewcode-block" id="NimGame.getActionSize">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.getActionSize">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getActionSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;return number of all possible actions&quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">get_legal_moves</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="NimGame.getNextState">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.getNextState">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getNextState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;if player takes action on board, return next (board,player)</span>
+<span class="sd">          action must be a valid move&quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">board</span><span class="p">))</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">execute_action</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">is_game_over</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">winner</span> <span class="o">=</span> <span class="n">player</span>
+        <span class="k">return</span> <span class="n">b</span><span class="o">.</span><span class="n">pieces</span><span class="p">,</span> <span class="o">-</span><span class="n">player</span></div>
+
+
+<div class="viewcode-block" id="NimGame.getValidMoves">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.getValidMoves">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getValidMoves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;returns a binary np.array (1 = still valid action, 0 = invalid&quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span>  <span class="c1"># fresh game, all possible valid moves</span>
+        <span class="n">valids_new</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">get_legal_moves</span><span class="p">()</span>
+
+        <span class="n">b</span><span class="o">.</span><span class="n">pieces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>  <span class="c1"># running game</span>
+        <span class="n">valids_input</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">get_legal_moves</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">tuple</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="n">valids_input</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">valids_new</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="NimGame.getGameEnded">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.getGameEnded">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getGameEnded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;returns 0 if not ended, 1 if player won, -1 if player lost&quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">board</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">b</span><span class="o">.</span><span class="n">is_game_over</span><span class="p">():</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">winner</span> <span class="o">==</span> <span class="n">player</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">winner</span> <span class="o">==</span> <span class="o">-</span><span class="n">player</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="NimGame.getSymmetries">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.getSymmetries">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getSymmetries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">pi</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;rows are interchangeable&quot;&quot;&quot;</span>
+        <span class="n">fresh_board</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span>
+
+        <span class="n">reshaped_pi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+
+        <span class="n">start_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">num_elements</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fresh_board</span><span class="o">.</span><span class="n">pieces</span><span class="p">):</span>
+            <span class="n">reshaped_pi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pi</span><span class="p">[</span><span class="n">start_index</span><span class="p">:(</span><span class="n">start_index</span> <span class="o">+</span> <span class="n">num_elements</span><span class="p">)])</span>
+            <span class="n">start_index</span> <span class="o">+=</span> <span class="n">num_elements</span>
+
+        <span class="n">sym_board</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="n">board</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="n">sym_pi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="n">reshaped_pi</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="n">sym_pi_flat</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sym_pi</span><span class="p">)):</span>
+            <span class="n">sym_pi_flat</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">prob</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">sym_pi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">])</span>
+        <span class="n">symmetries</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">sym_board</span><span class="p">,</span> <span class="n">sym_pi_flat</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">symmetries</span></div>
+
+
+<div class="viewcode-block" id="NimGame.permute">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.permute">[Doku]</a>
+    <span class="k">def</span> <span class="nf">permute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;used to swap all rows in all possible permutations/ symmetries&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">array</span><span class="p">]</span>
+
+        <span class="n">permutations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)):</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">remaining_list</span> <span class="o">=</span> <span class="n">array</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="n">remaining_list</span><span class="p">):</span>
+                <span class="n">permutations</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">m</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">permutations</span></div>
+
+
+<div class="viewcode-block" id="NimGame.translate">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.translate">[Doku]</a>
+    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span>
+        <span class="n">valids</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">get_legal_moves</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">valids</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="NimGame.rotateMove">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.rotateMove">[Doku]</a>
+    <span class="k">def</span> <span class="nf">rotateMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">move</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;no rotation at nim&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">move</span></div>
+
+
+<div class="viewcode-block" id="NimGame.stringRepresentation">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.stringRepresentation">[Doku]</a>
+    <span class="k">def</span> <span class="nf">stringRepresentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">board</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="NimGame.drawTerminal">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.drawTerminal">[Doku]</a>
+    <span class="k">def</span> <span class="nf">drawTerminal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">valid_moves</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">valid_moves</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">board</span><span class="p">))</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">get_legal_moves</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">board</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">)  &quot;</span> <span class="o">+</span> <span class="s2">&quot;I &quot;</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="NimGame.draw">
+<a class="viewcode-back" href="../../../Games.nim.html#Games.nim.NimGame.NimGame.draw">[Doku]</a>
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">valid_moves</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">pygame</span>
+        <span class="n">PIECE_HEIGHT</span> <span class="o">=</span> <span class="mi">110</span>
+        <span class="n">PIECE_WIDTH</span> <span class="o">=</span> <span class="mi">25</span>
+        <span class="n">HEIGHT</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span> <span class="o">*</span> <span class="p">(</span><span class="n">PIECE_HEIGHT</span> <span class="o">+</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="n">WIDTH</span> <span class="o">=</span> <span class="n">HEIGHT</span>
+        <span class="n">CENTER</span> <span class="o">=</span> <span class="n">HEIGHT</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">OUTLINING</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="n">expand_factor</span> <span class="o">=</span> <span class="mf">0.25</span>
+
+        <span class="n">y_scale</span> <span class="o">=</span> <span class="n">HEIGHT</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">x_scale</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">):</span>
+            <span class="n">x_scale</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">WIDTH</span> <span class="o">/</span> <span class="p">(</span><span class="n">board</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">color_background</span> <span class="o">=</span> <span class="p">(</span><span class="mi">252</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">244</span><span class="p">)</span>  <span class="c1"># cream</span>
+        <span class="n">color_piece_detail</span> <span class="o">=</span> <span class="p">(</span><span class="mi">172</span><span class="p">,</span> <span class="mi">244</span><span class="p">,</span> <span class="mi">230</span><span class="p">)</span>  <span class="c1"># light blue</span>
+        <span class="n">color_valid</span> <span class="o">=</span> <span class="p">(</span><span class="mi">144</span><span class="p">,</span> <span class="mi">238</span><span class="p">,</span> <span class="mi">144</span><span class="p">)</span>  <span class="c1"># turquoise</span>
+        <span class="n">color_outline</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># black</span>
+        <span class="n">color_piece</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">175</span><span class="p">)</span>  <span class="c1"># dark blue</span>
+
+        <span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+        <span class="n">surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">WIDTH</span><span class="p">,</span> <span class="n">HEIGHT</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="n">surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">color_background</span><span class="p">)</span>
+
+        <span class="n">color_detail</span> <span class="o">=</span> <span class="n">color_valid</span> <span class="k">if</span> <span class="n">valid_moves</span> <span class="k">else</span> <span class="n">color_piece_detail</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">pieces</span> <span class="ow">in</span> <span class="n">board</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">pieces</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)):</span>
+                <span class="n">stretch</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="n">y_scale</span> <span class="o">-</span> <span class="n">CENTER</span><span class="p">)</span> <span class="o">*</span> <span class="n">expand_factor</span>
+                <span class="c1"># stretch in order to get proportional more whitespace between the pieces in y direction</span>
+
+                <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_outline</span><span class="p">,</span>
+                                 <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">x_scale</span><span class="p">[</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">PIECE_WIDTH</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">OUTLINING</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                                             <span class="n">y</span> <span class="o">*</span> <span class="n">y_scale</span> <span class="o">+</span> <span class="n">stretch</span> <span class="o">-</span> <span class="n">PIECE_HEIGHT</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">OUTLINING</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                                             <span class="n">PIECE_WIDTH</span> <span class="o">+</span> <span class="n">OUTLINING</span><span class="p">,</span>
+                                             <span class="n">PIECE_HEIGHT</span> <span class="o">+</span> <span class="n">OUTLINING</span><span class="p">))</span>  <span class="c1"># grey outlining</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_piece</span><span class="p">,</span>
+                                 <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">x_scale</span><span class="p">[</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">PIECE_WIDTH</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                                             <span class="n">y</span> <span class="o">*</span> <span class="n">y_scale</span> <span class="o">+</span> <span class="n">stretch</span> <span class="o">-</span> <span class="n">PIECE_HEIGHT</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                                             <span class="n">PIECE_WIDTH</span><span class="p">,</span>
+                                             <span class="n">PIECE_HEIGHT</span><span class="p">))</span>  <span class="c1"># pieces themselves</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_detail</span><span class="p">,</span>
+                                 <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">x_scale</span><span class="p">[</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">PIECE_WIDTH</span> <span class="o">/</span> <span class="mf">3.55</span><span class="p">,</span>
+                                             <span class="n">y</span> <span class="o">*</span> <span class="n">y_scale</span> <span class="o">+</span> <span class="n">stretch</span> <span class="o">-</span> <span class="n">PIECE_HEIGHT</span> <span class="o">/</span> <span class="mf">2.2</span><span class="p">,</span>
+                                             <span class="n">PIECE_WIDTH</span> <span class="o">-</span> <span class="mi">10</span><span class="p">,</span>
+                                             <span class="n">PIECE_HEIGHT</span> <span class="o">-</span> <span class="mi">10</span><span class="p">))</span>  <span class="c1"># inner piece detail</span>
+
+            <span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">surface</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

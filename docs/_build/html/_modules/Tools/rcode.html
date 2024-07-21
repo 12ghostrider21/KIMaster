@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tools.rcode &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Tools.rcode</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Tools.rcode</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
+
+<span class="c1"># Define an enumeration for response codes (RCODE) used to indicate various statuses and errors</span>
+<div class="viewcode-block" id="RCODE">
+<a class="viewcode-back" href="../../Tools.html#Tools.rcode.RCODE">[Doku]</a>
+<span class="k">class</span> <span class="nc">RCODE</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="c1"># Language change codes</span>
+    <span class="n">LANGUAGECHANGED</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Language changed successfully.</span>
+    <span class="n">INVALIDLANGUAGE</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Selected language not found.</span>
+
+    <span class="c1"># General error codes</span>
+    <span class="n">INVALIDJSON</span> <span class="o">=</span> <span class="mi">51</span>  <span class="c1"># The received message is not a valid JSON</span>
+    <span class="n">COMMANDNOTFOUND</span> <span class="o">=</span> <span class="mi">52</span>  <span class="c1"># The specified command does not exist</span>
+    <span class="n">INVALIDGAME</span> <span class="o">=</span> <span class="mi">53</span>  <span class="c1"># The specified game does not exist</span>
+    <span class="n">INVALIDDIFFICULTY</span> <span class="o">=</span> <span class="mi">54</span>  <span class="c1"># The specified difficulty level does not exist</span>
+    <span class="n">INVALIDMODE</span> <span class="o">=</span> <span class="mi">55</span>  <span class="c1"># The specified game mode does not exist</span>
+
+    <span class="c1"># Lobby success codes</span>
+    <span class="n">L_CREATED</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># Lobby has been successfully created</span>
+    <span class="n">L_JOINED</span> <span class="o">=</span> <span class="mi">101</span>  <span class="c1"># Player has successfully joined the lobby</span>
+    <span class="n">L_LEFT</span> <span class="o">=</span> <span class="mi">102</span>  <span class="c1"># Player has successfully left the lobby</span>
+    <span class="n">L_SWAPPED</span> <span class="o">=</span> <span class="mi">103</span>  <span class="c1"># Player has successfully swapped positions within the lobby</span>
+    <span class="n">L_POS</span> <span class="o">=</span> <span class="mi">104</span>  <span class="c1"># Current position in the lobby has been successfully retrieved</span>
+    <span class="n">L_STATUS</span> <span class="o">=</span> <span class="mi">105</span>  <span class="c1"># Lobby status has been successfully retrieved</span>
+    <span class="n">L_GAMES</span> <span class="o">=</span> <span class="mi">106</span>  <span class="c1"># List of games has been successfully retrieved</span>
+
+    <span class="c1"># Lobby error codes</span>
+    <span class="n">L_CLIENTALREADYINLOBBY</span> <span class="o">=</span> <span class="mi">150</span>  <span class="c1"># Client is already in a lobby and cannot join multiple lobbies</span>
+    <span class="n">L_LOBBYNOTEXIST</span> <span class="o">=</span> <span class="mi">151</span>  <span class="c1"># The specified lobby does not exist</span>
+    <span class="n">L_JOINFAILURE</span> <span class="o">=</span> <span class="mi">152</span>  <span class="c1"># Failed to join the lobby</span>
+    <span class="n">L_CLIENTNOTINLOBBY</span> <span class="o">=</span> <span class="mi">153</span>  <span class="c1"># The specified client is not in the lobby</span>
+    <span class="n">L_POSUNKNOWN</span> <span class="o">=</span> <span class="mi">154</span>  <span class="c1"># The position within the lobby is unknown</span>
+    <span class="n">L_POSOCCUPIED</span> <span class="o">=</span> <span class="mi">155</span>  <span class="c1"># The position within the lobby is already occupied</span>
+    <span class="n">L_LOBBYNOTREADY</span> <span class="o">=</span> <span class="mi">157</span>  <span class="c1"># Lobby does not have enough players to start</span>
+    <span class="n">L_NOLEAVEACTIVPLAYER</span> <span class="o">=</span> <span class="mi">158</span>  <span class="c1"># Client cannot leave an active game as a player</span>
+    <span class="n">L_NOSWAP</span> <span class="o">=</span> <span class="mi">159</span>  <span class="c1"># Client cannot swap positions in an active game as a player</span>
+    <span class="n">L_RUNNINGNOJOIN</span> <span class="o">=</span> <span class="mi">160</span>  <span class="c1"># Lobby is already running; join only as a spectator</span>
+
+    <span class="c1"># Play success codes</span>
+    <span class="n">P_ARENAINIT</span> <span class="o">=</span> <span class="mi">200</span>  <span class="c1"># Arena has been successfully initialized</span>
+    <span class="n">P_GAMEOVER</span> <span class="o">=</span> <span class="mi">202</span>  <span class="c1"># Game has ended successfully</span>
+    <span class="n">P_VALIDMOVE</span> <span class="o">=</span> <span class="mi">207</span>  <span class="c1"># A valid move has been made</span>
+    <span class="n">P_MOVES</span> <span class="o">=</span> <span class="mi">208</span>  <span class="c1"># List of possible moves has been successfully retrieved</span>
+    <span class="n">P_VALIDUNDO</span> <span class="o">=</span> <span class="mi">209</span>  <span class="c1"># A valid undo action has been performed</span>
+    <span class="n">P_SURRENDER</span> <span class="o">=</span> <span class="mi">210</span>  <span class="c1"># A player has surrendered successfully</span>
+    <span class="n">P_BLUNDERLIST</span> <span class="o">=</span> <span class="mi">212</span>  <span class="c1"># List of blunders has been successfully retrieved</span>
+    <span class="n">P_TIMELINE</span> <span class="o">=</span> <span class="mi">214</span>  <span class="c1"># Timeline of events in the game has been successfully retrieved</span>
+    <span class="n">P_NOVALIDMOVES</span> <span class="o">=</span> <span class="mi">215</span>  <span class="c1"># Player does not have any valid moves left</span>
+    <span class="n">P_STEP</span> <span class="o">=</span> <span class="mi">216</span>  <span class="c1"># Step forward in the timeline</span>
+    <span class="n">P_UNSTEP</span> <span class="o">=</span> <span class="mi">217</span>  <span class="c1"># Step backward in the timeline</span>
+    <span class="n">P_PLAYER</span> <span class="o">=</span> <span class="mi">218</span>  <span class="c1"># Sends the current active player</span>
+    <span class="n">P_KIM</span> <span class="o">=</span> <span class="mi">219</span>  <span class="c1"># Send message if KIM is at turn</span>
+    <span class="n">P_CREATEBLUNDER</span> <span class="o">=</span> <span class="mi">220</span>  <span class="c1"># Server is calculating blunder for the  last game. Taking some time.</span>
+
+    <span class="c1"># Play error codes</span>
+    <span class="n">P_NOGAMECLIENT</span> <span class="o">=</span> <span class="mi">250</span>  <span class="c1"># No game client available; try again</span>
+    <span class="n">P_NOPERMISSION</span> <span class="o">=</span> <span class="mi">251</span>  <span class="c1"># Player does not have permission to perform the action</span>
+    <span class="n">P_NOTRUNNING</span> <span class="o">=</span> <span class="mi">252</span>  <span class="c1"># Game has not been initialized</span>
+    <span class="n">P_ARGS</span> <span class="o">=</span> <span class="mi">253</span>  <span class="c1"># Invalid arguments provided</span>
+    <span class="n">P_STILLRUNNING</span> <span class="o">=</span> <span class="mi">254</span>  <span class="c1"># Game is still running; requested action cannot be performed</span>
+    <span class="n">P_NOMOVE</span> <span class="o">=</span> <span class="mi">255</span>  <span class="c1"># No move has been made</span>
+    <span class="n">P_INVALIDMOVE</span> <span class="o">=</span> <span class="mi">256</span>  <span class="c1"># The move made is invalid</span>
+    <span class="n">P_NOUNDO</span> <span class="o">=</span> <span class="mi">258</span>  <span class="c1"># No undo action available</span>
+    <span class="n">P_INVALIDUNDO</span> <span class="o">=</span> <span class="mi">259</span>  <span class="c1"># The undo action attempted is invalid</span>
+    <span class="n">P_NOTIMELINE</span> <span class="o">=</span> <span class="mi">260</span>  <span class="c1"># No timeline available</span>
+    <span class="n">P_INVALIDTIMELINE</span> <span class="o">=</span> <span class="mi">261</span>  <span class="c1"># The specified timeline is invalid</span>
+    <span class="n">P_NOGAMEINIT</span> <span class="o">=</span> <span class="mi">266</span>  <span class="c1"># Create a game first</span>
+    <span class="n">P_NOTYOURTURN</span> <span class="o">=</span> <span class="mi">268</span>  <span class="c1"># Player tried to make a move out of turn</span>
+    <span class="n">P_NOBLUNDER</span> <span class="o">=</span> <span class="mi">269</span>  <span class="c1"># Nothing in history to define blunder</span>
+    <span class="n">P_BLUNDER</span> <span class="o">=</span> <span class="mi">270</span>  <span class="c1"># Server is working on blunder, please wait!</span>
+
+    <span class="c1"># Debug codes</span>
+    <span class="n">D_CONTAINER</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># List all active containers</span>
+    <span class="n">D_TOGGLECLIENT</span> <span class="o">=</span> <span class="mi">301</span>  <span class="c1"># Toggle debug mode of the game client</span>
+
+    <span class="c1"># Static method to get the enumeration member by its value</span>
+<div class="viewcode-block" id="RCODE.get">
+<a class="viewcode-back" href="../../Tools.html#Tools.rcode.RCODE.get">[Doku]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RCODE&quot;</span><span class="p">:</span>
+        <span class="c1"># Iterate over all enumeration members</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">RCODE</span><span class="p">:</span>
+            <span class="c1"># Check if the value of the enumeration member matches the given code</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">code</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">e</span>  <span class="c1"># Return the matching enumeration member</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

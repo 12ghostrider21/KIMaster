@@ -1,0 +1,29 @@
+Games.nim package
+=================
+
+Submodules
+----------
+
+Games.nim.NimGame module
+------------------------
+
+.. automodule:: Games.nim.NimGame
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Games.nim.NimLogic module
+-------------------------
+
+.. automodule:: Games.nim.NimLogic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Games.nim
+   :members:
+   :undoc-members:
+   :show-inheritance:

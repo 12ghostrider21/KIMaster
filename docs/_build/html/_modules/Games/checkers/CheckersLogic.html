@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Games.checkers.CheckersLogic &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
+    <link rel="search" title="Suche" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Games.checkers.CheckersLogic</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Games.checkers.CheckersLogic</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Board class for the game of Checkers (Russian variant).</span>
+
+<span class="sd">Board size is default 8x8.</span>
+<span class="sd">Board data:</span>
+<span class="sd">  first dim is column , 2nd is row:</span>
+<span class="sd">     pieces[0][0] is the top left square,</span>
+<span class="sd">     pieces[7][0] is the bottom left square,</span>
+<span class="sd">Squares are stored and manipulated as (row, col) tuples.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="n">WHITE_NON_KING</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">WHITE_KING</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">BLACK_NON_KING</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">BLACK_KING</span> <span class="o">=</span> <span class="o">-</span><span class="mi">3</span>
+<span class="n">EMPTY</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">DEFAULT_SIZE</span> <span class="o">=</span> <span class="mi">8</span>
+
+
+<div class="viewcode-block" id="Board">
+<a class="viewcode-back" href="../../../Games.checkers.html#Games.checkers.CheckersLogic.Board">[Doku]</a>
+<span class="k">class</span> <span class="nc">Board</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checkers Board.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__directions_kings</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">__directions_white</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">__directions_black</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pieces</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">last_long_capture</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up initial board configuration.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="ow">or</span> <span class="n">DEFAULT_SIZE</span>
+
+        <span class="c1"># capture position for piece of the player that is staying in turn (jumping over multiple enemy pieces)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_long_capture</span> <span class="o">=</span> <span class="n">last_long_capture</span> <span class="ow">or</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">pieces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Create the init board array.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup_pieces</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span> <span class="o">=</span> <span class="n">pieces</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Board.setup_pieces">
+<a class="viewcode-back" href="../../../Games.checkers.html#Games.checkers.CheckersLogic.Board.setup_pieces">[Doku]</a>
+    <span class="k">def</span> <span class="nf">setup_pieces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="n">col</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">BLACK_NON_KING</span>
+                    <span class="k">if</span> <span class="n">row</span> <span class="o">&gt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">//</span> <span class="mi">2</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">WHITE_NON_KING</span></div>
+
+
+    <span class="c1"># add [][] indexer syntax to the Board</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Board.get_action_size">
+<a class="viewcode-back" href="../../../Games.checkers.html#Games.checkers.CheckersLogic.Board.get_action_size">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get_action_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">square_from</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># half of all fields are possible positions for pieces</span>
+        <span class="n">move_vector</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span>  <span class="c1"># at max n-1 fields times 4 directions</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">square_from</span> <span class="o">*</span> <span class="n">move_vector</span>  <span class="c1"># size is always an even integer (odd or even * even = even)</span>
+        <span class="k">assert</span> <span class="n">size</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">size</span><span class="o">.</span><span class="n">is_integer</span><span class="p">()</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">sqrt_rounded</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">size</span><span class="p">))</span>
+        <span class="n">square</span> <span class="o">=</span> <span class="n">sqrt_rounded</span> <span class="o">*</span> <span class="n">sqrt_rounded</span>
+        <span class="n">padding</span> <span class="o">=</span> <span class="n">square</span> <span class="o">-</span> <span class="n">size</span>  <span class="c1"># calculating padding in order to rotate pi vector in getSymmetries later</span>
+        <span class="k">return</span> <span class="n">size</span><span class="p">,</span> <span class="n">padding</span></div>
+
+
+<div class="viewcode-block" id="Board.is_within_bounds">
+<a class="viewcode-back" href="../../../Games.checkers.html#Games.checkers.CheckersLogic.Board.is_within_bounds">[Doku]</a>
+    <span class="k">def</span> <span class="nf">is_within_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">col</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span></div>
+
+
+<div class="viewcode-block" id="Board.get_moves_for_square">
+<a class="viewcode-back" href="../../../Games.checkers.html#Games.checkers.CheckersLogic.Board.get_moves_for_square">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get_moves_for_square</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">col</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">captures_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">piece</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">piece</span> <span class="o">!=</span> <span class="n">EMPTY</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Square (</span><span class="si">{</span><span class="n">row</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">) is empty.&quot;</span>
+        <span class="n">moves</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">directions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__directions_white</span> <span class="k">if</span> <span class="n">color</span> <span class="o">==</span> <span class="n">WHITE_NON_KING</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">__directions_black</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">piece</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># King can move in all directions</span>
+            <span class="n">directions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__directions_kings</span>
+        <span class="k">for</span> <span class="n">d_row</span><span class="p">,</span> <span class="n">d_col</span> <span class="ow">in</span> <span class="n">directions</span><span class="p">:</span>
+            <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">row</span> <span class="o">+</span> <span class="n">d_row</span><span class="p">,</span> <span class="n">col</span> <span class="o">+</span> <span class="n">d_col</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">captures_only</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_within_bounds</span><span class="p">(</span><span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">nrow</span><span class="p">][</span><span class="n">ncol</span><span class="p">]</span> <span class="o">==</span> <span class="n">EMPTY</span><span class="p">:</span>
+                <span class="n">moves</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_within_bounds</span><span class="p">(</span><span class="n">nrow</span> <span class="o">+</span> <span class="n">d_row</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">+</span> <span class="n">d_col</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">nrow</span><span class="p">][</span><span class="n">ncol</span><span class="p">]</span> <span class="o">*</span> <span class="n">piece</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">nrow</span> <span class="o">+</span> <span class="n">d_row</span><span class="p">][</span><span class="n">ncol</span> <span class="o">+</span> <span class="n">d_col</span><span class="p">]</span> <span class="o">==</span> <span class="n">EMPTY</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">captures_only</span><span class="p">:</span>
+                    <span class="n">moves</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="n">captures_only</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">moves</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">nrow</span> <span class="o">+</span> <span class="n">d_row</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">+</span> <span class="n">d_col</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">moves</span></div>
+
+
+<div class="viewcode-block" id="Board.get_legal_moves">
+<a class="viewcode-back" href="../../../Games.checkers.html#Games.checkers.CheckersLogic.Board.get_legal_moves">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get_legal_moves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs the given move on the board</span>
+<span class="sd">        :param color: player that is executing the move</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">legal_moves</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_long_capture</span><span class="p">:</span>
+            <span class="n">start_row</span><span class="p">,</span> <span class="n">start_col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_long_capture</span>
+            <span class="n">legal_moves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_moves_for_square</span><span class="p">(</span><span class="n">start_row</span><span class="p">,</span> <span class="n">start_col</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">captures_only</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">*</span> <span class="n">color</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># checking whether field is not empty and it is an own piece</span>
+                        <span class="n">new_moves</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_moves_for_square</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">captures_only</span><span class="p">)</span>
+                        <span class="n">now_capturing</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">new_moves</span><span class="p">:</span>
+                            <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">i</span>
+                            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">nrow</span> <span class="o">-</span> <span class="n">row</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ncol</span> <span class="o">-</span> <span class="n">col</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                                <span class="n">now_capturing</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">captures_only</span> <span class="ow">and</span> <span class="n">now_capturing</span><span class="p">:</span>
+                            <span class="n">captures_only</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="n">legal_moves</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                            <span class="n">legal_moves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_moves</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">captures_only</span><span class="p">:</span>
+                            <span class="n">legal_moves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_moves</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">legal_moves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_moves</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">legal_moves</span></div>
+
+
+<div class="viewcode-block" id="Board.flat_legal_moves">
+<a class="viewcode-back" href="../../../Games.checkers.html#Games.checkers.CheckersLogic.Board.flat_legal_moves">[Doku]</a>
+    <span class="k">def</span> <span class="nf">flat_legal_moves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="n">legal_moves</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_legal_moves</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">moves</span> <span class="o">=</span> <span class="p">[</span><span class="n">move</span> <span class="k">for</span> <span class="n">moves_per_piece</span> <span class="ow">in</span> <span class="n">legal_moves</span> <span class="k">for</span> <span class="n">move</span> <span class="ow">in</span> <span class="n">moves_per_piece</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">moves</span></div>
+
+
+<div class="viewcode-block" id="Board.has_legal_moves">
+<a class="viewcode-back" href="../../../Games.checkers.html#Games.checkers.CheckersLogic.Board.has_legal_moves">[Doku]</a>
+    <span class="k">def</span> <span class="nf">has_legal_moves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">moves</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flat_legal_moves</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">moves</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Board.one_d_to_two_d">
+<a class="viewcode-back" href="../../../Games.checkers.html#Games.checkers.CheckersLogic.Board.one_d_to_two_d">[Doku]</a>
+    <span class="k">def</span> <span class="nf">one_d_to_two_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">action</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">action</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span></div>
+
+
+<div class="viewcode-block" id="Board.execute_action">
+<a class="viewcode-back" href="../../../Games.checkers.html#Games.checkers.CheckersLogic.Board.execute_action">[Doku]</a>
+    <span class="k">def</span> <span class="nf">execute_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">color</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs the given move on the board</span>
+<span class="sd">        :param action: tuple (from_row, from_column, to_row, to_column)</span>
+<span class="sd">        :param color: player that is executing the move</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">action</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">tuple</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid move: </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">action</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid move: </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">one_d_to_two_d</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flat_legal_moves</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid move: </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">action</span>
+        <span class="k">if</span> <span class="n">color</span> <span class="o">==</span> <span class="n">BLACK_NON_KING</span> <span class="ow">and</span> <span class="n">nrow</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">nrow</span><span class="p">][</span><span class="n">ncol</span><span class="p">]</span> <span class="o">=</span> <span class="n">BLACK_KING</span>
+        <span class="k">elif</span> <span class="n">color</span> <span class="o">==</span> <span class="n">WHITE_NON_KING</span> <span class="ow">and</span> <span class="n">nrow</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">nrow</span><span class="p">][</span><span class="n">ncol</span><span class="p">]</span> <span class="o">=</span> <span class="n">WHITE_KING</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">nrow</span><span class="p">][</span><span class="n">ncol</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">EMPTY</span>
+        <span class="c1"># captures</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">nrow</span> <span class="o">-</span> <span class="n">row</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">c_row</span><span class="p">,</span> <span class="n">c_col</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="n">nrow</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">col</span> <span class="o">+</span> <span class="n">ncol</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">c_row</span><span class="p">][</span><span class="n">c_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">EMPTY</span>
+
+            <span class="c1"># Check for additional captures</span>
+            <span class="n">additional_captures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_moves_for_square</span><span class="p">(</span><span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">captures_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">additional_captures</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_long_capture</span> <span class="o">=</span> <span class="p">(</span><span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_long_capture</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_long_capture</span> <span class="o">=</span> <span class="kc">None</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

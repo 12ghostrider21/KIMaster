@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tools package &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=245627df"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/translations.js?v=79cc9f76"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="genindex.html" />
+    <link rel="search" title="Suche" href="search.html" />
+    <link rel="next" title="Trainer package" href="Trainer.html" />
+    <link rel="prev" title="Test package" href="Test.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Projekt</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="GameClient.html">GameClient package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Games.html">Games package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Server.html">Server package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Test.html">Test package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tools package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Tools.dynamic_imports">Tools.dynamic_imports module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Tools.dynamic_imports.Entry"><code class="docutils literal notranslate"><span class="pre">Entry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Tools.dynamic_imports.ExcludeModule"><code class="docutils literal notranslate"><span class="pre">ExcludeModule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Tools.dynamic_imports.FilePaths"><code class="docutils literal notranslate"><span class="pre">FilePaths</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Tools.dynamic_imports.Importer"><code class="docutils literal notranslate"><span class="pre">Importer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Tools.i_game">Tools.i_game module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Tools.i_game.IGame"><code class="docutils literal notranslate"><span class="pre">IGame</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Tools.language_handler">Tools.language_handler module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Tools.language_handler.LANGUAGE"><code class="docutils literal notranslate"><span class="pre">LANGUAGE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Tools.language_handler.LanguageHandler"><code class="docutils literal notranslate"><span class="pre">LanguageHandler</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Tools.mcts">Tools.mcts module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Tools.mcts.MCTS"><code class="docutils literal notranslate"><span class="pre">MCTS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Tools.neural_net">Tools.neural_net module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Tools.neural_net.NeuralNet"><code class="docutils literal notranslate"><span class="pre">NeuralNet</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Tools.rcode">Tools.rcode module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Tools.rcode.RCODE"><code class="docutils literal notranslate"><span class="pre">RCODE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Tools.utils">Tools.utils module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Tools.utils.AverageMeter"><code class="docutils literal notranslate"><span class="pre">AverageMeter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Tools.utils.dotdict"><code class="docutils literal notranslate"><span class="pre">dotdict</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Tools">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Trainer.html">Trainer package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Projekt</a></li>
+      <li class="breadcrumb-item active">Tools package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Tools.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tools-package">
+<h1>Tools package<a class="headerlink" href="#tools-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-Tools.dynamic_imports">
+<span id="tools-dynamic-imports-module"></span><h2>Tools.dynamic_imports module<a class="headerlink" href="#module-Tools.dynamic_imports" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.Entry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Tools.dynamic_imports.</span></span><span class="sig-name descname"><span class="pre">Entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/dynamic_imports.html#Entry"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.dynamic_imports.Entry" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.Entry.print">
+<span class="sig-name descname"><span class="pre">print</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/dynamic_imports.html#Entry.print"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.dynamic_imports.Entry.print" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.ExcludeModule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Tools.dynamic_imports.</span></span><span class="sig-name descname"><span class="pre">ExcludeModule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/dynamic_imports.html#ExcludeModule"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.dynamic_imports.ExcludeModule" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.ExcludeModule.GAME_PY">
+<span class="sig-name descname"><span class="pre">GAME_PY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#Tools.dynamic_imports.ExcludeModule.GAME_PY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.ExcludeModule.MCTS">
+<span class="sig-name descname"><span class="pre">MCTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#Tools.dynamic_imports.ExcludeModule.MCTS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.FilePaths">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Tools.dynamic_imports.</span></span><span class="sig-name descname"><span class="pre">FilePaths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_py</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nnet_py</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">found</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/dynamic_imports.html#FilePaths"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.dynamic_imports.FilePaths" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.FilePaths.found">
+<span class="sig-name descname"><span class="pre">found</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#Tools.dynamic_imports.FilePaths.found" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.FilePaths.game_name">
+<span class="sig-name descname"><span class="pre">game_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#Tools.dynamic_imports.FilePaths.game_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.FilePaths.game_py">
+<span class="sig-name descname"><span class="pre">game_py</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#Tools.dynamic_imports.FilePaths.game_py" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.FilePaths.missing">
+<span class="sig-name descname"><span class="pre">missing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/Tools/dynamic_imports.html#FilePaths.missing"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.dynamic_imports.FilePaths.missing" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.FilePaths.model_file">
+<span class="sig-name descname"><span class="pre">model_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#Tools.dynamic_imports.FilePaths.model_file" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.FilePaths.model_path">
+<span class="sig-name descname"><span class="pre">model_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#Tools.dynamic_imports.FilePaths.model_path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.FilePaths.nnet_py">
+<span class="sig-name descname"><span class="pre">nnet_py</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#Tools.dynamic_imports.FilePaths.nnet_py" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.Importer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Tools.dynamic_imports.</span></span><span class="sig-name descname"><span class="pre">Importer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Tools.dynamic_imports.ExcludeModule" title="Tools.dynamic_imports.ExcludeModule"><span class="pre">ExcludeModule</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/dynamic_imports.html#Importer"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.dynamic_imports.Importer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.Importer.get_ai_func">
+<span class="sig-name descname"><span class="pre">get_ai_func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/Tools/dynamic_imports.html#Importer.get_ai_func"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.dynamic_imports.Importer.get_ai_func" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.Importer.get_games">
+<span class="sig-name descname"><span class="pre">get_games</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#Tools.i_game.IGame" title="Tools.i_game.IGame"><span class="pre">IGame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/Tools/dynamic_imports.html#Importer.get_games"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.dynamic_imports.Importer.get_games" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.dynamic_imports.Importer.import_class_from_file">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">import_class_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/dynamic_imports.html#Importer.import_class_from_file"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.dynamic_imports.Importer.import_class_from_file" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-Tools.i_game">
+<span id="tools-i-game-module"></span><h2>Tools.i_game module<a class="headerlink" href="#module-Tools.i_game" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Tools.i_game.IGame">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Tools.i_game.</span></span><span class="sig-name descname"><span class="pre">IGame</span></span><a class="reference internal" href="_modules/Tools/i_game.html#IGame"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.i_game.IGame.draw">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_moves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cur_player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/i_game.html#IGame.draw"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame.draw" title="Link to this definition"></a></dt>
+<dd><p>Draw the game representation onto a Pygame surface.</p>
+<p>This method is responsible for rendering the current game state represented by <cite>board</cite>
+onto a Pygame surface. This surface will be returned in bytes format, twice.
+One representation for player1, the other one mirrored for player2.</p>
+<dl>
+<dt>Parameters:</dt><dd><dl class="simple">
+<dt>board (np.array): A NumPy array representing the game state. The array should contain</dt><dd><p>the necessary information to visualize the current state of the game.</p>
+</dd>
+</dl>
+<p>valid_moves: Whether displaying / drawing valid moves or not.
+cur_player: The player who is in turn (1 for one player, -1 for the other player).
+args: first arg is from_pos (int): The from_pos to get the valid moves for.</p>
+<blockquote>
+<div><p>That argument is only for games where to move tokens.
+For Games in which to just one-time set tokens, this arg is redundant
+and need to get no further attention.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>pygame.Surface</p>
+</dd>
+</dl>
+<p>Notes:
+- The <cite>board</cite> parameter should be a NumPy array representing the game state in a structured</p>
+<blockquote>
+<div><p>format suitable for visualization. The specific structure and meaning of the array’s
+contents are defined by the concrete implementations of <cite>Drawable</cite>.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Needs to handle invalid from_pos for displaying valid moves (None / invalid pos).</p></li>
+<li><p>The method should handle the rendering of the game state based on the provided <cite>board</cite>
+data and any additional optional arguments (<cite>args</cite>). The resulting surface should
+visually represent the game’s current state.</p></li>
+<li><p>Implementations of this method should ensure that the returned surface is ready for
+display within a Pygame environment, such as by initializing the Pygame library and
+handling any necessary graphical operations.</p></li>
+</ul>
+<dl>
+<dt>Example Usage:</dt><dd><p># Example implementation for drawing a game state
+surface = pygame.Surface((800, 600))  # Create a Pygame surface
+surface.fill((255, 255, 255))         # Fill with white background</p>
+<p># Render game state onto the surface based on <cite>board</cite> data
+# Example: Draw a grid based on the <cite>board</cite> content
+cell_size = 50
+for i in range(board.shape[0]):</p>
+<blockquote>
+<div><dl class="simple">
+<dt>for j in range(board.shape[1]):</dt><dd><dl class="simple">
+<dt>if board[i, j] == 1:</dt><dd><p>pygame.draw.rect(surface, (0, 0, 0), (j * cell_size, i * cell_size, cell_size, cell_size))</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p>return surface</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.i_game.IGame.drawTerminal">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drawTerminal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_moves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cur_player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/Tools/i_game.html#IGame.drawTerminal"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame.drawTerminal" title="Link to this definition"></a></dt>
+<dd><p>Displays a terminal representation of the game board for debugging purposes.</p>
+<dl>
+<dt>Parameters:</dt><dd><p>board (numpy.array): The game board represented as a numpy array.
+valid_moves: Whether displaying / drawing valid moves or not.
+cur_player: The current player (1 for one player, -1 for the other player).
+args: first arg is from_pos (int): The from_pos to get the valid moves for.</p>
+<blockquote>
+<div><p>That argument is only for games where to move tokens.
+For Games in which to just one-time set tokens, this arg is redundant
+and need to get no further attention.</p>
+</div></blockquote>
+</dd>
+<dt>Notes:</dt><dd><p>-Needs to handle invalid from_pos for displaying valid moves (None / invalid pos).</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: The terminal representation of the board.</p>
+</dd>
+</dl>
+<p>This method is intended to visually display the current state of the game board
+in a terminal/console environment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.i_game.IGame.getActionSize">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getActionSize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/Tools/i_game.html#IGame.getActionSize"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame.getActionSize" title="Link to this definition"></a></dt>
+<dd><p>Get the total number of possible actions in the game.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>actionSize (int): The number of all possible actions available in the game.</p>
+</dd>
+</dl>
+<p>This method returns the total number of possible actions that can be taken by players
+in the game. The value <cite>actionSize</cite> represents the size of the action space, which
+defines the set of all valid actions that players can choose from during gameplay.</p>
+<dl class="simple">
+<dt>Example:</dt><dd><p>If implemented for a game like tic-tac-toe, <cite>getActionSize</cite> might return 9,
+representing the number of cells on the game board where a player can make a move.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.i_game.IGame.getBoardSize">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getBoardSize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/Tools/i_game.html#IGame.getBoardSize"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame.getBoardSize" title="Link to this definition"></a></dt>
+<dd><p>Get the dimensions of the game board.</p>
+<dl>
+<dt>Returns:</dt><dd><p>x (int): the one-dimensional size of the game board.
+(x, y) (tuple[int, int]): A tuple representing the dimensions of the game board.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>x</cite> (int): The number of rows in the board.</p></li>
+<li><p><cite>y</cite> (int): The number of columns in the board.</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<p>This method returns a tuple <cite>(x, y)</cite> representing the dimensions (number of rows and columns)
+of the game board. The values <cite>x</cite> and <cite>y</cite> indicate the size or shape of the board grid.</p>
+<dl class="simple">
+<dt>Example:</dt><dd><p>If implemented for a game like tic-tac-toe, <cite>getBoardSize</cite> might return <cite>(3, 3)</cite>,
+representing a 3x3 grid for the game board.</p>
+</dd>
+<dt>Note:</dt><dd><p>The tuple <cite>(x, y)</cite> should accurately reflect the dimensions of the game board,
+providing information about its structure and layout.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.i_game.IGame.getGameEnded">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getGameEnded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></span><a class="reference internal" href="_modules/Tools/i_game.html#IGame.getGameEnded"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame.getGameEnded" title="Link to this definition"></a></dt>
+<dd><p>Determine the outcome of the game for the given player on the current board state.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>board (numpy.array): The current game board represented as a numpy array.
+player (int): The current player (1 for one player, -1 for the other player).</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>result (int): An integer representing the game outcome for the specified player.</dt><dd><ul class="simple">
+<li><p><cite>0</cite> if the game has not ended.</p></li>
+<li><p><cite>1</cite> if the <cite>player</cite> has won.</p></li>
+<li><p><cite>-1</cite> if the <cite>player</cite> has lost.</p></li>
+<li><p>A small non-zero value (e.g., <cite>0.1</cite>) indicating a draw or game tie.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>This method evaluates the current game state on the given <cite>board</cite> and determines the outcome
+for the specified <cite>player</cite>. The <cite>player</cite> parameter indicates which player’s perspective to consider
+when determining the game outcome.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.i_game.IGame.getInitBoard">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getInitBoard</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="_modules/Tools/i_game.html#IGame.getInitBoard"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame.getInitBoard" title="Link to this definition"></a></dt>
+<dd><p>Get the initial representation of the game board.
+As well resets all other data to initial state!</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>startBoard (numpy.array): A representation of the initial game board.</dt><dd><p>This representation is suitable for input to a neural network.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>This method returns a numpy array <cite>startBoard</cite> representing the initial state or
+configuration of the game board. The <cite>startBoard</cite> is intended to be a suitable input
+format for feeding into a neural network model for game evaluation or decision-making.</p>
+<dl class="simple">
+<dt>Example:</dt><dd><p>If implemented for a game like tic-tac-toe, <cite>getInitBoard</cite> might return a numpy array
+representing an empty 3x3 game board.</p>
+</dd>
+<dt>Note:</dt><dd><p>The <cite>startBoard</cite> should provide an accurate and meaningful representation of the
+initial state of the game board, which serves as the starting point for gameplay.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.i_game.IGame.getNextState">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getNextState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/Tools/i_game.html#IGame.getNextState"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame.getNextState" title="Link to this definition"></a></dt>
+<dd><p>Generate the next game state after applying the specified action for the current player.</p>
+<dl>
+<dt>Parameters:</dt><dd><p>board (numpy.array): The current game board represented as a numpy array.
+player (int): The current player (1 for one player, -1 for the other player).
+action (any): The action taken by the current player on the board. Can be an int,</p>
+<blockquote>
+<div><p>a tuple or anything else that represents an action for the chosen game.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>nextBoard (numpy.array): The game board after applying the specified action.
+nextPlayer (int): The player who plays in the next turn (should be <cite>-player</cite>).</p>
+</dd>
+</dl>
+<p>This method computes the next game state (<cite>nextBoard</cite>) after the specified <cite>action</cite>
+is applied by the <cite>player</cite> on the current <cite>board</cite>. It also determines the next player
+(<cite>nextPlayer</cite>) who will play in the subsequent turn.</p>
+<p>The <cite>nextPlayer</cite> is calculated as <cite>-player</cite>, which effectively alternates between players
+in each turn.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.i_game.IGame.getSymmetries">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getSymmetries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/Tools/i_game.html#IGame.getSymmetries"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame.getSymmetries" title="Link to this definition"></a></dt>
+<dd><p>Generate symmetrical forms of the given board and corresponding policy vector.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>board (numpy.array): The current game board represented as a numpy array.
+pi (numpy.array): The policy vector of size <cite>self.getActionSize()</cite>, providing action probabilities.</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>symmForms (list): A list of tuples (board, pi) where each tuple represents a symmetrical</dt><dd><p>form of the board and the corresponding policy vector <cite>pi</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>This method generates symmetrical transformations of the given board along with the associated
+policy vector <cite>pi</cite>. The purpose is to create additional training data for the neural network by
+considering different orientations or reflections of the board, which helps in enhancing the
+model’s ability to generalize across different board configurations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.i_game.IGame.getValidMoves">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getValidMoves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="_modules/Tools/i_game.html#IGame.getValidMoves"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame.getValidMoves" title="Link to this definition"></a></dt>
+<dd><p>Determine the valid moves for the current player on the given board in binary form.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>board (numpy.array): The current game board represented as a numpy array.
+player (int): The current player (1 for one player, -1 for the other player).</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>validMoves (numpy.array): A binary vector indicating valid moves.</dt><dd><ul class="simple">
+<li><p><cite>1</cite> for valid moves.</p></li>
+<li><p><cite>0</cite> for invalid moves.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>This method generates a binary vector <cite>validMoves</cite> indicating which moves are valid
+for the specified <cite>player</cite> on the current <cite>board</cite>. Each element of <cite>validMoves</cite>
+corresponds to a possible action or move in the game.</p>
+<p>The value <cite>1</cite> in <cite>validMoves[i]</cite> indicates that the move corresponding to index <cite>i</cite>
+is valid for the <cite>player</cite> on the given <cite>board</cite>, while <cite>0</cite> indicates that the move
+is invalid or not allowed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.i_game.IGame.rotateMove">
+<span class="sig-name descname"><span class="pre">rotateMove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">move</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/Tools/i_game.html#IGame.rotateMove"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame.rotateMove" title="Link to this definition"></a></dt>
+<dd><p>For games like chess, checkers …
+Stands in relation with displaying rotated board frontend-wise.
+Every player moves from bottom to top (black AND white).
+So the moves coming from frontend need to be rotated as well for one of the two players.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>move (int | tuple[int, int]): The move to rotate.</p>
+</dd>
+<dt>Returns:</dt><dd><p>rotated move by 180 degree (int | tuple[int, int])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.i_game.IGame.stringRepresentation">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stringRepresentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/Tools/i_game.html#IGame.stringRepresentation"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame.stringRepresentation" title="Link to this definition"></a></dt>
+<dd><p>Convert the current game board into a string format required for hashing, used by Monte Carlo Tree Search (MCTS).</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>board (numpy.array): The current game board represented as a numpy array.</p>
+</dd>
+<dt>Returns:</dt><dd><p>boardString (str): A string representation of the board suitable for hashing in MCTS.</p>
+</dd>
+</dl>
+<p>This method is used to convert the current game board into a string format that can be used as a unique identifier
+for the board state within the context of Monte Carlo Tree Search (MCTS). The resulting string representation is
+used for efficient state hashing and lookup during the MCTS simulation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.i_game.IGame.translate">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">any</span></span></span><a class="reference internal" href="_modules/Tools/i_game.html#IGame.translate"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.i_game.IGame.translate" title="Link to this definition"></a></dt>
+<dd><p>Converts an index coming from alpha zero AI into an action.
+Comes into effect for games that do not just have a to_position (just an int as move).
+The output depends on the game getting implemented, most likely it’s a pair tuple (from_position, to_position),
+but it can also be a triplet tuple and so on - depending on the game.
+Alpha-zero AI generates just an index that needs to get converted back into the original move by comparison
+with the valid_moves method from the logic.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>index (int): The index of the move to translate.
+board (np.array): The current game board represented as a numpy array.
+player (int): The current player (1 for one player, -1 for the other player).</p>
+</dd>
+<dt>Returns:</dt><dd><p>action (any): The action fitting to the index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-Tools.language_handler">
+<span id="tools-language-handler-module"></span><h2>Tools.language_handler module<a class="headerlink" href="#module-Tools.language_handler" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Tools.language_handler.LANGUAGE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Tools.language_handler.</span></span><span class="sig-name descname"><span class="pre">LANGUAGE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/language_handler.html#LANGUAGE"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.language_handler.LANGUAGE" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.language_handler.LANGUAGE.DE">
+<span class="sig-name descname"><span class="pre">DE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#Tools.language_handler.LANGUAGE.DE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.language_handler.LANGUAGE.EN">
+<span class="sig-name descname"><span class="pre">EN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#Tools.language_handler.LANGUAGE.EN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.language_handler.LANGUAGE.FR">
+<span class="sig-name descname"><span class="pre">FR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#Tools.language_handler.LANGUAGE.FR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.language_handler.LANGUAGE.SP">
+<span class="sig-name descname"><span class="pre">SP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#Tools.language_handler.LANGUAGE.SP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Tools.language_handler.LanguageHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Tools.language_handler.</span></span><span class="sig-name descname"><span class="pre">LanguageHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/language_handler.html#LanguageHandler"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.language_handler.LanguageHandler" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.language_handler.LanguageHandler.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/language_handler.html#LanguageHandler.get"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.language_handler.LanguageHandler.get" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.language_handler.LanguageHandler.remove_client">
+<span class="sig-name descname"><span class="pre">remove_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/language_handler.html#LanguageHandler.remove_client"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.language_handler.LanguageHandler.remove_client" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.language_handler.LanguageHandler.update_language">
+<span class="sig-name descname"><span class="pre">update_language</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocket</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Tools.language_handler.LANGUAGE" title="Tools.language_handler.LANGUAGE"><span class="pre">LANGUAGE</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/language_handler.html#LanguageHandler.update_language"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.language_handler.LanguageHandler.update_language" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-Tools.mcts">
+<span id="tools-mcts-module"></span><h2>Tools.mcts module<a class="headerlink" href="#module-Tools.mcts" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Tools.mcts.MCTS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Tools.mcts.</span></span><span class="sig-name descname"><span class="pre">MCTS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nnet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/mcts.html#MCTS"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.mcts.MCTS" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.mcts.MCTS.get_action_prob">
+<span class="sig-name descname"><span class="pre">get_action_prob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cur_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/mcts.html#MCTS.get_action_prob"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.mcts.MCTS.get_action_prob" title="Link to this definition"></a></dt>
+<dd><p>Get the action probabilities for the given board state using MCTS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>board</strong> – The current state of the board in its canonical form.</p></li>
+<li><p><strong>temp</strong> – Temperature parameter for exploration. Lower values make the policy more deterministic.</p></li>
+<li><p><strong>cur_player</strong> – The player who is in turn.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of action probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.mcts.MCTS.search">
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cur_player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/mcts.html#MCTS.search"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.mcts.MCTS.search" title="Link to this definition"></a></dt>
+<dd><p>Perform a single MCTS search from the given board state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>board</strong> – The current state of the board in its canonical form.</p></li>
+<li><p><strong>cur_player</strong> – The current player.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-even"><p>The negative value of the board state from the current player’s perspective.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-Tools.neural_net">
+<span id="tools-neural-net-module"></span><h2>Tools.neural_net module<a class="headerlink" href="#module-Tools.neural_net" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Tools.neural_net.NeuralNet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Tools.neural_net.</span></span><span class="sig-name descname"><span class="pre">NeuralNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/neural_net.html#NeuralNet"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.neural_net.NeuralNet" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class specifies the base NeuralNet class. To define your own neural
+network, subclass this class and implement the functions below. The neural
+network does not consider the current player, and instead only deals with
+the canonical form of the board.</p>
+<p>See othello/NNet.py for an example implementation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.neural_net.NeuralNet.load_checkpoint">
+<span class="sig-name descname"><span class="pre">load_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/neural_net.html#NeuralNet.load_checkpoint"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.neural_net.NeuralNet.load_checkpoint" title="Link to this definition"></a></dt>
+<dd><p>Loads parameters of the neural network from folder/filename</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.neural_net.NeuralNet.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/neural_net.html#NeuralNet.predict"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.neural_net.NeuralNet.predict" title="Link to this definition"></a></dt>
+<dd><dl>
+<dt>Input:</dt><dd><p>board: current board in its canonical form.</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>pi: a policy vector for the current board- a numpy array of length</dt><dd><p>game.getActionSize</p>
+</dd>
+</dl>
+<p>v: a float in [-1,1] that gives the value of the current board</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.neural_net.NeuralNet.save_checkpoint">
+<span class="sig-name descname"><span class="pre">save_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/neural_net.html#NeuralNet.save_checkpoint"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.neural_net.NeuralNet.save_checkpoint" title="Link to this definition"></a></dt>
+<dd><p>Saves the current neural network (with its parameters) in
+folder/filename</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.neural_net.NeuralNet.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">examples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/neural_net.html#NeuralNet.train"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.neural_net.NeuralNet.train" title="Link to this definition"></a></dt>
+<dd><p>This function trains the neural network with examples obtained from
+self-play.</p>
+<dl class="simple">
+<dt>Input:</dt><dd><dl class="simple">
+<dt>examples: a list of training examples, where each example is of form</dt><dd><p>(board, pi, v). pi is the MCTS informed policy vector for
+the given board, and v is its value. The examples has
+board in its canonical form.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-Tools.rcode">
+<span id="tools-rcode-module"></span><h2>Tools.rcode module<a class="headerlink" href="#module-Tools.rcode" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Tools.rcode.</span></span><span class="sig-name descname"><span class="pre">RCODE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/rcode.html#RCODE"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.rcode.RCODE" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.COMMANDNOTFOUND">
+<span class="sig-name descname"><span class="pre">COMMANDNOTFOUND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">52</span></em><a class="headerlink" href="#Tools.rcode.RCODE.COMMANDNOTFOUND" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.D_CONTAINER">
+<span class="sig-name descname"><span class="pre">D_CONTAINER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">300</span></em><a class="headerlink" href="#Tools.rcode.RCODE.D_CONTAINER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.D_TOGGLECLIENT">
+<span class="sig-name descname"><span class="pre">D_TOGGLECLIENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">301</span></em><a class="headerlink" href="#Tools.rcode.RCODE.D_TOGGLECLIENT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.INVALIDDIFFICULTY">
+<span class="sig-name descname"><span class="pre">INVALIDDIFFICULTY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">54</span></em><a class="headerlink" href="#Tools.rcode.RCODE.INVALIDDIFFICULTY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.INVALIDGAME">
+<span class="sig-name descname"><span class="pre">INVALIDGAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">53</span></em><a class="headerlink" href="#Tools.rcode.RCODE.INVALIDGAME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.INVALIDJSON">
+<span class="sig-name descname"><span class="pre">INVALIDJSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">51</span></em><a class="headerlink" href="#Tools.rcode.RCODE.INVALIDJSON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.INVALIDLANGUAGE">
+<span class="sig-name descname"><span class="pre">INVALIDLANGUAGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#Tools.rcode.RCODE.INVALIDLANGUAGE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.INVALIDMODE">
+<span class="sig-name descname"><span class="pre">INVALIDMODE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">55</span></em><a class="headerlink" href="#Tools.rcode.RCODE.INVALIDMODE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.LANGUAGECHANGED">
+<span class="sig-name descname"><span class="pre">LANGUAGECHANGED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#Tools.rcode.RCODE.LANGUAGECHANGED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_CLIENTALREADYINLOBBY">
+<span class="sig-name descname"><span class="pre">L_CLIENTALREADYINLOBBY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">150</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_CLIENTALREADYINLOBBY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_CLIENTNOTINLOBBY">
+<span class="sig-name descname"><span class="pre">L_CLIENTNOTINLOBBY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">153</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_CLIENTNOTINLOBBY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_CREATED">
+<span class="sig-name descname"><span class="pre">L_CREATED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_CREATED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_GAMES">
+<span class="sig-name descname"><span class="pre">L_GAMES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">106</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_GAMES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_JOINED">
+<span class="sig-name descname"><span class="pre">L_JOINED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">101</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_JOINED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_JOINFAILURE">
+<span class="sig-name descname"><span class="pre">L_JOINFAILURE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">152</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_JOINFAILURE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_LEFT">
+<span class="sig-name descname"><span class="pre">L_LEFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">102</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_LEFT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_LOBBYNOTEXIST">
+<span class="sig-name descname"><span class="pre">L_LOBBYNOTEXIST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">151</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_LOBBYNOTEXIST" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_LOBBYNOTREADY">
+<span class="sig-name descname"><span class="pre">L_LOBBYNOTREADY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">157</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_LOBBYNOTREADY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_NOLEAVEACTIVPLAYER">
+<span class="sig-name descname"><span class="pre">L_NOLEAVEACTIVPLAYER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">158</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_NOLEAVEACTIVPLAYER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_NOSWAP">
+<span class="sig-name descname"><span class="pre">L_NOSWAP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">159</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_NOSWAP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_POS">
+<span class="sig-name descname"><span class="pre">L_POS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">104</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_POS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_POSOCCUPIED">
+<span class="sig-name descname"><span class="pre">L_POSOCCUPIED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">155</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_POSOCCUPIED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_POSUNKNOWN">
+<span class="sig-name descname"><span class="pre">L_POSUNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">154</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_POSUNKNOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_RUNNINGNOJOIN">
+<span class="sig-name descname"><span class="pre">L_RUNNINGNOJOIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">160</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_RUNNINGNOJOIN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_STATUS">
+<span class="sig-name descname"><span class="pre">L_STATUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">105</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_STATUS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.L_SWAPPED">
+<span class="sig-name descname"><span class="pre">L_SWAPPED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">103</span></em><a class="headerlink" href="#Tools.rcode.RCODE.L_SWAPPED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_ARENAINIT">
+<span class="sig-name descname"><span class="pre">P_ARENAINIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_ARENAINIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_ARGS">
+<span class="sig-name descname"><span class="pre">P_ARGS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">253</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_ARGS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_BLUNDER">
+<span class="sig-name descname"><span class="pre">P_BLUNDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">270</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_BLUNDER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_BLUNDERLIST">
+<span class="sig-name descname"><span class="pre">P_BLUNDERLIST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">212</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_BLUNDERLIST" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_CREATEBLUNDER">
+<span class="sig-name descname"><span class="pre">P_CREATEBLUNDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">220</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_CREATEBLUNDER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_GAMEOVER">
+<span class="sig-name descname"><span class="pre">P_GAMEOVER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">202</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_GAMEOVER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_INVALIDMOVE">
+<span class="sig-name descname"><span class="pre">P_INVALIDMOVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">256</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_INVALIDMOVE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_INVALIDTIMELINE">
+<span class="sig-name descname"><span class="pre">P_INVALIDTIMELINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">261</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_INVALIDTIMELINE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_INVALIDUNDO">
+<span class="sig-name descname"><span class="pre">P_INVALIDUNDO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">259</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_INVALIDUNDO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_KIM">
+<span class="sig-name descname"><span class="pre">P_KIM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">219</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_KIM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_MOVES">
+<span class="sig-name descname"><span class="pre">P_MOVES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">208</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_MOVES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_NOBLUNDER">
+<span class="sig-name descname"><span class="pre">P_NOBLUNDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">269</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_NOBLUNDER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_NOGAMECLIENT">
+<span class="sig-name descname"><span class="pre">P_NOGAMECLIENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">250</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_NOGAMECLIENT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_NOGAMEINIT">
+<span class="sig-name descname"><span class="pre">P_NOGAMEINIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">266</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_NOGAMEINIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_NOMOVE">
+<span class="sig-name descname"><span class="pre">P_NOMOVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">255</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_NOMOVE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_NOPERMISSION">
+<span class="sig-name descname"><span class="pre">P_NOPERMISSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">251</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_NOPERMISSION" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_NOTIMELINE">
+<span class="sig-name descname"><span class="pre">P_NOTIMELINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">260</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_NOTIMELINE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_NOTRUNNING">
+<span class="sig-name descname"><span class="pre">P_NOTRUNNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">252</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_NOTRUNNING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_NOTYOURTURN">
+<span class="sig-name descname"><span class="pre">P_NOTYOURTURN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">268</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_NOTYOURTURN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_NOUNDO">
+<span class="sig-name descname"><span class="pre">P_NOUNDO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">258</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_NOUNDO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_NOVALIDMOVES">
+<span class="sig-name descname"><span class="pre">P_NOVALIDMOVES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">215</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_NOVALIDMOVES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_PLAYER">
+<span class="sig-name descname"><span class="pre">P_PLAYER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">218</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_PLAYER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_STEP">
+<span class="sig-name descname"><span class="pre">P_STEP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">216</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_STEP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_STILLRUNNING">
+<span class="sig-name descname"><span class="pre">P_STILLRUNNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">254</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_STILLRUNNING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_SURRENDER">
+<span class="sig-name descname"><span class="pre">P_SURRENDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">210</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_SURRENDER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_TIMELINE">
+<span class="sig-name descname"><span class="pre">P_TIMELINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">214</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_TIMELINE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_UNSTEP">
+<span class="sig-name descname"><span class="pre">P_UNSTEP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">217</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_UNSTEP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_VALIDMOVE">
+<span class="sig-name descname"><span class="pre">P_VALIDMOVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">207</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_VALIDMOVE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.P_VALIDUNDO">
+<span class="sig-name descname"><span class="pre">P_VALIDUNDO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">209</span></em><a class="headerlink" href="#Tools.rcode.RCODE.P_VALIDUNDO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.rcode.RCODE.get">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#Tools.rcode.RCODE" title="Tools.rcode.RCODE"><span class="pre">RCODE</span></a></span></span><a class="reference internal" href="_modules/Tools/rcode.html#RCODE.get"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.rcode.RCODE.get" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-Tools.utils">
+<span id="tools-utils-module"></span><h2>Tools.utils module<a class="headerlink" href="#module-Tools.utils" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Tools.utils.AverageMeter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Tools.utils.</span></span><span class="sig-name descname"><span class="pre">AverageMeter</span></span><a class="reference internal" href="_modules/Tools/utils.html#AverageMeter"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.utils.AverageMeter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to keep track of the average value of a metric over time.</p>
+<p>This implementation is adapted from the PyTorch examples repository:
+<a class="reference external" href="https://github.com/pytorch/examples/blob/master/imagenet/main.py">https://github.com/pytorch/examples/blob/master/imagenet/main.py</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Tools.utils.AverageMeter.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Tools/utils.html#AverageMeter.update"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.utils.AverageMeter.update" title="Link to this definition"></a></dt>
+<dd><p>Update the meter with a new value.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>val (float): The new value to add.
+n (int, optional): The weight of the new value (default is 1).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Tools.utils.dotdict">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Tools.utils.</span></span><span class="sig-name descname"><span class="pre">dotdict</span></span><a class="reference internal" href="_modules/Tools/utils.html#dotdict"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#Tools.utils.dotdict" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<p>Dictionary subclass that allows for dot notation access to dictionary attributes.</p>
+<p>This means you can access dictionary keys as if they were attributes.</p>
+</dd></dl>
+
+</section>
+<section id="module-Tools">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Tools" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Test.html" class="btn btn-neutral float-left" title="Test package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+        <a href="Trainer.html" class="btn btn-neutral float-right" title="Trainer package" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

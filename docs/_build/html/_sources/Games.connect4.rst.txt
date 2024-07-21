@@ -1,0 +1,29 @@
+Games.connect4 package
+======================
+
+Submodules
+----------
+
+Games.connect4.Connect4Game module
+----------------------------------
+
+.. automodule:: Games.connect4.Connect4Game
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Games.connect4.Connect4Logic module
+-----------------------------------
+
+.. automodule:: Games.connect4.Connect4Logic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Games.connect4
+   :members:
+   :undoc-members:
+   :show-inheritance:

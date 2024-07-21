@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Games.connect4.Connect4Game &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
+    <link rel="search" title="Suche" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Games.connect4.Connect4Game</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Games.connect4.Connect4Game</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">Tools.i_game</span> <span class="kn">import</span> <span class="n">IGame</span><span class="p">,</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">Games.connect4.Connect4Logic</span> <span class="kn">import</span> <span class="n">Board</span>
+
+
+<div class="viewcode-block" id="Connect4Game">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game">[Doku]</a>
+<span class="k">class</span> <span class="nc">Connect4Game</span><span class="p">(</span><span class="n">IGame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Connect4 Game class implementing the alpha-zero-general Game interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">win_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">np_pieces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_board</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">win_length</span><span class="p">,</span> <span class="n">np_pieces</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Connect4Game.getInitBoard">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.getInitBoard">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getInitBoard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_board</span><span class="o">.</span><span class="n">np_pieces</span></div>
+
+
+<div class="viewcode-block" id="Connect4Game.getBoardSize">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.getBoardSize">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getBoardSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_board</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_board</span><span class="o">.</span><span class="n">width</span></div>
+
+
+<div class="viewcode-block" id="Connect4Game.getActionSize">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.getActionSize">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getActionSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_board</span><span class="o">.</span><span class="n">width</span></div>
+
+
+<div class="viewcode-block" id="Connect4Game.getNextState">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.getNextState">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getNextState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a copy of the board with updated move, original board is unmodified.&quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_board</span><span class="o">.</span><span class="n">with_np_pieces</span><span class="p">(</span><span class="n">np_pieces</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">board</span><span class="p">))</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">add_stone</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span><span class="o">.</span><span class="n">np_pieces</span><span class="p">,</span> <span class="o">-</span><span class="n">player</span></div>
+
+
+<div class="viewcode-block" id="Connect4Game.getValidMoves">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.getValidMoves">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getValidMoves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Any zero value in top row is a valid move&quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_board</span><span class="o">.</span><span class="n">with_np_pieces</span><span class="p">(</span><span class="n">np_pieces</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">board</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">get_legal_moves</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">width</span><span class="p">)])</span></div>
+
+
+<div class="viewcode-block" id="Connect4Game.getGameEnded">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.getGameEnded">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getGameEnded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_board</span><span class="o">.</span><span class="n">with_np_pieces</span><span class="p">(</span><span class="n">np_pieces</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">board</span><span class="p">))</span>
+        <span class="n">winstate</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">get_win_state</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">winstate</span><span class="o">.</span><span class="n">is_ended</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">winstate</span><span class="o">.</span><span class="n">winner</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># draw has very little value.</span>
+                <span class="k">return</span> <span class="mf">1e-4</span>
+            <span class="k">elif</span> <span class="n">winstate</span><span class="o">.</span><span class="n">winner</span> <span class="o">==</span> <span class="n">player</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">+</span><span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">winstate</span><span class="o">.</span><span class="n">winner</span> <span class="o">==</span> <span class="o">-</span><span class="n">player</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unexpected winstate found: &#39;</span><span class="p">,</span> <span class="n">winstate</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 0 used to represent unfinished game.</span>
+            <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="Connect4Game.getSymmetries">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.getSymmetries">[Doku]</a>
+    <span class="k">def</span> <span class="nf">getSymmetries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">pi</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Board is left/right board symmetric&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">board</span><span class="p">,</span> <span class="n">pi</span><span class="p">),</span> <span class="p">(</span><span class="n">board</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">pi</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span></div>
+
+
+<div class="viewcode-block" id="Connect4Game.translate">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.translate">[Doku]</a>
+    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">index</span></div>
+
+
+<div class="viewcode-block" id="Connect4Game.rotateMove">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.rotateMove">[Doku]</a>
+    <span class="k">def</span> <span class="nf">rotateMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">move</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;no rotation at connect4&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">move</span></div>
+
+
+<div class="viewcode-block" id="Connect4Game.stringRepresentation">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.stringRepresentation">[Doku]</a>
+    <span class="k">def</span> <span class="nf">stringRepresentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">board</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Connect4Game.drawTerminal">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.drawTerminal">[Doku]</a>
+    <span class="k">def</span> <span class="nf">drawTerminal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">valid_moves</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">valid_moves</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">valid</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getValidMoves</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="k">if</span> <span class="n">valid</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">horizontal_border</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">board</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;+</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+            <span class="n">output</span> <span class="o">=</span> <span class="n">horizontal_border</span>  <span class="c1"># board</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">board</span><span class="p">)):</span>
+                <span class="n">row_str</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span>
+                <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">])):</span>
+                    <span class="k">if</span> <span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">row_str</span> <span class="o">+=</span> <span class="s1">&#39;   |&#39;</span>
+                    <span class="k">elif</span> <span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">row_str</span> <span class="o">+=</span> <span class="s1">&#39; O |&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">row_str</span> <span class="o">+=</span> <span class="s1">&#39; X |&#39;</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="n">row_str</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">horizontal_border</span>
+
+            <span class="n">output</span> <span class="o">+=</span> <span class="n">horizontal_border</span>  <span class="c1"># board index</span>
+            <span class="n">column_numbers</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">board</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="n">column_numbers</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">col</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1"> |&#39;</span>
+            <span class="n">output</span> <span class="o">+=</span> <span class="n">column_numbers</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+            <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="Connect4Game.draw">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.draw">[Doku]</a>
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">valid_moves</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">pygame</span>
+        <span class="n">row_count</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">col_count</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">SQUARESIZE</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">WIDTH</span> <span class="o">=</span> <span class="n">col_count</span> <span class="o">*</span> <span class="n">SQUARESIZE</span>
+        <span class="n">HEIGHT</span> <span class="o">=</span> <span class="p">(</span><span class="n">row_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">SQUARESIZE</span>
+        <span class="n">TOKENSIZE</span> <span class="o">=</span> <span class="n">SQUARESIZE</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="n">color_background</span> <span class="o">=</span> <span class="p">(</span><span class="mi">252</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">244</span><span class="p">)</span>  <span class="c1"># cream</span>
+        <span class="n">color_ply_one</span> <span class="o">=</span> <span class="p">(</span><span class="mi">252</span><span class="p">,</span> <span class="mi">239</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># yellow</span>
+        <span class="n">color_ply_minus_one</span> <span class="o">=</span> <span class="p">(</span><span class="mi">244</span><span class="p">,</span> <span class="mi">58</span><span class="p">,</span> <span class="mi">58</span><span class="p">)</span>  <span class="c1"># red</span>
+        <span class="n">color_valid</span> <span class="o">=</span> <span class="p">(</span><span class="mi">144</span><span class="p">,</span> <span class="mi">238</span><span class="p">,</span> <span class="mi">144</span><span class="p">)</span>  <span class="c1"># turquoise</span>
+
+        <span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+        <span class="c1"># creating empty surface and filling it with the appropriate color</span>
+        <span class="n">surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">WIDTH</span><span class="p">,</span> <span class="n">HEIGHT</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="n">surface</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">45</span><span class="p">,</span> <span class="mi">116</span><span class="p">,</span> <span class="mi">216</span><span class="p">))</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_background</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">WIDTH</span><span class="p">,</span> <span class="n">SQUARESIZE</span><span class="p">))</span>
+
+        <span class="c1"># draw board</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">col_count</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">row_count</span><span class="p">):</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_background</span><span class="p">,</span>
+                                   <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">TOKENSIZE</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">TOKENSIZE</span><span class="p">),</span>
+                                   <span class="n">TOKENSIZE</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># holes in the board</span>
+                <span class="k">if</span> <span class="n">valid_moves</span> <span class="ow">and</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">valid</span><span class="p">)</span> <span class="ow">in</span>
+                                                        <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getValidMoves</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="k">if</span> <span class="n">valid</span><span class="p">]:</span>
+                    <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_valid</span><span class="p">,</span>
+                                       <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">TOKENSIZE</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">TOKENSIZE</span><span class="p">),</span>
+                                       <span class="n">TOKENSIZE</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># displaying valid moves</span>
+                <span class="k">if</span> <span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">draw_chip</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_ply_minus_one</span><span class="p">,</span>
+                                   <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">TOKENSIZE</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">TOKENSIZE</span><span class="p">),</span> <span class="n">TOKENSIZE</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">draw_chip</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color_ply_one</span><span class="p">,</span>
+                                   <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">TOKENSIZE</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">SQUARESIZE</span> <span class="o">+</span> <span class="n">TOKENSIZE</span><span class="p">),</span> <span class="n">TOKENSIZE</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">surface</span></div>
+
+
+<div class="viewcode-block" id="Connect4Game.draw_chip">
+<a class="viewcode-back" href="../../../Games.connect4.html#Games.connect4.Connect4Game.Connect4Game.draw_chip">[Doku]</a>
+    <span class="k">def</span> <span class="nf">draw_chip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">pygame</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>
+        <span class="n">dark_edge_color</span> <span class="o">=</span> <span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">dark_edge_color</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

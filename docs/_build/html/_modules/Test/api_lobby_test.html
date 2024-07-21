@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test.api_lobby_test &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Test.api_lobby_test</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Test.api_lobby_test</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+<span class="kn">from</span> <span class="nn">websockets.client</span> <span class="kn">import</span> <span class="n">connect</span><span class="p">,</span> <span class="n">ClientConnection</span>
+<span class="kn">from</span> <span class="nn">api_lobby_fixtures</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">send</span>
+
+
+<div class="viewcode-block" id="test_websocket_connection">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_websocket_connection">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_websocket_connection</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_response_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Checks if a workin connection could be established at all&#39;&#39;&#39;</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pong_waiter</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">ping</span><span class="p">(</span><span class="s2">&quot;healthcheck&quot;</span><span class="p">)</span>
+            <span class="n">latency</span> <span class="o">=</span> <span class="k">await</span> <span class="n">pong_waiter</span>
+            <span class="k">assert</span> <span class="n">latency</span> <span class="o">&lt;=</span> <span class="n">max_response_time</span>
+            <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">break</span>
+        <span class="k">except</span> <span class="ne">ConnectionRefusedError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">continue</span></div>
+
+        
+
+<div class="viewcode-block" id="test_lobby_creation">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_lobby_creation">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_lobby_creation</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="c1"># create lobby</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+
+        <span class="c1"># the response should have a response_code as specified in commands_and_command_keys </span>
+        <span class="k">assert</span> <span class="s2">&quot;response_code&quot;</span> <span class="ow">in</span> <span class="n">res</span>
+        
+        <span class="c1"># when lobby creation was successful response_code should be 100 as specified in commands_and_command_keys</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">100</span>
+
+        <span class="c1"># the response should have a freshly created lobby key as specified in commands_and_command_keys</span>
+        <span class="k">assert</span> <span class="s2">&quot;key&quot;</span> <span class="ow">in</span> <span class="n">res</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+        
+<div class="viewcode-block" id="test_joining_existing_lobby">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_joining_existing_lobby">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_joining_existing_lobby</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">join_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect as player-1 to the server</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn_player_one</span><span class="p">:</span>
+        <span class="c1"># create lobby</span>
+        <span class="n">res_one</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn_player_one</span><span class="p">)</span>
+
+        <span class="c1"># get the key of the created lobby</span>
+        <span class="n">lobby_key</span> <span class="o">=</span> <span class="n">res_one</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+
+        <span class="c1"># second connection to the server</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn_player_two</span><span class="p">:</span>
+
+            <span class="c1"># join the lobby of player 1</span>
+            <span class="n">join_lobby_msg</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lobby_key</span>
+            <span class="n">res_two</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">join_lobby_msg</span><span class="p">,</span> <span class="n">conn_player_two</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">res_two</span><span class="p">)</span>
+
+            <span class="c1"># check if both players are in the same lobby</span>
+            <span class="c1"># assert res_two[&quot;key&quot;] == lobby_key</span>
+
+            <span class="c1"># check if the response_code meets the specification in commands_and_command_keys</span>
+            <span class="k">assert</span> <span class="s2">&quot;response_code&quot;</span> <span class="ow">in</span> <span class="n">res_two</span>
+            <span class="k">assert</span> <span class="n">res_two</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">101</span></div>
+
+
+
+<div class="viewcode-block" id="test_joining_non_existing_lobby">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_joining_non_existing_lobby">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_joining_non_existing_lobby</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">join_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span> 
+        <span class="c1"># try to join a non existing lobby</span>
+        <span class="n">join_lobby_msg</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;this_is_only_a_dummy_key_not_a_real_one_therefore_this_key_should_not_be_working&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">join_lobby_msg</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+
+        <span class="c1"># check if the response_code meets the specification in commands_and_command_keys </span>
+        <span class="k">assert</span> <span class="s2">&quot;response_code&quot;</span> <span class="ow">in</span> <span class="n">res</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">151</span></div>
+
+
+
+<div class="viewcode-block" id="test_creating_multiple_lobbies">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_creating_multiple_lobbies">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_creating_multiple_lobbies</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect as player-1 to the server</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="c1"># create first lobby</span>
+        <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+        
+        <span class="c1"># no need to run tests on the first lobby, since this is covered in test_lobby_creation()</span>
+
+
+        <span class="c1"># create second lobby</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+        
+        <span class="c1"># check if the response_code meets the specification in commands_and_command_keys </span>
+        <span class="k">assert</span> <span class="s2">&quot;response_code&quot;</span> <span class="ow">in</span> <span class="n">res</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">150</span></div>
+
+        
+
+<div class="viewcode-block" id="test_joining_multiple_lobbies">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_joining_multiple_lobbies">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_joining_multiple_lobbies</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">join_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect as player-1 to the server</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn_player_one</span><span class="p">:</span>
+        <span class="c1"># create lobby</span>
+        <span class="n">res_create_lobby</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn_player_one</span><span class="p">)</span>
+
+        <span class="c1"># get the key of the created lobby</span>
+        <span class="n">lobby_key</span> <span class="o">=</span> <span class="n">res_create_lobby</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+
+        <span class="c1">#connect as player-2 to the server</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn_player_two</span><span class="p">:</span>
+
+            <span class="c1"># first time joining the lobby</span>
+            <span class="n">join_lobby_msg</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lobby_key</span>
+            <span class="n">res_first_join</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">join_lobby_msg</span><span class="p">,</span> <span class="n">conn_player_two</span><span class="p">)</span>
+
+            <span class="c1"># check if both players are in the same lobby</span>
+            <span class="c1"># assert res_first_join[&quot;key&quot;] == lobby_key</span>
+
+            <span class="c1"># second time joining the lobby</span>
+            <span class="n">res_second_join</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">join_lobby_msg</span><span class="p">,</span> <span class="n">conn_player_two</span><span class="p">)</span>
+
+            <span class="c1"># check if the response_code meets the specification in commands_and_command_keys </span>
+            <span class="k">assert</span> <span class="s2">&quot;response_code&quot;</span> <span class="ow">in</span> <span class="n">res_second_join</span>
+            <span class="k">assert</span> <span class="n">res_second_join</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">150</span></div>
+
+
+
+
+<span class="c1"># TODO: Test for response_code 152</span>
+
+<div class="viewcode-block" id="test_leaving_current_lobby">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_leaving_current_lobby">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_leaving_current_lobby</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">leave_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="c1"># create lobby</span>
+        <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+        
+        <span class="c1"># leave lobby</span>
+        <span class="n">res_first_leave</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">leave_lobby_msg</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+
+        <span class="c1"># check if the response_code meets the specification in commands_and_command_keys </span>
+        <span class="k">assert</span> <span class="s2">&quot;response_code&quot;</span> <span class="ow">in</span> <span class="n">res_first_leave</span>
+        <span class="k">assert</span> <span class="n">res_first_leave</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">102</span>
+
+        <span class="c1"># try to leave the lobby a second time - this should not work since we already left the lobby</span>
+        <span class="n">res_second_leave</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">leave_lobby_msg</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s2">&quot;response_code&quot;</span> <span class="ow">in</span> <span class="n">res_second_leave</span>
+        <span class="k">assert</span> <span class="n">res_second_leave</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">153</span></div>
+
+
+
+<div class="viewcode-block" id="test_leaving_non_existing_lobby">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_leaving_non_existing_lobby">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_leaving_non_existing_lobby</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">leave_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>        
+        <span class="c1"># leave lobby</span>
+        <span class="n">res_leave</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">leave_lobby_msg</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+
+        <span class="c1"># check if the response_code meets the specification in commands_and_command_keys </span>
+        <span class="k">assert</span> <span class="s2">&quot;response_code&quot;</span> <span class="ow">in</span> <span class="n">res_leave</span>
+        <span class="k">assert</span> <span class="n">res_leave</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">153</span></div>
+
+
+<div class="viewcode-block" id="test_swap_player">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_swap_player">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_swap_player</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">swap_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+
+    <span class="c1"># p1 creates lobby</span>
+    <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    
+    <span class="c1"># swap from player 1 to player 2 (only possible when only one player is in the lobby)</span>
+    <span class="n">res_swap</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">swap_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_swap</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">swap_msg</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">res_swap</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">103</span>
+
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_swap_player_when_occupied">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_swap_player_when_occupied">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_swap_player_when_occupied</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">join_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">swap_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+    <span class="n">conn_p2</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+
+    <span class="c1"># p1 creates lobby</span>
+    <span class="n">res_create</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    
+    <span class="c1"># p2 joins lobby</span>
+    <span class="n">join_lobby_msg</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res_create</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+    <span class="n">join_lobby_msg</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;p2&quot;</span>
+    <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">join_lobby_msg</span><span class="p">,</span> <span class="n">conn_p2</span><span class="p">)</span>
+    <span class="c1"># p2 sends a broadcast that it joined (101), p1 must remove it from his queue to read the following responses</span>
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+    
+    <span class="c1"># swap from player 1 to player 2</span>
+    <span class="n">res_swap</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">swap_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_swap</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">swap_msg</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">res_swap</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">155</span>
+
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">conn_p2</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_swap_player_while_not_in_lobby">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_swap_player_while_not_in_lobby">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_swap_player_while_not_in_lobby</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">swap_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+    
+    <span class="c1"># p1 tries to swap but is not in a lobby</span>
+    <span class="n">res_swap</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">swap_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_swap</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">153</span>
+
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_swap_player_to_undefined_pos">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_swap_player_to_undefined_pos">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_swap_player_to_undefined_pos</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">swap_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+
+    <span class="c1"># p1 creates lobby</span>
+    <span class="n">res_create</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    
+    <span class="c1"># try to swap to a undefined position</span>
+    <span class="n">swap_msg</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;pos&quot;</span><span class="p">)</span>    <span class="c1"># remove position to make sure it will be unknown</span>
+    <span class="n">res_swap</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">swap_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_swap</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">154</span>
+
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_swap_player_to_non_sense_pos">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_swap_player_to_non_sense_pos">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_swap_player_to_non_sense_pos</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">swap_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+
+    <span class="c1"># p1 creates lobby</span>
+    <span class="n">res_create</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    
+    <span class="c1"># try to swap to a non-sense position</span>
+    <span class="n">swap_msg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;pos&quot;</span><span class="p">:</span><span class="s2">&quot;jkölhgj,k&quot;</span><span class="p">})</span>   <span class="c1"># change pos argument to non-sense value</span>
+    <span class="n">res_swap</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">swap_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_swap</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">154</span>
+    <span class="k">assert</span> <span class="n">res_swap</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">swap_msg</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span>
+
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_swap_player_to_none_pos">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_swap_player_to_none_pos">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_swap_player_to_none_pos</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">swap_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+
+    <span class="c1"># p1 creates lobby</span>
+    <span class="n">res_create</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    
+    <span class="c1"># try to swap to a None position</span>
+    <span class="n">swap_msg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;pos&quot;</span><span class="p">:</span><span class="kc">None</span><span class="p">})</span>   <span class="c1"># change pos argument to non-sense value</span>
+    <span class="n">res_swap</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">swap_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_swap</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">154</span>
+    <span class="k">assert</span> <span class="n">res_swap</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">swap_msg</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span>
+
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_pos_of_lobby_creator">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_get_pos_of_lobby_creator">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_pos_of_lobby_creator</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">pos_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+
+    <span class="c1"># create lobby</span>
+    <span class="n">res_create</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+
+    <span class="c1"># test pos of creator</span>
+    <span class="n">res_pos_p1</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">pos_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_pos_p1</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">104</span>
+    <span class="k">assert</span> <span class="n">res_pos_p1</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;p1&quot;</span>    <span class="c1"># p1 is the default for the creator of the lobby</span>
+
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_pos_of_p2">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_get_pos_of_p2">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_pos_of_p2</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">pos_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">join_lobby_as_p2_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+    <span class="n">conn_p2</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+
+    <span class="c1"># p1 creates lobby</span>
+    <span class="n">res_create</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    
+    <span class="c1"># p2 joins lobby</span>
+    <span class="n">join_lobby_as_p2_msg</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res_create</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+    <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">join_lobby_as_p2_msg</span><span class="p">,</span> <span class="n">conn_p2</span><span class="p">)</span>
+    
+    <span class="c1"># test pos of p2</span>
+    <span class="n">res_pos_p2</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">pos_msg</span><span class="p">,</span> <span class="n">conn_p2</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_pos_p2</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">104</span>
+    <span class="k">assert</span> <span class="n">res_pos_p2</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;p2&quot;</span>    <span class="c1"># p2 is the position of the second player</span>
+    
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">conn_p2</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_pos_of_sp">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_get_pos_of_sp">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_pos_of_sp</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">pos_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">join_lobby_as_sp_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+    <span class="n">conn_sp</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+
+    <span class="c1"># p1 creates lobby</span>
+    <span class="n">res_create</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    
+    <span class="c1"># sp joins lobby</span>
+    <span class="n">join_lobby_as_sp_msg</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res_create</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+    <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">join_lobby_as_sp_msg</span><span class="p">,</span> <span class="n">conn_sp</span><span class="p">)</span>
+    
+    <span class="c1"># test pos of 2p</span>
+    <span class="n">res_pos_sp</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">pos_msg</span><span class="p">,</span> <span class="n">conn_sp</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_pos_sp</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">104</span>
+    <span class="k">assert</span> <span class="n">res_pos_sp</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;sp&quot;</span>    <span class="c1"># sp2 is the default for all spectators</span>
+    
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">conn_sp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_pos_with_no_lobby">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_get_pos_with_no_lobby">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_pos_with_no_lobby</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pos_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+    
+    <span class="c1"># test pos of p1</span>
+    <span class="n">res_pos_sp</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">pos_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_pos_sp</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">153</span>
+    
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_lobby_status">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_lobby_status">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_lobby_status</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">create_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">lobby_status_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">join_lobby_as_p2_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">join_lobby_as_sp_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+    <span class="n">conn_p2</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+    <span class="n">conn_sp1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+    <span class="n">conn_sp2</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+    
+    <span class="c1"># test no lobby</span>
+    <span class="n">no_lobby_res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">lobby_status_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">no_lobby_res</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">153</span>
+
+    <span class="c1"># create lobby</span>
+    <span class="n">create_res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">create_lobby_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+
+    <span class="c1"># test start-up-time is lower than 1 sec</span>
+    <span class="c1"># This has to be done here to be able make a prediction wether there is a GameClient or not</span>
+    <span class="n">time_of_creation</span><span class="p">:</span><span class="nb">float</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>                                 <span class="c1"># save time when the create command was send</span>
+    <span class="n">res_status_create</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">lobby_status_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    
+    <span class="k">while</span> <span class="n">res_status_create</span><span class="p">[</span><span class="s2">&quot;GameClient&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">startuptime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">time_of_creation</span>                       <span class="c1"># calculate the time passed since sending create lobby command</span>
+        <span class="k">assert</span> <span class="n">startuptime</span> <span class="o">&lt;=</span> <span class="mf">1.2</span>                                   <span class="c1"># assert time to start up a game_client to run the lobby is lower than 1 sec</span>
+        <span class="n">res_status_create</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">lobby_status_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>   <span class="c1"># refresh lobby status message</span>
+    
+
+    <span class="c1"># test status after creation</span>
+    <span class="k">assert</span> <span class="n">res_status_create</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">105</span>
+    <span class="k">assert</span> <span class="n">res_status_create</span><span class="p">[</span><span class="s2">&quot;P1&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">res_status_create</span><span class="p">[</span><span class="s2">&quot;P2&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span>
+    <span class="k">assert</span> <span class="n">res_status_create</span><span class="p">[</span><span class="s2">&quot;Spectators&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">assert</span> <span class="n">res_status_create</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">create_res</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+    
+    <span class="c1"># set up join messages</span>
+    <span class="n">join_lobby_as_sp_msg</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">create_res</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+    <span class="n">join_lobby_as_p2_msg</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">create_res</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+
+    <span class="c1"># test status after Spectator 1 joined</span>
+    <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">join_lobby_as_sp_msg</span><span class="p">,</span> <span class="n">conn_sp1</span><span class="p">)</span>
+    <span class="n">res_status_sp1</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">lobby_status_msg</span><span class="p">,</span> <span class="n">conn_sp1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_status_sp1</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">105</span>
+    <span class="k">assert</span> <span class="n">res_status_sp1</span><span class="p">[</span><span class="s2">&quot;P1&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">res_status_sp1</span><span class="p">[</span><span class="s2">&quot;P2&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span>
+    <span class="k">assert</span> <span class="n">res_status_sp1</span><span class="p">[</span><span class="s2">&quot;Spectators&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">res_status_sp1</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">create_res</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+
+    <span class="c1"># test status after p2 joined</span>
+    <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">join_lobby_as_p2_msg</span><span class="p">,</span> <span class="n">conn_p2</span><span class="p">)</span>
+    <span class="n">res_status_p2</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">lobby_status_msg</span><span class="p">,</span> <span class="n">conn_p2</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_status_p2</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">105</span>
+    <span class="k">assert</span> <span class="n">res_status_p2</span><span class="p">[</span><span class="s2">&quot;P1&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">res_status_p2</span><span class="p">[</span><span class="s2">&quot;P2&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">res_status_p2</span><span class="p">[</span><span class="s2">&quot;Spectators&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">res_status_p2</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">create_res</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+
+    <span class="c1"># test status after Spectator 2 joined</span>
+    <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">join_lobby_as_sp_msg</span><span class="p">,</span> <span class="n">conn_sp2</span><span class="p">)</span>
+    <span class="n">res_status_sp2</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">lobby_status_msg</span><span class="p">,</span> <span class="n">conn_sp2</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res_status_sp2</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">105</span>
+    <span class="k">assert</span> <span class="n">res_status_sp2</span><span class="p">[</span><span class="s2">&quot;P1&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">res_status_sp2</span><span class="p">[</span><span class="s2">&quot;P2&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">res_status_sp2</span><span class="p">[</span><span class="s2">&quot;Spectators&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">res_status_sp2</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">create_res</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+
+    <span class="c1"># close connections</span>
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">conn_p2</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">conn_sp1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">conn_sp2</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_none_lobby_command_key">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_none_lobby_command_key">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_none_lobby_command_key</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">empty_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+    
+    <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">empty_lobby_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">52</span>
+
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_non_sense_lobby_command_key">
+<a class="viewcode-back" href="../../Test.html#Test.api_lobby_test.test_non_sense_lobby_command_key">[Doku]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_non_sense_lobby_command_key</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">empty_lobby_msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># connect to server</span>
+    <span class="n">conn_p1</span><span class="p">:</span> <span class="n">ClientConnection</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connect</span><span class="p">(</span><span class="n">web_socket_uri</span><span class="p">)</span>
+    
+    <span class="n">empty_lobby_msg</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;command_key&quot;</span><span class="p">:</span><span class="s2">&quot;This_is_useless_command_key_which_should_not_work&quot;</span><span class="p">})</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">empty_lobby_msg</span><span class="p">,</span> <span class="n">conn_p1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;response_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">52</span>
+
+    <span class="k">await</span> <span class="n">conn_p1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

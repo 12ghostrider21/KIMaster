@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameClient.pit &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">GameClient.pit</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für GameClient.pit</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">GameClient.arena</span> <span class="kn">import</span> <span class="n">Arena</span>
+<span class="kn">from</span> <span class="nn">GameClient.player</span> <span class="kn">import</span> <span class="n">Player</span>
+<span class="kn">from</span> <span class="nn">Tools.Game_Config.game_config</span> <span class="kn">import</span> <span class="n">GameConfig</span>
+
+
+<span class="c1"># The Pit class manages the game interactions and states</span>
+<div class="viewcode-block" id="Pit">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit">[Doku]</a>
+<span class="k">class</span> <span class="nc">Pit</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_client</span><span class="p">):</span>
+        <span class="c1"># Initialize the Pit with the game client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_client</span> <span class="o">=</span> <span class="n">game_client</span>
+        <span class="c1"># Create an arena instance using the game client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="p">:</span> <span class="n">Arena</span> <span class="o">=</span> <span class="n">Arena</span><span class="p">(</span><span class="n">game_client</span><span class="p">)</span>
+        <span class="c1"># Initialize two players</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player1</span><span class="p">:</span> <span class="n">Player</span> <span class="o">=</span> <span class="n">Player</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player2</span><span class="p">:</span> <span class="n">Player</span> <span class="o">=</span> <span class="n">Player</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Pit.clear_arena">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit.clear_arena">[Doku]</a>
+    <span class="k">def</span> <span class="nf">clear_arena</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># reset history on new game configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blunder</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># reset blunder on new game configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blunder_history</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># reset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blender_calculation</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># reset to default</span></div>
+
+
+    <span class="c1"># Start the battle in the arena</span>
+<div class="viewcode-block" id="Pit.start_battle">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit.start_battle">[Doku]</a>
+    <span class="k">def</span> <span class="nf">start_battle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">cur_player</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">it</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="c1"># Set the arena&#39;s running status to True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">board</span> <span class="o">=</span> <span class="n">board</span>
+        <span class="c1"># Create and start an asynchronous task to play the game in the arena</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">cur_player</span><span class="o">=</span><span class="n">cur_player</span><span class="p">,</span> <span class="n">it</span><span class="o">=</span><span class="n">it</span><span class="p">))</span></div>
+
+
+    <span class="c1"># Stop the battle in the arena</span>
+<div class="viewcode-block" id="Pit.stop_battle">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit.stop_battle">[Doku]</a>
+    <span class="k">def</span> <span class="nf">stop_battle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Call the arena&#39;s stop method to halt the game</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+
+    <span class="c1"># Set the move for a player</span>
+<div class="viewcode-block" id="Pit.set_move">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit.set_move">[Doku]</a>
+    <span class="k">def</span> <span class="nf">set_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">move</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Check if it&#39;s the correct player&#39;s turn based on their position</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cur_player</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;p1&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># Set the move for player 1</span>
+            <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;p1&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">player1</span><span class="o">.</span><span class="n">move</span> <span class="o">=</span> <span class="n">move</span>
+            <span class="c1"># Set the move for player 2</span>
+            <span class="k">elif</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;p2&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">player2</span><span class="o">.</span><span class="n">move</span> <span class="o">=</span> <span class="n">move</span>
+            <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># It is the player&#39;s turn</span>
+        <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Not the player&#39;s turn</span></div>
+
+
+<div class="viewcode-block" id="Pit.get_cur_player">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit.get_cur_player">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get_cur_player</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">cur_player</span></div>
+
+
+    <span class="c1"># Initialize the arena with the game configuration</span>
+<div class="viewcode-block" id="Pit.init_arena">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit.init_arena">[Doku]</a>
+    <span class="k">def</span> <span class="nf">init_arena</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_config</span><span class="p">:</span> <span class="n">GameConfig</span><span class="p">):</span>
+        <span class="n">play1</span><span class="p">,</span> <span class="n">play2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="c1"># Match the game mode to set up the appropriate player functions</span>
+        <span class="k">match</span> <span class="n">game_config</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">case</span> <span class="mi">0</span> <span class="o">|</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># player_vs_player or playerai_vs_playerai</span>
+                <span class="n">play1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player1</span><span class="o">.</span><span class="n">play</span>
+                <span class="n">play2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player2</span><span class="o">.</span><span class="n">play</span>
+            <span class="k">case</span> <span class="mi">1</span> <span class="o">|</span> <span class="mi">4</span><span class="p">:</span>  <span class="c1"># player_vs_kim or playerai_vs_kim</span>
+                <span class="n">play1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player1</span><span class="o">.</span><span class="n">play</span>
+                <span class="n">play2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player2</span><span class="o">.</span><span class="n">playAI</span>
+            <span class="k">case</span> <span class="mi">2</span> <span class="o">|</span> <span class="mi">5</span><span class="p">:</span>  <span class="c1"># kim_vs_player or kim_vs_playerai</span>
+                <span class="n">play1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player1</span><span class="o">.</span><span class="n">playAI</span>
+                <span class="n">play2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player2</span><span class="o">.</span><span class="n">play</span>
+        <span class="c1"># Print the new game configuration</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;New game loaded:&quot;</span><span class="p">,</span> <span class="n">game_config</span><span class="p">)</span>
+        <span class="c1"># Set the arena with the game and player configurations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">set_arena</span><span class="p">(</span><span class="n">game_config</span><span class="o">.</span><span class="n">game</span><span class="p">,</span> <span class="n">game_config</span><span class="o">.</span><span class="n">game_name</span><span class="p">,</span> <span class="n">game_config</span><span class="o">.</span><span class="n">difficulty</span><span class="p">,</span> <span class="n">play1</span><span class="p">,</span> <span class="n">play2</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Retrieve the last entry from the arena&#39;s history</span>
+<div class="viewcode-block" id="Pit.get_last_hist_entry">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit.get_last_hist_entry">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get_last_hist_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Pit.undo">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit.undo">[Doku]</a>
+    <span class="k">def</span> <span class="nf">undo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="n">board</span><span class="p">,</span> <span class="n">last_player</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>  <span class="c1"># popping off last state (current player in turn doing undo)</span>
+
+        <span class="n">last_player</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># players are always -1 / 1, never 0</span>
+        <span class="n">cur_player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cur_player</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="k">while</span> <span class="n">cur_player</span> <span class="o">!=</span> <span class="n">last_player</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">board</span><span class="p">,</span> <span class="n">last_player</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+                    <span class="n">it_blunder_hist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blunder_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">it_blunder_hist</span> <span class="o">&gt;=</span> <span class="n">it</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blunder_history</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">board</span><span class="p">,</span> <span class="n">last_player</span><span class="p">,</span> <span class="n">it</span></div>
+
+
+
+    <span class="c1"># Navigate through the game timeline</span>
+<div class="viewcode-block" id="Pit.timeline">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit.timeline">[Doku]</a>
+    <span class="k">def</span> <span class="nf">timeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">forward</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">start_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Helper function to update the index for timeline navigation</span>
+        <span class="k">def</span> <span class="nf">update_index</span><span class="p">(</span><span class="n">current_index</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">history_length</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">current_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">history_length</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">current_index</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">direction</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">%</span> <span class="n">history_length</span>
+
+        <span class="k">if</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p1&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">time_index_p1</span> <span class="o">=</span> <span class="n">update_index</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">time_index_p1</span><span class="p">,</span> <span class="n">start_index</span><span class="p">,</span> <span class="n">forward</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">state</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">iteration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">time_index_p1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">time_index_p2</span> <span class="o">=</span> <span class="n">update_index</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">time_index_p2</span><span class="p">,</span> <span class="n">start_index</span><span class="p">,</span> <span class="n">forward</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">state</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">iteration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">time_index_p2</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">state</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">iteration</span></div>
+
+
+<div class="viewcode-block" id="Pit.set_blunder">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit.set_blunder">[Doku]</a>
+    <span class="k">def</span> <span class="nf">set_blunder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blunder</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blunder</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>  <span class="c1"># b[0] is action</span>
+                <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blunder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Pit.get_blunder_payload">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit.get_blunder_payload">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get_blunder_payload</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">bh</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blunder_history</span><span class="p">:</span>
+            <span class="n">array</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">move</span> <span class="o">=</span> <span class="n">bh</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">player</span><span class="p">,</span> <span class="n">move</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="Pit.get_blunder">
+<a class="viewcode-back" href="../../GameClient.html#GameClient.pit.Pit.get_blunder">[Doku]</a>
+    <span class="k">def</span> <span class="nf">get_blunder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_pos</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">demanding_player</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">p_pos</span> <span class="o">==</span> <span class="s2">&quot;p1&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;blunder&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="k">for</span> <span class="n">action</span><span class="p">,</span> <span class="n">it</span><span class="p">,</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">blunder</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">player</span> <span class="o">!=</span> <span class="n">demanding_player</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">action</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">rotate</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">rotateMove</span><span class="p">(</span><span class="n">action</span><span class="p">),</span>
+                 <span class="s2">&quot;it&quot;</span><span class="p">:</span> <span class="n">it</span><span class="p">,</span>
+                 <span class="s2">&quot;player&quot;</span><span class="p">:</span> <span class="n">player</span><span class="p">}</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;blunder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arena</span><span class="o">.</span><span class="n">rotate</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

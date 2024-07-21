@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Server.fastAPIServer &mdash; Ki-Master  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=245627df"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=79cc9f76"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Ki-Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Projekt</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Ki-Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">Server.fastAPIServer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für Server.fastAPIServer</h1><div class="highlight"><pre>
+<span></span><span class="c1"># External imports</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">WebSocketDisconnect</span>
+<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">loads</span><span class="p">,</span> <span class="n">JSONDecodeError</span>
+
+<span class="c1"># Own modules</span>
+<span class="kn">from</span> <span class="nn">Server.connection_manager</span> <span class="kn">import</span> <span class="n">AbstractConnectionManager</span>
+<span class="kn">from</span> <span class="nn">Server.lobby</span> <span class="kn">import</span> <span class="n">Lobby</span>
+<span class="kn">from</span> <span class="nn">Server.lobby_manager</span> <span class="kn">import</span> <span class="n">LobbyManager</span>
+<span class="kn">from</span> <span class="nn">Tools.Game_Config.difficulty</span> <span class="kn">import</span> <span class="n">EDifficulty</span>
+<span class="kn">from</span> <span class="nn">Tools.Game_Config.mode</span> <span class="kn">import</span> <span class="n">EGameMode</span>
+<span class="kn">from</span> <span class="nn">Tools.dynamic_imports</span> <span class="kn">import</span> <span class="n">Importer</span>
+<span class="kn">from</span> <span class="nn">Tools.language_handler</span> <span class="kn">import</span> <span class="n">LanguageHandler</span><span class="p">,</span> <span class="n">LANGUAGE</span>
+<span class="kn">from</span> <span class="nn">Tools.rcode</span> <span class="kn">import</span> <span class="n">RCODE</span>
+
+
+<div class="viewcode-block" id="FastAPIServer">
+<a class="viewcode-back" href="../../Server.html#Server.fastAPIServer.FastAPIServer">[Doku]</a>
+<span class="k">class</span> <span class="nc">FastAPIServer</span><span class="p">(</span><span class="n">AbstractConnectionManager</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    FastAPI Server class to manage WebSocket connections, lobby, and game interactions.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        manager (LobbyManager): Manages lobbies.</span>
+<span class="sd">        importer (Importer): Imports game configurations.</span>
+<span class="sd">        executor (ThreadPoolExecutor): Thread pool executor for asynchronous tasks.</span>
+<span class="sd">        __command_mask (list[str]): List of allowed command keys.</span>
+<span class="sd">        __play_mask (list[str]): List of allowed play command keys.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manager</span><span class="p">:</span> <span class="n">LobbyManager</span><span class="p">,</span> <span class="n">msg_builder</span><span class="p">:</span> <span class="n">LanguageHandler</span><span class="p">,</span> <span class="n">importer</span><span class="p">:</span> <span class="n">Importer</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the FastAPIServer with given managers and handlers.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            manager (LobbyManager): Manages lobbies.</span>
+<span class="sd">            msg_builder (LanguageHandler): Handles language-based messages.</span>
+<span class="sd">            importer (Importer): Imports game configurations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg_builder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="p">:</span> <span class="n">LobbyManager</span> <span class="o">=</span> <span class="n">manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">importer</span><span class="p">:</span> <span class="n">Importer</span> <span class="o">=</span> <span class="n">importer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">executor</span> <span class="o">=</span> <span class="n">ThreadPoolExecutor</span><span class="p">()</span>  <span class="c1"># Global Thread Executor without any Thread limits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__command_mask</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;command&quot;</span><span class="p">,</span> <span class="s2">&quot;command_key&quot;</span><span class="p">,</span> <span class="s2">&quot;pos&quot;</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="s2">&quot;game&quot;</span><span class="p">,</span> <span class="s2">&quot;difficulty&quot;</span><span class="p">,</span> <span class="s2">&quot;num&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="s2">&quot;lang&quot;</span><span class="p">,</span> <span class="s2">&quot;fromPos&quot;</span><span class="p">,</span> <span class="s2">&quot;isFrontend&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__play_mask</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">,</span> <span class="s2">&quot;valid_moves&quot;</span><span class="p">,</span> <span class="s2">&quot;make_move&quot;</span><span class="p">,</span> <span class="s2">&quot;undo_move&quot;</span><span class="p">,</span> <span class="s2">&quot;surrender&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;new_game&quot;</span><span class="p">,</span> <span class="s2">&quot;blunder&quot;</span><span class="p">,</span> <span class="s2">&quot;timeline&quot;</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">,</span> <span class="s2">&quot;unstep&quot;</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="FastAPIServer.connect">
+<a class="viewcode-back" href="../../Server.html#Server.fastAPIServer.FastAPIServer.connect">[Doku]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connects a WebSocket client.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            websocket (WebSocket): The WebSocket connection to the client.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FastAPIServer.disconnect">
+<a class="viewcode-back" href="../../Server.html#Server.fastAPIServer.FastAPIServer.disconnect">[Doku]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Disconnects a WebSocket client and performs necessary clean-up.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            websocket (WebSocket): The WebSocket connection to the client.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">websocket</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_connections</span><span class="p">:</span>
+            <span class="n">lobby</span><span class="p">:</span> <span class="n">Lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>  <span class="c1"># Get the lobby the client is part of</span>
+            <span class="k">if</span> <span class="n">lobby</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_pos_of_client</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;sp&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">lobby</span><span class="o">.</span><span class="n">game_running</span><span class="p">:</span>  <span class="c1"># If a game is running, handle surrender on connection loss</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_cmd</span><span class="p">(</span><span class="n">game_client</span><span class="o">=</span><span class="n">lobby</span><span class="o">.</span><span class="n">game_client</span><span class="p">,</span>
+                                            <span class="n">command</span><span class="o">=</span><span class="s2">&quot;play&quot;</span><span class="p">,</span>
+                                            <span class="n">command_key</span><span class="o">=</span><span class="s2">&quot;surrender&quot;</span><span class="p">,</span>
+                                            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;p_pos&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_pos_of_client</span><span class="p">(</span><span class="n">websocket</span><span class="p">),</span> <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">lobby</span><span class="o">.</span><span class="n">key</span><span class="p">})</span>
+                        <span class="n">lobby</span><span class="o">.</span><span class="n">game_running</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Override running mode for unresolved surrender</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active_connections</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>  <span class="c1"># Remove client from active connections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">leave_lobby</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>  <span class="c1"># Remove client from lobby</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg_builder</span><span class="o">.</span><span class="n">remove_client</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>  <span class="c1"># Remove client from private language selections</span></div>
+
+
+<div class="viewcode-block" id="FastAPIServer.websocket_endpoint">
+<a class="viewcode-back" href="../../Server.html#Server.fastAPIServer.FastAPIServer.websocket_endpoint">[Doku]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main endpoint for WebSocket connections, handling incoming messages.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            client (WebSocket): The WebSocket connection to the client.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>  <span class="c1"># Event loop for threading (each connection gets its own)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">read_object</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">receive_json</span><span class="p">()</span>  <span class="c1"># Receive JSON data from the client</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">read_object</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                        <span class="n">read_object</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">read_object</span><span class="p">)</span>
+                    <span class="c1"># Filter read_object based on allowed keys</span>
+                    <span class="n">read_object</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">read_object</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__command_mask</span><span class="p">}</span>
+                <span class="k">except</span> <span class="n">JSONDecodeError</span><span class="p">:</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">RCODE</span><span class="o">.</span><span class="n">INVALIDJSON</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="n">command</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;command&quot;</span><span class="p">)</span>
+                <span class="k">match</span> <span class="n">command</span><span class="p">:</span>
+                    <span class="k">case</span> <span class="s2">&quot;debug&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">submit_task</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_debug_command</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">read_object</span><span class="p">)</span>
+                    <span class="k">case</span> <span class="s2">&quot;lobby&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">submit_task</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_lobby</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">read_object</span><span class="p">)</span>
+                    <span class="k">case</span> <span class="s2">&quot;play&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">submit_task</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_play_command</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">read_object</span><span class="p">)</span>
+                    <span class="k">case</span> <span class="s2">&quot;client&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">submit_task</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_client</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">read_object</span><span class="p">)</span>
+                    <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">RCODE</span><span class="o">.</span><span class="n">COMMANDNOTFOUND</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">})</span>
+        <span class="k">except</span> <span class="n">WebSocketDisconnect</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1000</span><span class="p">:</span> <span class="s2">&quot;Normal disconnect&quot;</span><span class="p">,</span> <span class="mi">1001</span><span class="p">:</span> <span class="s2">&quot;Browser reload/tab close&quot;</span><span class="p">,</span> <span class="mi">1006</span><span class="p">:</span> <span class="s2">&quot;Critical connection break!&quot;</span><span class="p">}</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;WebSocket disconnected with code: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">code</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">client</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FastAPIServer.submit_task">
+<a class="viewcode-back" href="../../Server.html#Server.fastAPIServer.FastAPIServer.submit_task">[Doku]</a>
+    <span class="k">def</span> <span class="nf">submit_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loop</span><span class="p">,</span> <span class="n">coro</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run async methods in an own thread to reduce response times.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            loop: Event loop.</span>
+<span class="sd">            coro: Coroutine to run.</span>
+<span class="sd">            *args: Parameters of coroutine.</span>
+
+<span class="sd">        Returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">coro</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="FastAPIServer.handle_debug_command">
+<a class="viewcode-back" href="../../Server.html#Server.fastAPIServer.FastAPIServer.handle_debug_command">[Doku]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_debug_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">read_object</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles debug commands received from the client.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            client (WebSocket): The WebSocket connection to the client.</span>
+<span class="sd">            read_object (dict): The received command object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">command_key</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;command_key&quot;</span><span class="p">)</span>
+        <span class="k">match</span> <span class="n">command_key</span><span class="p">:</span>
+            <span class="k">case</span> <span class="s2">&quot;active_container&quot;</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">D_CONTAINER</span><span class="p">,</span>
+                                         <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">docker</span><span class="o">.</span><span class="n">list_containers</span><span class="p">())</span>
+            <span class="k">case</span> <span class="s2">&quot;game_client&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">docker</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">docker</span><span class="o">.</span><span class="n">debug</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">D_TOGGLECLIENT</span><span class="p">,</span>
+                                         <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;debug&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">docker</span><span class="o">.</span><span class="n">debug</span><span class="p">})</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">COMMANDNOTFOUND</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="n">command_key</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="FastAPIServer.handle_lobby">
+<a class="viewcode-back" href="../../Server.html#Server.fastAPIServer.FastAPIServer.handle_lobby">[Doku]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_lobby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">read_object</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles lobby commands received from the client.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            client (WebSocket): The WebSocket connection to the client.</span>
+<span class="sd">            read_object (dict): The received command object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">command_key</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;command_key&quot;</span><span class="p">)</span>
+        <span class="k">match</span> <span class="n">command_key</span><span class="p">:</span>
+            <span class="k">case</span> <span class="s2">&quot;create&quot;</span><span class="p">:</span>
+                <span class="n">lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lobby</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_CLIENTALREADYINLOBBY</span><span class="p">)</span>
+                <span class="n">new_lobby_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">create_lobby</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">join_lobby</span><span class="p">(</span><span class="n">new_lobby_key</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="s2">&quot;p1&quot;</span><span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_CREATED</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">new_lobby_key</span><span class="p">})</span>
+            <span class="k">case</span> <span class="s2">&quot;join&quot;</span><span class="p">:</span>
+                <span class="n">lobby_key</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
+                <span class="n">lobby</span><span class="p">:</span> <span class="n">Lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">lobby_key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lobby</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_LOBBYNOTEXIST</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">lobby_key</span><span class="p">})</span>
+                <span class="n">lobby_key</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pos&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lobby</span><span class="o">.</span><span class="n">game_running</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">pos</span> <span class="o">!=</span> <span class="s2">&quot;sp&quot;</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_RUNNINGNOJOIN</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>  <span class="c1"># pos is sp</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_cmd</span><span class="p">(</span><span class="n">game_client</span><span class="o">=</span><span class="n">lobby</span><span class="o">.</span><span class="n">game_client</span><span class="p">,</span>
+                                            <span class="n">command</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                            <span class="n">command_key</span><span class="o">=</span><span class="s2">&quot;image&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">join_lobby</span><span class="p">(</span><span class="n">lobby_key</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_CLIENTALREADYINLOBBY</span><span class="p">,</span>
+                                                    <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">lobby_key</span><span class="p">})</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_response</span><span class="p">(</span><span class="n">client_list</span><span class="o">=</span><span class="n">lobby</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_JOINED</span><span class="p">,</span>
+                                              <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pos&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_pos_of_client</span><span class="p">(</span><span class="n">client</span><span class="p">)})</span>
+            <span class="k">case</span> <span class="s2">&quot;leave&quot;</span><span class="p">:</span>
+                <span class="n">lobby</span><span class="p">:</span> <span class="n">Lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lobby</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_CLIENTNOTINLOBBY</span><span class="p">)</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_pos_of_client</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+                <span class="n">client_list</span> <span class="o">=</span> <span class="n">lobby</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">leave_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">lobby</span><span class="o">.</span><span class="n">game_running</span> <span class="ow">and</span> <span class="n">lobby</span><span class="o">.</span><span class="n">in_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_NOLEAVEACTIVPLAYER</span><span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_response</span><span class="p">(</span><span class="n">client_list</span><span class="o">=</span><span class="n">client_list</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_LEFT</span><span class="p">,</span>
+                                              <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pos&quot;</span><span class="p">:</span> <span class="n">pos</span><span class="p">})</span>
+            <span class="k">case</span> <span class="s2">&quot;swap&quot;</span><span class="p">:</span>
+                <span class="n">pos</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pos&quot;</span><span class="p">)</span>
+                <span class="n">lobby</span><span class="p">:</span> <span class="n">Lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lobby</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_CLIENTNOTINLOBBY</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lobby</span><span class="o">.</span><span class="n">game_running</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">lobby</span><span class="o">.</span><span class="n">in_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_NOSWAP</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pos</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;p1&quot;</span><span class="p">,</span> <span class="s2">&quot;p2&quot;</span><span class="p">,</span> <span class="s2">&quot;sp&quot;</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_POSUNKNOWN</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pos&quot;</span><span class="p">:</span> <span class="n">pos</span><span class="p">})</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">swap_to</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_POSOCCUPIED</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pos&quot;</span><span class="p">:</span> <span class="n">pos</span><span class="p">})</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_response</span><span class="p">(</span><span class="n">client_list</span><span class="o">=</span><span class="n">lobby</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_SWAPPED</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pos&quot;</span><span class="p">:</span> <span class="n">pos</span><span class="p">})</span>
+            <span class="k">case</span> <span class="s2">&quot;pos&quot;</span><span class="p">:</span>
+                <span class="n">pos</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_pos_of_client</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pos</span><span class="p">:</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_POS</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pos&quot;</span><span class="p">:</span> <span class="n">pos</span><span class="p">})</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># client not in lobby</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_CLIENTNOTINLOBBY</span><span class="p">)</span>
+            <span class="k">case</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span>
+                <span class="n">lobby</span><span class="p">:</span> <span class="n">Lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lobby</span><span class="p">:</span>  <span class="c1"># success</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_STATUS</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">lobby</span><span class="o">.</span><span class="n">status</span><span class="p">())</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># client not in lobby</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_CLIENTNOTINLOBBY</span><span class="p">)</span>
+            <span class="k">case</span> <span class="s2">&quot;games&quot;</span><span class="p">:</span>
+                <span class="n">lobby</span><span class="p">:</span> <span class="n">Lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lobby</span><span class="p">:</span>  <span class="c1"># success</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_GAMES</span><span class="p">,</span>
+                                             <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;games&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">importer</span><span class="o">.</span><span class="n">get_games</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()]})</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># client not in lobby</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_CLIENTNOTINLOBBY</span><span class="p">)</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">COMMANDNOTFOUND</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;command_key&quot;</span><span class="p">:</span> <span class="n">command_key</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="FastAPIServer.handle_play_command">
+<a class="viewcode-back" href="../../Server.html#Server.fastAPIServer.FastAPIServer.handle_play_command">[Doku]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_play_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">read_object</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles play commands received from the client.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            client (WebSocket): The WebSocket connection to the client.</span>
+<span class="sd">            read_object (dict): The received command object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lobby</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_lobby</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lobby</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_CLIENTNOTINLOBBY</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lobby</span><span class="o">.</span><span class="n">game_client</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOGAMECLIENT</span><span class="p">)</span>
+        <span class="n">pos</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_pos_of_client</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="s2">&quot;sp&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">P_NOPERMISSION</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;p_pos&quot;</span><span class="p">:</span> <span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">lobby</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">read_object</span><span class="p">}</span>
+        <span class="n">command_key</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;command_key&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">command_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__play_mask</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">COMMANDNOTFOUND</span><span class="p">,</span>
+                                            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;command_key&quot;</span><span class="p">:</span> <span class="n">command_key</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">command_key</span> <span class="o">==</span> <span class="s2">&quot;create&quot;</span><span class="p">:</span>
+            <span class="n">lobby</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;game&quot;</span><span class="p">)</span>
+            <span class="n">lobby</span><span class="o">.</span><span class="n">difficulty</span> <span class="o">=</span> <span class="n">EDifficulty</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;difficulty&quot;</span><span class="p">))</span>
+            <span class="n">lobby</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">EGameMode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">importer</span><span class="o">.</span><span class="n">get_games</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">lobby</span><span class="o">.</span><span class="n">game</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">INVALIDGAME</span><span class="p">,</span>
+                                                <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;game&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;game&quot;</span><span class="p">),</span>
+                                                      <span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">importer</span><span class="o">.</span><span class="n">get_games</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()]})</span>
+            <span class="k">if</span> <span class="n">lobby</span><span class="o">.</span><span class="n">difficulty</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">INVALIDDIFFICULTY</span><span class="p">,</span>
+                                                <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;difficulty&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;difficulty&quot;</span><span class="p">),</span>
+                                                      <span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">EDifficulty</span><span class="p">]})</span>
+            <span class="k">if</span> <span class="n">lobby</span><span class="o">.</span><span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">INVALIDMODE</span><span class="p">,</span>
+                                                <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">),</span>
+                                                      <span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">EGameMode</span><span class="p">]})</span>
+
+        <span class="k">if</span> <span class="n">command_key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">,</span> <span class="s2">&quot;new_game&quot;</span><span class="p">]:</span>  <span class="c1"># prevent a game to start without enough players</span>
+            <span class="n">missing</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">mode_checks</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;P1&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot; not connected!&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;P2&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot; not connected!&quot;</span><span class="p">)],</span>  <span class="c1"># player_vs_player</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;P1&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot; not connected!&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;P2&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot; needs to be empty!&quot;</span><span class="p">)],</span>  <span class="c1"># player_vs_KIM</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;P1&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot; needs to be empty!&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;P2&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot; not connected!&quot;</span><span class="p">)],</span>  <span class="c1"># KIM_vs_player</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;P1&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot; not connected!&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;P2&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot; not connected!&quot;</span><span class="p">)],</span>  <span class="c1"># playerai_vs_playerai</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;P1&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot; not connected!&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;P2&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot; needs to be empty!&quot;</span><span class="p">)],</span>  <span class="c1"># playerai_vs_KIM</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="p">[(</span><span class="s2">&quot;P1&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot; needs to be empty!&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;P2&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot; not connected!&quot;</span><span class="p">)]</span>  <span class="c1"># KIM_vs_playerai</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">player</span><span class="p">,</span> <span class="n">should_be_connected</span><span class="p">,</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">mode_checks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">lobby</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="n">should_be_connected</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">lobby</span><span class="p">,</span> <span class="n">player</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">missing</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">player</span><span class="p">,</span> <span class="n">message</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">should_be_connected</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">lobby</span><span class="p">,</span> <span class="n">player</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">missing</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">player</span><span class="p">,</span> <span class="n">message</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+                                                <span class="n">code</span><span class="o">=</span><span class="n">RCODE</span><span class="o">.</span><span class="n">L_LOBBYNOTREADY</span><span class="p">,</span>
+                                                <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">missing</span><span class="p">})</span>
+
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_cmd</span><span class="p">(</span><span class="n">lobby</span><span class="o">.</span><span class="n">game_client</span><span class="p">,</span> <span class="s2">&quot;play&quot;</span><span class="p">,</span> <span class="n">command_key</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FastAPIServer.handle_client">
+<a class="viewcode-back" href="../../Server.html#Server.fastAPIServer.FastAPIServer.handle_client">[Doku]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">read_object</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles client-specific commands received from the client.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            client (WebSocket): The WebSocket connection to the client.</span>
+<span class="sd">            read_object (dict): The received command object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">command_key</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;command_key&quot;</span><span class="p">)</span>
+        <span class="k">match</span> <span class="n">command_key</span><span class="p">:</span>
+            <span class="k">case</span> <span class="s2">&quot;language&quot;</span><span class="p">:</span>
+                <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">read_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lang&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lang</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">LANGUAGE</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">lang</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">msg_builder</span><span class="o">.</span><span class="n">update_language</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">RCODE</span><span class="o">.</span><span class="n">LANGUAGECHANGED</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">})</span>
+                            <span class="k">return</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">RCODE</span><span class="o">.</span><span class="n">INVALIDLANGUAGE</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="n">lang</span><span class="p">})</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">RCODE</span><span class="o">.</span><span class="n">COMMANDNOTFOUND</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="n">command_key</span><span class="p">})</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Justine Buß, Thorben Jones, Alexander Roos, Maximilian Bachmann, Omar Karkotli, Sven Reinhard, Pascal Waldschmidt.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

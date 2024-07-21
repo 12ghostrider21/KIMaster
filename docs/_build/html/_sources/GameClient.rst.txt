@@ -1,0 +1,61 @@
+GameClient package
+==================
+
+Submodules
+----------
+
+GameClient.arena module
+-----------------------
+
+.. automodule:: GameClient.arena
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+GameClient.connection\_manager module
+-------------------------------------
+
+.. automodule:: GameClient.connection_manager
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+GameClient.game\_client module
+------------------------------
+
+.. automodule:: GameClient.game_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+GameClient.pit module
+---------------------
+
+.. automodule:: GameClient.pit
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+GameClient.player module
+------------------------
+
+.. automodule:: GameClient.player
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+GameClient.start module
+-----------------------
+
+.. automodule:: GameClient.start
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: GameClient
+   :members:
+   :undoc-members:
+   :show-inheritance:
