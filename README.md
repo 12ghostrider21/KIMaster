@@ -19,7 +19,8 @@ KIMaster ist eine benutzerfreundliche Plattform, die es Nutzern ermöglicht, pra
   - [Systemanforderungen](#systemanforderungen)
   - [Nutzung der Plattform](#nutzung-der-plattform)
   - [Dokumentation](#dokumentation)
-  - [Contributing](#contributing)
+  - [Team](#team)
+  - [Externe Repositories](#externe-repositories)
   - [Lizenz](#lizenz)
 
 ## Funktionen
@@ -96,9 +97,25 @@ Beim ersten Mal kann der Build-Prozess je nach Internetverbindung sehr lange dau
 
 Alle relevanten Dokumentationsinhalte sind im Verzeichnis `spezifikation` im Hauptbranch (`main`) des Repositories verfügbar. Dort findet sich die umfassende Spezifikationen und Anleitungen, die helfen sollen, das Projekt besser zu verstehen und effektiv zu nutzen. ZU finde unter folgendem Direkt-Link: [Spezifikation](https://github.com/12ghostrider21/KIMaster/tree/main/Spezifikation).
 
-## Contributing
+## Team
 
-Beiträge sind willkommen! Bitte erstelle einen Fork des Repositories und sende einen Pull-Request mit deinen Änderungen. Stelle sicher, dass du die bestehenden Codierungsstandards und Best Practices befolgst.
+[ThorbenJones](https://github.com/ThorbenJones): Projektleitung, Frontend-Entwicklung
+
+[12ghostrider21](https://github.com/12ghostrider21): Stellvertretende Projektleitung, Dokumentationsspezialist 
+
+[Flying-Suricate](https://github.com/Flying-Suricate): Technischer Architekt, Backend-Entwicklung
+
+[maximilianlbachmann](https://github.com/maximilianlbachmann): Backend-Entwicklung, Spiele-Entwicklung
+
+[S-Reinhard](https://github.com/S-Reinhard): Dockerspezialist, QA-Ingenieur
+
+[PascalWaldschmidt](https://github.com/PascalWaldschmidt): Frontend-Entwicklung, UI/UX-Designer
+
+[OmarKarkotli](https://github.com/OmarKarkotli): UI/UX-Designer, Technischer Architekt
+
+## Externe Repositories
+
+Für die Basisimplementierung der KI-Trainierung wurden Teile aus [suragnair/alpha-zero-general](https://github.com/suragnair/alpha-zero-general) verwendet.
 
 ## Lizenz
 
