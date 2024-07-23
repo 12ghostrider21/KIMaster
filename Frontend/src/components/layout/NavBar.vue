@@ -1,16 +1,20 @@
 <template>
+  <!-- Navigation bar with brand logo and links for navigation -->
   <nav class="navbar navbar-expand-lg bg-body-tertiary nav-bar">
     <div class="container-fluid">
+      <!-- Link to home page with logo -->
       <router-link class="navbar-brand" @click="leaveLobby()" :to="{ name: 'home' }">
         <img :src="logo" alt="KI Master Logo" class="logo" />
       </router-link>
       <div class="navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <!-- Conditional link for instructions page, shown only on starting page -->
           <li class="nav-item" v-if="isStartingPage">
             <router-link class="nav-link" :to="{ name: 'instruction' }">{{ $t('message.instruction') }}</router-link>
           </li>
         </ul>
       </div>
+      <!-- Controls for theme switcher and language selection -->
       <div class="top-right-controls">
         <label class="switch">
           <input type="checkbox" v-model="isDarkMode" @change="toggleDarkMode">
@@ -19,7 +23,7 @@
         <language-switcher class="me-2"></language-switcher>
       </div>
     </div>
-    <!-- Rules Dialog -->
+    <!-- Rules Dialog Component -->
     <teleport to="body">
       <base-dialog :title="$t('rules.game_title')" v-if="isRulesVisible" @close="closeRules">
         <component :is="currentRuleComponent" />
@@ -34,7 +38,7 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import { useRoute } from "vue-router";
-// import ChessRules from '@/components/gameRules/ChessRules.vue';
+// Importing rule components for various games
 import Connect4Rules from '@/components/gameRules/Connect4Rules.vue';
 import NimRules from '@/components/gameRules/NimRules.vue';
 import OthelloRules from '@/components/gameRules/OthelloRules.vue';
@@ -42,7 +46,12 @@ import TicTacToeRules from '@/components/gameRules/TicTacToeRules.vue';
 import PlayPageLogic from '../UI/PlayPage.js';
 import BaseDialog from '@/components/UI/BaseDialog.vue';
 import LanguageSwitcher from './LanguageSwitcher.vue';
-import logo from '@/components/icons/logo.png'; // Importiere das Logo
+import logo from '@/components/icons/logo.png'; // Import the logo image
+
+/**
+ * NavBar component that includes a Home Button and language selection Options
+ * @module NavBar
+ */
 
 export default {
   components: {
@@ -56,31 +65,66 @@ export default {
   mixins: [PlayPageLogic],
   data() {
     return {
+      /** 
+       * Current language of the application */
       currentLanguage: this.$i18n.locale,
+      /** Whether the rules dialog is visible */
       isRulesVisible: false,
+      /** - Component name to be displayed in the rules dialog */
       currentRuleComponent: null,
-      logo, // Füge das Logo zur Datenfunktion hinzu
+      /** - Path to the logo image */
+      logo, // Add logo path to data function
     };
   },
   computed: {
+    /**
+     * Checks if the current route is the starting page.
+     * @returns {boolean} - True if on the starting page, otherwise false.
+     * @method
+     */
     isStartingPage() {
       return this.$route.name === 'home';
     },
+    /**
+     * Checks if the current route is the play page.
+     * @returns {boolean} - True if on the play page, otherwise false.
+     */
     isPlayPage() {
       return this.$route.name === 'play';
     },
+    /**
+     * Checks if the current route is the lobby page.
+     * @returns {boolean} - True if on the lobby page, otherwise false.
+     */
     isLobbyPage() {
       return this.$route.name === 'lobby';
     },
+    /**
+     * Vuex getter for game active state.
+     * @type {boolean}
+     */
     ...mapGetters(['gameActive']),
   },
   methods: {
+    /**
+     * Maps Vuex actions to the component.
+     * @type {Function} 
+     */
     ...mapActions(["sendWebSocketMessage"]),
+    
+    /**
+     * Sends a WebSocket message.
+     * @param {Object} data - Data to be sent in the message.
+     */
     sendMessage(data) {
       console.log(data);
       this.sendWebSocketMessage(JSON.stringify(data));
     },
-    leaveLobby() { //Leaving Lobby when pressing on the KIM Button in the Top right when a Game isn't running, removes unexpected behaviour when seemingly leaving a lobby and trying to join/create a new one
+    
+    /**
+     * Handles leaving the lobby based on the current route and game state.
+     */
+    leaveLobby() {
       if (this.$route.name === 'lobby' || 
         this.$route.name === 'wait' || 
         (this.$route.name === 'play' && !this.gameActive) || 
@@ -94,6 +138,10 @@ export default {
         this.sendMessage(data);
       }
     },
+    
+    /**
+     * Toggles the application language.
+     */
     changeLanguage() {
       if (this.$i18n.locale === 'en') {
         this.$i18n.locale = 'de';
@@ -106,6 +154,10 @@ export default {
         document.querySelector('.form-select').blur();
       });
     },
+    
+    /**
+     * Shows the rules dialog based on the current game.
+     */
     showRules() {
       if (this.game === 'connect4') {
         this.currentRuleComponent = 'Connect4Rules';
@@ -120,6 +172,10 @@ export default {
       }
       this.isRulesVisible = true;
     },
+    
+    /**
+     * Closes the rules dialog.
+     */
     closeRules() {
       this.isRulesVisible = false;
     },
@@ -128,6 +184,7 @@ export default {
 </script>
 
 <style scoped>
+/* Styles for the navigation bar container */
 .container-fluid {
   padding-left: 15px;
   padding-right: 15px;
@@ -139,6 +196,7 @@ export default {
   position: relative;
 }
 
+/* Styles for the navbar brand (logo and text) */
 .navbar-brand {
   font-size: 1.5rem;
   font-weight: bold;
@@ -147,14 +205,17 @@ export default {
   align-items: center; /* Ensures the logo is vertically centered */
 }
 
+/* Styles for navigation items */
 .nav-item {
   margin-left: 10px;
 }
 
+/* Hover effect for navigation links */
 .nav-link:hover {
   color: #007bff;
 }
 
+/* Styles for the collapsible navbar */
 .navbar-collapse {
   display: flex;
   flex-grow: 1;
@@ -162,6 +223,7 @@ export default {
   align-items: center;
 }
 
+/* Styles for the top-right controls (toggle switch and language switcher) */
 .top-right-controls {
   display: flex;
   align-items: center;
@@ -216,6 +278,7 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
+/* Styles for the logo image */
 .logo {
   width: auto;
   height: 40px; /* Adjust the height to fit within the navbar */
@@ -223,6 +286,7 @@ input:checked + .slider:before {
   aspect-ratio: 2.31; /* Maintain the aspect ratio */
 }
 
+/* Responsive adjustments for mobile view */
 @media (max-width: 768px) {
   .navbar-collapse {
     flex-direction: row;

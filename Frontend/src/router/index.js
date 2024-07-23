@@ -9,7 +9,10 @@ import About from '@/components/KIM_Pages/AboutView.vue';
 import Wait from '@/components/KIM_Pages/WaitPage.vue';
 import Instructions from '@/components/KIM_Pages/InstructionsPage.vue'
 
-
+  /**
+  * Provides the different Routings used throughout the application
+  * @module Router 
+  */
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

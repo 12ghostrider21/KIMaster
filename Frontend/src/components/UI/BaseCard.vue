@@ -9,6 +9,10 @@
 </template>
 
 <script>
+  /**
+  * Used to group several Elements together into one basic Unit
+  * @module BaseCard 
+  */
 export default {
     mounted(){
         console.log(this.$slots.header)

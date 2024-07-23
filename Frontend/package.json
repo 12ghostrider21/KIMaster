@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docs": "jsdoc -c jsdoc.json"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
@@ -21,6 +22,9 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
+    "@vue/compiler-sfc": "^3.4.33",
+    "jsdoc": "^4.0.3",
+    "jsdoc-vuejs": "^4.0.0",
     "vite": "^5.2.8"
   }
 }

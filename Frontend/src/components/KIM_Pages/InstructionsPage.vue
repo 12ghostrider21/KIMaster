@@ -94,6 +94,10 @@
 </template>
 
 <script>
+  /**
+  * This Page contains Instructions on how to set up and connect your own Application
+  * @module InstructionPage 
+  */
 import Prism from 'vue-prism-component';
 
 export default {

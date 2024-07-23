@@ -32,6 +32,10 @@
   </template>
   
   <script>
+  /**
+  * Rules for Checkers
+  * @module gameRules 
+  */
   export default {
     name: 'CheckersRules'
   };

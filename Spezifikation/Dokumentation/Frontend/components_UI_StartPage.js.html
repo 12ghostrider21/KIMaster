@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/UI/StartPage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/UI/StartPage.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { mapActions, mapGetters } from 'vuex';
+import * as ENUMS from "@/components/enums.js";
+import BaseDialog from "@/components/UI/BaseDialog.vue";
+
+/**
+ * Vue component for handling the logic of the StartPage.
+ * Includes methods for interacting with the game lobby and handling UI state.
+ * @module StartPage 
+ * @vue-prop {string} title - The title to display in the component.
+ * @vue-data {Array} games - List of available games from ENUMS.
+ * @vue-data {string|null} lobbyKeyToJoin - Key for joining a lobby.
+ * @vue-data {boolean} popUpTrigger - Flag to trigger the popup dialog.
+ * @vue-computed {Object} ENUMS - Returns the ENUMS object.
+ * @vue-computed {Object} ...mapGetters - Vuex getters mapped to component computed properties.
+ * @vue-event {void} joinLobbyWait - Polls for the lobby status and navigates to the waiting page if the lobby is joined.
+ * @vue-event {void} callPos - Automatically updates the lobby status if there are potential changes.
+ * @vue-event {void} notif - Displays notification when needed and clears them after a delay.
+ */
+export default {
+  components: {
+    BaseDialog,
+  },
+  data() {
+    return {
+
+      games: ENUMS.games,
+
+      lobbyKeyToJoin: null,
+
+
+      popUpTrigger: false,
+    };
+  },
+  computed: {
+    /**
+     * Returns the ENUMS object.
+     * @returns {Object}
+     */
+    ENUMS() {
+      return ENUMS;
+    },
+
+    /**
+     * Vuex getters mapped to component computed properties.
+     * @type {Object}
+     */
+    ...mapGetters(['inLobby', 'popup', 'notif', 'gameActive', 'game', 'callPos']),
+  },
+  methods: {
+    /**
+     * Vuex actions mapped to component methods.
+     * @type {Object}
+     */
+    ...mapActions(['sendWebSocketMessage', 'setNotif', 'setGame']),
+
+    /**
+     * Sends a message via WebSocket.
+     * @param {Object} data - The data to send.
+     */
+    sendMessage(data) {
+      console.log(data);
+      this.sendWebSocketMessage(JSON.stringify(data));
+    },
+
+    /**
+     * Transforms a game name by replacing underscores with spaces and capitalizing each word.
+     * @param {string} game - The game name to transform.
+     * @returns {string} - The transformed game name.
+     */
+    transformGameName(game) {
+      return game.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    },
+
+    /**
+     * Starts the process of joining a lobby.
+     * Sends a message to join the lobby and waits for confirmation.
+     */
+    joinLobbyStart() {
+      if (!this.lobbyKeyToJoin) return; // Avoid sending request with empty key
+
+      const data = {
+        command: 'lobby',
+        command_key: 'join',
+        key: this.lobbyKeyToJoin.trim(),
+        pos: 'sp',
+      };
+      this.sendMessage(data);
+      this.joinLobbyWait();
+    },
+
+    /**
+     * Sends a message to surrender the current game and closes the popup.
+     * Usable when you're in an active game and you try to join a new Lobby
+     */
+    surrenderGame() {
+      const data = {
+        command: 'play',
+        command_key: 'surrender',
+      };
+      this.sendMessage(data);
+      this.closePopUp();
+    },
+
+    /**
+     * Navigates back to the game page when double clicking on the game board
+     */
+    returnToGame() {
+      this.closePopUp();
+      this.$router.push({ name: 'play', params: { game: this.game }});
+    },
+
+    /**
+     * Triggers the display of the popup dialog.
+     */
+    triggerPopUp() {
+      this.popUpTrigger = true;
+    },
+
+    /**
+     * Closes the popup dialog.
+     */
+    closePopUp() {
+      console.log("Popup closed");
+      this.popUpTrigger = false;
+    },
+
+    /**
+     * Sends a message to get the current position in the lobby.
+     */
+    lobbyPos() {
+      const data = {
+        command: 'lobby',
+        command_key: 'pos',
+      };
+      this.sendMessage(data);
+    },
+
+    /**
+     * Sends a message to get the current status of the lobby.
+     */
+    lobbyStatus() {
+      const data = {
+        command: "lobby",
+        command_key: "status",
+      };
+      this.sendMessage(data);
+    },
+
+    /**
+     * Polls for the lobby status and navigates to the waiting page if the lobby is joined.
+     * Retries if the lobby join fails.
+     */
+    joinLobbyWait() {
+      console.log(this.inLobby);
+      if (this.inLobby) {
+        this.$router.push({ name: 'wait' });
+      } else if (this.notif === ENUMS.notifStatus.LOBBYJOINFAIL) {
+        console.log("Couldn't Find Lobby!");
+      } else {
+        setTimeout(() => {
+          this.joinLobbyWait();
+        }, 1000);
+      }
+    },
+  },
+  watch: {
+    /**
+     * Automatically updates the lobby Status if there are potential changes.
+     * @param {Object} newVal - The new value of callPos.
+     */
+    callPos(newVal) {
+      this.lobbyPos();
+      this.lobbyStatus();
+      console.log(this.positionsInLobby); // Ensure positionsInLobby is defined if used
+    },
+
+    /**
+     * Displays notification when needed and clears them after a delay.
+     * @param {string|null} newVal - The new value of notif.
+     */
+    notif(newVal) {
+      if (newVal) {
+        setTimeout(() => {
+          this.setNotif(null);
+        }, 5000);
+      }
+    },
+  },
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-BaseButton.html">BaseButton</a></li><li><a href="module-BaseCard.html">BaseCard</a></li><li><a href="module-BaseDialog.html">BaseDialog</a></li><li><a href="module-DraggableImage.html">DraggableImage</a></li><li><a href="module-Footer.html">Footer</a></li><li><a href="module-InstructionPage.html">InstructionPage</a></li><li><a href="module-LanguageSwitcher.html">LanguageSwitcher</a></li><li><a href="module-LobbyPage.html">LobbyPage</a></li><li><a href="module-NavBar.html">NavBar</a></li><li><a href="module-PlayPage.html">PlayPage</a></li><li><a href="module-Router.html">Router</a></li><li><a href="module-StartPage.html">StartPage</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-Waitpage.html">Waitpage</a></li><li><a href="module-gameRules.html">gameRules</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue Jul 23 2024 18:07:15 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

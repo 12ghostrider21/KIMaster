@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/UI/WaitPage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/UI/WaitPage.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { mapActions, mapGetters } from 'vuex';
+import * as ENUMS from '../enums';
+
+/**
+ * Vue component logic for managing the Wait Page. 
+ * @module Waitpage
+ * 
+ * @vue-computed {Object} ...mapGetters- Vuex getters mapped to component computed properties.
+ * @vue-computed {string} positionSelect - Computed property for selecting the position. Provides getter and setter for the `position` value.
+ * @vue-event {boolean} gameActive - Watches for changes in the `gameActive` value and redirects to the game page when a game starts.
+ * @vue-event {void} callPos - Watches for changes in the `callPos` value and updates the lobby status if there are potential changes.
+ */
+export default {
+  data() {
+
+  },
+  computed: {
+    /**
+     * Vuex getters mapped to component computed properties.
+     * @type {Object}
+     */
+    ...mapGetters(['gameActive', 'position', 'game', 'callPos', 'positionsInLobby']),
+
+    /**
+     * Computed property for selecting the position.
+     * Provides getter and setter for the `position` value.
+     * @type {'p1'|'p2'|'sp'}
+     */
+    positionSelect: {
+      get() {
+        return this.position;
+      },
+      set(value) {
+        this.updatePosition(value);
+      }
+    }
+  },
+  beforeMount() {
+    /**
+     * Lifecycle hook called before the component is mounted.
+     * Initializes the lobby position and status.
+     */
+    this.lobbyPos();
+    this.lobbyStatus();
+  },
+  mounted() {
+    /**
+     * Lifecycle hook called after the component is mounted.
+     * Redirects to the game page if the game is active.
+     */
+    if (this.gameActive) {
+      this.goToGame();
+    }
+  },
+  methods: {
+    /**
+     * Vuex actions mapped to component methods.
+     * @type {Object}
+     */
+    ...mapActions(['initWebSocket', 'sendWebSocketMessage', 'updatePosition']),
+
+    /**
+     * Sends a message via WebSocket after converting it to a JSON string.
+     * @param {Object} data - The data to send.
+     */
+    sendMessage(data) {
+      console.log(data);
+      this.sendWebSocketMessage(JSON.stringify(data));
+    },
+
+    /**
+     * Sends a message to get the current position in the lobby.
+     */
+    lobbyPos() {
+      const data = {
+        command: 'lobby',
+        command_key: 'pos',
+      };
+      this.sendMessage(data);
+    },
+
+    /**
+     * Sends a message to get the current status of the lobby.
+     */
+    lobbyStatus() {
+      const data = {
+        command: "lobby",
+        command_key: "status",
+      };
+      this.sendMessage(data);
+    },
+
+    /**
+     * Sends a message to swap the current position in the lobby.
+     */
+    swapPositionInLobby() {
+      const data = {
+        command: 'lobby',
+        command_key: 'swap',
+        pos: this.positionSelect
+      };
+      this.sendMessage(data);
+    },
+
+    /**
+     * Navigates to the game page with the current game parameters.
+     */
+    goToGame() {
+      this.$router.push({
+        name: 'play',
+        params: { game: this.game }
+      });
+    },
+  },
+  watch: {
+    /**
+     * Watches for changes in the `gameActive` value.
+     * Redirects to the game page when a game has started starts.
+     * @param {boolean} newVal - The new value of gameActive.
+     */
+    gameActive(newVal) {
+      if (newVal) {
+        this.goToGame();
+      }
+    },
+
+    /**
+     * Watches for changes in the `callPos` value.
+     * Automatically updates the lobby Status if there are potential changes.
+     * @param {Object} newVal - The new value of callPos.
+     */
+    callPos() {
+      this.lobbyPos();
+      this.lobbyStatus();
+    },
+  },
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-BaseButton.html">BaseButton</a></li><li><a href="module-BaseCard.html">BaseCard</a></li><li><a href="module-BaseDialog.html">BaseDialog</a></li><li><a href="module-DraggableImage.html">DraggableImage</a></li><li><a href="module-Footer.html">Footer</a></li><li><a href="module-InstructionPage.html">InstructionPage</a></li><li><a href="module-LanguageSwitcher.html">LanguageSwitcher</a></li><li><a href="module-LobbyPage.html">LobbyPage</a></li><li><a href="module-NavBar.html">NavBar</a></li><li><a href="module-PlayPage.html">PlayPage</a></li><li><a href="module-Router.html">Router</a></li><li><a href="module-StartPage.html">StartPage</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-Waitpage.html">Waitpage</a></li><li><a href="module-gameRules.html">gameRules</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue Jul 23 2024 18:07:15 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -27,6 +27,10 @@
   </template>
   
   <script>
+   /**
+  * Rules for Othello
+  * @module gameRules 
+  */
   export default {
     name: 'OthelloRules'
   };

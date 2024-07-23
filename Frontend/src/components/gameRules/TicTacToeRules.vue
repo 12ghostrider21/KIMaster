@@ -24,6 +24,10 @@
 </template>
 
 <script>
+   /**
+  * Rules for Tic Tac Toe
+  * @module gameRules 
+  */
 export default {
   name: 'TicTacToeRules'
 };

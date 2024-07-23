@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/KIM_Pages/InstructionsPage.vue</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/KIM_Pages/InstructionsPage.vue</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>&lt;template>
+  &lt;base-card>
+    &lt;div class="instructions">
+      &lt;h1>{{ $t('instructions.instruction_title') }}&lt;/h1>
+      &lt;section>
+        &lt;h1>{{ $t('instructions.introduction.title') }}&lt;/h1>
+        &lt;p>{{ $t('instructions.introduction.description1') }}&lt;/p>
+        &lt;p>{{ $t('instructions.introduction.description2') }}&lt;/p>
+        &lt;p>{{ $t('instructions.introduction.description3') }}&lt;/p>
+      &lt;/section>
+
+      &lt;section>
+        &lt;h1>{{ $t('instructions.requirements.title') }}&lt;/h1>
+        &lt;ul>
+          &lt;li>{{ $t('instructions.requirements.network_access') }}&lt;/li>
+          &lt;li>{{ $t('instructions.requirements.websocket_uri_title') }}&lt;/li>
+          &lt;p>{{ $t('instructions.requirements.websocket_uri') }}&lt;/p>
+          &lt;li>{{ $t('instructions.requirements.browser_url_title') }}&lt;/li>
+          &lt;p>{{ $t('instructions.requirements.browser_url') }}&lt;/p>
+          &lt;li>{{ $t('instructions.requirements.message_format_title') }}&lt;/li>
+          &lt;p>{{ $t('instructions.requirements.message_format') }}&lt;/p>
+          &lt;li>{{ $t('instructions.requirements.documentation_title') }}&lt;/li>
+          &lt;p>{{ $t('instructions.requirements.documentation') }}&lt;/p>
+        &lt;/ul>
+      &lt;/section>
+
+      &lt;section>
+        &lt;h1>{{ $t('instructions.webSocketConnection.title') }}&lt;/h1>
+        &lt;h3>{{ $t('instructions.webSocketConnection.step1.title') }}&lt;/h3>
+        &lt;ul>
+          &lt;h4>{{ $t('instructions.webSocketConnection.step1.vpn') }}&lt;/h4>
+          &lt;li>{{ $t('instructions.webSocketConnection.step1.vpn_description') }}
+            &lt;a href="https://www.thm.de/its/campusnetz/vpn.html" target="_blank"> {{ $t('instructions.webSocketConnection.step1.vpn_link') }}&lt;/a>
+          &lt;/li>
+
+          &lt;h4>{{ $t('instructions.webSocketConnection.step1.eduroam') }}&lt;/h4>
+          &lt;li>{{ $t('instructions.webSocketConnection.step1.eduroam_description') }}
+            &lt;a href="https://www.thm.de/its/campusnetz/wlan/anleitungen.html" target="_blank">{{ $t('instructions.webSocketConnection.step1.eduroam_link') }}&lt;/a>
+          &lt;/li>
+        &lt;/ul>
+        &lt;h3>{{ $t('instructions.webSocketConnection.step2.title') }}&lt;/h3>
+        &lt;h4>{{ $t('instructions.webSocketConnection.step2.browser.title') }}&lt;/h4>
+        &lt;ul>
+          &lt;li>{{ $t('instructions.webSocketConnection.step2.browser.open_browser') }}&lt;/li>
+          &lt;li>{{ $t('instructions.webSocketConnection.step2.browser.enter_url') }}&lt;/li>
+          &lt;li>{{ $t('instructions.webSocketConnection.step2.browser.internal_network') }}&lt;/li>
+        &lt;/ul>
+
+        &lt;h4>{{ $t('instructions.webSocketConnection.step2.connection_with_ProgrammingLanguage.title') }}&lt;/h4>
+        &lt;ul>
+          &lt;li>{{ $t('instructions.webSocketConnection.step2.connection_with_ProgrammingLanguage.install_python') }}&lt;/li>
+          &lt;li>{{ $t('instructions.webSocketConnection.step2.connection_with_ProgrammingLanguage.install_webSocket') }}&lt;/li>
+          &lt;li>{{ $t('instructions.webSocketConnection.step2.connection_with_ProgrammingLanguage.pip_command') }}&lt;/li>
+         
+        &lt;/ul>
+        
+        &lt;h4>{{ $t('instructions.webSocketConnection.step2.connection_with_ProgrammingLanguage.connection_code') }}&lt;/h4>
+        &lt;ul>
+          &lt;li>
+             &lt;a href="https://github.com/12ghostrider21/Plattform-fuer-Vergleich-von-Spiele-KIs/blob/rework/External/Python/kim_interface.py" target="_blank">{{ $t('instructions.webSocketConnection.step2.connection_with_ProgrammingLanguage.connection_code') }}&lt;/a>
+         &lt;/li>
+          &lt;li>
+             &lt;a href="https://github.com/12ghostrider21/Plattform-fuer-Vergleich-von-Spiele-KIs/blob/rework/External/Python/Kim_example.py" target="_blank">{{ $t('instructions.webSocketConnection.step2.connection_with_ProgrammingLanguage.sending_code') }}&lt;/a>
+         &lt;/li>
+       &lt;/ul>
+
+        &lt;prism language="python">
+          &lt;pre>&lt;code>{{ $t('instructions.webSocketConnection.step2.connection_with_ProgrammingLanguage.example_code') }}&lt;/code>&lt;/pre>
+        &lt;/prism>
+      &lt;/section>
+
+      &lt;section>
+        &lt;h3>{{ $t('instructions.webSocketConnection.step3.title') }}&lt;/h3>
+        &lt;ul>
+          &lt;li>{{ $t('instructions.webSocketConnection.step3.json_format') }}&lt;/li>
+          &lt;p>{{ $t('instructions.webSocketConnection.step3.json_format_descripton') }}&lt;/p>
+          &lt;li>{{ $t('instructions.webSocketConnection.step3.example_message') }}&lt;/li>
+          &lt;img :src="terminalScreenshot" alt="Example Terminal Command" class="example-image">
+          &lt;li>{{ $t('instructions.webSocketConnection.step3.send_message') }}&lt;/li>
+          &lt;p>{{ $t('instructions.webSocketConnection.step3.send_message_description') }}&lt;/p>
+        &lt;/ul>
+
+        &lt;h3>{{ $t('instructions.webSocketConnection.step4.title') }}&lt;/h3>
+        &lt;ul>
+          &lt;li>{{ $t('instructions.webSocketConnection.step4.json_feedback') }}&lt;/li>
+          &lt;p>{{ $t('instructions.webSocketConnection.step4.feedback') }}&lt;/p>
+          &lt;li>{{ $t('instructions.webSocketConnection.step4.bytestream') }}&lt;/li>
+          &lt;p>{{ $t('instructions.webSocketConnection.step4.bytestream_receive') }}&lt;/p>
+        &lt;/ul>
+      &lt;/section>
+    &lt;/div>
+  &lt;/base-card>
+  &lt;footer-bar>&lt;/footer-bar>
+&lt;/template>
+
+&lt;script>
+  /**
+  * This Page contains Instructions on how to set up and connect your own Application
+  * @module InstructionPage 
+  */
+import Prism from 'vue-prism-component';
+
+export default {
+  name: 'Instructions',
+  components: {
+    Prism
+  }
+};
+&lt;/script>
+
+&lt;style scoped>
+.instructions {
+  max-height: 80vh; /* Set the maximum height */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.instructions h1,
+.instructions h2,
+.instructions h3,
+.instructions h4 {
+  margin-top: 20px;
+}
+
+.instructions ul {
+  padding-left: 20px;
+}
+
+.instructions p {
+  margin-bottom: 10px;
+}
+
+prism {
+  display: block;
+  background: #f5f2f0;
+  padding: 10px;
+  border-radius: 8px;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  max-width: 100%; /* Ensure it doesn't exceed the container width */
+}
+&lt;/style>
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-BaseButton.html">BaseButton</a></li><li><a href="module-BaseCard.html">BaseCard</a></li><li><a href="module-BaseDialog.html">BaseDialog</a></li><li><a href="module-DraggableImage.html">DraggableImage</a></li><li><a href="module-Footer.html">Footer</a></li><li><a href="module-InstructionPage.html">InstructionPage</a></li><li><a href="module-LanguageSwitcher.html">LanguageSwitcher</a></li><li><a href="module-LobbyPage.html">LobbyPage</a></li><li><a href="module-NavBar.html">NavBar</a></li><li><a href="module-PlayPage.html">PlayPage</a></li><li><a href="module-Router.html">Router</a></li><li><a href="module-StartPage.html">StartPage</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-Waitpage.html">Waitpage</a></li><li><a href="module-gameRules.html">gameRules</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue Jul 23 2024 18:07:15 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

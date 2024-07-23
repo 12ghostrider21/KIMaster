@@ -25,6 +25,10 @@
   </template>
   
   <script>
+  /**
+  * Rules for Nim
+  * @module gameRules 
+  */
   export default {
     name: 'NimRules'
   };

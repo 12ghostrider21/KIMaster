@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/layout/NavBar.vue</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/layout/NavBar.vue</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>&lt;template>
+  &lt;!-- Navigation bar with brand logo and links for navigation -->
+  &lt;nav class="navbar navbar-expand-lg bg-body-tertiary nav-bar">
+    &lt;div class="container-fluid">
+      &lt;!-- Link to home page with logo -->
+      &lt;router-link class="navbar-brand" @click="leaveLobby()" :to="{ name: 'home' }">
+        &lt;img :src="logo" alt="KI Master Logo" class="logo" />
+      &lt;/router-link>
+      &lt;div class="navbar-collapse" id="navbarSupportedContent">
+        &lt;ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          &lt;!-- Conditional link for instructions page, shown only on starting page -->
+          &lt;li class="nav-item" v-if="isStartingPage">
+            &lt;router-link class="nav-link" :to="{ name: 'instruction' }">{{ $t('message.instruction') }}&lt;/router-link>
+          &lt;/li>
+        &lt;/ul>
+      &lt;/div>
+      &lt;!-- Controls for theme switcher and language selection -->
+      &lt;div class="top-right-controls">
+        &lt;label class="switch">
+          &lt;input type="checkbox" v-model="isDarkMode" @change="toggleDarkMode">
+          &lt;span class="slider round">&lt;/span>
+        &lt;/label>
+        &lt;language-switcher class="me-2">&lt;/language-switcher>
+      &lt;/div>
+    &lt;/div>
+    &lt;!-- Rules Dialog Component -->
+    &lt;teleport to="body">
+      &lt;base-dialog :title="$t('rules.game_title')" v-if="isRulesVisible" @close="closeRules">
+        &lt;component :is="currentRuleComponent" />
+        &lt;template #actions>
+          &lt;base-button @click="closeRules">{{ $t('message.okay') }}&lt;/base-button>
+        &lt;/template>
+      &lt;/base-dialog>
+    &lt;/teleport>
+  &lt;/nav>
+&lt;/template>
+
+&lt;script>
+import { mapActions, mapGetters } from "vuex";
+import { useRoute } from "vue-router";
+// Importing rule components for various games
+import Connect4Rules from '@/components/gameRules/Connect4Rules.vue';
+import NimRules from '@/components/gameRules/NimRules.vue';
+import OthelloRules from '@/components/gameRules/OthelloRules.vue';
+import TicTacToeRules from '@/components/gameRules/TicTacToeRules.vue';
+import PlayPageLogic from '../UI/PlayPage.js';
+import BaseDialog from '@/components/UI/BaseDialog.vue';
+import LanguageSwitcher from './LanguageSwitcher.vue';
+import logo from '@/components/icons/logo.png'; // Import the logo image
+
+/**
+ * NavBar component that includes a Home Button and language selection Options
+ * @module NavBar
+ */
+
+export default {
+  components: {
+    Connect4Rules,
+    NimRules,
+    OthelloRules,
+    TicTacToeRules,
+    LanguageSwitcher,
+    BaseDialog,
+  },
+  mixins: [PlayPageLogic],
+  data() {
+    return {
+      /** 
+       * Current language of the application */
+      currentLanguage: this.$i18n.locale,
+      /** Whether the rules dialog is visible */
+      isRulesVisible: false,
+      /** - Component name to be displayed in the rules dialog */
+      currentRuleComponent: null,
+      /** - Path to the logo image */
+      logo, // Add logo path to data function
+    };
+  },
+  computed: {
+    /**
+     * Checks if the current route is the starting page.
+     * @returns {boolean} - True if on the starting page, otherwise false.
+     * @method
+     */
+    isStartingPage() {
+      return this.$route.name === 'home';
+    },
+    /**
+     * Checks if the current route is the play page.
+     * @returns {boolean} - True if on the play page, otherwise false.
+     */
+    isPlayPage() {
+      return this.$route.name === 'play';
+    },
+    /**
+     * Checks if the current route is the lobby page.
+     * @returns {boolean} - True if on the lobby page, otherwise false.
+     */
+    isLobbyPage() {
+      return this.$route.name === 'lobby';
+    },
+    /**
+     * Vuex getter for game active state.
+     * @type {boolean}
+     */
+    ...mapGetters(['gameActive']),
+  },
+  methods: {
+    /**
+     * Maps Vuex actions to the component.
+     * @type {Function} 
+     */
+    ...mapActions(["sendWebSocketMessage"]),
+    
+    /**
+     * Sends a WebSocket message.
+     * @param {Object} data - Data to be sent in the message.
+     */
+    sendMessage(data) {
+      console.log(data);
+      this.sendWebSocketMessage(JSON.stringify(data));
+    },
+    
+    /**
+     * Handles leaving the lobby based on the current route and game state.
+     */
+    leaveLobby() {
+      if (this.$route.name === 'lobby' || 
+        this.$route.name === 'wait' || 
+        (this.$route.name === 'play' &amp;&amp; !this.gameActive) || 
+        (this.$route.name === 'instructions' &amp;&amp; !this.gameActive) || 
+        (this.$route.name === 'impressum' &amp;&amp; !this.gameActive) || 
+        (this.$route.name === 'about' &amp;&amp; !this.gameActive)) {   
+        const data = {
+          command: "lobby",
+          command_key: "leave",
+        };
+        this.sendMessage(data);
+      }
+    },
+    
+    /**
+     * Toggles the application language.
+     */
+    changeLanguage() {
+      if (this.$i18n.locale === 'en') {
+        this.$i18n.locale = 'de';
+        this.currentLanguage = 'de';
+      } else {
+        this.$i18n.locale = 'en';
+        this.currentLanguage = 'en';
+      }
+      this.$nextTick(() => {
+        document.querySelector('.form-select').blur();
+      });
+    },
+    
+    /**
+     * Shows the rules dialog based on the current game.
+     */
+    showRules() {
+      if (this.game === 'connect4') {
+        this.currentRuleComponent = 'Connect4Rules';
+      } else if (this.game === 'tictactoe') {
+        this.currentRuleComponent = 'TicTacToeRules';
+      } else if (this.game === 'nim') {
+        this.currentRuleComponent = 'NimRules';
+      } else if (this.game === 'othello') {
+        this.currentRuleComponent = 'OthelloRules';
+      } else {
+        this.currentRuleComponent = null;
+      }
+      this.isRulesVisible = true;
+    },
+    
+    /**
+     * Closes the rules dialog.
+     */
+    closeRules() {
+      this.isRulesVisible = false;
+    },
+  },
+};
+&lt;/script>
+
+&lt;style scoped>
+/* Styles for the navigation bar container */
+.container-fluid {
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+/* Styles for the navbar brand (logo and text) */
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  align-items: center; /* Ensures the logo is vertically centered */
+}
+
+/* Styles for navigation items */
+.nav-item {
+  margin-left: 10px;
+}
+
+/* Hover effect for navigation links */
+.nav-link:hover {
+  color: #007bff;
+}
+
+/* Styles for the collapsible navbar */
+.navbar-collapse {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Styles for the top-right controls (toggle switch and language switcher) */
+.top-right-controls {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 10px;
+}
+
+/* Toggle Switch Styles */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  margin-right: 10px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Styles for the logo image */
+.logo {
+  width: auto;
+  height: 40px; /* Adjust the height to fit within the navbar */
+  max-height: 40px; /* Ensure it doesn't overflow the navbar */
+  aspect-ratio: 2.31; /* Maintain the aspect ratio */
+}
+
+/* Responsive adjustments for mobile view */
+@media (max-width: 768px) {
+  .navbar-collapse {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+  }
+
+  .navbar-nav {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .form-select {
+    margin-bottom: 0.5rem;
+  }
+}
+&lt;/style></code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-BaseButton.html">BaseButton</a></li><li><a href="module-BaseCard.html">BaseCard</a></li><li><a href="module-BaseDialog.html">BaseDialog</a></li><li><a href="module-DraggableImage.html">DraggableImage</a></li><li><a href="module-Footer.html">Footer</a></li><li><a href="module-InstructionPage.html">InstructionPage</a></li><li><a href="module-LanguageSwitcher.html">LanguageSwitcher</a></li><li><a href="module-LobbyPage.html">LobbyPage</a></li><li><a href="module-NavBar.html">NavBar</a></li><li><a href="module-PlayPage.html">PlayPage</a></li><li><a href="module-Router.html">Router</a></li><li><a href="module-StartPage.html">StartPage</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-Waitpage.html">Waitpage</a></li><li><a href="module-gameRules.html">gameRules</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue Jul 23 2024 18:07:15 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

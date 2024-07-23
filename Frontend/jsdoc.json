@@ -1,0 +1,26 @@
+{
+  "tags": {
+      "allowUnknownTags": true
+  },
+  "source": {
+      "include": ["./src"],
+      "excludePattern": "(^|\\/)(dist|node_modules|public)(\\/|$)",
+      "includePattern": "\\.(vue|js)$"
+  },
+  "plugins": [
+      "node_modules/jsdoc-vuejs",
+      "plugins/markdown"
+  ],
+  "opts": {
+      "encoding": "utf8",
+      "destination": "../Spezifikation/Dokumentation/Frontend",
+      "recurse": true,
+      "verbose": true,
+      "readme": "./readme.md"
+      
+  },
+"templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false
+    }
+}

@@ -4,6 +4,15 @@
   </button>
 </template>
 
+<script>
+/**
+* Basic reusable Button
+* @module BaseButton 
+*/
+export default {
+
+};
+</script>
 <style scoped>
 
 .button {

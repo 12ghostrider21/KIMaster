@@ -25,6 +25,10 @@
 </template>
 
 <script>
+/**
+  * Rules for Connect4
+  * @module gameRules 
+  */
 export default {
   name: 'Connect4Rules'
 };

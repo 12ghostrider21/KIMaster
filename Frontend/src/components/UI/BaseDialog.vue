@@ -19,6 +19,11 @@
 </template>
 
 <script>
+/**
+* Reusuable Pop Up Object. Implement in such a way that clicking outside the PopUp closes it.
+* @module BaseDialog 
+*/
+
 export default {
   props: {
     title: {
