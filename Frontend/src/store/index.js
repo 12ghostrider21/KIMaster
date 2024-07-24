@@ -378,7 +378,7 @@ export default createStore({
                 }
                 socket = new WebSocket(modifiedUrl); // When deployed on Local System
             } else {
-                socket = new WebSocket('wss://kimaster.mni.thm.de/ws'); // Change to 'ws://localhost:8010/ws' when Locally deployed outside of the Docker File
+                socket = new WebSocket('ws://localhost:8010/ws'); // Change to  when Locally deployed outside of the Docker File
             }
 
             socket.onopen = () => {

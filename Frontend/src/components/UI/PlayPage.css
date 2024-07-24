@@ -38,6 +38,7 @@
   position: absolute;
   top: 0;
   left: 0;
+  margin-left: 43px; /* Verschiebt das Spielfeld (Bild) nach rechts */
 }
 
 .highlight-cell {
@@ -59,8 +60,13 @@
   .ButtonUp base-button {
     flex: 1 1 100%; /* jeder Button nimmt die volle Breite ein */
   }
-  .base-card.lower-card {
-    margin-bottom: 17%; /* Abstand nach unten zur unteren base-card */
+
+  .control-Buttons {
+    flex-wrap: wrap; /* bei kleinen Bildschirmen umbrechen */
+  }
+  .control-Buttons base-button {
+    flex: 1 1 100%; /* jeder Button nimmt die volle Breite ein */
+    margin: 10px 0; /* Abstand zwischen den Buttons */
   }
 }
 
@@ -72,5 +78,41 @@
 }
 
 .base-card.lower-card {
-  margin-bottom: 2,5rem; /* Abstand nach unten zur unteren base-card */
+  margin-bottom: 75px; /* Abstand nach unten zur unteren base-card */
+}
+
+.dialog-content {
+  display: flex;
+  align-items: center; /* Zentriert den Inhalt vertikal */
+  justify-content: center; /* Zentriert den Inhalt horizontal */
+  gap: 20px; /* Abstand zwischen Bild und Buttons */
+  height: 100%; /* Stellt sicher, dass der Container die volle Höhe hat */
+}
+
+.button-column {
+  display: flex;
+  flex-direction: column;
+  gap: 19px; /* Abstand zwischen den Buttons */
+  width: 75%;
+  align-items: center; /* Zentriert die Buttons innerhalb der Spalte */
+}
+
+.button-column base-button {
+  width: 100%; /* Setzt die Breite der Buttons auf 100% der Spaltenbreite */
+  margin: 0.5rem 0; /* Vertikaler Abstand oben und unten */
+}
+
+.wrongMoves {
+  display: flex;
+  flex-wrap: wrap; /* Lässt die Buttons umbrechen, wenn der Platz nicht ausreicht */
+  gap: 9px; /* Abstand zwischen den Buttons */
+  margin-top: 1rem; /* Abstand zum oberen Container */
+}
+
+.wrongMoves base-button {
+  flex: 0 1 auto; /* Buttons passen ihre Größe automatisch an */
+}
+
+.dialog-content img {
+  margin-left: 43px; /* Verschiebt das Spielfeld (Bild) nach rechts */
 }
