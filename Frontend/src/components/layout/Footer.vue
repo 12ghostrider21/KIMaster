@@ -6,8 +6,8 @@
     <!-- Router link to the 'about' page -->
     <RouterLink :to="{ name: 'about' }">{{ $t('footer.datenschutz') }}</RouterLink>
 
-    <!-- Router link to the 'impressum' page -->
-    <RouterLink :to="{ name: 'impressum' }">{{ $t('footer.impressum') }}</RouterLink>
+    <!-- External link to the Impressum page -->
+    <a href="https://www.thm.de/site/impressum.html">{{ $t('footer.impressum') }}</a>
   </footer>
 </template>
 
