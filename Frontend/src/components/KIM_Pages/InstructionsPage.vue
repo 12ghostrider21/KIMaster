@@ -64,9 +64,9 @@
          </li>
        </ul>
 
-        <prism language="python">
+        <!--<prism language="python">
           <pre><code>{{ $t('instructions.webSocketConnection.step2.connection_with_ProgrammingLanguage.example_code') }}</code></pre>
-        </prism>
+        </prism> -->
       </section>
 
       <section>
@@ -98,12 +98,12 @@
   * This Page contains Instructions on how to set up and connect your own Application
   * @module InstructionPage 
   */
-import Prism from 'vue-prism-component';
+//import Prism from 'vue-prism-component';
 
 export default {
   name: 'Instructions',
   components: {
-    Prism
+    //Prism
   }
 };
 </script>

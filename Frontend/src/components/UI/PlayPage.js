@@ -223,9 +223,8 @@ export default {
       const cellY = Math.ceil(
         mouseY / (this.$refs.imageRef.offsetHeight / this.boardHeight)
       );
-
       // Set the hovered cell coordinates
-      this.hoveredCell = { x: cellX, y: cellY };
+      if(cellX!=0&&cellY!=0) this.hoveredCell = { x: cellX, y: cellY };
     },
 
     /**
