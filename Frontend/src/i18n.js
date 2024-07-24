@@ -8,7 +8,7 @@ const messages = {
       instruction: "Instruction",
       leaderboard: "Leaderboard",
       achievements: "Achievements",
-      welcome: "Welcome to KI-Master",
+      welcome: "Welcome to KIMaster",
       subtitle: "Here you can test your Game-AI",
       enter_lobby_key: "Enter Lobby Key",
       join_lobby: "Join Lobby",
@@ -38,7 +38,6 @@ const messages = {
       player2: "Player 2",
       spectator: "Spectator",
       timeLine: "Timeline",
-      change_game_lobby: "Change to different Game Lobby:",
       player_vs_player: "Player vs Player",
       player_vs_ai: "Player vs KIM",
       playerai_vs_ai: "Player AI vs KIM",
@@ -71,7 +70,7 @@ const messages = {
       surrender_before_start:
         "You need to first surrender before you can start a new Game or Lobby",
       draw: "Draw!",
-      startGame: "Start Game!",
+      startGame: "Start Game",
       waitMessage: "Waiting until Lobby is created...",
       connection_not_possible: "Connecting to Server wasn't possible",
       copyright: "© 2024 Your Company. All rights reserved.",
@@ -430,6 +429,10 @@ const messages = {
         },
       },
     },
+    footer: {
+      datenschutz: 'Privacy Policy',
+      impressum: 'Imprint'
+    },
   },
 
   ////////////////////////////////////////////////////German/////////////////////////////////////////////////////////////////////////////////////////
@@ -439,7 +442,7 @@ const messages = {
       instruction: "Anleitung",
       leaderboard: "Rangliste",
       achievements: "Erfolge",
-      welcome: "Willkommen zu KI-Master",
+      welcome: "Willkommen zu KIMaster",
       subtitle: "Hier kannst du deine Spiele-KI testen",
       enter_lobby_key: "Lobby-Schlüssel eingeben",
       join_lobby: "Lobby beitreten",
@@ -456,7 +459,7 @@ const messages = {
       lobby: "Lobby",
       lobby_welcome: "Willkommen zur {game}",
       leave_lobby: "Lobby verlassen",
-      start_game: "Spiel starten!",
+      start_game: "Spiel starten",
       lobby_key_generating: "Lobby-Schlüssel: Wird generiert",
       lobby_key: "Lobby-Schlüssel: {key}",
       your_position: "Ihre Position {position}",
@@ -468,7 +471,6 @@ const messages = {
       player2: "Spieler 2",
       spectator: "Zuschauer",
       timeLine: "Zeitleiste",
-      change_game_lobby: "Lobby wechseln",
       player_vs_player: "Spieler gegen Spieler",
       player_vs_ai: "Spieler gegen KIM",
       playerai_vs_ai: "Spieler-KI gegen KIM",
@@ -501,7 +503,7 @@ const messages = {
       surrender_before_start:
         "Sie müssen erst aufgeben, bevor Sie ein neues Spiel oder eine neue Lobby beginnen können",
       draw: "Unentschieden!",
-      startGame: "Spiel Starten!",
+      startGame: "Spiel Starten",
       waitMessage: "Warten, bis die Lobby erstellt ist...",
       connection_not_possible: "Die Verbindung zum Server war nicht möglich",
       copyright: "© 2024 Dein Unternehmen. Alle Rechte vorbehalten.",
@@ -890,6 +892,10 @@ const messages = {
         },
       },
     },
+    footer: {
+      datenschutz: 'Datenschutz',
+      impressum: 'Impressum'
+    },
   },
 ////////////////////////////////////////////////////////////////Französisch///////////////////////////////////////////////////////////////////////////////////
   fr: {
@@ -898,7 +904,7 @@ const messages = {
       instruction: "Instruction",
       leaderboard: "Classement",
       achievements: "Réalisations",
-      welcome: "Bienvenue chez KI-Master",
+      welcome: "Bienvenue chez KIMaster",
       subtitle: "Ici, vous pouvez tester votre IA de jeu",
       enter_lobby_key: "Entrez la clé de la salle",
       join_lobby: "Rejoindre la salle",
@@ -926,7 +932,6 @@ const messages = {
       player2: "Joueur 2",
       spectator: "Spectateur",
       timeLine: "Ligne temporelle",
-      change_game_lobby: "Changer de salle de jeu:",
       player_vs_player: "Joueur contre Joueur",
       player_vs_ai: "Joueur contre KIM",
       playerai_vs_ai: "IA Joueur contre KIM",
@@ -961,7 +966,7 @@ const messages = {
       surrender_before_start:
         "Vous devez abandonner avant de pouvoir commencer une nouvelle partie ou un nouveau lobby.",
       draw: "Match nul!",
-      startGame: "Démarrer le jeu !",
+      startGame: "Démarrer le jeu",
       waitMessage: "Attendre que le lobby soit créé...",
       connection_not_possible: "La connexion au serveur n'était pas possible",
       copyright: "© 2024 Votre entreprise. Tous droits réservés.",
@@ -1223,8 +1228,12 @@ const messages = {
           bytestream: "2. Recevoir des bytestreams :",
           bytestream_receive: "Si le feed-back est un bytestream représentant un PNG, enregistrez-le en conséquence.",
         },
-      }
-    }
+      },
+    },
+      footer: {
+        datenschutz: 'Politique de Confidentialité',
+        impressum: 'Mentions légales'
+      },
   },
 /////////////////////////////////////////////////////////Spanisch////////////////////////////////////////////////////////////////////////////////////////////////////
   
@@ -1234,7 +1243,7 @@ es: {
       instruction: "Instrucción",
       leaderboard: "Tabla de clasificación",
       achievements: "Logros",
-      welcome: "Bienvenido a KI-Master",
+      welcome: "Bienvenido a KIMaster",
       subtitle: "Aquí puedes probar tu IA de juegos",
       enter_lobby_key: "Introducir la clave del vestíbulo",
       join_lobby: "Unirse al vestíbulo",
@@ -1262,7 +1271,6 @@ es: {
       player2: "Jugador 2",
       spectator: "Espectador",
       timeLine: "Línea del tiempo",
-      change_game_lobby: "Cambiar a otro vestíbulo de juego:",
       player_vs_player: "Jugador contra Jugador",
       player_vs_ai: "Jugador contra KIM",
       playerai_vs_ai: "IA Jugador contra KIM",
@@ -1297,7 +1305,7 @@ es: {
       surrender_before_start:
         "Debes abandonar antes de poder empezar una nueva partida o lobby.",
       draw: "Indecisos!",
-      startGame: "¡Que empiece el juego!",
+      startGame: "¡Que empiece el juego",
       waitMessage: "Esperar a que se cree el vestíbulo...",
       connection_not_possible: "La conexión con el servidor no ha sido posible",
       copyright: "© 2024 Tu empresa. Todos los derechos reservados.",
@@ -1566,9 +1574,12 @@ es: {
           bytestream: "2. Recibir bytestreams :",
           bytestream_receive: "Si la respuesta es un flujo de bytes que representa un PNG, guárdelo en consecuencia.",
         },
-        
-      }
-    }
+      },
+    },
+    footer: {
+      datenschutz: 'Política de Privacidad',
+      impressum: 'Pie de imprenta'
+    },
   },
 };
 

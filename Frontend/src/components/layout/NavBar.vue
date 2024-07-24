@@ -1,6 +1,6 @@
 <template>
   <!-- Navigation bar with brand logo and links for navigation -->
-  <nav class="navbar navbar-expand-lg bg-body-tertiary nav-bar">
+  <nav class="navbar-expand-lg bg-body-tertiary nav-bar">
     <div class="container-fluid">
       <!-- Link to home page with logo -->
       <router-link class="navbar-brand" @click="leaveLobby()" :to="{ name: 'home' }">
@@ -185,6 +185,11 @@ export default {
 
 <style scoped>
 /* Styles for the navigation bar container */
+.navbar-expand-lg {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
 .container-fluid {
   padding-left: 15px;
   padding-right: 15px;
@@ -208,6 +213,10 @@ export default {
 /* Styles for navigation items */
 .nav-item {
   margin-left: 10px;
+}
+
+.nav-link {
+  padding-left: 12px;
 }
 
 /* Hover effect for navigation links */

@@ -42,4 +42,17 @@ export default {
   outline: none; /* Entfernt den Fokus-Rand */
 }
 
+.qr-code-button {
+  transform: scale(0.7); /* Skaliert den Button auf 50% der Originalgröße */
+  transform-origin: center; /* Stellt sicher, dass die Skalierung von der Mitte ausgeht */
+  padding: 7.5px 15px; /* Padding halbieren */
+  margin: 0px;
+  font-size: 16px; /* Schriftgröße halbieren, falls nötig */
+}
+
+.qr-code-button:hover {
+  transform: scale(0.8) !important; /* Skaliert den Button auch im Hover-Zustand auf 50% der Originalgröße */
+  background-color: rgba(211, 211, 211, 0.5); /* Leicht graue Farbe beim Hover */
+  box-shadow: 0 0 7.5px rgba(128, 128, 128, 0.8); /* Grauer Schatten für den Leuchteffekt, ebenfalls halbiert */
+}
 </style>

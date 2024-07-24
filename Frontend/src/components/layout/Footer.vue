@@ -4,10 +4,10 @@
     <a href="https://www.thm.de">THM</a>
 
     <!-- Router link to the 'about' page -->
-    <RouterLink :to="{ name: 'about' }">Copyright</RouterLink>
+    <RouterLink :to="{ name: 'about' }">{{ $t('footer.datenschutz') }}</RouterLink>
 
     <!-- Router link to the 'impressum' page -->
-    <RouterLink :to="{ name: 'impressum' }">Impressum</RouterLink>
+    <RouterLink :to="{ name: 'impressum' }">{{ $t('footer.impressum') }}</RouterLink>
   </footer>
 </template>
 

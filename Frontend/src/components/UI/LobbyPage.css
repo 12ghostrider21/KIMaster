@@ -36,6 +36,14 @@
   gap: 1rem;
 }
 
+p1 {
+  margin: 0.5rem; /* Setzt die Margin der p1-Elemente auf 0 */
+}
+
+.myPosition, .guestPosition {
+  margin: 0.5rem; /* Setzt die Margin der myPosition- und guestPosition-Elemente auf 0.5rem */
+}
+
 /* Neues CSS für die horizontalen Dropdown-Menüs */
 .horizontal-selects {
   display: flex;

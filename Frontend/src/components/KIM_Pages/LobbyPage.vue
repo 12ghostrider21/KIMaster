@@ -29,7 +29,6 @@
           </select>
 
           <select v-model="selectedGame" @change="setGame(selectedGame)">
-            <option value="" disabled>{{ $t('message.change_game_lobby') }}</option>
             <option v-for="(value, key) in enums.games" :key="key" :value="value">
               {{ $t(`message.${value}`) }}
             </option>
@@ -42,12 +41,17 @@
 
     <base-card>
       <div class="button-group">
-        <p v-if="lobbyKey === null">{{ $t('message.lobby_key_generating') }}</p>
-        <p v-else>Lobby Key: {{ lobbyKey }} <base-button @click="{setPopup(enums.popUpStatus.QR);generateQrCode();}">QR-Code</base-button></p>
-        <p>{{ $t('message.your_position', { position: position }) }}</p>
-        <p>{{ $t('message.lobby_position', { p1: positionsInLobby[0], p2: positionsInLobby[1], spectators: positionsInLobby[2] }) }}</p>
+        <p1 v-if="lobbyKey === null">{{ $t('message.lobby_key_generating') }}</p1>
+        <p1 v-else>Lobby Key: {{ lobbyKey }} 
+          <base-button class="qr-code-button" @click="{setPopup(enums.popUpStatus.QR);generateQrCode();}">
+            QR-Code
+          </base-button>
+        </p1>
+        <p class="myPosition">{{ $t('message.your_position', { position: position }) }}</p>
+        <p class="guestPosition">{{ $t('message.lobby_position', { p1: positionsInLobby[0], p2: positionsInLobby[1], spectators: positionsInLobby[2] }) }}</p>
       </div>
     </base-card>
+
     
     <base-card class="LobbyButton">
       <base-button @click="leaveLobby">{{ $t('message.leave_lobby') }}</base-button>
