@@ -43,7 +43,7 @@ export default {
      * Vuex getters required for the Lobby
      * @type {Object}
      */
-    ...mapGetters(["lobbyKey", "position", "gameActive", "positionsInLobby", "callPos", "game", "socketConnected", "popup", "gameReady"]),
+    ...mapGetters(["notif","lobbyKey", "position", "gameActive", "positionsInLobby", "callPos", "game", "socketConnected", "popup", "gameReady"]),
 
     /**
      * Enums imported from '../enums.js'.
@@ -81,7 +81,7 @@ export default {
      * Vuex actions mapped to component methods.
      * @type {Object}
      */
-    ...mapActions(["initWebSocket", "sendWebSocketMessage", "setGame", "updatePosition", "setPopup"]),
+    ...mapActions(["initWebSocket", "sendWebSocketMessage", "setGame", "updatePosition", "setPopup",'setNotif',]),
 
     /**
      * Sends a message through the WebSocket.
@@ -272,5 +272,16 @@ export default {
         });
       }
     },
+        /**
+     * Displays notification when needed and clears them after a delay.
+     * @param {string|null} newVal - The new value of notif.
+     */
+        notif(newVal) {
+          if (newVal) {
+            setTimeout(() => {
+              this.setNotif(null);
+            }, 5000);
+          }
+        },
   },
 };

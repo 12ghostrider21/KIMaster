@@ -19,7 +19,7 @@ export default {
      * Vuex getters mapped to component computed properties.
      * @type {Object}
      */
-    ...mapGetters(['gameActive', 'position', 'game', 'callPos', 'positionsInLobby']),
+    ...mapGetters(['notif','gameActive', 'position', 'game', 'callPos', 'positionsInLobby']),
 
     /**
      * Computed property for selecting the position.
@@ -33,7 +33,12 @@ export default {
       set(value) {
         this.updatePosition(value);
       }
-    }
+    },
+        /**
+     * Enums imported from '../enums.js'.
+     * @type {Object}
+     */
+        enums() { return ENUMS; },
   },
   beforeMount() {
     /**
@@ -57,7 +62,7 @@ export default {
      * Vuex actions mapped to component methods.
      * @type {Object}
      */
-    ...mapActions(['initWebSocket', 'sendWebSocketMessage', 'updatePosition']),
+    ...mapActions(['initWebSocket', 'sendWebSocketMessage', 'updatePosition','setNotif']),
 
     /**
      * Sends a message via WebSocket after converting it to a JSON string.
@@ -133,5 +138,16 @@ export default {
       this.lobbyPos();
       this.lobbyStatus();
     },
+        /**
+     * Displays notification when needed and clears them after a delay.
+     * @param {string|null} newVal - The new value of notif.
+     */
+        notif(newVal) {
+          if (newVal) {
+            setTimeout(() => {
+              this.setNotif(null);
+            }, 5000);
+          }
+        },
   },
 };

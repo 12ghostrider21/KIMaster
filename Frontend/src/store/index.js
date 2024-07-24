@@ -339,15 +339,13 @@ export default createStore({
         },
 
         /**
-         * Sets the notification state and clears it after 10 seconds.
+         * Sets the notification state, needs to be cleared again in the Components
          * @param {Object} context - The Vuex context.
          * @param {string|null} newNotif - The notification state.
          */
         setNotif({ commit }, newNotif) {
             commit('setNotif', newNotif);
-            setTimeout(() => {
-                commit('setNotif', null);
-            }, 10000);
+
         },
 
         /**

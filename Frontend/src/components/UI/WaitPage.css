@@ -1,2 +1,18 @@
-
-  
+.posSelect{
+    position: relative;
+}
+.message-box {
+    position: absolute;
+    top:100%;
+    left: 0;
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 8px;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    width: 100%; /* Adjust the width to match the input field */
+    white-space: wrap; /* Ensures the message can be seen completely*/
+    overflow: hidden; /* Hides overflow text */
+    text-overflow: ellipsis; /* Adds ellipsis (...) if text overflows */
+    z-index: 1000;
+  }

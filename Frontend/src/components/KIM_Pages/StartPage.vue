@@ -36,7 +36,6 @@
     <teleport to="body">
       <base-dialog
         v-if="popUpTrigger"
-        :title="'Test'"
         @close="closePopUp"
       >
         <template #default>

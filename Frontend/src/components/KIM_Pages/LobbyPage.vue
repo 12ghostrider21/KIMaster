@@ -15,13 +15,15 @@
             <option value="p2">{{ $t('message.player2') }}</option>
             <option value="sp">{{ $t('message.spectator') }}</option>
           </select>
+          <div class="message-box" v-if="notif === enums.notifStatus.POSOCCUPIED">
+          {{ $t('message.lobby_swap_failed') }}
+        </div>
           <select v-model="mode">
             <option value="player_vs_player">{{ $t('message.player_vs_player') }}</option>
             <option value="player_vs_kim">{{ $t('message.player_vs_ai') }}</option>
             <option value="playerai_vs_kim">{{ $t('message.playerai_vs_ai') }}</option>
             <option value="playerai_vs_playerai">{{ $t('message.playerai_vs_playerai') }}</option>
           </select>
-
           <select v-model="difficulty" v-if="mode==='player_vs_kim'||mode==='playerai_vs_kim'||mode==='kim_vs_player'|| mode==='kim_vs_playerai'">
             <option value="easy">{{ $t('message.easy') }}</option>
             <option value="medium">{{ $t('message.medium') }}</option>
@@ -33,6 +35,7 @@
               {{ $t(`message.${value}`) }}
             </option>
           </select>
+     
           </div>
         </div>
 
@@ -56,6 +59,9 @@
     <base-card class="LobbyButton">
       <base-button @click="leaveLobby">{{ $t('message.leave_lobby') }}</base-button>
       <base-button @click="playCreate">{{ $t('message.startGame') }}</base-button>
+      <div class="message-box" v-if="notif === enums.notifStatus.NOTENOUGHPLAYERS">
+          {{ $t('message.game_start_failed') }}
+        </div>
     </base-card>
 
 <div v-if="popup===enums.popUpStatus.QR">

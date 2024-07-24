@@ -4,12 +4,15 @@
       <base-card class="WaitingTitle">
         <h1>{{ $t('message.waitMessage') }}</h1>
       </base-card>
-      <base-card>
+      <base-card class="posSelect">
         <select v-model="positionSelect" @change="swapPositionInLobby">
           <option value="p1">{{ $t('message.player1') }}</option>
           <option value="p2">{{ $t('message.player2') }}</option>
           <option value="sp">{{ $t('message.spectator') }}</option>
         </select>
+        <div class="message-box" v-if="notif === enums.notifStatus.POSOCCUPIED">
+          {{ $t('message.lobby_swap_failed') }}
+        </div>
       </base-card>
       <base-card>
         <p>{{ $t('message.your_position', { position: position }) }}</p>

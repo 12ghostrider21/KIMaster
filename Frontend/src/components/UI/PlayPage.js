@@ -39,6 +39,7 @@ export default {
      * Vuex getters mapped to component computed properties.
      */
     ...mapGetters([
+      "notif",
       "imageSrc",
       "position",
       "game",
@@ -157,7 +158,7 @@ export default {
      */
     ...mapActions([
       "sendWebSocketMessage",
-      "setNotif",
+      'setNotif',
       "setPopup",
     ]),
 
@@ -516,5 +517,16 @@ export default {
         this.sendMessage(data);
       }
     },
+        /**
+     * Displays notification when needed and clears them after a delay.
+     * @param {string|null} newVal - The new value of notif.
+     */
+        notif(newVal) {
+          if (newVal) {
+            setTimeout(() => {
+              this.setNotif(null);
+            }, 5000);
+          }
+        },
   },
 }
