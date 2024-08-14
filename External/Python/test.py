@@ -23,7 +23,7 @@ async def listen_and_send(uri, key):
                 if message.get("response_code") == 101:
                     await asyncio.sleep(1)
                     await send_message(json.dumps(
-                        {"command": "play", "command_key": "create", "game": "checkers", "difficulty": "easy",
+                        {"command": "play", "command_key": "create", "game": "connect4", "difficulty": "easy",
                          "mode": "player_vs_kim"}))
                     await asyncio.sleep(0.5)
                 if message.get("response_code") == 218:
@@ -51,5 +51,5 @@ async def main(key):
 
 
 if __name__ == "__main__":
-    key = "1a9287a2c7e3c58449052343b0e60797535a4d5f6cbeeee2a6f105a3455e0e39"
+    key = "7a626"
     asyncio.run(main(key))

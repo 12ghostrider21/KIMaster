@@ -80,7 +80,13 @@ class GameClient(WebSocketConnectionManager):
                              for i, m in enumerate(self.pit.arena.game.getValidMoves(hist[0], hist[1])) if m == 1]
                     if read_object.get("isFrontend") and p_pos == "p2":
                         moves = str([self.pit.arena.game.rotateMove(move) for move in moves])
-                    await self.send_response(RCODE.P_MOVES, p_pos, {"moves": moves})
+                    board: np.array = hist[0]
+                    await self.send_response(RCODE.P_MOVES, p_pos, {
+                        "moves": moves,
+                        "board": board.tolist(),  # The actual NumPy array
+                        "shape": board.shape,  # The shape of the array
+                        "type": str(board.dtype)  # The data type of the array
+                    })
 
                 # Handling 'make_move' command
                 case "make_move":
